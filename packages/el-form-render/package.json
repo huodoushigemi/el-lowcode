@@ -1,0 +1,15 @@
+{
+  "name": "el-form-render",
+  "private": false,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "unpkg": "dist/index.iife.js",
+  "jsdelivr": "dist/index.iife.js",
+  "types": "dist/types/index.d.ts",
+  "files": ["dist"],
+  "dependencies": {
+    
+  }
+}
