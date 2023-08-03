@@ -9,7 +9,7 @@ import pkg from './package.json' assert { type: 'json' }
 const formats = {
   esm: 'mjs',
   cjs: 'cjs',
-  iife: 'iife.js'
+  // iife: 'iife.js'
 }
 
 export default defineConfig({
@@ -17,7 +17,7 @@ export default defineConfig({
   output: Object.entries(formats).map(([format, ext]) => ({
     format,
     file: `packages/el-form-render/dist/index.${ext}`,
-    name: 'ElFormRender',
+    // name: 'ElFormRender',
   })),
   external: Object.keys(pkg.peerDependencies ?? []),
   plugins: [
@@ -29,6 +29,6 @@ export default defineConfig({
       },
     }),
     esbuild({ minify: true, target: ['chrome58', 'ios13'] }),
-    typescript({ declaration: true, emitDeclarationOnly: true, outDir: 'types' }),
+    // typescript({ declaration: true, emitDeclarationOnly: true, outDir: 'types' }),
   ]
 })

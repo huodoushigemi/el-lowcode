@@ -1,7 +1,7 @@
 {
   "name": "el-form-render",
   "private": false,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -11,5 +11,9 @@
   "files": ["dist"],
   "dependencies": {
     
+  },
+  "peerDependencies": {
+    "element-plus": "^2.3.8",
+    "vue": "^3.2.0"
   }
 }

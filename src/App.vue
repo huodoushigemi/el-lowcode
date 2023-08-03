@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import HelloWorld from './components/HelloWorld.vue'
+import {ElFormRender} from 'el-form-render'
 </script>
 
 <template>
@@ -11,7 +12,7 @@ import HelloWorld from './components/HelloWorld.vue'
       <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
     </a>
   </div>
-  <HelloWorld msg="Vite + Vue" />
+  <el-form-render inline :model="{}" :items="[{ lp: 'asd qwr3' }, { lp: 'asd23 r34f' }, { label: '34', prop: 'sd' }]" />
 </template>
 
 <style scoped>

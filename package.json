@@ -6,17 +6,17 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
+    "build:packages": "rollup -c && pnpm run build:types",
+    "build:types": "vue-tsc --declaration --emitDeclarationOnly --outDir packages/el-form-render/dist/types",
     "preview": "vite preview",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
-    
-  },
-  "peerDependencies": {
+    "el-form-render": "workspace:*",
     "element-plus": "^2.3.8",
-    "vue": "^3.3.4"
+    "vue": "^3.2.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.1.0",
