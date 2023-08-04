@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { ElForm, ElFormItem } from 'element-plus'
 import 'element-plus/es/components/form/style/css'
-import { Item, formRenderProps } from './form-render'
+import { Item, formRenderProps, label, prop } from './form-render'
 
 defineOptions({ name: 'ElFormRender' })
 
@@ -19,7 +19,7 @@ function isExp(exp: string) {
 function execExp(exp: string, prop: string) {
   const matched = isExp(exp)
   if (!matched) return exp
-  const func = new Function('data', `return ${matched[1]}`)
+  const func = new Function('$', `return ${matched[1]}`)
   const val = func(props.model)
   return (props.model![prop] = val)
 }
@@ -38,10 +38,6 @@ const disabled = (item: Item) => isExp(item.el?.value) || item.el?.disabled
 
 const formRef = ref()
 
-const solveLP = (lp: string | string[] | undefined) => Array.isArray(lp) ? lp : lp?.split(' ')
-
-const label = (item: Item) => item.label || solveLP(item.lp)![0]
-const prop = (item: Item) => item.prop || solveLP(item.lp)![1]
 const val = (item: Item) => props.model![prop(item)]
 
 defineExpose({
