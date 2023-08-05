@@ -4,6 +4,7 @@ import Vue from 'unplugin-vue/rollup'
 import VueMacros from 'unplugin-vue-macros/rollup'
 import esbuild from 'rollup-plugin-esbuild'
 import typescript from '@rollup/plugin-typescript'
+import plugins from './build/plugins'
 import pkg from './package.json' assert { type: 'json' }
 
 const formats = {
@@ -22,6 +23,7 @@ export default defineConfig({
   external: Object.keys(pkg.peerDependencies ?? []),
   plugins: [
     // nodeResolve(),
+    ...plugins(),
     VueMacros({
       plugins: {
         vue: Vue(),

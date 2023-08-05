@@ -9,6 +9,7 @@
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
+    "noImplicitAny": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": false,
@@ -33,7 +34,7 @@
       "@vue-macros/volar/export-props"
     ]
   },
-  "include": ["shims-vue.d.ts", "packages"],
+  "include": ["packages", "shims-vue.d.ts", "auto-imports.d.ts"],
   "exclude": ["node_modules", "**/dist"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
