@@ -47,7 +47,7 @@ defineExpose({
 </script>
 
 <template>
-  <el-form ref="formRef" v-bind="{...props, ...$attrs}" :items="undefined">
+  <el-form ref="formRef" v-bind="props" :items="undefined">
     <template v-for="item in items" :key="item[1]">
       <el-form-item
         v-if="!exec(item.hide)"
