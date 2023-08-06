@@ -18,15 +18,15 @@
   <slot name="header:after" />
 
   <!-- 表格内容展示 -->
-  <el-table ref="tableRef" :border="true" v-bind="objectPick($props, Object.keys(tableProps))" :data="_data" @select="_onSelect" @select-all="onSelectAll">
+  <el-table ref="tableRef" :border="true" v-bind="objectPick($props, ks(tableProps))" :data="_data" @select="_onSelect" @select-all="onSelectAll">
     <el-table-column v-if="showSelect" type="selection" width="60" reserve-selection :selectable="selectable" />
     <el-table-column v-if="showIndex" type="index" label="序号" width="80" />
 
     <template v-for="col in _columns" :key="col.prop">
       <el-table-column v-bind="col">
-        <template #default="{ row, $index }">
-          <slot :name="col.prop" :row="row" :$index="$index">
-            <Render :render="col.formatter?.(row, col, row[col.prop], $index) ?? row[col.prop]" />
+        <template #default="{ row, column, $index }">
+          <slot :name="col.prop" :row="row" :column="column" :$index="$index">
+            <Render :render="col.formatter?.(row, column, row[col.prop], $index) ?? row[col.prop]" />
           </slot>
         </template>
       </el-table-column>
@@ -51,7 +51,7 @@
     v-model:page-size="params.page.pageSize"
     :total="_total"
     layout="total, sizes, prev, pager, next"
-    v-bind="page"
+    v-bind="pagination"
   />
 
   <!-- 表单 -->
@@ -70,11 +70,10 @@
 </template>
 
 <script setup lang="ts">
-import type { ExtractPropTypes } from 'vue'
 import { isObject, isString } from '@vue/shared'
-import { objectPick } from '@vueuse/core'
+import { objectPick  } from '@vueuse/core'
 
-import { PaginationProps, TableColumnCtx, ButtonProps, ElMessageBox, ElMessage, FormProps, DialogProps, ElTable, ElTableColumn, ElButton, ElPagination, ElDialog } from 'element-plus'
+import { ElMessageBox, ElMessage, ElTable, ElTableColumn, ElButton, ElPagination, ElDialog } from 'element-plus'
 import tableProps from 'element-plus/es/components/table/src/table/defaults'
 import 'element-plus/es/components/table/style/css'
 import 'element-plus/es/components/pagination/style/css'
@@ -83,62 +82,24 @@ import 'element-plus/es/components/button/style/css'
 
 import ElFormRender, { Item, label, prop } from 'el-form-render'
 
-// import { post } from '@/api/http'
-const post = () => {}
+import { get, ks, set } from  '../utils'
 import Render from '../render'
-
-const solveRowKey = <T,>(fn: T | ((row) => T), row) => typeof fn === 'function' ? (fn as Function)(row) : row[fn]
+import config from './config'
+import { crudProps, Column } from './crud'
 
 defineOptions({ name: 'crud' })
 
-export type Column = Partial<TableColumnCtx<any>> & { prop: string }
-
-export type CRUDProps = ExtractPropTypes<typeof props>
-
-const props = defineProps({
-  ...tableProps,
-  url: String,
-  extraQuery: Object,
-  data: Array,
-  columns: Array as PropType<Array<string | TableColumnCtx<any>>[]>,
-  showIndex: Boolean,
-  showSelect: Boolean,
-  selected: Array,
-  selectable: Function as PropType<Column['selectable']>,
-  multiple: Boolean,
-  // 
-  page: Object as PropType<PaginationProps>,
-  // 
-  operation: Object as PropType<Column>,
-  hasNew: { type: Boolean, default: true },
-  hasEdit: { type: Boolean, default: true },
-  hasDel: { type: Boolean, default: true },
-  btns: { type: Function as PropType<(row) => (Partial<ButtonProps> & { render: any })[]> },
-  onNew: { type: Function as PropType<(row: any) => Awaited<void>> },
-  onEdit: { type: Function as PropType<(row: any) => Awaited<void>> },
-  onDel: { type: Function as PropType<(row: any) => Awaited<void>> },
-  // 
-  schema: Array as PropType<Item[]>,
-  // 
-  search: Object as PropType<FormProps>,
-  searchItems: Array as PropType<Array<string | Item>>,
-  // 
-  dialog: Object as PropType<DialogProps>,
-  form: Object as PropType<FormProps>,
-  formItems: Array as PropType<Array<string | Item>>,
-  // 
-  onSelect: Function as PropType<(selected: any[], row) => void>,
-})
+const props = defineProps(crudProps)
 
 defineExpose({
   getData
 })
 
 // 分页查询
-const params = reactive({
-  page: { page: 1, pageSize: 10 },
-  ...props.extraQuery
-})
+const params = reactive<Record<string, any>>({})
+set(params, props.field.page, 1)
+set(params, props.field.pageSize, props.pagination?.pageSize)
+Object.assign(params, props.extraQuery)
 
 watch(
   () => params.page,
@@ -155,7 +116,7 @@ watch(
     await nextTick()
     tableRef.value!.clearSelection()
     val?.forEach(e => {
-      e = _data.value.find(row => solveRowKey(props.rowKey, row) == solveRowKey(props.rowKey, e)) ?? e
+      e = _data.value.find(row => get(row, props.rowKey!) == get(e, props.rowKey!)) ?? e
       tableRef.value!.toggleRowSelection(e, true)
     })
   },
@@ -188,18 +149,17 @@ const _data = computed(() => props.data ?? _list.value)
 
 async function getData(query = params) {
   if (!props.url) return
-  const { data } = await post(props.url, query)
-  _list.value =  data.list
-  _total.value = data.total
+  const { data } = await config.request(props.url, query, 'get')
+  _list.value =  get(data, props.field.list)
+  _total.value = get(data, props.field.total)
 }
 
 async function _onDel(row) {
   await ElMessageBox.confirm('是否删除该数据 ？', 'warning', { type: 'warning' })
   if (props.onDel) {
     await props.onDel(row)
-  } else {
-    const url = props.url.replace('list', 'information').replace('search', 'delete')
-    await post(url, { id: row.id })
+  } else if (props.url) {
+    await config.request(props.url, { id: row.id }, 'delete')
   }
   getData()
 }
@@ -223,9 +183,8 @@ async function _onConfirm() {
 async function _onNew() {
   if (props.onNew) {
     await props.onNew(row.value)
-  } else {
-    const url = props.url.replace('list', 'information').replace('search', 'create')
-    await post(url, row.value)
+  } else if (props.url) {
+    await config.request(props.url, row.value, 'post')
   }
   ElMessage.success({ message: '创建成功' })
 }
@@ -233,9 +192,8 @@ async function _onNew() {
 async function _onEdit() {
   if (props.onEdit) {
     await props.onEdit(row.value)
-  } else {
-    const url = props.url.replace('list', 'information').replace('search', 'edit')
-    await post(url, row.value)
+  } else if (props.url) {
+    await config.request(props.url, row.value, 'put')
   }
   ElMessage.success({ message: '修改成功' })
 }
@@ -256,7 +214,7 @@ function _2column(e: string | Column): Column {
   return {
     label: label(item),
     prop: prop(item),
-    formatter: (row, column, val, index) => {
+    formatter: (_row, _column, val, _index) => {
       return (
         item.type === 'date-picker' ? new Date(val * 1000).toLocaleDateString() :
         item.el?.options ? item.el.options.find(e => e.value == val) :

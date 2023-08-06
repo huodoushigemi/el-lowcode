@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import HelloWorld from './components/HelloWorld.vue'
 import {ElFormRender} from 'el-form-render'
+
+const asd = ref()
 </script>
 
 <template>
