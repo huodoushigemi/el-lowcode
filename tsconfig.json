@@ -32,7 +32,7 @@
       "@vue-macros/volar/export-props"
     ]
   },
-  "include": ["packages", "types/*", "types/global.d.ts"],
+  "include": ["packages", "types/*"],
   "exclude": ["node_modules", "**/dist"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

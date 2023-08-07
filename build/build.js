@@ -3,7 +3,8 @@ import { nodeResolve } from '@rollup/plugin-node-resolve'
 import Vue from 'unplugin-vue/rollup'
 import VueMacros from 'unplugin-vue-macros/rollup'
 import esbuild from 'rollup-plugin-esbuild'
-import dts from 'rollup-plugin-dts'
+// import dts from 'rollup-plugin-dts'
+import { generateDtsBundle as dts } from 'rollup-plugin-dts-bundle-generator'
 import fs from 'fs'
 import path from 'path'
 import plugins from './plugins/index.js'
@@ -63,20 +64,33 @@ export async function buildFull() {
 }
 
 async function buildDts(pack) {
-  // execSync(`npx vue-tsc --declaration --emitDeclarationOnly --outDir packages/${pack}/dist/types packages/${pack}/index.ts`)
+  // execSync(`rimraf ${pkgDir(pack, 'dist')}`)
+  // execSync(`npx vue-tsc -d --emitDeclarationOnly --outDir ${pkgDir(pack, 'dist/types')} ${pkgDir(pack, 'index.ts')}`)
+  // execSync(`npx vue-tsc -d --emitDeclarationOnly --outDir ../packages/${pack}/dist/types ../packages/${pack}/index.ts`)
+  // execSync(`node_modules/.bin/vue-tsc -d --emitDeclarationOnly --outDir ${pkgDir(pack, 'dist/types')} ${pkgDir(pack, 'index.ts')}`, { cwd })
+  // return
 
   const bundle = await rollup({
     // input: pkgDir(`${pack}/dist/types/${pack}/index.d.ts`),
-    input: pkgDir(`${pack}/index.ts`),
+    input: pkgDir(pack, `index.ts`),
     // external: Object.keys(pkgJSON.dependencies || {}),
-    external: id => !/^[./]/.test(id),
-    plugins: [
-      dts()
-    ]
+    external: id => !/^[./]/.test(id)
   })
 
   await bundle.write({
-    file: pkgDir(`${pack}/dist/index.d.ts`),
+    dir: pkgDir(pack, 'dist'),
+    plugins: [
+      dts({
+        outFile: pkgDir(pack, 'dist/index.d.ts')
+      }),
+      {
+        generateBundle(output, bundle) {
+          for (const key in bundle) {
+            if (!key.endsWith('.d.ts')) delete bundle[key]
+          }
+        }
+      }
+    ]
   })
 
   // execSync(`rimraf packages/${pack}/dist/types`)
@@ -87,5 +101,7 @@ async function buildDts(pack) {
 // buildFull()
 // await build('crud')
 // await build('el-form-render')
+await build('utils')
 
-buildDts('utils')
+// buildDts('utils')
+// buildDts('el-form-render')
