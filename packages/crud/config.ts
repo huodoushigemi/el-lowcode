@@ -1,5 +1,6 @@
 import { Awaitable } from "@vueuse/core"
 import { PaginationProps } from "element-plus"
+import { Funable } from "../../types/global"
 
 type Type = 'get' | 'post' | 'put' | 'delete'
 

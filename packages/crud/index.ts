@@ -1,4 +1,5 @@
-import 'virtual:uno.css'
+// import 'virtual:uno.css'
+// import './style.css'
 import { withInstall } from '../utils'
 import * as _CRUD from './crud.vue'
 

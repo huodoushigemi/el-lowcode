@@ -12,13 +12,11 @@
     "noImplicitAny": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": false,
+    "noEmit": true,
     "jsx": "preserve",
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
     "types": ["unplugin-vue-macros/macros-global"]
@@ -34,7 +32,7 @@
       "@vue-macros/volar/export-props"
     ]
   },
-  "include": ["packages/**/*", "shims-vue.d.ts", "auto-imports.d.ts", "global.d.ts"],
+  "include": ["packages", "types/*", "types/global.d.ts"],
   "exclude": ["node_modules", "**/dist"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

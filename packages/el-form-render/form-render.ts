@@ -1,4 +1,3 @@
-import type { PropType } from 'vue'
 import type { FormItemProps } from 'element-plus'
 import { formProps } from 'element-plus'
 
@@ -17,7 +16,6 @@ export const formRenderProps = {
   ...formProps,
   items: Array as PropType<Item[]>
 }
-
 
 const solveLP = (lp: string | string[] | undefined) => Array.isArray(lp) ? lp : lp?.split(' ')
 

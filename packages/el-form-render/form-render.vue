@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElForm, ElFormItem } from 'element-plus'
-import 'element-plus/es/components/form/style/css'
+// import 'element-plus/es/components/form/style/css'
 import { Item, formRenderProps, label, prop } from './form-render'
 
 defineOptions({ name: 'ElFormRender' })

@@ -20,7 +20,7 @@ export default defineConfig({
     file: `packages/el-form-render/dist/index.${ext}`,
     // name: 'ElFormRender',
   })),
-  external: Object.keys(pkg.peerDependencies ?? []),
+  external: Object.keys(pkg.peerDependencies || {}),
   plugins: [
     // nodeResolve(),
     ...plugins(),

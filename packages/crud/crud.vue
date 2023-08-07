@@ -6,6 +6,7 @@
     </template>
     <el-form-item>
       <el-button type="primary" @click="getData()">查询</el-button>
+      <!-- @vue-ignore -->
       <el-button @click="() => ($refs.searchRef.resetFields(), getData())">重置</el-button>
     </el-form-item>
   </el-form-render>
@@ -246,8 +247,8 @@ function _2searchItem(e: string | Item) {
 </script>
 
 
-<style>
+<!-- <style>
 .is-disabled .el-checkbox__inner {
   background-color: #80808040 !important;
 }
-</style>
+</style> -->

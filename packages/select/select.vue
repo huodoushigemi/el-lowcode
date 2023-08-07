@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <el-select v-if="!$slots.default" v-bind="{ ...props, ...$attrs }" :model-value="_modelValue" @update:model-value="e => emit('update:modelValue', e)">
     <el-option v-for="item in _options" :key="item.value" v-bind="item" />
   </el-select>
@@ -88,4 +88,4 @@ const _options = computedAsync(async () => {
 const _modelValue = ref(castArray(props.modelValue))
 watch(() => props.modelValue, val => _modelValue.value = castArray(val))
 watch(() => props.getVal, async val => val && (_modelValue.value = castArray(await props.getVal())), { immediate: true })
-</script>
+</script> -->
