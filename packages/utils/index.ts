@@ -1,21 +1,21 @@
-import type { App, Plugin } from 'vue'
-import type { Funable } from '../../types/global'
+import type { App, Component, Plugin } from 'vue'
+import type { Fnable } from './types'
+
+export * from './types'
 
 type SFCWithInstall<T> = T & Plugin
+type Comp = Component & { name: string } & Partial<Plugin>
 
-export function withInstall<T>(comp: T): SFCWithInstall<T> {
-  // @ts-ignore
+export function withInstall<T extends Comp>(comp: T) {
   comp.install = (app: App) => app.component(comp.name, comp)
-  // @ts-ignore
-  return comp
+  return comp as SFCWithInstall<T>
 }
 
 export const ks = <T extends object>(obj: T) => Object.keys(obj) as (keyof T)[]
 
-export const unFun = <T>(fn: Funable<T>, ...args) => typeof fn === 'function' ? (fn as Function)(...args) : fn
+export const unFn = <T>(fn: Fnable<T>, ...args) => typeof fn === 'function' ? (fn as Function)(...args) : fn
 
-export function get(obj: any, path: Funable<string>) {
-  // @ts-ignore
+export function get(obj: any, path: string | ((...args) => any)) {
   if (typeof path === 'function') return path(obj)
   for (const k of path.split('.')) if (!(obj = obj[k])) break
   return obj

@@ -72,7 +72,7 @@
 
 <script setup lang="ts">
 import { isObject, isString } from '@vue/shared'
-import { objectPick  } from '@vueuse/core'
+import { objectPick } from '@vueuse/core'
 
 import { ElMessageBox, ElMessage, ElTable, ElTableColumn, ElButton, ElPagination, ElDialog } from 'element-plus'
 import tableProps from 'element-plus/es/components/table/src/table/defaults'
