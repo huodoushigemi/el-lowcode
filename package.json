@@ -33,6 +33,7 @@
     "@vitejs/plugin-vue": "^4.2.3",
     "@vue-macros/volar": "^0.12.3",
     "dts-bundle-generator": "^8.0.1",
+    "esbuild-register": "^3.4.2",
     "fast-glob": "^3.3.1",
     "rollup": "^3.27.2",
     "rollup-plugin-dts": "^5.3.1",

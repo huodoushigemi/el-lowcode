@@ -13,7 +13,6 @@ import plugins from './plugins/index.js'
 
 // import pkgJSON from '../package.json' assert { type: 'json' }
 import { exec, execSync } from 'child_process'
-import { FixedSizeGrid } from 'element-plus'
 
 const formats = {
   esm: 'mjs',
@@ -132,12 +131,24 @@ async function buildDts(pack) {
 // buildDts('utils')
 // buildDts('el-form-render')
 
-const packages = fg.sync('*/index.ts', { cwd: pkgDir() }).map(e => e.split('/')[0])
+// const packages = fg.sync('*/index.ts', { cwd: pkgDir() }).map(e => e.split('/')[0])
+const packages = ['utils']
+
+const configs: RollupOptions[] = []
 
 for (const name of packages) {
   const config: RollupOptions = {
-    input: 
+    input: `${name}/index.ts`,
+    plugins: [
+      dts({
+        compilerOptions: {
+          preserveSymlinks: false,
+          rootDir: pkgDir(name)
+        }
+      })
+    ]
   }
+  configs.push(config)
 }
 
-// const input = 
+export default configs

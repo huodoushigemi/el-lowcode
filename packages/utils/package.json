@@ -7,7 +7,7 @@
   "module": "dist/index.mjs",
   "unpkg": "dist/index.iife.js",
   "jsdelivr": "dist/index.iife.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/index.d.ts",
   "files": ["dist"],
   "dependencies": {
     "element-plus": "^2.3.8",
