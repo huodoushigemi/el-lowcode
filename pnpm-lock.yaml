@@ -89,12 +89,7 @@ importers:
     specifiers: {}
 
   packages/utils:
-    specifiers:
-      element-plus: ^2.3.8
-      vue: ^3.2.0
-    dependencies:
-      element-plus: 2.3.8_vue@3.3.4
-      vue: 3.3.4
+    specifiers: {}
 
 packages:
 

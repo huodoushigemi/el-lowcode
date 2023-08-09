@@ -72,8 +72,6 @@ export async function buildFull() {
 
 async function buildDts(pack) {
   execSync(`rimraf ${pkgDir(pack, 'dist')}`)
-  // execSync(`npx vue-tsc -d --emitDeclarationOnly --outDir ${pkgDir(pack, 'dist/types')} ${pkgDir(pack, 'index.ts')}`)
-  // execSync(`npx vue-tsc -d --emitDeclarationOnly --outDir ../packages/${pack}/dist/types ../packages/${pack}/index.ts`)
   execSync(`node_modules\\.bin\\vue-tsc -d --emitDeclarationOnly --outDir ${pkgDir(pack, 'dist/types')} ${pkgDir(pack, 'index.ts')}`, { cwd })
 
   const bundle = await rollup({
