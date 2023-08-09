@@ -1,4 +1,4 @@
-import { defineConfig, rollup, RollupOptions } from 'rollup'
+import { defineConfig, rollup } from 'rollup'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import Vue from 'unplugin-vue/rollup'
 import VueMacros from 'unplugin-vue-macros/rollup'
@@ -71,56 +71,26 @@ export async function buildFull() {
 }
 
 async function buildDts(pack) {
-  // execSync(`rimraf ${pkgDir(pack, 'dist')}`)
+  execSync(`rimraf ${pkgDir(pack, 'dist')}`)
   // execSync(`npx vue-tsc -d --emitDeclarationOnly --outDir ${pkgDir(pack, 'dist/types')} ${pkgDir(pack, 'index.ts')}`)
   // execSync(`npx vue-tsc -d --emitDeclarationOnly --outDir ../packages/${pack}/dist/types ../packages/${pack}/index.ts`)
-  // execSync(`node_modules/.bin/vue-tsc -d --emitDeclarationOnly --outDir ${pkgDir(pack, 'dist/types')} ${pkgDir(pack, 'index.ts')}`, { cwd })
-  // return
+  execSync(`node_modules\\.bin\\vue-tsc -d --emitDeclarationOnly --outDir ${pkgDir(pack, 'dist/types')} ${pkgDir(pack, 'index.ts')}`, { cwd })
 
   const bundle = await rollup({
-    // input: pkgDir(`${pack}/dist/types/${pack}/index.d.ts`),
-    input: pkgDir(pack, `index.ts`),
-    // external: Object.keys(pkgJSON.dependencies || {}),
-    external: id => !/^[./]/.test(id),
-    output: {
-      file: pkgDir(pack, 'dist/index.d.ts')
-    },
+    input: pkgDir(pack, `dist/types/index.d.ts`),
+    external: (id, importer, isResolved) => !isResolved && !/^[./]/.test(id),
     plugins: [
-      dts({
-        compilerOptions: {
-          preserveSymlinks: false,
-          rootDir: pkgDir(pack)
-        },
-        tsconfig: path.join(cwd, 'tsconfig.json')
-      }),
+      dts({ compilerOptions: { preserveSymlinks: false } }),
     ]
   })
 
   await bundle.write({
-    // dir: pkgDir(pack, 'dist'),
-    // plugins: [
-    //   dts({
-    //     compilerOptions: {
-    //       preserveSymlinks: false,
-    //       rootDir: pkgDir(pack)
-    //     }
-    //   }),
-    //   // generateDtsBundle({
-    //   //   outFile: pkgDir(pack, 'dist/index.d.ts')
-    //   // }),
-    //   {
-    //     generateBundle(output, bundle) {
-    //       for (const key in bundle) {
-    //         if (!key.endsWith('.d.ts')) delete bundle[key]
-    //       }
-    //     }
-    //   }
-    // ]
+    file: pkgDir(pack, 'dist/index.d.ts')
   })
 
-  // execSync(`rimraf packages/${pack}/dist/types`)
+  execSync(`rimraf ${pkgDir(pack, '/dist/types')}`,  { cwd })
 
-  // await bundle.close()
+  await bundle.close()
 }
 
 // buildFull()
@@ -129,26 +99,4 @@ async function buildDts(pack) {
 // await build('utils')
 
 // buildDts('utils')
-// buildDts('el-form-render')
-
-// const packages = fg.sync('*/index.ts', { cwd: pkgDir() }).map(e => e.split('/')[0])
-const packages = ['utils']
-
-const configs: RollupOptions[] = []
-
-for (const name of packages) {
-  const config: RollupOptions = {
-    input: `${name}/index.ts`,
-    plugins: [
-      dts({
-        compilerOptions: {
-          preserveSymlinks: false,
-          rootDir: pkgDir(name)
-        }
-      })
-    ]
-  }
-  configs.push(config)
-}
-
-export default configs
+buildDts('el-form-render')
