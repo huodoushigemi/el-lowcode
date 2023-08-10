@@ -27,7 +27,9 @@
       <el-table-column v-bind="col">
         <template #default="{ row, column, $index }">
           <slot :name="col.prop" :row="row" :column="column" :$index="$index">
-            <Render :render="col.formatter?.(row, column, row[col.prop], $index) ?? row[col.prop]" />
+            <!-- todo -->
+            <!-- @vue-ignore -->
+            <Render :render="col.formatter ? col.formatter(row, col, row[col.prop], $index) : row[col.prop]" />
           </slot>
         </template>
       </el-table-column>
@@ -36,7 +38,7 @@
     <el-table-column v-if="hasEdit || hasDel || btns || $slots.btns" label="操作" width="300" fixed="right" v-bind="operation">
       <template #default="{ row, $index }">
         <slot name="btns" :row="row" :$index="$index" />
-        <el-button v-for="btn in btns?.(row)" type="primary" size="small" v-bind="btn"><Render :render="btn.render" /></el-button>
+        <el-button v-for="btn in btns?.(row)" type="primary" size="small" v-bind="btn"><Renderer :render="btn.render" /></el-button>
         <el-button size="small" type="primary" @click="openDialog(row)">编辑</el-button>
         <el-button size="small" type="danger" @click="_onDel(row)">删除</el-button>
       </template>
@@ -246,9 +248,8 @@ function _2searchItem(e: string | Item) {
 }
 </script>
 
-<style >
-/* :deep(.is-disabled .el-checkbox__inner) {
+<style>
+:deep(.is-disabled .el-checkbox__inner) {
   background-color: #80808040 !important;
-} */
-.asd {}
+}
 </style>

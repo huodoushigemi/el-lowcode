@@ -1,7 +1,7 @@
 import { rollup } from 'rollup'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
-// import Vue from 'unplugin-vue/rollup'
-import Vue from '@vitejs/plugin-vue'
+import Vue from 'unplugin-vue/rollup'
+// import Vue from '@vitejs/plugin-vue'
 import VueMacros from 'unplugin-vue-macros/rollup'
 import esbuild from 'rollup-plugin-esbuild'
 import dts from 'rollup-plugin-dts'
@@ -33,15 +33,15 @@ export async function build(pack) {
     external: Object.keys(JSON.parse(fs.readFileSync(jsonPath, 'utf8')).peerDependencies ?? []),
     plugins: [
       nodeResolve(),
-      // VueMacros({
-      //   plugins: {
-      //     vue: Vue(),
-      //     // vueJsx: VueJsx(), // if needed
-      //   },
-      // }),
-      Vue(),
+      VueMacros({
+        plugins: {
+          vue: Vue(),
+          // vueJsx: VueJsx(), // if needed
+        },
+      }),
+      // Vue(),
       esbuild({ minify: true, target: ['chrome58', 'ios13'] }),
-      // ...plugins(),
+      ...plugins(),
       // esbuild(),
       // ts({ allowImportingTsExtensions: true, declaration: true, emitDeclarationOnly: true, noEmit: false, outDir: '', rootDir: pkgDir(pack) }),
     ]
@@ -96,6 +96,8 @@ async function buildDts(pack) {
 }
 
 // buildFull()
+// await build('utils')
+// await build('render')
 // await build('el-form-render')
 await build('crud')
 
