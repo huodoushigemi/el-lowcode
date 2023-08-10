@@ -1,19 +1,18 @@
 {
-  "name": "@el-lowcode/crud",
+  "name": "@el-lowcode/render",
   "private": false,
   "version": "0.0.2",
   "type": "module",
   "main": "dist/index.cjs",
-  "module": "index.ts",
+  "module": "dist/index.mjs",
   "unpkg": "dist/index.iife.js",
   "jsdelivr": "dist/index.iife.js",
   "types": "dist/index.d.ts",
   "files": ["dist"],
   "dependencies": {
-    
+
   },
   "peerDependencies": {
-    "element-plus": "^2.3.8",
-    "vue": "^3.2.0"
+    
   }
 }

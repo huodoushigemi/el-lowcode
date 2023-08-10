@@ -17,6 +17,7 @@
   "dependencies": {
     "@el-lowcode/crud": "workspace:*",
     "@el-lowcode/utils": "workspace:*",
+    "@el-lowcode/render": "workspace:*",
     "@vue/shared": "^3.3.4",
     "@vueuse/core": "^10.3.0",
     "el-form-render": "workspace:*",

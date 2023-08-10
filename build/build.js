@@ -1,18 +1,17 @@
-import { defineConfig, rollup } from 'rollup'
+import { rollup } from 'rollup'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
-import Vue from 'unplugin-vue/rollup'
+// import Vue from 'unplugin-vue/rollup'
+import Vue from '@vitejs/plugin-vue'
 import VueMacros from 'unplugin-vue-macros/rollup'
 import esbuild from 'rollup-plugin-esbuild'
-import ts from '@rollup/plugin-typescript'
 import dts from 'rollup-plugin-dts'
 import { generateDtsBundle } from 'rollup-plugin-dts-bundle-generator'
-import fs from 'fs'
 import path from 'path'
+import fs from 'fs'
 import fg from 'fast-glob'
-import plugins from './plugins/index.js'
+import { execSync } from 'child_process'
 
-// import pkgJSON from '../package.json' assert { type: 'json' }
-import { exec, execSync } from 'child_process'
+import plugins from './plugins/index.js'
 
 const formats = {
   esm: 'mjs',
@@ -24,26 +23,25 @@ const cwd = process.cwd()
 const pkgDir = (...args) => path.join('packages', ...args)
 
 export async function build(pack) {
+  execSync(`rimraf ${pkgDir(pack, 'dist')}`)
+  
   const jsonPath = pkgDir(pack, 'package.json')
   if (!fs.existsSync(jsonPath)) return
 
   const bundle = await rollup({
     input: pkgDir(pack, 'index.ts'),
-    // external: Object.keys(JSON.parse(fs.readFileSync(jsonPath, 'utf8')).peerDependencies ?? []),
-    // external: Object.keys(pkgJSON.peerDependencies || {}),
-    // external: Object.keys(pkgJSON.peerDependencies || {}),
-    // external: id => !/^[./]/.test(id),
-    external: ['vue', 'element-plus'],
+    external: Object.keys(JSON.parse(fs.readFileSync(jsonPath, 'utf8')).peerDependencies ?? []),
     plugins: [
-      // nodeResolve(),
-      // ...plugins(),
+      nodeResolve(),
       // VueMacros({
       //   plugins: {
       //     vue: Vue(),
       //     // vueJsx: VueJsx(), // if needed
       //   },
       // }),
-      // esbuild({ minify: true, target: ['chrome58', 'ios13'] }),
+      Vue(),
+      esbuild({ minify: true, target: ['chrome58', 'ios13'] }),
+      // ...plugins(),
       // esbuild(),
       // ts({ allowImportingTsExtensions: true, declaration: true, emitDeclarationOnly: true, noEmit: false, outDir: '', rootDir: pkgDir(pack) }),
     ]
@@ -71,14 +69,20 @@ export async function buildFull() {
 }
 
 async function buildDts(pack) {
-  execSync(`rimraf ${pkgDir(pack, 'dist')}`)
-  execSync(`node_modules\\.bin\\vue-tsc -d --emitDeclarationOnly --outDir ${pkgDir(pack, 'dist/types')} ${pkgDir(pack, 'index.ts')}`, { cwd })
+  try {
+    const comd =`node_modules\\.bin\\vue-tsc -d --emitDeclarationOnly --outDir ${pkgDir(pack, 'dist/types')} ${pkgDir(pack, 'index.ts')}`
+    console.log(comd);
+    execSync(comd, { cwd })
+  } catch (e) {
 
-  const bundle = await rollup({
+  }
+
+  const bundle = await rollup({ 
     input: pkgDir(pack, `dist/types/index.d.ts`),
     external: (id, importer, isResolved) => !isResolved && !/^[./]/.test(id),
     plugins: [
       dts({ compilerOptions: { preserveSymlinks: false } }),
+      // generateDtsBundle({ entry: pkgDir(pack, `dist/types/index.d.ts`), outFile: pkgDir(pack, `dist/index.d.ts`) })
     ]
   })
 
@@ -92,9 +96,8 @@ async function buildDts(pack) {
 }
 
 // buildFull()
-// await build('crud')
 // await build('el-form-render')
-// await build('utils')
+await build('crud')
 
-// buildDts('utils')
-buildDts('el-form-render')
+// buildDts('crud')
+// buildDts('el-form-render')

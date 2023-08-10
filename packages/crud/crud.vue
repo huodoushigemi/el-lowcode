@@ -11,7 +11,7 @@
     </el-form-item>
   </el-form-render>
 
-  <div v-if="hasNew" mb18>
+  <div v-if="hasNew" style="margin-bottom: 18px;">
     <el-button type="primary" @click="openDialog()">新增</el-button>
     <slot name="header" />
   </div>
@@ -45,9 +45,8 @@
 
   <!-- 分页 -->
   <el-pagination
-    m20
+    style="justify-content: flex-end; margin: 20px;"
     background
-    justify-end
     v-model:current-page="params.page.page"
     v-model:page-size="params.page.pageSize"
     :total="_total"
@@ -71,20 +70,21 @@
 </template>
 
 <script setup lang="ts">
+import { computed, nextTick, reactive, ref, watch } from 'vue'
 import { isObject, isString } from '@vue/shared'
 import { objectPick } from '@vueuse/core'
 
 import { ElMessageBox, ElMessage, ElTable, ElTableColumn, ElButton, ElPagination, ElDialog } from 'element-plus'
 import tableProps from 'element-plus/es/components/table/src/table/defaults'
-import 'element-plus/es/components/table/style/css'
-import 'element-plus/es/components/pagination/style/css'
-import 'element-plus/es/components/dialog/style/css'
-import 'element-plus/es/components/button/style/css'
+// import 'element-plus/es/components/table/style/css'
+// import 'element-plus/es/components/pagination/style/css'
+// import 'element-plus/es/components/dialog/style/css'
+// import 'element-plus/es/components/button/style/css'
 
 import ElFormRender, { Item, label, prop } from 'el-form-render'
+import Render from '@el-lowcode/render'
+import { get, set, ks } from  '@el-lowcode/utils'
 
-import { get, ks, set } from  '../utils'
-import Render from '../render'
 import config from './config'
 import { crudProps, Column } from './crud'
 
@@ -246,9 +246,9 @@ function _2searchItem(e: string | Item) {
 }
 </script>
 
-
-<!-- <style>
-.is-disabled .el-checkbox__inner {
+<style >
+/* :deep(.is-disabled .el-checkbox__inner) {
   background-color: #80808040 !important;
-}
-</style> -->
+} */
+.asd {}
+</style>

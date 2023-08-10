@@ -1,4 +1,4 @@
-import type { ExtractPropTypes } from 'vue'
+import type { ExtractPropTypes, PropType } from 'vue'
 import { ButtonProps, DialogProps, FormProps, PaginationProps, TableColumnCtx } from 'element-plus'
 import tableProps from 'element-plus/es/components/table/src/table/defaults'
 import type { Item } from 'el-form-render'
@@ -17,7 +17,7 @@ export const crudProps = {
   showIndex: Boolean,
   showSelect: Boolean,
   selected: Array,
-  selectable: Function as PropType<Column['selectable']>,
+  selectable: Function as unknown as PropType<Column['selectable']>,
   multiple: Boolean,
   //
   field: { default: config.field },

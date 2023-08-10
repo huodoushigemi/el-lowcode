@@ -1,3 +1,4 @@
+import { PropType } from 'vue'
 import type { FormItemProps } from 'element-plus'
 import { formProps } from 'element-plus'
 

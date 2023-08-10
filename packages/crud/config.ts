@@ -1,6 +1,6 @@
-import { Awaitable } from "@vueuse/core"
-import { PaginationProps } from "element-plus"
-import { Funable } from "../../types/global"
+import type { Awaitable } from '@vueuse/core'
+import type { PaginationProps } from 'element-plus'
+import type { Fnable } from '@el-lowcode/utils'
 
 type Type = 'get' | 'post' | 'put' | 'delete'
 
@@ -9,8 +9,8 @@ export type Config = {
   field: {
     page: string
     pageSize: string
-    total: Funable<string>
-    list: Funable<string>
+    total: Fnable<string>
+    list: Fnable<string>
   }
   pagination: Partial<PaginationProps>
 }
@@ -21,7 +21,7 @@ export const config: Config = {
     page: 'page.page',
     pageSize: 'page.pageSize',
     total: 'total',
-    list: 'list',
+    list: 'list'
   },
   pagination: {
     pageSize: 10
