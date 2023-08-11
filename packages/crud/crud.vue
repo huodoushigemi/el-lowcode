@@ -27,8 +27,7 @@
       <el-table-column v-bind="col">
         <template #default="{ row, column, $index }">
           <slot :name="col.prop" :row="row" :column="column" :$index="$index">
-            <!-- todo -->
-            <!-- @vue-ignore -->
+            <!-- @vue-ignore todo -->
             <Render :render="col.formatter ? col.formatter(row, col, row[col.prop], $index) : row[col.prop]" />
           </slot>
         </template>
@@ -38,7 +37,7 @@
     <el-table-column v-if="hasEdit || hasDel || btns || $slots.btns" label="操作" width="300" fixed="right" v-bind="operation">
       <template #default="{ row, $index }">
         <slot name="btns" :row="row" :$index="$index" />
-        <el-button v-for="btn in btns?.(row)" type="primary" size="small" v-bind="btn"><Renderer :render="btn.render" /></el-button>
+        <el-button v-for="btn in btns?.(row)" type="primary" size="small" v-bind="btn"><Render :render="btn.render" /></el-button>
         <el-button size="small" type="primary" @click="openDialog(row)">编辑</el-button>
         <el-button size="small" type="danger" @click="_onDel(row)">删除</el-button>
       </template>
@@ -93,6 +92,7 @@ import { crudProps, Column } from './crud'
 defineOptions({ name: 'crud' })
 
 const props = defineProps(crudProps)
+const _request = props.request || config.request
 
 defineExpose({
   getData
@@ -152,7 +152,7 @@ const _data = computed(() => props.data ?? _list.value)
 
 async function getData(query = params) {
   if (!props.url) return
-  const { data } = await config.request(props.url, query, 'get')
+  const { data } = await _request(props.url, query, 'get')
   _list.value =  get(data, props.field.list)
   _total.value = get(data, props.field.total)
 }
@@ -162,7 +162,7 @@ async function _onDel(row) {
   if (props.onDel) {
     await props.onDel(row)
   } else if (props.url) {
-    await config.request(props.url, { id: row.id }, 'delete')
+    await _request(props.url, { id: row.id }, 'delete')
   }
   getData()
 }
@@ -187,7 +187,7 @@ async function _onNew() {
   if (props.onNew) {
     await props.onNew(row.value)
   } else if (props.url) {
-    await config.request(props.url, row.value, 'post')
+    await _request(props.url, row.value, 'post')
   }
   ElMessage.success({ message: '创建成功' })
 }
@@ -196,7 +196,7 @@ async function _onEdit() {
   if (props.onEdit) {
     await props.onEdit(row.value)
   } else if (props.url) {
-    await config.request(props.url, row.value, 'put')
+    await _request(props.url, row.value, 'put')
   }
   ElMessage.success({ message: '修改成功' })
 }

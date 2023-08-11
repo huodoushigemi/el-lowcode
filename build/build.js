@@ -27,10 +27,11 @@ export async function build(pack) {
   
   const jsonPath = pkgDir(pack, 'package.json')
   if (!fs.existsSync(jsonPath)) return
+  const pkg = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))
 
   const bundle = await rollup({
     input: pkgDir(pack, 'index.ts'),
-    external: Object.keys(JSON.parse(fs.readFileSync(jsonPath, 'utf8')).peerDependencies ?? []),
+    external: Object.keys({ ...pkg.dependencies, ...pkg.peerDependencies }) ?? [],
     plugins: [
       nodeResolve(),
       VueMacros({
@@ -96,9 +97,9 @@ async function buildDts(pack) {
 }
 
 // buildFull()
-// await build('utils')
-// await build('render')
-// await build('el-form-render')
+await build('utils')
+await build('render')
+await build('el-form-render')
 await build('crud')
 
 // buildDts('crud')

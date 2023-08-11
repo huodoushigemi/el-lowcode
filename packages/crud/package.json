@@ -10,7 +10,7 @@
   "types": "dist/index.d.ts",
   "files": ["dist"],
   "dependencies": {
-    "@el-lowcode/render": "workspace:*"
+    "el-form-render": "*"
   },
   "peerDependencies": {
     "element-plus": "^2.3.8",

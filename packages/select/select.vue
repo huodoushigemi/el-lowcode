@@ -1,5 +1,5 @@
 <!-- <template>
-  <el-select v-if="!$slots.default" v-bind="{ ...props, ...$attrs }" :model-value="_modelValue" @update:model-value="e => emit('update:modelValue', e)">
+  <el-select v-if="!$slots.default" v-bind="{ ...props, ...$attrs }" :model-value="props.modelValue" @update:model-value="e => emit('update:modelValue', e)">
     <el-option v-for="item in _options" :key="item.value" v-bind="item" />
   </el-select>
 
@@ -30,7 +30,7 @@
       <template #header:after>
         <div>
           已选中
-          <el-tag v-for="(e, i) in _modelValue" :key="e" style="margin: 0 4px;" :closable="!props.disabled" @close="_modelValue.splice(i, 1)">{{ e }}</el-tag>
+          <el-tag v-for="(e, i) in _modelValue" :key="e" style="margin: 0 4px;" :closable="!props.disabled" @close="(_modelValue.splice(i, 1), onDel())">{{ e }}</el-tag>
         </div>
         <br />
       </template>
@@ -39,11 +39,12 @@
 </template>
 
 <script setup lang="ts">
-const post = () => {}
+import { post } from '@/api/http';
 import { ElSelect } from 'element-plus'
+import { PropType, ref } from 'vue';
 import DataTable, { Column } from '../DataTable/DataTable.vue';
 import { Awaitable, computedAsync } from '@vueuse/core';
-import { Arrayable } from 'element-plus/es/utils';
+import { Arrayable } from 'element-plus/es/utils/typescript';
 const castArray = (e) => Array.isArray(e) ? e : (e != null ? [e] : [])
 
 type Option = { label: string, value: string }
@@ -65,13 +66,14 @@ const emit = defineEmits(['update:modelValue'])
 function onSelect(e) {
   e = e.map(e => e[props.replace.value])
   e = [...new Set(e)]
-  setTimeout(() => {
-    _modelValue.value = e
-    console.log([..._modelValue.value]);
-    
-  }, 100);
+  _modelValue.value = e
   emit('update:modelValue', props.multiple ? e : e[0])
   dialogVisible.value = props.multiple
+}
+
+function onDel() {
+  const e = _modelValue.value
+  emit('update:modelValue', props.multiple ? e : e[0])
 }
 
 const dialogVisible = ref(false)
@@ -87,5 +89,5 @@ const _options = computedAsync(async () => {
 
 const _modelValue = ref(castArray(props.modelValue))
 watch(() => props.modelValue, val => _modelValue.value = castArray(val))
-watch(() => props.getVal, async val => val && (_modelValue.value = castArray(await props.getVal())), { immediate: true })
+watch(dialogVisible, async val => val && props.getVal && (_modelValue.value = castArray(await props.getVal())), { immediate: true })
 </script> -->

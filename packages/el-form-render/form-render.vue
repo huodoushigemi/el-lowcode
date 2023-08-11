@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ElForm, ElFormItem } from 'element-plus'
+import { ElForm, ElFormItem, ElOption, ElCheckbox, ElCheckboxButton, ElRadio, ElRadioButton } from 'element-plus'
 // import 'element-plus/es/components/form/style/css'
 import { Item, formRenderProps, label, prop } from './form-render'
 
@@ -25,8 +25,6 @@ function execExp(exp: string, prop: string) {
 }
 
 // ================================================================================
-
-const is = (item: Item) => item.is ?? 'el-' + (item.type || 'input')
 
 const placeholder = (item: Item) => '请输入' + label(item)
 
@@ -54,7 +52,6 @@ defineExpose({
         v-bind="item"
         :label="label(item)"
         :prop="prop(item)"
-        :wrap="undefined"
         :lp="undefined"
         :el="undefined"
         :is="undefined"
@@ -66,13 +63,24 @@ defineExpose({
       >
         <slot :name="prop(item)">
           <component
-            :is="is(item)"
+            :is="item.is ?? 'el-' + (item.type || 'input')"
             :placeholder="placeholder(item)"
             v-bind="item.el"
             :model-value="item.get ? item.get(val(item)) : value(item)"
             @update:modelValue="model![prop(item)] = item.set ? item.set($event) : $event"
             :disabled="disabled(item)"
-          />
+          >
+
+            <template v-for="opt in item.options">
+              <el-option v-if="item.type === 'select'" v-bind="opt" />
+
+              <el-checkbox-button v-else-if="item.type === 'checkbox-group' && item.el?.type === 'button'" v-bind="opt" :label="'value' in opt ? opt.value : opt.label">{{ opt.label }}</el-checkbox-button>
+              <el-checkbox v-else-if="item.type === 'checkbox-group'" v-bind="opt" :label="'value' in opt ? opt.value : opt.label">{{ opt.label }}</el-checkbox>
+
+              <el-radio-button v-else-if="item.type === 'radio-group' && item.el?.type === 'button'" v-bind="opt" :label="'value' in opt ? opt.value : opt.label">{{ opt.label }}</el-radio-button>
+              <el-radio v-else-if="item.type === 'radio-group'" v-bind="opt" :label="'value' in opt ? opt.value : opt.label">{{ opt.label }}</el-radio>
+            </template>
+          </component>
         </slot>
       </el-form-item>
     </template>

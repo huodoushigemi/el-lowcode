@@ -2,7 +2,7 @@ import type { ExtractPropTypes, PropType } from 'vue'
 import { ButtonProps, DialogProps, FormProps, PaginationProps, TableColumnCtx } from 'element-plus'
 import tableProps from 'element-plus/es/components/table/src/table/defaults'
 import type { Item } from 'el-form-render'
-import config from './config'
+import config, { Config } from './config'
 
 export type Column = Partial<TableColumnCtx<any>> & { prop: string }
 
@@ -10,6 +10,7 @@ export type CRUDProps = ExtractPropTypes<typeof crudProps>
 
 export const crudProps = {
   ...tableProps,
+  request: Function as PropType<Config['request']>,
   url: String,
   extraQuery: Object,
   data: Array,
