@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ElForm, ElFormItem, ElOption, ElCheckbox, ElCheckboxButton, ElRadio, ElRadioButton } from 'element-plus'
+import { ElForm, ElFormItem, ElOption, ElCheckbox, ElCheckboxButton, ElRadio, ElRadioButton, FormContext, FormInstance } from 'element-plus'
 // import 'element-plus/es/components/form/style/css'
 import { Item, formRenderProps, label, prop } from './form-render'
 
@@ -26,7 +26,7 @@ function execExp(exp: string, prop: string) {
 
 // ================================================================================
 
-const placeholder = (item: Item) => '请输入' + label(item)
+const placeholder = (item: Item) => `${item.type === 'select' ?  '请选择' : '请输入'}` + label(item)
 
 const value = (item: Item) => execExp(item.el?.value, prop(item)) ?? val(item)
 
@@ -34,14 +34,18 @@ const disabled = (item: Item) => isExp(item.el?.value) || item.el?.disabled
 
 // ================================================================================
 
-const formRef = ref()
+const formRef = ref<FormInstance>()
 
 const val = (item: Item) => props.model![prop(item)]
 
-defineExpose({
-  validate: () => formRef.value.validate(),
-  resetFields: () => formRef.value.resetFields()
-})
+defineExpose(new Proxy({}, {
+  get(t, k) {
+    return formRef.value?.[k]
+  },
+  has(t, k) {
+      return k in (formRef.value || {})
+  }
+}))
 </script>
 
 <template>
