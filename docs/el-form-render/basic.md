@@ -18,7 +18,7 @@ const model = reactive({})
 
 const items: Item[] = [
   { lp: ['姓名', 'name'] },
-  { label: '年龄', prop: 'age' },
+  { lp: ['年龄', 'age'] },
   { lp: ['性别', 'sex'], type: 'switch' },
   { lp: ['是否', 'is'], type: 'checkbox' },
 ]
@@ -231,6 +231,10 @@ const items: Item[] = [
 ]
 </script>
 ```
+
+## value-format
+
+## 自定义组件
 
 <style>
   .mdp-demo__preview code {
