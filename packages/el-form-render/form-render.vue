@@ -30,6 +30,12 @@ const placeholder = (item: Item) => `${item.type === 'select' ?  '请选择' : '
 
 const value = (item: Item) => execExp(item.el?.value, prop(item)) ?? val(item)
 
+const onInput = (item: Item, val) => {
+  if (item.set) props.model![prop(item)] = item.set!(val, props.model)
+  else props.model![prop(item)] = val
+  if (item.out) Object.assign(props.model!, item.out!(val, props.model))
+}
+
 const disabled = (item: Item) => isExp(item.el?.value) || item.el?.disabled
 
 // ================================================================================
@@ -70,12 +76,12 @@ defineExpose(new Proxy({}, {
             :is="item.is ?? 'el-' + (item.type || 'input')"
             :placeholder="placeholder(item)"
             v-bind="item.el"
-            :model-value="item.get ? item.get(val(item)) : value(item)"
-            @update:modelValue="model![prop(item)] = item.set ? item.set($event) : $event"
+            :model-value="item.get ? item.get(val(item), model) : value(item)"
+            @update:modelValue="onInput(item, $event)"
             :disabled="disabled(item)"
           >
 
-            <template v-for="opt in item.options">
+          <template v-for="opt in item.options">
               <el-option v-if="item.type === 'select'" v-bind="opt" />
 
               <el-checkbox-button v-else-if="item.type === 'checkbox-group' && item.el?.type === 'button'" v-bind="opt" :label="'value' in opt ? opt.value : opt.label">{{ opt.label }}</el-checkbox-button>

@@ -1,0 +1,27 @@
+:root {
+  --vp-nav-bg-color: #ffffff80;
+}
+
+.dark {
+  --vp-nav-bg-color: #1e1e2090;
+}
+
+.content-body {
+  backdrop-filter: blur(10px);
+}
+
+.vp-doc .el-table {
+  table {
+    margin: 0;
+    border-collapse: unset;
+    overflow: unset;
+  }
+
+  tr {
+    background-color: unset;
+  }
+  
+  th, td {
+    border: unset;
+  }
+}

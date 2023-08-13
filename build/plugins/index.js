@@ -3,7 +3,7 @@ import postcss from 'rollup-plugin-postcss'
 
 export default function plugins() {
   return [
-    autoimport,
+    // autoimport,
     postcss()
   ]
 }

@@ -17,8 +17,14 @@ export default defineConfig({
       {
         text: 'el-form-render',
         items: [
-          { text: '基础使用 basic', link: '/el-form-render/basic' },
-          { text: 'Runtime API Examples', link: '/markdown-examples' }
+          { text: '基础使用', link: '/el-form-render/basic' },
+          { text: 'Runtime API Examples', link: '/markdown-examples' },
+        ]
+      },
+      {
+        text: 'crud',
+        items: [
+          { text: '基础使用', link: '/crud/basic' },
         ]
       }
     ],

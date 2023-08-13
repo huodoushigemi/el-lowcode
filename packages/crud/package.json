@@ -1,14 +1,16 @@
 {
   "name": "@el-lowcode/crud",
   "private": false,
-  "version": "0.0.2",
+  "version": "0.0.8",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "unpkg": "dist/index.iife.js",
   "jsdelivr": "dist/index.iife.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "el-form-render": "*"
   },

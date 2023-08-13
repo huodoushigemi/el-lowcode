@@ -3,7 +3,7 @@ import type { FormItemProps } from 'element-plus'
 import { formProps } from 'element-plus'
 import { Fnable } from '@el-lowcode/utils'
 
-type Opt = {
+export type Opt = {
   label?: string
   value?: any
   [k: string]: any
@@ -15,8 +15,9 @@ export type Item = Partial<FormItemProps> & Partial<{
   prop: string
   is: any
   hide: boolean | (() => boolean)
-  get: (val: any) => any
-  set: (val: any) => any
+  get: (val: any, row: any) => any
+  set: (val: any, row: any) => any
+  out: (val: any, row: any) => any
   lp: string | [string, string]
   options: Opt[]
 }>
@@ -30,5 +31,6 @@ export const formRenderProps = {
 
 const solveLP = (lp: string | string[] | undefined) => Array.isArray(lp) ? lp : lp?.split(' ')
 
-export const label = (item: Item) => item.label || solveLP(item.lp)![0]
-export const prop = (item: Item) => item.prop || solveLP(item.lp)![1]
+export const label = (item: Item) => item.label || solveLP(item.lp)?.[0]
+export const prop = (item: Item) => item.prop || solveLP(item.lp)?.[1]
+export const showOpt = (opt?: Opt) => opt?.label ?? opt?.value

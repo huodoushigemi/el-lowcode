@@ -1,5 +1,5 @@
 import type { ExtractPropTypes, PropType } from 'vue'
-import { ButtonProps, DialogProps, FormProps, PaginationProps, TableColumnCtx } from 'element-plus'
+import { ButtonProps, DialogProps, FormProps, TableColumnCtx } from 'element-plus'
 import tableProps from 'element-plus/es/components/table/src/table/defaults'
 import type { Item } from 'el-form-render'
 import config, { Config } from './config'
@@ -21,8 +21,9 @@ export const crudProps = {
   selectable: Function as unknown as PropType<Column['selectable']>,
   multiple: Boolean,
   //
-  field: { default: config.field },
-  pagination: Object as PropType<PaginationProps>,
+  field: { type: Object, default: () => config.field },
+  pagination: { type: Object, default: () => config.pagination },
+  hasPagination: { default: true },
   //
   operation: Object as PropType<Column>,
   hasNew: { default: true },

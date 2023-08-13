@@ -1,11 +1,11 @@
 import type { Awaitable } from '@vueuse/core'
-import type { PaginationProps } from 'element-plus'
+import { PaginationProps } from 'element-plus'
 import type { Fnable } from '@el-lowcode/utils'
 
-type Type = 'get' | 'post' | 'put' | 'delete'
+type Type = 'list' | 'new' | 'edit' | 'del' | 'get'
 
 export type Config = {
-  request(url: string, data: any, type: Type): Awaitable<any>
+  request(url: string | undefined, data: any, type: Type): Awaitable<any>
   field: {
     page: string
     pageSize: string
@@ -20,8 +20,8 @@ export const config: Config = {
   field: {
     page: 'page.page',
     pageSize: 'page.pageSize',
-    total: 'total',
-    list: 'list'
+    total: 'data.total',
+    list: 'data.list'
   },
   pagination: {
     pageSize: 10

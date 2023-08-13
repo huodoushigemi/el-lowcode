@@ -1,22 +1,22 @@
 <template>
   <!-- 搜索 -->
-  <el-form-render ref="searchRef" :inline="true" :model="params" :items="_searchItems" v-bind="search" @keyup.enter="getData()" @submit.native.prevent>
-    <template v-for="e in Object.keys($slots).map(e => e.split('search:')[1]).filter(e => e)" #[e]>
-      <slot :name="'search:' + e" :model="row" />
+  <el-form-render v-if="needReq" ref="searchRef" :inline="true" :model="params" :items="_searchItems" v-bind="search" @keyup.enter="getData()" @submit.native.prevent>
+    <template v-for="e in Object.keys($slots).map(e => e.split('$search:')[1]).filter(e => e)" #[e]>
+      <slot :name="'$search:' + e" :model="params" />
     </template>
+    <slot name="$search" :model="params" />
     <el-form-item>
       <el-button type="primary" @click="getData()">查询</el-button>
-      <!-- @vue-ignore -->
-      <el-button @click="() => ($refs.searchRef.resetFields(), getData())">重置</el-button>
+      <el-button @click="resetSearch()">重置</el-button>
     </el-form-item>
   </el-form-render>
 
   <div v-if="hasNew" style="margin-bottom: 18px;">
     <el-button type="primary" @click="openDialog()">新增</el-button>
-    <slot name="header" />
+    <slot name="$header" />
   </div>
 
-  <slot name="header:after" />
+  <slot name="$table-above" />
 
   <!-- 表格内容展示 -->
   <el-table ref="tableRef" :border="true" v-bind="objectPick($props, ks(tableProps))" :data="_data" @select="_onSelect" @select-all="onSelectAll">
@@ -25,42 +25,43 @@
 
     <template v-for="col in _columns" :key="col.prop">
       <el-table-column v-bind="col">
-        <template #default="{ row, column, $index }">
-          <slot :name="col.prop" :row="row" :column="column" :$index="$index">
-            <!-- @vue-ignore todo -->
-            <Render :render="col.formatter ? col.formatter(row, col, row[col.prop], $index) : row[col.prop]" />
+        <template #default="scope">
+          <slot :name="col.prop" v-bind="scope">
+            <RenderCell v-bind="scope" />
           </slot>
         </template>
       </el-table-column>
     </template>
 
     <el-table-column v-if="hasEdit || hasDel || btns || $slots.btns" label="操作" width="300" fixed="right" v-bind="operation">
-      <template #default="{ row, $index }">
-        <slot name="btns" :row="row" :$index="$index" />
-        <el-button v-for="btn in btns?.(row)" type="primary" size="small" v-bind="btn"><Render :render="btn.render" /></el-button>
-        <el-button size="small" type="primary" @click="openDialog(row)">编辑</el-button>
-        <el-button size="small" type="danger" @click="_onDel(row)">删除</el-button>
+      <template #default="scope">
+        <slot name="$btns" v-bind="scope" />
+        <el-button v-for="btn in btns?.(scope.row)" type="primary" size="small" v-bind="btn"><Render :render="btn.render" /></el-button>
+        <el-button size="small" type="primary" @click="openDialog(scope.row)">编辑</el-button>
+        <el-button size="small" type="danger" @click="_onDel(scope.row)">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
 
   <!-- 分页 -->
   <el-pagination
+    v-if="hasPagination"
     style="justify-content: flex-end; margin: 20px;"
     background
-    v-model:current-page="params.page.page"
-    v-model:page-size="params.page.pageSize"
     :total="_total"
     layout="total, sizes, prev, pager, next"
     v-bind="pagination"
+    v-model:current-page="_page"
+    v-model:page-size="_pageSize"
   />
 
   <!-- 表单 -->
   <el-dialog v-model="visible" :title="row?.id ? '编辑' : '新增'" width="800" destroy-on-close v-bind="dialog">
     <el-form-render ref="formRef" :model="row" :items="_formItems" label-width="auto" v-bind="form">
-      <template v-for="e in Object.keys($slots).map(e => e.split('form:')[1]).filter(e => e)" #[e]>
-        <slot :name="'form:' + e" :model="row" :row="row" />
+      <template v-for="e in Object.keys($slots).map(e => e.split('$form:')[1]).filter(e => e)" #[e]>
+        <slot :name="'$form:' + e" :model="row" />
       </template>
+      <slot name="$form" :model="row" />
     </el-form-render>
 
     <template #footer>
@@ -71,18 +72,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, reactive, ref, watch } from 'vue'
+import { computed, h, nextTick, reactive, ref, watch } from 'vue'
 import { isObject, isString } from '@vue/shared'
 import { objectPick } from '@vueuse/core'
 
-import { ElMessageBox, ElMessage, ElTable, ElTableColumn, ElButton, ElPagination, ElDialog } from 'element-plus'
+import { ElMessageBox, ElMessage, ElTable, ElTableColumn, ElButton, ElPagination, ElDialog, FormInstance } from 'element-plus'
 import tableProps from 'element-plus/es/components/table/src/table/defaults'
 // import 'element-plus/es/components/table/style/css'
 // import 'element-plus/es/components/pagination/style/css'
 // import 'element-plus/es/components/dialog/style/css'
 // import 'element-plus/es/components/button/style/css'
 
-import ElFormRender, { Item, label, prop } from 'el-form-render'
+import ElFormRender, { Item, label, prop, showOpt } from 'el-form-render'
 import Render from '@el-lowcode/render'
 import { get, set, ks } from  '@el-lowcode/utils'
 
@@ -93,22 +94,69 @@ defineOptions({ name: 'crud' })
 
 const props = defineProps(crudProps)
 const _request = props.request || config.request
+const _field = computed(() => ({ ...props.field, ...config.field }))
+const _pagination = computed(() => ({ ...props.pagination, ...config.pagination }))
+
+// todo：由于未知原因，这段代码写在 template 中会编译报错，可能是 vue 编译器的问题
+const RenderCell = ({ row, column, $index }) => column.formatter ? column.formatter(row, column, row[column.property], $index) : row[column.property]
+
+const needReq = computed(() => props.url || props.request)
 
 defineExpose({
-  getData
+  getData,
+  getList: getData,
+  resetSearch
 })
 
 // 分页查询
+const searchRef = ref<FormInstance>()
 const params = reactive<Record<string, any>>({})
-set(params, props.field.page, 1)
-set(params, props.field.pageSize, props.pagination?.pageSize)
+const _total = ref(0)
+const _list = ref([])
+const _data = computed(() => props.data ?? _list.value)
+
+const _page = computed({
+  get() { return get(params, _field.value.page) },
+  set(val) { set(params, _field.value.page, val) }
+})
+const _pageSize = computed({
+  get() { return get(params, _field.value.pageSize) },
+  set(val) { set(params, _field.value.pageSize, val) }
+})
+
+_page.value = 1
+_pageSize.value = _pagination.value?.pageSize ?? _pagination.value.pageSize
+
 Object.assign(params, props.extraQuery)
 
 watch(
-  () => params.page,
+  () => [_page.value, _pageSize.value],
   () => getData(),
-  { deep: true, immediate: true }
+  { immediate: true }
 )
+
+async function getData(query = params) {
+  if (!needReq.value) return
+  const data = await _request(props.url, query, 'list')
+  _list.value =  get(data, _field.value.list)
+  _total.value = get(data, _field.value.total)
+}
+
+function resetSearch() {
+  searchRef.value!.resetFields()
+  return getData()
+}
+
+async function _onDel(row) {
+  await ElMessageBox.confirm('是否删除该数据 ？', 'warning', { type: 'warning' })
+  if (props.onDel) {
+    await props.onDel(row)
+  } else if (props.url) {
+    await _request(props.url, { id: row.id }, 'del')
+  }
+  ElMessage.success({ message: '删除成功' })
+  getData()
+}
 
 // 选中状态
 const tableRef = ref<InstanceType<typeof import('element-plus')['ElTable']>>()
@@ -145,30 +193,8 @@ function onSelectAll() {
   }
 }
 
-// 
-const _total = ref(0)
-const _list = ref([])
-const _data = computed(() => props.data ?? _list.value)
-
-async function getData(query = params) {
-  if (!props.url) return
-  const { data } = await _request(props.url, query, 'get')
-  _list.value =  get(data, props.field.list)
-  _total.value = get(data, props.field.total)
-}
-
-async function _onDel(row) {
-  await ElMessageBox.confirm('是否删除该数据 ？', 'warning', { type: 'warning' })
-  if (props.onDel) {
-    await props.onDel(row)
-  } else if (props.url) {
-    await _request(props.url, { id: row.id }, 'delete')
-  }
-  getData()
-}
-
 // dialog
-const formRef = ref()
+const formRef = ref<FormInstance>()
 const row = ref()
 const visible = ref(false)
 
@@ -177,7 +203,7 @@ function openDialog(e = {}) {
   visible.value = true
 }
 async function _onConfirm() {
-  await formRef.value.validate()
+  await formRef.value!.validate()
   await (row.value.id ? _onEdit() : _onNew())
   visible.value = false
   getData()
@@ -187,7 +213,7 @@ async function _onNew() {
   if (props.onNew) {
     await props.onNew(row.value)
   } else if (props.url) {
-    await _request(props.url, row.value, 'post')
+    await _request(props.url, row.value, 'new')
   }
   ElMessage.success({ message: '创建成功' })
 }
@@ -196,7 +222,7 @@ async function _onEdit() {
   if (props.onEdit) {
     await props.onEdit(row.value)
   } else if (props.url) {
-    await _request(props.url, row.value, 'put')
+    await _request(props.url, row.value, 'edit')
   }
   ElMessage.success({ message: '修改成功' })
 }
@@ -212,15 +238,15 @@ const _formItems = computed(() => props.formItems?.map(e => isString(e) ? _schem
 const _columns = computed(() => props.columns?.map(_2column))
 
 function _2column(e: string | Column): Column {
-  const item = (isString(e) ? _schemaBy.value[e] : _schemaBy.value[prop(e)]) || { lp: ['', ''] }
+  const item = (isString(e) ? _schemaBy.value[e] : _schemaBy.value[prop(e)]) || {}
   const col = isObject(e) ? e : {}
   return {
-    label: label(item),
-    prop: prop(item),
+    label: label(item) ?? label(col),
+    prop: prop(item) ?? prop(col),
     formatter: (_row, _column, val, _index) => {
       return (
-        item.type === 'date-picker' ? new Date(val * 1000).toLocaleDateString() :
-        item.el?.options ? item.el.options.find(e => e.value == val) :
+        item.el?.options ? showOpt(item.el.options.find(e => e.value == val)) :
+        item.options ? showOpt(item.options.find(e => e.value == val)) :
         val
       )
     },
@@ -248,7 +274,7 @@ function _2searchItem(e: string | Item) {
 }
 </script>
 
-<style>
+<style scoped>
 :deep(.is-disabled .el-checkbox__inner) {
   background-color: #80808040 !important;
 }

@@ -1,18 +1,18 @@
 {
   "name": "el-lowcode",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.8",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "build:packages": "rollup -c && pnpm run build:types",
-    "build:types": "vue-tsc --d --emitDeclarationOnly --outFile packages/utils/dist/index.d.ts packages/utils/index.ts",
+    "build:packages": "node build/build.js",
     "clean": "rimraf --glob dist \"packages/*/dist\"",
     "preview": "vite preview",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "publish:packages": "node build/publish.js"
   },
   "dependencies": {
     "@el-lowcode/crud": "workspace:*",
@@ -20,6 +20,7 @@
     "@el-lowcode/utils": "workspace:*",
     "@vue/shared": "^3.3.4",
     "@vueuse/core": "^10.3.0",
+    "axios": "^1.4.0",
     "el-form-render": "workspace:*",
     "element-plus": "^2.3.8",
     "qs": "^6.11.2",
@@ -37,11 +38,13 @@
     "dts-bundle-generator": "^8.0.1",
     "esbuild-register": "^3.4.2",
     "fast-glob": "^3.3.1",
+    "msw": "^1.2.3",
     "rollup": "^3.27.2",
     "rollup-plugin-dts": "^5.3.1",
     "rollup-plugin-dts-bundle-generator": "^1.4.0",
     "rollup-plugin-esbuild": "^5.0.0",
     "rollup-plugin-postcss": "^4.0.2",
+    "sass": "^1.65.1",
     "tslib": "^2.6.1",
     "typescript": "^5.1.6",
     "unocss": "^0.54.1",
@@ -52,5 +55,8 @@
     "vite-plugin-markdown-preview": "^1.0.4",
     "vitepress": "1.0.0-beta.7",
     "vue-tsc": "^1.8.5"
+  },
+  "msw": {
+    "workerDirectory": "docs\\public"
   }
 }
