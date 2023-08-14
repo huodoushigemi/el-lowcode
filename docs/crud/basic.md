@@ -26,7 +26,7 @@ CRUD.setConfig({
     list: 'data.list'
   },
   pagination: {
-    pageSize: 10
+    pageSize: 5
   }
 })
 ```
@@ -62,7 +62,7 @@ const schema = [
 ```vue preview
 <template>
   <CRUD
-    url="/user"
+    :data="data"
     :columns="schema"
     :hasNew="false"
     :hasDel="false"
@@ -80,6 +80,14 @@ const schema = [
   { lp: ['年龄', 'age'] },
   { lp: ['性别', 'sex'] },
   { lp: ['是否', 'is'] },
+]
+
+const data = [
+  { id: '1', name: 'aaa', age: 18, sex: '男', is: '否' },
+  { id: '2', name: 'bbb', age: 17, sex: '男', is: '否' },
+  { id: '3', name: 'ccc', age: 16, sex: '男', is: '否' },
+  { id: '4', name: 'ddd', age: 15, sex: '男', is: '否' },
+  { id: '5', name: 'eee', age: 14, sex: '男', is: '否' },
 ]
 </script>
 ```
@@ -120,16 +128,16 @@ const schema = [
 </script>
 ```
 
-## www
+## options
 
 ```vue preview
 <template>
   <CRUD
     url="/user"
     :schema="schema"
-    :columns="['id', 'name', 'sex', 'age']"
-    :searchItems="['name', 'sex']"
-    :formItems="['id', 'name', 'sex', 'age']"
+    :columns="['id', 'name', 'sex', 'age', 'type']"
+    :searchItems="['name', 'sex', 'type']"
+    :formItems="['id', 'name', 'sex', 'age', 'type']"
   />
 </template>
 
@@ -141,7 +149,16 @@ const schema = [
   { lp: ['姓名', 'name'] },
   { lp: ['年龄', 'age'] },
   { lp: ['性别', 'sex'], type: 'select', options: [{ label: '男', value: 0 }, { label: '女', value: 1 }] },
-  { lp: ['是否', 'is'], type: 'checkbox' },
+  {
+    lp: ['Activity type', 'type'],
+    type: 'checkbox-group',
+    options: [
+      { label: 'Online activities' },
+      { label: 'Promotion activities' },
+      { label: 'Offline activities' },
+      { label: 'Simple brand exposure' },
+    ]
+  },
 ]
 </script>
 ```
