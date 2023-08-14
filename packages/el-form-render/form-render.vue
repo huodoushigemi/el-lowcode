@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, createVNode, resolveDynamicComponent } from 'vue'
 import { ElForm, ElFormItem, ElOption, ElCheckbox, ElCheckboxButton, ElRadio, ElRadioButton, FormContext, FormInstance } from 'element-plus'
 // import 'element-plus/es/components/form/style/css'
 import { Item, formRenderProps, label, prop } from './form-render'
@@ -52,6 +52,10 @@ defineExpose(new Proxy({}, {
       return k in (formRef.value || {})
   }
 }))
+
+
+// <component :is="is" v-bind="props" />
+const Comp = ({ is, hasChild, ...props }, { slots }) => createVNode(resolveDynamicComponent(is), props, hasChild ? slots : undefined)
 </script>
 
 <template>
@@ -72,16 +76,16 @@ defineExpose(new Proxy({}, {
         :rules="exec(item.rules)"
       >
         <slot :name="prop(item)">
-          <component
+          <Comp
             :is="item.is ?? 'el-' + (item.type || 'input')"
+            :hasChild="!!item.options"
             :placeholder="placeholder(item)"
             v-bind="item.el"
             :model-value="item.get ? item.get(val(item), model) : value(item)"
             @update:modelValue="onInput(item, $event)"
             :disabled="disabled(item)"
           >
-
-          <template v-for="opt in item.options">
+            <template v-for="opt in item.options">
               <el-option v-if="item.type === 'select'" v-bind="opt" />
 
               <el-checkbox-button v-else-if="item.type === 'checkbox-group' && item.el?.type === 'button'" v-bind="opt" :label="'value' in opt ? opt.value : opt.label">{{ opt.label }}</el-checkbox-button>
@@ -90,7 +94,7 @@ defineExpose(new Proxy({}, {
               <el-radio-button v-else-if="item.type === 'radio-group' && item.el?.type === 'button'" v-bind="opt" :label="'value' in opt ? opt.value : opt.label">{{ opt.label }}</el-radio-button>
               <el-radio v-else-if="item.type === 'radio-group'" v-bind="opt" :label="'value' in opt ? opt.value : opt.label">{{ opt.label }}</el-radio>
             </template>
-          </component>
+          </Comp>
         </slot>
       </el-form-item>
     </template>

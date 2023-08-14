@@ -238,7 +238,7 @@ const _formItems = computed(() => props.formItems?.map(e => isString(e) ? _schem
 const _columns = computed(() => props.columns?.map(_2column))
 
 function _2column(e: string | Column): Column {
-  const item = (isString(e) ? _schemaBy.value[e] : _schemaBy.value[prop(e)]) || {}
+  const item = (isString(e) ? _schemaBy.value[e] : _schemaBy.value[prop(e)]) || { lp: [] }
   const col = isObject(e) ? e : {}
   return {
     label: label(item) ?? label(col),

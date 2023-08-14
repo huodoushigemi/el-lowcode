@@ -6,6 +6,30 @@
 
 ```vue preview
 <template>
+  <el-form-render
+    :model="model"
+    :items="[
+      {
+        lp: ['姓名', 'name'],
+        is: (props, { slots }) => console.log(slots),
+        options: null,
+        el: { url: '/admin_business/getChannelList', multiple: true, replace: { label: 'channel_name', value: 'id' } }
+      }
+    ]"
+  />
+</template>
+
+<script setup lang="ts">
+import ElFormRender, { Item } from 'el-form-render'
+
+const model = reactive({})
+
+const xxx = (props, { slots }) => console.log(props, slots)
+</script>
+```
+
+```vue preview
+<template>
   <el-form-render :model="model" :items="items" />
   
   <code><pre>model: {{ JSON.stringify(model, null, '  ') }}</pre></code>

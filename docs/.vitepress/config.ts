@@ -1,6 +1,9 @@
+import path from 'path'
 import { defineConfig } from 'vitepress'
 import MarkdownPreview from 'vite-plugin-markdown-preview'
 import AutoImport from 'unplugin-auto-import/vite'
+import { ALL_PKGS } from '../../build/all-pkgs.js'
+import { cwd, pkgDir } from '../../build/utils.js'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -35,6 +38,16 @@ export default defineConfig({
   },
 
   vite: {
+    resolve: {
+      alias: ALL_PKGS.map(pkg => ({
+        find: pkg,
+        // replacement: path.join(cwd, pkgDir(pkg, 'index.ts'))
+        replacement: path.join(cwd, pkgDir(pkg.replace('@el-lowcode/', ''), 'index.ts'))
+      }))
+    },
+    optimizeDeps: {
+      exclude: ALL_PKGS,
+    },
     plugins: [
       AutoImport({ imports: 'vue' }),
       MarkdownPreview(),

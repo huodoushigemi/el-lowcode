@@ -1,15 +1,17 @@
-import { execSync } from "child_process";
-import { readFileSync, writeFileSync } from "fs";
-import path from "path";
-import { cwd, pkgDir }  from './utils.js'
+import { execSync } from 'child_process'
+import { pkgDir, pkgJson } from './utils.js'
+import { ALL_PKGS } from '../build/all-pkgs.js'
 import rootPkg from '../package.json' assert { type: 'json' }
 
 // 版本号同步
 function verSync(pack) {
-  const pkgPath = path.join(cwd, pkgDir(pack), 'package.json')
-  const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
+  const pkg = pkgJson(pack)
   pkg.version = rootPkg.version
-  writeFileSync(pkgPath, JSON.stringify(pkg, null, '  '))
+  for (const name of ALL_PKGS) {
+    pkg.dependencies?.[name] && (pkg.dependencies[name] = `^${pkg.version}`);
+    pkg.peerDependencies?.[name] && (pkg.peerDependencies[name] = `^${pkg.version}`);
+  }
+  pkgJson(pack, pkg)
 }
 
 // 发布
