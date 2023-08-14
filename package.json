@@ -6,13 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "build:packages": "node build/build.js",
     "clean": "rimraf --glob dist \"packages/*/dist\"",
     "preview": "vite preview",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
-    "publish:packages": "node build/publish.js"
+    "packages:build": "node build/build.js",
+    "packages:publish": "node build/publish.js"
   },
   "dependencies": {
     "@el-lowcode/crud": "workspace:*",
