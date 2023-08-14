@@ -5,6 +5,7 @@ import type { Item } from 'el-form-render'
 import config, { Config } from './config'
 
 export type Column = Partial<TableColumnCtx<any>> & { prop: string }
+export type Schema = Item
 
 export type CRUDProps = ExtractPropTypes<typeof crudProps>
 
@@ -34,7 +35,7 @@ export const crudProps = {
   onEdit: { type: Function as PropType<(row: any) => Awaited<void>> },
   onDel: { type: Function as PropType<(row: any) => Awaited<void>> },
   //
-  schema: Array as PropType<Item[]>,
+  schema: Array as PropType<Schema[]>,
   //
   search: Object as PropType<FormProps>,
   searchItems: Array as PropType<(string | Item)[]>,

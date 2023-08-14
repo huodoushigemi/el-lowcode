@@ -88,7 +88,7 @@ import Render from '@el-lowcode/render'
 import { get, set, ks } from  '@el-lowcode/utils'
 
 import config from './config'
-import { crudProps, Column } from './crud'
+import { crudProps, Schema, Column } from './crud'
 
 defineOptions({ name: 'crud' })
 
@@ -237,7 +237,7 @@ const _formItems = computed(() => props.formItems?.map(e => isString(e) ? _schem
 // @ts-ignore
 const _columns = computed(() => props.columns?.map(_2column))
 
-function _2column(e: string | Column): Column {
+function _2column(e: string | Schema): Column {
   const item = (isString(e) ? _schemaBy.value[e] : _schemaBy.value[prop(e)]) || { lp: [] }
   const col = isObject(e) ? e : {}
   return {
