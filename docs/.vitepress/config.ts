@@ -38,15 +38,14 @@ export default defineConfig({
   },
 
   vite: {
+    optimizeDeps: {
+      exclude: ALL_PKGS,
+    },
     resolve: {
       alias: ALL_PKGS.map(pkg => ({
         find: pkg,
-        // replacement: path.join(cwd, pkgDir(pkg, 'index.ts'))
         replacement: path.join(cwd, pkgDir(pkg.replace('@el-lowcode/', ''), 'index.ts'))
       }))
-    },
-    optimizeDeps: {
-      exclude: ALL_PKGS,
     },
     plugins: [
       AutoImport({ imports: 'vue' }),

@@ -14,7 +14,7 @@ export const crudProps = {
   url: String,
   extraQuery: Object,
   data: Array,
-  columns: Array as PropType<Array<string | TableColumnCtx<any>>[]>,
+  columns: Array as PropType<(string | TableColumnCtx<any>)[]>,
   showIndex: Boolean,
   showSelect: Boolean,
   selected: Array,
@@ -37,11 +37,11 @@ export const crudProps = {
   schema: Array as PropType<Item[]>,
   //
   search: Object as PropType<FormProps>,
-  searchItems: Array as PropType<Array<string | Item>>,
+  searchItems: Array as PropType<(string | Item)[]>,
   //
   dialog: Object as PropType<DialogProps>,
   form: Object as PropType<FormProps>,
-  formItems: Array as PropType<Array<string | Item>>,
+  formItems: Array as PropType<(string | Item)[]>,
   //
   onSelect: Function as PropType<(selected: any[], row) => void>
 }

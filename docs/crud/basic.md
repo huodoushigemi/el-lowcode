@@ -62,7 +62,7 @@ const schema = [
 ```vue preview
 <template>
   <CRUD
-    :data="data"
+    url="/user"
     :columns="schema"
     :hasNew="false"
     :hasDel="false"
@@ -81,31 +81,33 @@ const schema = [
   { lp: ['性别', 'sex'] },
   { lp: ['是否', 'is'] },
 ]
-
-const data = [
-  { id: '1', name: 'aaa', age: 18, sex: '男', is: '否' },
-  { id: '2', name: 'bbb', age: 17, sex: '男', is: '否' },
-  { id: '3', name: 'ccc', age: 16, sex: '男', is: '否' },
-  { id: '4', name: 'ddd', age: 15, sex: '男', is: '否' },
-  { id: '5', name: 'eee', age: 14, sex: '男', is: '否' },
-]
 </script>
 ```
 
-## xxx
+## 额外按钮
+
+通过设置 `btns` 或 `#$btns` 自定义操作列按钮
 
 ```vue preview
 <template>
   <CRUD
-    :data="data"
+    url="/user"
     :schema="schema"
     :columns="['id', 'name', 'age']"
     :searchItems="['name', 'age']"
     :formItems="['id', 'name', 'age']"
-  />
+    :btns="(row) => [
+      { render: 'btns', type: 'primary', onClick: () => ElMessage('btns') }
+    ]"
+  >
+    <template #$btns="{ row }">
+      <el-button type="primary" link @click="ElMessage('#$btns')">#$btns</el-button>
+    </template>
+  </CRUD>
 </template>
 
 <script setup lang="ts">
+import { ElMessage } from 'element-plus'
 import CRUD from '@el-lowcode/crud'
 
 const schema = [
@@ -114,14 +116,6 @@ const schema = [
   { lp: ['年龄', 'age'] },
   { lp: ['性别', 'sex'], type: 'switch' },
   { lp: ['是否', 'is'], type: 'checkbox' },
-]
-
-const data = [
-  { id: '1', name: 'aaa', age: 18, sex: true, is: false },
-  { id: '2', name: 'bbb', age: 17, sex: true, is: false },
-  { id: '3', name: 'ccc', age: 16, sex: true, is: false },
-  { id: '4', name: 'ddd', age: 15, sex: true, is: false },
-  { id: '5', name: 'eee', age: 14, sex: true, is: false },
 ]
 </script>
 ```
@@ -131,11 +125,11 @@ const data = [
 ```vue preview
 <template>
   <CRUD
-    :data="data"
+    url="/user"
     :schema="schema"
-    :columns="['id', 'name', 'age']"
-    :searchItems="['name', 'age', ...searchItems]"
-    :formItems="['id', 'name', 'age']"
+    :columns="['id', 'name', 'sex', 'age']"
+    :searchItems="['name', 'sex']"
+    :formItems="['id', 'name', 'sex', 'age']"
   />
 </template>
 
@@ -146,20 +140,8 @@ const schema = [
   { lp: ['id', 'id'], el: { disabled: true } },
   { lp: ['姓名', 'name'] },
   { lp: ['年龄', 'age'] },
-  { lp: ['性别', 'sex'], type: 'switch' },
+  { lp: ['性别', 'sex'], type: 'select', options: [{ label: '男', value: 0 }, { label: '女', value: 1 }] },
   { lp: ['是否', 'is'], type: 'checkbox' },
-]
-
-const data = [
-  { id: '1', name: 'aaa', age: 18, sex: true, is: false },
-  { id: '2', name: 'bbb', age: 17, sex: true, is: false },
-  { id: '3', name: 'ccc', age: 16, sex: true, is: false },
-  { id: '4', name: 'ddd', age: 15, sex: true, is: false },
-  { id: '5', name: 'eee', age: 14, sex: true, is: false },
-]
-
-const searchItems = [
-  { lp: ['asd', 'xxx'], type: 'date-picker', el: { type: 'daterange', valueFormat: 'x' }, get1(val, row) { return [row.start, row.end] } }
 ]
 </script>
 ```

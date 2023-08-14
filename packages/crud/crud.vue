@@ -11,7 +11,7 @@
     </el-form-item>
   </el-form-render>
 
-  <div v-if="hasNew" style="margin-bottom: 18px;">
+  <div v-if="hasNew || $slots.$header" style="margin-bottom: 18px;">
     <el-button type="primary" @click="openDialog()">新增</el-button>
     <slot name="$header" />
   </div>
@@ -19,7 +19,7 @@
   <slot name="$table-above" />
 
   <!-- 表格内容展示 -->
-  <el-table ref="tableRef" :border="true" v-bind="objectPick($props, ks(tableProps))" :data="_data" @select="_onSelect" @select-all="onSelectAll">
+  <el-table ref="tableRef" v-bind="objectPick($props, ks(tableProps))" :data="_data" @select="_onSelect" @select-all="onSelectAll">
     <el-table-column v-if="showSelect" type="selection" width="60" reserve-selection :selectable="selectable" />
     <el-table-column v-if="showIndex" type="index" label="序号" width="80" />
 
@@ -33,12 +33,12 @@
       </el-table-column>
     </template>
 
-    <el-table-column v-if="hasEdit || hasDel || btns || $slots.btns" label="操作" width="300" fixed="right" v-bind="operation">
+    <el-table-column v-if="hasEdit || hasDel || btns || $slots.$btns" label="操作" width="300" fixed="right" v-bind="operation">
       <template #default="scope">
         <slot name="$btns" v-bind="scope" />
         <el-button v-for="btn in btns?.(scope.row)" type="primary" size="small" v-bind="btn"><Render :render="btn.render" /></el-button>
-        <el-button size="small" type="primary" @click="openDialog(scope.row)">编辑</el-button>
-        <el-button size="small" type="danger" @click="_onDel(scope.row)">删除</el-button>
+        <el-button v-if="hasEdit" size="small" type="primary" @click="openDialog(scope.row)">编辑</el-button>
+        <el-button v-if="hasDel" size="small" type="danger" @click="_onDel(scope.row)">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -83,7 +83,7 @@ import tableProps from 'element-plus/es/components/table/src/table/defaults'
 // import 'element-plus/es/components/dialog/style/css'
 // import 'element-plus/es/components/button/style/css'
 
-import ElFormRender, { Item, label, prop, showOpt } from 'el-form-render'
+import ElFormRender, { Item, label, prop, showOpt, solveOptions } from 'el-form-render'
 import Render from '@el-lowcode/render'
 import { get, set, ks } from  '@el-lowcode/utils'
 
@@ -245,8 +245,8 @@ function _2column(e: string | Column): Column {
     prop: prop(item) ?? prop(col),
     formatter: (_row, _column, val, _index) => {
       return (
-        item.el?.options ? showOpt(item.el.options.find(e => e.value == val)) :
-        item.options ? showOpt(item.options.find(e => e.value == val)) :
+        solveOptions(item.el?.options) ? showOpt(solveOptions(item.el!.options).find(e => e.value == val)) :
+        solveOptions(item.options) ? showOpt(solveOptions(item.options).find(e => e.value == val)) :
         val
       )
     },

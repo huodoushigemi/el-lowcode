@@ -1,5 +1,5 @@
 import type { App, Component, Plugin } from 'vue'
-import type { Fnable } from './types'
+import type { Arrable, Fnable } from './types'
 
 export * from './types'
 
@@ -13,7 +13,11 @@ export function withInstall<T extends Comp>(comp: T) {
 
 export const ks = <T extends object>(obj: T) => Object.keys(obj) as (keyof T)[]
 
-export const unFn = <T>(fn: Fnable<T>, ...args) => typeof fn === 'function' ? (fn as Function)(...args) : fn
+export const toArr = <T>(arr?: Arrable<T>) => Array.isArray(arr) ? arr : (arr == null ? [] : [arr])
+
+type UnFn <T> = T extends (...args) => infer R ? R : T
+type UnP<T> = T extends (...args: infer P) => any ? P : []
+export const unFn = <T extends Fnable<any>>(fn: T, ...args: UnP<T>): UnFn<T> => typeof fn === 'function' ? (fn as Function)(...args) : fn
 
 export function get(obj: any, path: string | ((...args) => any)) {
   if (typeof path === 'function') return path(obj)

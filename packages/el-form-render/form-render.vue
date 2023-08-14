@@ -2,15 +2,16 @@
 import { ref, createVNode, resolveDynamicComponent } from 'vue'
 import { ElForm, ElFormItem, ElOption, ElCheckbox, ElCheckboxButton, ElRadio, ElRadioButton, FormContext, FormInstance } from 'element-plus'
 // import 'element-plus/es/components/form/style/css'
-import { Item, formRenderProps, label, prop } from './form-render'
+import { Item, formRenderProps, label, prop, solveOptions } from './form-render'
+import { unFn, toArr } from '@el-lowcode/utils';
 
 defineOptions({ name: 'ElFormRender' })
 
 const props = defineProps(formRenderProps)
 
-function exec<T>(e: T | (() => T)): T {
-  return typeof e === 'function' ? (e as Function)() : e
-}
+// function exec<T>(e: T | ((...args: infer A[]) => T), ...args: A): T {
+//   return typeof e === 'function' ? (e as Function)(...args) : e
+// }
 
 function isExp(exp: string) {
   return exp?.trim().match(/^\{(.*?)\}$/)
@@ -62,7 +63,7 @@ const Comp = ({ is, hasChild, ...props }, { slots }) => createVNode(resolveDynam
   <el-form ref="formRef" v-bind="props" :items="undefined">
     <template v-for="item in items" :key="item[1]">
       <el-form-item
-        v-if="!exec(item.hide)"
+        v-if="!unFn(item.hide, model, item)"
         v-bind="item"
         :label="label(item)"
         :prop="prop(item)"
@@ -73,7 +74,7 @@ const Comp = ({ is, hasChild, ...props }, { slots }) => createVNode(resolveDynam
         :hide="undefined"
         :set="undefined"
         :get="undefined"
-        :rules="exec(item.rules)"
+        :rules="toArr(item.rules).map(e => unFn(e, model))"
       >
         <slot :name="prop(item)">
           <Comp
@@ -85,7 +86,7 @@ const Comp = ({ is, hasChild, ...props }, { slots }) => createVNode(resolveDynam
             @update:modelValue="onInput(item, $event)"
             :disabled="disabled(item)"
           >
-            <template v-for="opt in item.options">
+            <template v-for="opt in solveOptions(item.options)">
               <el-option v-if="item.type === 'select'" v-bind="opt" />
 
               <el-checkbox-button v-else-if="item.type === 'checkbox-group' && item.el?.type === 'button'" v-bind="opt" :label="'value' in opt ? opt.value : opt.label">{{ opt.label }}</el-checkbox-button>
