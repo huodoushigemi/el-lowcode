@@ -33,7 +33,7 @@ export const formRenderProps = {
 
 const solveLP = (lp: string | string[] | undefined) => Array.isArray(lp) ? lp : lp?.split(' ')
 
-export const label = (item: Item) => item.label || solveLP(item.lp)![0]
+export const label = (item: Item) => item.label || solveLP(item.lp)?.[0]
 export const prop = (item: Item) => item.prop || solveLP(item.lp)![1]
 export const showOpt = (opt?: Opt) => opt?.label ?? opt?.value
 
