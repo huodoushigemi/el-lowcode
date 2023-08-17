@@ -2,7 +2,7 @@
 import { ref, createVNode, resolveDynamicComponent } from 'vue'
 import { ElForm, ElFormItem, ElOption, ElCheckbox, ElCheckboxButton, ElRadio, ElRadioButton, FormContext, FormInstance } from 'element-plus'
 // import 'element-plus/es/components/form/style/css'
-import { Item, formRenderProps, label, prop, solveOptions } from './form-render'
+import { Item, formRenderProps, label, prop, optValue, solveOptions } from './form-render'
 import { unFn, toArr } from '@el-lowcode/utils';
 
 defineOptions({ name: 'ElFormRender' })
@@ -39,7 +39,7 @@ const onInput = (item: Item, val) => {
 
 const disabled = (item: Item) => isExp(item.el?.value) || item.el?.disabled
 
-// ================================================================================
+// == defineExpose ==============================================================================
 
 const formRef = ref<FormInstance>()
 
@@ -50,17 +50,16 @@ defineExpose(new Proxy({}, {
     return formRef.value?.[k]
   },
   has(t, k) {
-      return k in (formRef.value || {})
+    return k in (formRef.value || {})
   }
 }))
-
 
 // <component :is="is" v-bind="props" />
 const Comp = ({ is, hasChild, ...props }, { slots }) => createVNode(resolveDynamicComponent(is), props, hasChild ? slots : undefined)
 </script>
 
 <template>
-  <el-form ref="formRef" v-bind="props" :items="undefined">
+  <el-form ref="formRef" v-bind="props" :items="undefined" @submit.prevent="formRef.validate()">
     <template v-for="item in items" :key="item[1]">
       <el-form-item
         v-if="!unFn(item.hide, model, item)"
@@ -87,13 +86,13 @@ const Comp = ({ is, hasChild, ...props }, { slots }) => createVNode(resolveDynam
             :disabled="disabled(item)"
           >
             <template v-for="opt in solveOptions(item.options)">
-              <el-option v-if="item.type === 'select'" v-bind="opt" />
+              <el-option v-if="item.type === 'select'" v-bind="opt" :value="optValue(opt)" />
 
-              <el-checkbox-button v-else-if="item.type === 'checkbox-group' && item.el?.type === 'button'" v-bind="opt" :label="'value' in opt ? opt.value : opt.label">{{ opt.label }}</el-checkbox-button>
-              <el-checkbox v-else-if="item.type === 'checkbox-group'" v-bind="opt" :label="'value' in opt ? opt.value : opt.label">{{ opt.label }}</el-checkbox>
+              <el-checkbox-button v-else-if="item.type === 'checkbox-group' && item.el?.type === 'button'" v-bind="opt" :label="optValue(opt)">{{ opt.label }}</el-checkbox-button>
+              <el-checkbox v-else-if="item.type === 'checkbox-group'" v-bind="opt" :label="optValue(opt)">{{ opt.label }}</el-checkbox>
 
-              <el-radio-button v-else-if="item.type === 'radio-group' && item.el?.type === 'button'" v-bind="opt" :label="'value' in opt ? opt.value : opt.label">{{ opt.label }}</el-radio-button>
-              <el-radio v-else-if="item.type === 'radio-group'" v-bind="opt" :label="'value' in opt ? opt.value : opt.label">{{ opt.label }}</el-radio>
+              <el-radio-button v-else-if="item.type === 'radio-group' && item.el?.type === 'button'" v-bind="opt" :label="optValue(opt)">{{ opt.label }}</el-radio-button>
+              <el-radio v-else-if="item.type === 'radio-group'" v-bind="opt" :label="optValue(opt)">{{ opt.label }}</el-radio>
             </template>
           </Comp>
         </slot>

@@ -2,9 +2,9 @@
   <!-- 搜索 -->
   <el-form-render v-if="needReq" ref="searchRef" :inline="true" :model="params" :items="_searchItems" v-bind="search" @keyup.enter="getData()" @submit.native.prevent>
     <template v-for="e in Object.keys($slots).map(e => e.split('$search:')[1]).filter(e => e)" #[e]>
-      <slot :name="'$search:' + e" :model="params" />
+      <slot :name="'$search:' + e" :row="params" :model="params" />
     </template>
-    <slot name="$search" :model="params" />
+    <slot name="$search" :row="params" :model="params" />
     <el-form-item>
       <el-button type="primary" @click="getData()">查询</el-button>
       <el-button @click="resetSearch()">重置</el-button>
@@ -59,9 +59,9 @@
   <el-dialog v-model="visible" :title="row?.id ? '编辑' : '新增'" width="800" destroy-on-close v-bind="dialog">
     <el-form-render ref="formRef" :model="row" :items="_formItems" label-width="auto" v-bind="form">
       <template v-for="e in Object.keys($slots).map(e => e.split('$form:')[1]).filter(e => e)" #[e]>
-        <slot :name="'$form:' + e" :model="row" />
+        <slot :name="'$form:' + e" :row="row" :model="row" />
       </template>
-      <slot name="$form" :model="row" />
+      <slot name="$form" :row="row" :model="row" />
     </el-form-render>
 
     <template #footer>
@@ -231,6 +231,8 @@ async function _onEdit() {
 const _schemaBy = computed(() => (props.schema || [])?.reduce((o, e) => (o[prop(e)] = e, o), {}) as Record<string, Item>)
 
 const _searchItems = computed(() => props.searchItems?.map(_2searchItem))
+console.log(_searchItems.value);
+
 
 const _formItems = computed(() => props.formItems?.map(e => isString(e) ? _schemaBy.value[e] : { ..._schemaBy.value[prop(e)], ...e }))
 
@@ -257,18 +259,28 @@ function _2column(e: string | Schema): Column {
 function _2searchItem(e: string | Item) {
   const schema = (isString(e) ? _schemaBy.value[e] : _schemaBy.value[prop(e)]) || {}
   let item = isObject(e) ? e : {}
-  item = {
+  const type = item.type || schema.type
+  const elType = item.el?.type || schema.el?.type
+  return {
     ...schema,
     ...item,
     rules: undefined,
-    el: { ...schema.el, ...item.el, disabled: false }
-  }
-  return {
-    ...item,
+    type: (
+      type === 'checkbox-group' ? 'select' :
+      type === 'radio-group' ? 'select' :
+      type
+    ),
     el: {
       clearable: true,
+      ...schema.el,
       ...item.el,
-      type: !item.type || item.type === 'input' ? '' : item.el!.type
+      multiple: (
+        type === 'checkbox-group' ? true :
+        type === 'radio-group' ? false :
+        item.el?.multiple
+      ),
+      disabled: false,
+      type: (!elType || elType === 'input') ? '' : item.el?.type
     }
   }
 }

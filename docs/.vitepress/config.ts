@@ -20,6 +20,7 @@ export default defineConfig({
       {
         text: 'el-form-render',
         items: [
+          { text: '快速开始', link: '/el-form-render/quickstart' },
           { text: '基础使用', link: '/el-form-render/basic' },
           { text: 'Runtime API Examples', link: '/markdown-examples' },
         ]
@@ -28,6 +29,7 @@ export default defineConfig({
         text: 'crud',
         items: [
           { text: '基础使用', link: '/crud/basic' },
+          { text: '插槽', link: '/crud/slot' },
         ]
       }
     ],

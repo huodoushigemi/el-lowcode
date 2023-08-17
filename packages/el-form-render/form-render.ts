@@ -35,6 +35,8 @@ const solveLP = (lp: string | string[] | undefined) => Array.isArray(lp) ? lp : 
 
 export const label = (item: Item) => item.label || solveLP(item.lp)?.[0]
 export const prop = (item: Item) => item.prop || solveLP(item.lp)![1]
+
+export const optValue = (opt?: Opt) => (opt && 'value' in opt) ? opt.value : opt?.label
 export const showOpt = (opt?: Opt) => opt?.label ?? opt?.value
 
 // ==============================================================================================

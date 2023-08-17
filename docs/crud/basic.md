@@ -38,9 +38,9 @@ CRUD.setConfig({
   <CRUD
     url="/user"
     :schema="schema"
-    :columns="['id', 'name', 'age']"
+    :columns="['id', 'name', 'age', 'sex']"
     :searchItems="['name', 'age']"
-    :formItems="['id', 'name', 'age']"
+    :formItems="['id', 'name', 'age', 'sex', 'is']"
   />
 </template>
 
@@ -51,7 +51,7 @@ const schema = [
   { lp: ['id', 'id'], el: { disabled: true } },
   { lp: ['姓名', 'name'] },
   { lp: ['年龄', 'age'] },
-  { lp: ['性别', 'sex'], type: 'switch' },
+  { lp: ['性别', 'sex'], type: 'radio-group', options: [{ label: '男', value: 0 }, { label: '女', value: 1 }] },
   { lp: ['是否', 'is'], type: 'checkbox' },
 ]
 </script>
@@ -83,11 +83,11 @@ const schema = [
 ]
 
 const data = [
-  { id: '1', name: 'aaa', age: 18, sex: '男', is: '否' },
-  { id: '2', name: 'bbb', age: 17, sex: '男', is: '否' },
-  { id: '3', name: 'ccc', age: 16, sex: '男', is: '否' },
-  { id: '4', name: 'ddd', age: 15, sex: '男', is: '否' },
-  { id: '5', name: 'eee', age: 14, sex: '男', is: '否' },
+  { id: '1', name: 'aaa', age: 18, sex: '男', is: false },
+  { id: '2', name: 'bbb', age: 17, sex: '男', is: false },
+  { id: '3', name: 'ccc', age: 16, sex: '男', is: false },
+  { id: '4', name: 'ddd', age: 15, sex: '男', is: false },
+  { id: '5', name: 'eee', age: 14, sex: '男', is: false },
 ]
 </script>
 ```

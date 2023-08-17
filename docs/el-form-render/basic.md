@@ -141,7 +141,6 @@ const items: Item[] = [
       <code><pre>model: {{ JSON.stringify(model, null, '  ') }}</pre></code>
     </el-form-item>
   </el-form-render>
-  
 </template>
 
 <script setup lang="ts">
@@ -199,6 +198,41 @@ const submitForm = () => {
     }
   })
 }
+</script>
+```
+
+## 动态校验
+
+性别为 `男` 时 `介绍` 必填
+
+```vue preview
+<template>
+  <el-form-render ref="form" :model="model" :items="items" label-width="120px">
+    <el-form-item>
+      <el-button type="primary" native-type="submit">Submit</el-button>
+      <el-button @click="$refs.form.resetFields()">Reset</el-button>
+    </el-form-item>
+
+    <el-form-item>
+      <code><pre>model: {{ JSON.stringify(model, null, '  ') }}</pre></code>
+    </el-form-item>
+  </el-form-render>
+</template>
+
+<script setup lang="ts">
+import ElFormRender, { Item } from 'el-form-render'
+
+const model = reactive({})
+
+const items: Item[] = [
+  { lp: ['姓名', 'name'] },
+  { lp: ['性别', 'sex'], type: 'select', options: [{ value: '男' }, { value: '女' }] },
+  {
+    lp: ['介绍', 'intro'],
+    rules: (row) => ({ required: row.sex === '男', message: '必填 ' }),
+    el: { type: 'textarea' }
+  },
+]
 </script>
 ```
 
