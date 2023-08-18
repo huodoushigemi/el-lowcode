@@ -7,13 +7,13 @@ import { cwd, pkgDir } from '../../build/utils.js'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "el-lowcode",
-  description: "vue3 + element-plus / lowcode",
+  title: "El Lowcode",
+  description: "一款高效的低代码神器",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Components', link: '/markdown-examples' }
+      { text: 'Components', link: '/el-form-render/quickstart' }
     ],
 
     sidebar: [
@@ -22,14 +22,16 @@ export default defineConfig({
         items: [
           { text: '快速开始', link: '/el-form-render/quickstart' },
           { text: '基础使用', link: '/el-form-render/basic' },
-          { text: 'Runtime API Examples', link: '/markdown-examples' },
+          // { text: 'Runtime API Examples', link: '/markdown-examples' },
         ]
       },
       {
         text: 'crud',
         items: [
+          { text: '快速开始', link: '/crud/quickstart' },
           { text: '基础使用', link: '/crud/basic' },
           { text: '插槽', link: '/crud/slot' },
+          { text: '属性', link: '/crud/attrs' },
         ]
       }
     ],

@@ -37,11 +37,13 @@ export const crudProps = {
   //
   schema: Array as PropType<Schema[]>,
   //
-  search: Object as PropType<FormProps>,
+  search: Object,
+  searchAttrs: Object as PropType<FormProps>,
   searchItems: Array as PropType<(string | Item)[]>,
   //
-  dialog: Object as PropType<DialogProps>,
-  form: Object as PropType<FormProps>,
+  dialogAttrs: Object as PropType<DialogProps>,
+  form: Object,
+  formAttrs: Object as PropType<FormProps>,
   formItems: Array as PropType<(string | Item)[]>,
   //
   onSelect: Function as PropType<(selected: any[], row) => void>

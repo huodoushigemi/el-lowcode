@@ -1,6 +1,6 @@
 <template>
   <!-- 搜索 -->
-  <el-form-render v-if="needReq" ref="searchRef" :inline="true" :model="params" :items="_searchItems" v-bind="search" @keyup.enter="getData()" @submit.native.prevent>
+  <el-form-render v-if="needReq" ref="searchRef" :inline="true" :model="params" :items="_searchItems" v-bind="searchAttrs" @keyup.enter="getData()" @submit.native.prevent>
     <template v-for="e in Object.keys($slots).map(e => e.split('$search:')[1]).filter(e => e)" #[e]>
       <slot :name="'$search:' + e" :row="params" :model="params" />
     </template>
@@ -56,8 +56,8 @@
   />
 
   <!-- 表单 -->
-  <el-dialog v-model="visible" :title="row?.id ? '编辑' : '新增'" width="800" destroy-on-close v-bind="dialog">
-    <el-form-render ref="formRef" :model="row" :items="_formItems" label-width="auto" v-bind="form">
+  <el-dialog v-model="visible" :title="row?.id ? '编辑' : '新增'" width="800" destroy-on-close v-bind="dialogAttrs">
+    <el-form-render ref="formRef" :model="row" :items="_formItems" label-width="auto" v-bind="formAttrs">
       <template v-for="e in Object.keys($slots).map(e => e.split('$form:')[1]).filter(e => e)" #[e]>
         <slot :name="'$form:' + e" :row="row" :model="row" />
       </template>
@@ -91,6 +91,7 @@ import config from './config'
 import { crudProps, Schema, Column } from './crud'
 
 defineOptions({ name: 'crud' })
+const emit = defineEmits(['update:search', 'update:form'])
 
 const props = defineProps(crudProps)
 const _request = props.request || config.request
@@ -110,7 +111,7 @@ defineExpose({
 
 // 分页查询
 const searchRef = ref<FormInstance>()
-const params = reactive<Record<string, any>>({})
+const params = reactive<Record<string, any>>(props.search ?? {})
 const _total = ref(0)
 const _list = ref([])
 const _data = computed(() => props.data ?? _list.value)
@@ -201,6 +202,7 @@ const visible = ref(false)
 function openDialog(e = {}) {
   row.value = e
   visible.value = true
+  emit('update:form', row.value)
 }
 async function _onConfirm() {
   await formRef.value!.validate()

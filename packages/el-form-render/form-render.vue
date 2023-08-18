@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref, createVNode, resolveDynamicComponent } from 'vue'
-import { ElForm, ElFormItem, ElOption, ElCheckbox, ElCheckboxButton, ElRadio, ElRadioButton, FormContext, FormInstance } from 'element-plus'
+import { ElForm, ElFormItem, ElOption, ElCheckbox, ElCheckboxButton, ElRadio, ElRadioButton, FormInstance, formItemProps } from 'element-plus'
 // import 'element-plus/es/components/form/style/css'
 import { Item, formRenderProps, label, prop, optValue, solveOptions } from './form-render'
-import { unFn, toArr } from '@el-lowcode/utils';
+import { unFn, toArr, ks } from '@el-lowcode/utils';
+import { objectPick } from '@vueuse/core';
 
 defineOptions({ name: 'ElFormRender' })
+
+const formItemKs = ks(formItemProps)
 
 const props = defineProps(formRenderProps)
 
@@ -59,20 +62,13 @@ const Comp = ({ is, hasChild, ...props }, { slots }) => createVNode(resolveDynam
 </script>
 
 <template>
-  <el-form ref="formRef" v-bind="props" :items="undefined" @submit.prevent="formRef.validate()">
+  <el-form ref="formRef" v-bind="props" :items="undefined" @submit.prevent="formRef!.validate()">
     <template v-for="item in items" :key="item[1]">
       <el-form-item
         v-if="!unFn(item.hide, model, item)"
-        v-bind="item"
+        v-bind="objectPick(item, formItemKs)"
         :label="label(item)"
         :prop="prop(item)"
-        :lp="undefined"
-        :el="undefined"
-        :is="undefined"
-        :type="undefined"
-        :hide="undefined"
-        :set="undefined"
-        :get="undefined"
         :rules="toArr(item.rules).map(e => unFn(e, model))"
       >
         <slot :name="prop(item)">
