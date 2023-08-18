@@ -39,9 +39,9 @@ async function onEdit(row) {
 </script>
 ```
 
-## 自定义搜索
+## 自定义操作列
 
-通过设置 `#$search:xxx` 自定义搜索。
+通过设置 `#$btns` 自定义操作列按钮。
 
 ```vue preview
 <template>
@@ -49,14 +49,12 @@ async function onEdit(row) {
     url="/user"
     :schema="schema"
     :columns="['id', 'name', 'age', 'is']"
-    :searchItems="['name', 'age', 'is']"
+    :searchItems="['name', 'age']"
     :formItems="['id', 'name', 'age', 'is']"
   >
-    <template #is="{ row }">
-      <el-switch v-model="row.is" />
-    </template>
-    <template #$search:is="{ row }">
-      <el-switch v-model="row.is" />
+    <template #$btns="{ row }">
+      <el-button link type="primary">xxx</el-button>
+      <el-button link type="primary">ooo</el-button>
     </template>
   </CRUD>
 </template>
@@ -71,10 +69,75 @@ const schema = [
   { lp: ['年龄', 'age'] },
   { lp: ['是否', 'is'], type: 'checkbox' },
 ]
+</script>
+```
 
-async function onEdit(row) {
-  await axios.post('/user/edit', row)
-  alert('修改成功')
-}
+## 自定义搜索
+
+通过设置 `#$search:xxx` 自定义搜索。
+
+```vue preview
+<template>
+  <CRUD
+    url="/user"
+    :schema="schema"
+    :columns="['id', 'name', 'age', 'is']"
+    :searchItems="['name', 'age', 'is']"
+    :formItems="['id', 'name', 'age', 'is']"
+  >
+    <template #$search:name="{ row }">
+      <input v-model="row.name" style="border: solid;" />
+    </template>
+    <template #$search:age="{ row }">
+      <input v-model="row.age" type="range" />
+      {{ row.age }}
+    </template>
+  </CRUD>
+</template>
+
+<script setup lang="ts">
+import CRUD from '@el-lowcode/crud'
+
+const schema = [
+  { lp: ['id', 'id'], el: { disabled: true } },
+  { lp: ['姓名', 'name'] },
+  { lp: ['年龄', 'age'] },
+  { lp: ['是否', 'is'], type: 'checkbox' },
+]
+</script>
+```
+
+## 自定义表单
+
+通过设置 `#$form:xxx` 自定义表单。
+
+```vue preview
+<template>
+  <CRUD
+    url="/user"
+    :schema="schema"
+    :columns="['id', 'name', 'age', 'is']"
+    :searchItems="['name', 'age', 'is']"
+    :formItems="['id', 'name', 'age', 'is']"
+  >
+    <template #$form:name="{ row }">
+      <input v-model="row.name" style="border: solid;" />
+    </template>
+    <template #$form:age="{ row }">
+      <input v-model="row.age" type="range" />
+      {{ row.age }}
+    </template>
+  </CRUD>
+</template>
+
+<script setup lang="ts">
+import CRUD from '@el-lowcode/crud'
+
+const schema = [
+  { lp: ['id', 'id'], el: { disabled: true } },
+  { lp: ['姓名', 'name'] },
+  { lp: ['年龄', 'age'] },
+  { lp: ['是否', 'is'], type: 'checkbox' },
+]
 </script>
 ```

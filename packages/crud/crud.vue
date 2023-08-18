@@ -1,6 +1,6 @@
 <template>
   <!-- 搜索 -->
-  <el-form-render v-if="needReq" ref="searchRef" :inline="true" :model="params" :items="_searchItems" v-bind="search" @keyup.enter="getData()" @submit.native.prevent>
+  <el-form-render v-if="needReq" ref="searchRef" :inline="true" :model="params" :items="_searchItems" v-bind="search" @keyup.enter="getData()">
     <template v-for="e in Object.keys($slots).map(e => e.split('$search:')[1]).filter(e => e)" #[e]>
       <slot :name="'$search:' + e" :row="params" :model="params" />
     </template>
@@ -25,9 +25,9 @@
 
     <template v-for="col in _columns" :key="col.prop">
       <el-table-column v-bind="col">
-        <template #default="scope">
-          <slot :name="col.prop" v-bind="scope">
-            <RenderCell v-bind="scope" />
+        <template #default="{ row, column, $index }">
+          <slot :name="col.prop" v-bind="{ row, column, $index }">
+            {{ column.formatter ? column.formatter(row, column, row[column.property], $index) : row[column.property] }}
           </slot>
         </template>
       </el-table-column>
@@ -96,9 +96,6 @@ const props = defineProps(crudProps)
 const _request = props.request || config.request
 const _field = computed(() => ({ ...props.field, ...config.field }))
 const _pagination = computed(() => ({ ...props.pagination, ...config.pagination }))
-
-// todo：由于未知原因，这段代码写在 template 中会编译报错，可能是 vue 编译器的问题
-const RenderCell = ({ row, column, $index }) => column.formatter ? column.formatter(row, column, row[column.property], $index) : row[column.property]
 
 const needReq = computed(() => props.url || props.request)
 
@@ -199,7 +196,7 @@ const row = ref()
 const visible = ref(false)
 
 function openDialog(e = {}) {
-  row.value = e
+  row.value = JSON.parse(JSON.stringify(e))
   visible.value = true
 }
 async function _onConfirm() {

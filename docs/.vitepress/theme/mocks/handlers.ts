@@ -7,6 +7,7 @@ const filter = curry((query, row) => Object.entries<any>(row).every(([k, v]) => 
 export const handlers = [
   rest.post('/user/list', async (req, res, ctx) => {
     const json = await req.json()
+    const _list = list.filter(filter(json))
     return res(
       ctx.delay(100),
       ctx.status(200),
@@ -14,8 +15,8 @@ export const handlers = [
         code: 200,
         msg: 'success',
         data: {
-          list: list.filter(filter(json)).splice((json.page.page - 1) * json.page.pageSize, json.page.pageSize),
-          total: list.length
+          list: _list.splice((json.page.page - 1) * json.page.pageSize, json.page.pageSize),
+          total: _list.length
         }
       })
     )
