@@ -204,6 +204,7 @@ watch(visible, val => emit('update:form', val ? row.value : null))
 function openDialog(e = {}) {
   row.value = JSON.parse(JSON.stringify(e))
   visible.value = true
+  emit('update:form', row.value)
 }
 async function _onConfirm() {
   await formRef.value!.validate()

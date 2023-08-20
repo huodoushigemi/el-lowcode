@@ -11,7 +11,7 @@
   <CRUD
     url="/user"
     :schema="schema"
-    :columns="['name', 'id', 'age', 'is']"
+    :columns="['id', 'name', 'age', 'is']"
     :searchItems="['name', 'age']"
     :formItems="['id', 'name', 'age', 'is']"
     :formAttrs="{
