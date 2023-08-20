@@ -9,7 +9,8 @@ import 'element-plus/theme-chalk/dark/css-vars.css'
 import './custom.scss'
 
 import './crud'
-import './mocks'
+
+if (typeof window != 'undefined') import('./mocks')
 
 export default {
   ...DefaultTheme,

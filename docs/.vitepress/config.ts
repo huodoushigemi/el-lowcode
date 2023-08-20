@@ -44,6 +44,7 @@ export default defineConfig({
   },
 
   vite: {
+    base: './',
     optimizeDeps: {
       exclude: ALL_PKGS,
     },
@@ -52,6 +53,9 @@ export default defineConfig({
         find: pkg,
         replacement: path.join(cwd, pkgDir(pkg.replace('@el-lowcode/', ''), 'index.ts'))
       }))
+    },
+    ssr: {
+      noExternal: ['vite-plugin-markdown-preview'],
     },
     plugins: [
       AutoImport({ imports: 'vue' }),
