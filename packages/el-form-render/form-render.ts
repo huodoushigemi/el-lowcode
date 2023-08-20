@@ -2,7 +2,7 @@ import { PropType, Ref, ref } from 'vue'
 import type { FormItemProps, FormItemRule } from 'element-plus'
 import { formProps } from 'element-plus'
 import { Awaitable } from '@vueuse/core'
-import { Arrable, Fnable, unFn } from '@el-lowcode/utils'
+import { Arrable, Fnable, Assign, unFn } from '@el-lowcode/utils'
 
 export type Opt = {
   label?: string
@@ -10,7 +10,7 @@ export type Opt = {
   [k: string]: any
 }
 
-export type Item = Omit<Partial<FormItemProps>, 'rules'> & Partial<{
+export type Item = Assign<Partial<FormItemProps>, Partial<{
   type: string
   el: Record<string, any>
   prop: string
@@ -22,7 +22,7 @@ export type Item = Omit<Partial<FormItemProps>, 'rules'> & Partial<{
   lp: string | [string, string]
   rules: Arrable<FormItemRule | ((row: any) => FormItemRule)>
   options: Fnable<Awaitable<Opt[]>>
-}>
+}>>
 
 export const formRenderProps = {
   ...formProps,
@@ -34,7 +34,7 @@ export const formRenderProps = {
 const solveLP = (lp: string | string[] | undefined) => Array.isArray(lp) ? lp : lp?.split(' ')
 
 export const label = (item: Item) => item.label || solveLP(item.lp)?.[0]
-export const prop = (item: Item) => item.prop || solveLP(item.lp)![1]
+export const prop = (item: Item) => item.prop || solveLP(item.lp)?.[1]
 
 export const optValue = (opt?: Opt) => (opt && 'value' in opt) ? opt.value : opt?.label
 export const showOpt = (opt?: Opt) => opt?.label ?? opt?.value

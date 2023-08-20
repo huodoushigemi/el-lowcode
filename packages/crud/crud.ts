@@ -4,7 +4,7 @@ import tableProps from 'element-plus/es/components/table/src/table/defaults'
 import type { Item } from 'el-form-render'
 import config, { Config } from './config'
 
-export type Column = Partial<TableColumnCtx<any>> & { prop: string }
+export type Column = Partial<TableColumnCtx<any>>
 export type Schema = Item
 
 export type CRUDProps = ExtractPropTypes<typeof crudProps>
@@ -26,7 +26,6 @@ export const crudProps = {
   pagination: { type: Object, default: () => config.pagination },
   hasPagination: { default: true },
   //
-  operation: Object as PropType<Column>,
   hasNew: { default: true },
   hasEdit: { default: true },
   hasDel: { default: true },
@@ -34,15 +33,22 @@ export const crudProps = {
   onNew: { type: Function as PropType<(row: any) => Awaited<void>> },
   onEdit: { type: Function as PropType<(row: any) => Awaited<void>> },
   onDel: { type: Function as PropType<(row: any) => Awaited<void>> },
+  // 
+  hasOperation: { default: true },
+  operation: Object as PropType<Column>,
   //
   schema: Array as PropType<Schema[]>,
   //
-  search: Object as PropType<FormProps>,
+  search: Object,
+  searchAttrs: Object as PropType<FormProps>,
   searchItems: Array as PropType<(string | Item)[]>,
   //
-  dialog: Object as PropType<DialogProps>,
-  form: Object as PropType<FormProps>,
+  dialogAttrs: Object as PropType<DialogProps>,
+  form: Object,
+  formAttrs: Object as PropType<FormProps>,
   formItems: Array as PropType<(string | Item)[]>,
   //
-  onSelect: Function as PropType<(selected: any[], row) => void>
+  onSelect: Function as PropType<(selected: any[], row) => void>,
+  // 
+  headerAttrs: Object
 }

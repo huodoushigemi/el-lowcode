@@ -2,35 +2,6 @@
 
 支持 [`el-table`](https://element-plus.gitee.io/zh-CN/component/table.html#table-%E5%B1%9E%E6%80%A7) 所有属性
 
-## 安装
-
-```shell
-npm i @el-lowcode/crud
-```
-
-## 配置
-
-```js
-import CRUD from '@el-lowcode/crud'
-import axios from 'axios'
-
-CRUD.setConfig({
-  async request(url, data, type) {
-    // type = 'list' | 'new' | 'edit' | 'del' | 'get'
-    return (await axios.post(`${url}/${type}`, data)).data
-  },
-  field: {
-    page: 'page.page',
-    pageSize: 'page.pageSize',
-    total: 'data.total',
-    list: 'data.list'
-  },
-  pagination: {
-    pageSize: 5
-  }
-})
-```
-
 ## 基础用法
 
 ```vue preview
@@ -129,6 +100,8 @@ const schema = [
 ```
 
 ## options
+
+`options` 属性支持多种类型，[详见](/el-form-render/options.html)
 
 ```vue preview
 <template>

@@ -33,7 +33,7 @@ const items: Item[] = [
 
 ## 典型表单
 
-最基础的表单包括各种输入表单项，比如`input`、`select`、`radio`、`checkbox`等。
+最基础的表单包括各种输入表单项，比如 `input`、`select`、`radio`、`checkbox` 等。
 
 ```vue preview
 <template>
@@ -296,13 +296,3 @@ const items: Item[] = [
 ```
 
 ## 自定义组件
-
-<style>
-  .mdp-demo__preview code {
-    display: inline-block;
-  }
-  .mdp-demo__preview pre {
-    margin: 0;
-    line-height: 1.5;
-  }
-</style>

@@ -1,13 +1,18 @@
 :root {
-  --vp-nav-bg-color: #ffffff80;
+  // --vp-nav-bg-color: #ffffff80;
+  // --vp-sidebar-bg-color: var(--vp-c-bg);
 }
 
 .dark {
-  --vp-nav-bg-color: #1e1e2090;
+  // --vp-nav-bg-color: #1e1e2090;
 }
 
 .content-body {
   backdrop-filter: blur(10px);
+}
+
+body {
+  // background: var(--vp-c-bg-alt);
 }
 
 .vp-doc .el-table {
@@ -24,4 +29,21 @@
   th, td {
     border: unset;
   }
+}
+
+.mdp-demo__preview code {
+  display: inline-block;
+}
+.mdp-demo__preview pre {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.el-table {
+  --el-table-bg-color: var(--el-bg-color);
+}
+
+.el-pager {
+  padding: 0 !important;
+  margin: 0 !important;
 }

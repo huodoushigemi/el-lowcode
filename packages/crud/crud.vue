@@ -1,74 +1,77 @@
 <template>
-  <!-- 搜索 -->
-  <el-form-render v-if="needReq" ref="searchRef" :inline="true" :model="params" :items="_searchItems" v-bind="search" @keyup.enter="getData()">
-    <template v-for="e in Object.keys($slots).map(e => e.split('$search:')[1]).filter(e => e)" #[e]>
-      <slot :name="'$search:' + e" :row="params" :model="params" />
-    </template>
-    <slot name="$search" :row="params" :model="params" />
-    <el-form-item>
-      <el-button type="primary" @click="getData()">查询</el-button>
-      <el-button @click="resetSearch()">重置</el-button>
-    </el-form-item>
-  </el-form-render>
-
-  <div v-if="hasNew || $slots.$header" style="margin-bottom: 18px;">
-    <el-button type="primary" @click="openDialog()">新增</el-button>
-    <slot name="$header" />
-  </div>
-
-  <slot name="$table-above" />
-
-  <!-- 表格内容展示 -->
-  <el-table ref="tableRef" v-bind="objectPick($props, ks(tableProps))" :data="_data" @select="_onSelect" @select-all="onSelectAll">
-    <el-table-column v-if="showSelect" type="selection" width="60" reserve-selection :selectable="selectable" />
-    <el-table-column v-if="showIndex" type="index" label="序号" width="80" />
-
-    <template v-for="col in _columns" :key="col.prop">
-      <el-table-column v-bind="col">
-        <template #default="{ row, column, $index }">
-          <slot :name="col.prop" v-bind="{ row, column, $index }">
-            {{ column.formatter ? column.formatter(row, column, row[column.property], $index) : row[column.property] }}
-          </slot>
-        </template>
-      </el-table-column>
-    </template>
-
-    <el-table-column v-if="hasEdit || hasDel || btns || $slots.$btns" label="操作" width="300" fixed="right" v-bind="operation">
-      <template #default="scope">
-        <slot name="$btns" v-bind="scope" />
-        <el-button v-for="btn in btns?.(scope.row)" type="primary" size="small" v-bind="btn"><Render :render="btn.render" /></el-button>
-        <el-button v-if="hasEdit" size="small" type="primary" @click="openDialog(scope.row)">编辑</el-button>
-        <el-button v-if="hasDel" size="small" type="danger" @click="_onDel(scope.row)">删除</el-button>
+  <div class="crud">
+      <!-- 搜索 -->
+    <el-form-render v-if="needReq" ref="searchRef" class="crud-search" :inline="true" :model="params" :items="_searchItems" v-bind="searchAttrs" @keyup.enter="getData()">
+      <template v-for="e in Object.keys($slots).map(e => e.split('$search:')[1]).filter(e => e)" #[e]>
+        <slot :name="'$search:' + e" :row="params" :model="params" />
       </template>
-    </el-table-column>
-  </el-table>
-
-  <!-- 分页 -->
-  <el-pagination
-    v-if="hasPagination"
-    style="justify-content: flex-end; margin: 20px;"
-    background
-    :total="_total"
-    layout="total, sizes, prev, pager, next"
-    v-bind="pagination"
-    v-model:current-page="_page"
-    v-model:page-size="_pageSize"
-  />
-
-  <!-- 表单 -->
-  <el-dialog v-model="visible" :title="row?.id ? '编辑' : '新增'" width="800" destroy-on-close v-bind="dialog">
-    <el-form-render ref="formRef" :model="row" :items="_formItems" label-width="auto" v-bind="form">
-      <template v-for="e in Object.keys($slots).map(e => e.split('$form:')[1]).filter(e => e)" #[e]>
-        <slot :name="'$form:' + e" :row="row" :model="row" />
-      </template>
-      <slot name="$form" :row="row" :model="row" />
+      <slot name="$search" :row="params" :model="params" />
+      <el-form-item>
+        <el-button type="primary" @click="getData()">查询</el-button>
+        <el-button @click="resetSearch()">重置</el-button>
+      </el-form-item>
     </el-form-render>
 
-    <template #footer>
-      <el-button @click="() => (visible = false, row = {})">取消</el-button>
-      <el-button type="primary" @click="_onConfirm">保存</el-button>
-    </template>
-  </el-dialog>
+    <div v-if="hasNew || $slots.$header" class="crud-header" v-bind="headerAttrs">
+      <el-button v-if="hasNew" type="primary" @click="openDialog()">新增</el-button>
+      <slot name="$header" />
+    </div>
+
+    <slot name="$table-above" />
+
+    <!-- 表格内容展示 -->
+    <el-table ref="tableRef" class="crud-table" v-bind="objectPick($props, ks(tableProps))" :data="_data" @select="_onSelect" @select-all="onSelectAll">
+      <el-table-column v-if="showSelect" type="selection" width="60" reserve-selection :selectable="selectable" />
+      <el-table-column v-if="showIndex" type="index" label="序号" width="80" />
+
+      <template v-for="col in _columns" :key="col.prop">
+        <el-table-column v-bind="col">
+          <template #default="{ row, column, $index }">
+            <slot :name="col.prop" v-bind="{ row, column, $index }">
+              {{ column.formatter ? column.formatter(row, column, row[column.property], $index) : row[column.property] }}
+            </slot>
+          </template>
+        </el-table-column>
+      </template>
+
+      <el-table-column v-if="hasOperation && (hasEdit || hasDel || btns || $slots.$btns)" label="操作" width="auto" fixed="right" v-bind="operation">
+        <template #default="scope">
+          <slot name="$btns" v-bind="scope" />
+          <el-button v-for="btn in btns?.(scope.row)" type="primary" size="small" v-bind="btn"><Render :render="btn.render" /></el-button>
+          <el-button v-if="hasEdit" size="small" type="primary" @click="openDialog(scope.row)">编辑</el-button>
+          <el-button v-if="hasDel" size="small" type="danger" @click="_onDel(scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!-- 分页 -->
+    <el-pagination
+      v-if="hasPagination"
+      class="crud--pagination"
+      style="justify-content: flex-end; margin: 20px;"
+      background
+      :total="_total"
+      layout="total, sizes, prev, pager, next"
+      v-bind="pagination"
+      v-model:current-page="_page"
+      v-model:page-size="_pageSize"
+    />
+
+    <!-- 表单 -->
+    <el-dialog v-model="visible" :title="row?.id ? '编辑' : '新增'" width="800" destroy-on-close v-bind="dialogAttrs">
+      <el-form-render ref="formRef" :model="row" :items="_formItems" label-width="auto" v-bind="formAttrs">
+        <template v-for="e in Object.keys($slots).map(e => e.split('$form:')[1]).filter(e => e)" #[e]>
+          <slot :name="'$form:' + e" :row="row" :model="row" />
+        </template>
+        <slot name="$form" :row="row" :model="row" />
+      </el-form-render>
+
+      <template #footer>
+        <el-button @click="() => (visible = false, row = {})">取消</el-button>
+        <el-button type="primary" @click="_onConfirm">保存</el-button>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -91,6 +94,7 @@ import config from './config'
 import { crudProps, Schema, Column } from './crud'
 
 defineOptions({ name: 'crud' })
+const emit = defineEmits(['update:search', 'update:form'])
 
 const props = defineProps(crudProps)
 const _request = props.request || config.request
@@ -107,7 +111,7 @@ defineExpose({
 
 // 分页查询
 const searchRef = ref<FormInstance>()
-const params = reactive<Record<string, any>>({})
+const params = reactive<Record<string, any>>(props.search ?? {})
 const _total = ref(0)
 const _list = ref([])
 const _data = computed(() => props.data ?? _list.value)
@@ -195,6 +199,8 @@ const formRef = ref<FormInstance>()
 const row = ref()
 const visible = ref(false)
 
+watch(visible, val => emit('update:form', val ? row.value : null))
+
 function openDialog(e = {}) {
   row.value = JSON.parse(JSON.stringify(e))
   visible.value = true
@@ -225,36 +231,33 @@ async function _onEdit() {
 }
 
 // form
-const _schemaBy = computed(() => (props.schema || [])?.reduce((o, e) => (o[prop(e)] = e, o), {}) as Record<string, Item>)
+const _schemaBy = computed(() => (props.schema || [])?.reduce((o, e) => (o[prop(e)!] = e, o), {}) as Record<string, Item>)
 
 const _searchItems = computed(() => props.searchItems?.map(_2searchItem))
-console.log(_searchItems.value);
 
+const _formItems = computed(() => props.formItems?.map(e => isString(e) ? _schemaBy.value[e] : { ..._schemaBy.value[prop(e)!], ...e }))
 
-const _formItems = computed(() => props.formItems?.map(e => isString(e) ? _schemaBy.value[e] : { ..._schemaBy.value[prop(e)], ...e }))
-
-// @ts-ignore
 const _columns = computed(() => props.columns?.map(_2column))
 
 function _2column(e: string | Schema): Column {
-  const item = (isString(e) ? _schemaBy.value[e] : _schemaBy.value[prop(e)]) || { lp: [] }
+  const item = (isString(e) ? _schemaBy.value[e] : _schemaBy.value[prop(e)!]) || { lp: [] }
   const col = isObject(e) ? e : {}
   return {
     label: label(item) ?? label(col),
     prop: prop(item) ?? prop(col),
     formatter: (_row, _column, val, _index) => {
       return (
-        solveOptions(item.el?.options) ? showOpt(solveOptions(item.el!.options).find(e => e.value == val)) :
-        solveOptions(item.options) ? showOpt(solveOptions(item.options).find(e => e.value == val)) :
+        item.el?.options ? showOpt(solveOptions(item.el!.options)!.find(e => e.value == val)) :
+        item.options ? showOpt(solveOptions(item.options)!.find(e => e.value == val)) :
         val
-      )
+      ) ?? val
     },
     ...col
   }
 }
 
 function _2searchItem(e: string | Item) {
-  const schema = (isString(e) ? _schemaBy.value[e] : _schemaBy.value[prop(e)]) || {}
+  const schema = (isString(e) ? _schemaBy.value[e] : _schemaBy.value[prop(e)!]) || {}
   let item = isObject(e) ? e : {}
   const type = item.type || schema.type
   const elType = item.el?.type || schema.el?.type
@@ -286,5 +289,31 @@ function _2searchItem(e: string | Item) {
 <style scoped>
 :deep(.is-disabled .el-checkbox__inner) {
   background-color: #80808040 !important;
+}
+
+.crud-search {
+  padding-top: 10px;
+  padding-left: 8px;
+  background-color: var(--el-bg-color);
+}
+
+.crud-search.el-form--inline :deep(.el-form-item) {
+  margin-bottom: 10px;
+  margin-right: 14px;
+}
+
+.crud-search.el-form--inline :deep(.el-form-item__label) {
+  padding-right: 8px;
+}
+
+.crud-search.el-form--inline :deep(.el-input__suffix) {
+  position: absolute;
+  right: 11px;
+}
+
+.crud-header {
+  margin: 6px 0 0;
+  padding: 14px 8px;
+  background-color: var(--el-bg-color);
 }
 </style>

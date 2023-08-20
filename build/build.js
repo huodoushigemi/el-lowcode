@@ -98,7 +98,7 @@ async function buildDts(pack) {
 }
 
 // buildFull()
-// await build('utils')
+await build('utils')
 // await build('render')
 await build('el-form-render')
 await build('crud')
