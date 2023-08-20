@@ -59,7 +59,7 @@ export async function build(pack) {
 
   await bundle.close()
 
-  await buildDts(pack)
+  buildDts(pack)
 }
 
 export async function buildFull() {

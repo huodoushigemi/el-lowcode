@@ -1,9 +1,10 @@
 # FormRender 表单渲染
 
-本章讲解 `options` 的使用
+本章介绍 `options` 属性的使用
 
-`options` 支持多种类型：
+---
 
+`options` 属性支持多种类型：
 - `Option[]`  
 - `() => Option[]`  
 - `Promise<Option[]>` 

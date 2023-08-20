@@ -16,7 +16,7 @@ hero:
 
 features:
   - title: ✅ 表单渲染引擎
-    details: JSON 渲染表单<br />轻便小巧 Minified <b> 3.5 KB</b>
+    details: JSON 渲染表单<br />轻便小巧 Minified <b> 5 KB</b>
   - title: ✅ CRUD 引擎
     details: CRUD 从未如此简单<br />减少重复代码 > 50%
   - title: 🎃 人体工程学

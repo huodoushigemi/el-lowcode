@@ -63,13 +63,13 @@ const items: Item[] = [
     lp: ['Activity type', 'type'],
     type: 'checkbox-group',
     options: [
-      { label: 'Online activities' },
-      { label: 'Promotion activities' },
-      { label: 'Offline activities' },
-      { label: 'Simple brand exposure' },
+      { value: 'Online activities' },
+      { value: 'Promotion activities' },
+      { value: 'Offline activities' },
+      { value: 'Simple brand exposure' },
     ]
   },
-  { lp: ['Resources', 'resource'], type: 'radio-group', options: [{ label: 'Sponsor' }, { label: 'Venue' }] },
+  { lp: ['Resources', 'resource'], type: 'radio-group', options: [{ value: 'Sponsor' }, { value: 'Venue' }] },
   { lp: ['Activity form', 'desc'], el: { type: "textarea" } },
 ]
 
