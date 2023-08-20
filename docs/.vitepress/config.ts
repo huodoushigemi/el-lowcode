@@ -43,8 +43,10 @@ export default defineConfig({
     ]
   },
 
+  base: '/el-lowcode',
+
   vite: {
-    base: './',
+    // base: 'el-lowcode',
     optimizeDeps: {
       exclude: ALL_PKGS,
     },
