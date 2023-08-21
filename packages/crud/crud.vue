@@ -166,7 +166,7 @@ watch(
   () => [...props.selected ?? []],
   async (val) => {
     await nextTick()
-    tableRef.value!.clearSelection()
+    tableRef.value?.clearSelection()
     val?.forEach(e => {
       e = _data.value.find(row => get(row, props.rowKey!) == get(e, props.rowKey!)) ?? e
       tableRef.value!.toggleRowSelection(e, true)
