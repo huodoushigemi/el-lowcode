@@ -1,4 +1,4 @@
-# FormRender 表单渲染
+# ElFormRender 表单渲染
 
 支持 [`el-form`](https://element-plus.gitee.io/zh-CN/component/form.html#form-attributes) 所有属性
 
@@ -294,5 +294,3 @@ const items: Item[] = [
 ]
 </script>
 ```
-
-## 自定义组件

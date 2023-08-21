@@ -1,7 +1,13 @@
 {
   "name": "el-form-render",
+  "version": "0.0.16",
   "private": false,
-  "version": "0.0.15",
+  "description": "vue3 + element-plus render form-item easily",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/huodoushigemi/el-lowcode/tree/main/packages/el-form-render"
+  },
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",

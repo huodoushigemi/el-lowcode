@@ -14,6 +14,7 @@
     :columns="['id', 'name', 'age', 'is']"
     :searchItems="['name', 'age']"
     :formItems="['id', 'name', 'age', 'is']"
+    :operation="{ width: 200 }"
   >
     <template #is="{ row }">
       <el-switch v-model="row.is" @change="onEdit(row)" />
@@ -51,6 +52,7 @@ async function onEdit(row) {
     :columns="['id', 'name', 'age', 'is']"
     :searchItems="['name', 'age']"
     :formItems="['id', 'name', 'age', 'is']"
+    :operation="{ width: 250 }"
   >
     <template #$btns="{ row }">
       <el-button link type="primary">xxx</el-button>
@@ -84,6 +86,7 @@ const schema = [
     :columns="['id', 'name', 'age', 'is']"
     :searchItems="['name', 'age', 'is']"
     :formItems="['id', 'name', 'age', 'is']"
+    :operation="{ width: 200 }"
   >
     <template #$search:name="{ row }">
       <input v-model="row.name" style="border: solid;" />
@@ -119,6 +122,7 @@ const schema = [
     :columns="['id', 'name', 'age', 'is']"
     :searchItems="['name', 'age', 'is']"
     :formItems="['id', 'name', 'age', 'is']"
+    :operation="{ width: 200 }"
   >
     <template #$form:name="{ row }">
       <input v-model="row.name" style="border: solid;" />

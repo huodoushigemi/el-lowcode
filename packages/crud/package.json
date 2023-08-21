@@ -1,7 +1,13 @@
 {
   "name": "@el-lowcode/crud",
+  "version": "0.0.16",
   "private": false,
-  "version": "0.0.15",
+  "description": "vue3 + element-plus render crud easily",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/huodoushigemi/el-lowcode/tree/main/packages/crud"
+  },
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -12,7 +18,7 @@
     "dist"
   ],
   "dependencies": {
-    "el-form-render": "^0.0.15"
+    "el-form-render": "^0.0.16"
   },
   "peerDependencies": {
     "element-plus": "^2.3.8",

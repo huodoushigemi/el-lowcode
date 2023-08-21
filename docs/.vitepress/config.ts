@@ -9,6 +9,7 @@ import { cwd, pkgDir } from '../../build/utils.js'
 export default defineConfig({
   title: "El Lowcode",
   description: "一款高效的低代码神器",
+
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
@@ -23,6 +24,7 @@ export default defineConfig({
           { text: '快速开始', link: '/el-form-render/quickstart' },
           { text: '基础使用', link: '/el-form-render/basic' },
           { text: 'options 属性', link: '/el-form-render/options' },
+          { text: '自定义组件', link: '/el-form-render/is' },
           // { text: 'Runtime API Examples', link: '/markdown-examples' },
         ]
       },

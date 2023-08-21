@@ -36,6 +36,7 @@ const onInput = (item: Item, val) => {
   if (item.out) Object.assign(props.model!, item.out!(val, props.model))
 }
 
+// todo
 const disabled = (item: Item) => isExp(item.el?.value) || item.el?.disabled
 
 // == defineExpose ==============================================================================
@@ -59,21 +60,22 @@ const Comp = ({ is, hasChild, ...props }, { slots }) => createVNode(resolveDynam
 
 <template>
   <el-form ref="formRef" v-bind="props" :items="undefined" @submit.prevent="formRef!.validate()">
-    <template v-for="item in items" :key="item[1]">
-      <el-form-item
+    <template v-for="item in items" :key="prop(item)">
+      <component
         v-if="!unFn(item.hide, model, item)"
-        v-bind="objectPick(item, formItemKs)"
+        :is="ElFormItem"
+        v-bind="objectPick(item, formItemKs)" 
         :label="label(item)"
         :prop="prop(item)"
         :rules="toArr(item.rules).map(e => unFn(e, model))"
       >
         <slot :name="prop(item)">
           <Comp
-            :is="item.is ?? 'el-' + (item.type || 'input')"
+            :is="item.el?.is ?? 'el-' + (item.type || 'input')"
             :hasChild="!!item.options"
             :placeholder="placeholder(item)"
             v-bind="item.el"
-            :model-value="item.get ? item.get(val(item), model) : value(item)"
+            :modelValue="item.get ? item.get(val(item), model) : value(item)"
             @update:modelValue="onInput(item, $event)"
             :disabled="disabled(item)"
           >
@@ -88,7 +90,7 @@ const Comp = ({ is, hasChild, ...props }, { slots }) => createVNode(resolveDynam
             </template>
           </Comp>
         </slot>
-      </el-form-item>
+      </component>
     </template>
 
     <slot />

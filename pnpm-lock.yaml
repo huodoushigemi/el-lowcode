@@ -130,7 +130,7 @@ importers:
   packages/crud:
     dependencies:
       el-form-render:
-        specifier: ^0.0.14
+        specifier: ^0.0.15
         version: link:../el-form-render
       element-plus:
         specifier: ^2.3.8

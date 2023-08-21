@@ -18,6 +18,7 @@
       labelSuffix: '🎃',
       labelWidth: 400
     }"
+    :operation="{ width: 200 }"
   />
 </template>
 
@@ -48,6 +49,7 @@ const schema = [
     :searchItems="['name', 'age']"
     :formItems="['id', 'name', 'age', 'is']"
     :dialogAttrs="{ fullscreen: true }"
+    :operation="{ width: 200 }"
   />
 </template>
 
@@ -78,6 +80,7 @@ const schema = [
     :searchItems="['name', 'age']"
     :formItems="['id', 'name', 'age', 'is']"
     :searchAttrs="{ inline: false }"
+    :operation="{ width: 200 }"
   />
 </template>
 

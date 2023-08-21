@@ -12,6 +12,7 @@
     :columns="['id', 'name', 'age', 'sex']"
     :searchItems="['name', 'age']"
     :formItems="['id', 'name', 'age', 'sex', 'is']"
+    :operation="{ width: 200 }"
   />
 </template>
 
@@ -36,8 +37,7 @@ const schema = [
     :data="data"
     :columns="schema"
     :hasNew="false"
-    :hasDel="false"
-    :hasEdit="false"
+    :hasOperation="false"
     :hasPagination="false"
   />
 </template>
@@ -75,6 +75,7 @@ const data = [
     :columns="['id', 'name', 'age']"
     :searchItems="['name', 'age']"
     :formItems="['id', 'name', 'age']"
+    :operation="{ width: 300 }"
     :btns="(row) => [
       { render: 'btns', type: 'primary', onClick: () => ElMessage('btns') }
     ]"
@@ -111,6 +112,7 @@ const schema = [
     :columns="['id', 'name', 'sex', 'age', 'type']"
     :searchItems="['name', 'sex', 'type']"
     :formItems="['id', 'name', 'sex', 'age', 'type']"
+    :operation="{ width: 200 }"
   />
 </template>
 

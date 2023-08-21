@@ -1,4 +1,4 @@
-# FormRender 表单渲染
+# ElFormRender 表单渲染
 
 本章介绍 `options` 属性的使用
 

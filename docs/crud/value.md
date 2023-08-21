@@ -13,17 +13,18 @@
   <CRUD
     url="/user"
     :schema="schema"
-    :columns="['name', 'id', 'age', 'is']"
+    :columns="['id', 'name', 'age', 'is']"
     :searchItems="['name', 'age']"
     :formItems="['id', 'name', 'age', 'is']"
+    :operation="{ width: 200 }"
     v-model:search="searchModel"
     v-model:form="formModel"
   />
 
-  <p>searchModel</p>
+  <p>v-model:search</p>
   <code><pre>{{ JSON.stringify(searchModel, null, '  ') }}</pre></code>
   
-  <p>formModel</p>
+  <p>v-model:form</p>
   <code><pre>{{ JSON.stringify(formModel, null, '  ') }}</pre></code>
 </template>
 
