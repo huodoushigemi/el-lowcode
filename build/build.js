@@ -5,7 +5,6 @@ import Vue from 'unplugin-vue/rollup'
 import VueMacros from 'unplugin-vue-macros/rollup'
 import esbuild from 'rollup-plugin-esbuild'
 import dts from 'rollup-plugin-dts'
-import { generateDtsBundle } from 'rollup-plugin-dts-bundle-generator'
 import path from 'path'
 import fs from 'fs'
 import fg from 'fast-glob'
@@ -40,12 +39,9 @@ export async function build(pack) {
           // vueJsx: VueJsx(), // if needed
         },
       }),
-      // Vue(),
-      esbuild(),
+      esbuild({ target: ['chrome58', 'ios13'] }),
       // esbuild({ minify: true, target: ['chrome58', 'ios13'] }),
       ...plugins(),
-      // esbuild(),
-      // ts({ allowImportingTsExtensions: true, declaration: true, emitDeclarationOnly: true, noEmit: false, outDir: '', rootDir: pkgDir(pack) }),
     ]
   })
 
