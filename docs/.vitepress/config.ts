@@ -63,7 +63,7 @@ export default defineConfig({
     },
     plugins: [
       AutoImport({ imports: 'vue' }),
-      MarkdownPreview(),
+      // MarkdownPreview(),
     ],
   },
 })
