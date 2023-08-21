@@ -4,8 +4,7 @@ import axios from 'axios'
 CRUD.setConfig({
   async request(url, data, type) {
     // type = 'list' | 'new' | 'edit' | 'del' | 'get'
-    // return (await axios.post(`${url}/${type}`, data)).data
-    return {}
+    return (await axios.post(`${url}/${type}`, data)).data
   },
   field: {
     page: 'page.page',
