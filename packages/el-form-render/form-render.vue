@@ -79,7 +79,7 @@ const Comp = ({ is, hasChild, ...props }, { slots }) => createVNode(resolveDynam
             @update:modelValue="onInput(item, $event)"
             :disabled="disabled(item)"
           >
-            <template v-for="opt in solveOptions(item.options)">
+            <template v-for="opt in solveOptions(item.options)" :key="optValue(opt)">
               <el-option v-if="item.type === 'select'" v-bind="opt" :value="optValue(opt)" />
 
               <el-checkbox-button v-else-if="item.type === 'checkbox-group' && item.el?.type === 'button'" v-bind="opt" :label="optValue(opt)">{{ showOpt(opt) }}</el-checkbox-button>
