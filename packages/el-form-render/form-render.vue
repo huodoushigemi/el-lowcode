@@ -63,8 +63,8 @@ const Comp = ({ is, hasChild, ...props }, { slots }) => createVNode(resolveDynam
     <template v-for="item in items" :key="prop(item)">
       <component
         v-if="!unFn(item.hide, model, item)"
-        :is="ElFormItem"
         v-bind="objectPick(item, formItemKs)" 
+        :is="item.is ?? ElFormItem"
         :label="label(item)"
         :prop="prop(item)"
         :rules="toArr(item.rules).map(e => unFn(e, model))"
