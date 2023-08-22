@@ -153,7 +153,7 @@ async function _onDel(row) {
   if (props.onDel) {
     await props.onDel(row)
   } else if (props.url) {
-    await _request(props.url, { id: row.id }, 'del')
+    await _request(props.url, row, 'del')
   }
   ElMessage.success({ message: '删除成功' })
   getData()
