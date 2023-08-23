@@ -11,7 +11,7 @@ import 'element-plus/theme-chalk/dark/css-vars.css'
 
 import './custom.scss'
 
-import './crud'
+import './crud.config'
 
 if (typeof window != 'undefined') import('./mocks')
 

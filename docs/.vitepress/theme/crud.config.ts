@@ -3,7 +3,7 @@ import axios from 'axios'
 
 CRUD.setConfig({
   async request(url, data, type) {
-    // type = 'list' | 'new' | 'edit' | 'del' | 'get'
+    // type = 'list' | 'new' | 'edit' | 'del'
     return (await axios.post(`${url}/${type}`, data)).data
   },
   field: {
