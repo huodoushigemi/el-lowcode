@@ -20,8 +20,8 @@
     <slot name="$table-above" />
 
     <!-- 表格内容展示 -->
-    <el-table ref="tableRef" class="crud-table" v-bind="objectPick($props, ks(tableProps))" :data="_data" @select="_onSelect" @select-all="onSelectAll">
-      <el-table-column v-if="showSelect" type="selection" width="60" reserve-selection :selectable="selectable" />
+    <el-table ref="tableRef" class="crud-table" v-bind="tableAttrs" :data="_data" @select="_onSelect" @select-all="onSelectAll">
+      <el-table-column v-if="selection && !unFn(selection.hide)" type="selection" width="60" reserve-selection v-bind="selection" :selectable="_selectable" />
       <el-table-column v-if="showIndex" type="index" label="序号" width="80" />
 
       <template v-for="col in _columns" :key="col.prop">
@@ -77,10 +77,8 @@
 <script setup lang="ts">
 import { computed, h, nextTick, reactive, ref, watch } from 'vue'
 import { isObject, isString } from '@vue/shared'
-import { objectPick } from '@vueuse/core'
 
-import { ElMessageBox, ElMessage, ElTable, ElTableColumn, ElButton, ElPagination, ElDialog, FormInstance } from 'element-plus'
-import tableProps from 'element-plus/es/components/table/src/table/defaults'
+import { ElMessageBox, ElMessage, ElTable, ElTableColumn, TableColumnCtx, ElButton, ElPagination, ElDialog, FormInstance } from 'element-plus'
 // import 'element-plus/es/components/table/style/css'
 // import 'element-plus/es/components/pagination/style/css'
 // import 'element-plus/es/components/dialog/style/css'
@@ -88,18 +86,28 @@ import tableProps from 'element-plus/es/components/table/src/table/defaults'
 
 import ElFormRender, { Item, label, prop, showOpt, solveOptions } from 'el-form-render'
 import Render from '@el-lowcode/render'
-import { get, set, ks } from  '@el-lowcode/utils'
+import { get, set, unFn } from  '@el-lowcode/utils'
 
 import config from './config'
-import { crudProps, Schema, Column } from './crud'
+import { crudProps, Column } from './crud'
+
+// utils
+const fn_true = () => true
+const isSelected = (row) => props.selected?.some(e => get(e, props.tableAttrs!.rowKey!) == get(row, props.tableAttrs!.rowKey!))
 
 defineOptions({ name: 'crud' })
-const emit = defineEmits(['update:search', 'update:form'])
+const emit = defineEmits(['update:search', 'update:form', 'update:selected'])
 
 const props = defineProps(crudProps)
 const _request = props.request || config.request
 const _field = computed(() => ({ ...props.field, ...config.field }))
 const _pagination = computed(() => ({ ...props.pagination, ...config.pagination }))
+
+const remainSeletable = () => props.selection?.limit != null ? props.selection.limit > (props.selected?.length || 0) : true
+const _selectable = ((row, i) => (
+  remainSeletable() && (props.selection?.selectable || fn_true)(row, i)) ||
+  isSelected(row)
+) as TableColumnCtx<any>['selectable']
 
 const needReq = computed(() => props.url || props.request)
 
@@ -168,7 +176,7 @@ watch(
     await nextTick()
     tableRef.value?.clearSelection()
     val?.forEach(e => {
-      e = _data.value.find(row => get(row, props.rowKey!) == get(e, props.rowKey!)) ?? e
+      e = _data.value.find(row => get(row, props.tableAttrs!.rowKey!) == get(e, props.tableAttrs!.rowKey!)) ?? e
       tableRef.value!.toggleRowSelection(e, true)
     })
   },
@@ -184,6 +192,7 @@ function _onSelect(selected: any[], row) {
     }
     setTimeout(() => {
       props.onSelect?.(tableRef.value!.getSelectionRows(), row)
+      emit('update:selected', tableRef.value!.getSelectionRows())
     }, 0);
   }, 0);
 }
@@ -240,7 +249,7 @@ const _formItems = computed(() => props.formItems?.map(e => isString(e) ? _schem
 
 const _columns = computed(() => props.columns?.map(_2column))
 
-function _2column(e: string | Schema): Column {
+function _2column(e: string | Column): Column {
   const item = (isString(e) ? _schemaBy.value[e] : _schemaBy.value[prop(e)!]) || { lp: [] }
   const col = isObject(e) ? e : {}
   return {

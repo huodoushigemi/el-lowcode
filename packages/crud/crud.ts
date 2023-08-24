@@ -1,7 +1,7 @@
 import type { ExtractPropTypes, PropType } from 'vue'
-import { ButtonProps, DialogProps, FormProps, TableColumnCtx } from 'element-plus'
-import tableProps from 'element-plus/es/components/table/src/table/defaults'
+import { ButtonProps, DialogProps, FormProps, TableProps, TableColumnCtx } from 'element-plus'
 import type { Item } from 'el-form-render'
+import { Fnable } from '@el-lowcode/utils'
 import config, { Config } from './config'
 
 export type Column = Partial<TableColumnCtx<any>>
@@ -10,16 +10,15 @@ export type Schema = Item
 export type CRUDProps = ExtractPropTypes<typeof crudProps>
 
 export const crudProps = {
-  ...tableProps,
   request: Function as PropType<Config['request']>,
   url: String,
   extraQuery: Object,
   data: Array,
-  columns: Array as PropType<(string | TableColumnCtx<any>)[]>,
+  tableAttrs: Object as PropType<Partial<TableProps<any> & { [k: string]: any }>>,
+  columns: Array as PropType<(string | (TableColumnCtx<any> & { lp?: [string, string?] }))[]>,
   showIndex: Boolean,
-  showSelect: Boolean,
   selected: Array,
-  selectable: Function as unknown as PropType<Column['selectable']>,
+  selection: Object as PropType<Column & { limit?: number; hide: Fnable<boolean> }>,
   multiple: Boolean,
   //
   field: { type: Object, default: () => config.field },
