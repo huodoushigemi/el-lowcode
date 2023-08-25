@@ -1,12 +1,12 @@
 # CRUD 增删改查
 
-本章介绍如何获取 **表单的值**
+本章介绍如何启用 **勾选行**
 
 ## 基础使用
 
-通过 `v-model:search` 获取搜索表单的值
+通过设置 `selection` 启用勾选功能
 
-通过 `v-model:form` 获取弹窗表单的值
+通过设置 `v-model:selected` 获取选中的行
 
 ```vue preview
 <template>  
@@ -19,7 +19,7 @@
     :operation="{ width: 200 }"
     :tableAttrs="{ rowKey: 'id' }"
     multiple
-    :selection="{ limit: 2 }"
+    :selection="{ limit: 3, selectable: row => row.id != 1 }"
     v-model:selected="selected"
   />
 

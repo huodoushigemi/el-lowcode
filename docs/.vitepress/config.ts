@@ -36,6 +36,7 @@ export default defineConfig({
           { text: '插槽', link: '/crud/slot' },
           { text: '属性', link: '/crud/attrs' },
           { text: '获取值', link: '/crud/value' },
+          { text: '勾选行', link: '/crud/select' },
         ]
       }
     ],

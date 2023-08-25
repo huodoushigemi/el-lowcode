@@ -122,7 +122,7 @@ const searchRef = ref<FormInstance>()
 const params = reactive<Record<string, any>>(props.search ?? {})
 const _total = ref(0)
 const _list = ref([])
-const _data = computed(() => props.data ?? _list.value)
+const _data = computed(() => props.tableAttrs?.data ?? props.data ?? _list.value)
 
 const _page = computed({
   get() { return get(params, _field.value.page) },

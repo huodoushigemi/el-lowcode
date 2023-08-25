@@ -1,7 +1,7 @@
 import { h } from 'vue'
 import DefaultTheme from 'vitepress/theme'
 import { EnhanceAppContext } from 'vitepress'
-import CodePreview from 'vite-plugin-markdown-preview/component/CodePreview.vue'
+import { CodePreview } from 'vite-plugin-markdown-preview/components'
 
 import { useMounted } from '@vueuse/core'
 import ElementPlus, { ID_INJECTION_KEY } from 'element-plus'
