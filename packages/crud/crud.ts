@@ -28,7 +28,7 @@ export const crudProps = {
   hasNew: { default: true },
   hasEdit: { default: true },
   hasDel: { default: true },
-  btns: { type: Function as PropType<(row) => (Partial<ButtonProps> & { render: any })[]> },
+  btns: { type: Function as PropType<(row) => (Partial<ButtonProps> & { children: string })[]> },
   onNew: { type: Function as PropType<(row: any) => Awaited<void>> },
   onEdit: { type: Function as PropType<(row: any) => Awaited<void>> },
   onDel: { type: Function as PropType<(row: any) => Awaited<void>> },

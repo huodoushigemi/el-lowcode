@@ -14,13 +14,14 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "allowJs": true,
     "jsx": "preserve",
 
     /* Linting */
     "strict": true,
     "noFallthroughCasesInSwitch": true,
 
-    "types": ["unplugin-vue-macros/macros-global"]
+    "types": ["unplugin-vue-macros/macros-global", "element-plus/global"]
   },
   "vueCompilerOptions": {
     "plugins": [
@@ -33,7 +34,7 @@
       "@vue-macros/volar/export-props"
     ]
   },
-  "include": ["packages", "types/*"],
+  "include": ["packages", "types/*", "designer"],
   "exclude": ["node_modules", "**/dist"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

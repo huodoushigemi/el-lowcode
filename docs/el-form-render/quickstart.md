@@ -35,6 +35,7 @@ app.mount('#app')
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
 import ElFormRender, { Item } from 'el-form-render'
 
 const model = reactive({})

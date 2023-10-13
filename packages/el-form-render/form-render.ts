@@ -1,28 +1,52 @@
-import { PropType, Ref, ref } from 'vue'
+import { PropType, Ref, ref, ExtractPropTypes } from 'vue'
 import type { FormItemProps, FormItemRule } from 'element-plus'
-import { formProps } from 'element-plus'
-import { Awaitable } from '@vueuse/core'
-import { Arrable, Fnable, Assign, unFn } from '@el-lowcode/utils'
+import { formProps, formItemProps } from 'element-plus'
+import { camelize, isPromise, isString } from '@vue/shared'
+import { Arrable, Assign, Fnable, unFn } from '@el-lowcode/utils'
 
-export type Opt = {
+// todo > vue-tsc 使用这个会报错
+// import { Awaitable } from '@vueuse/core'
+type Awaitable<T> = Promise<T> | T
+
+export type NormalizedOpt = {
   label?: string
-  value?: any
+  value: any
   [k: string]: any
 }
 
-export type Item = Assign<Partial<FormItemProps>, Partial<{
-  type: string
-  el: Record<string, any>
-  prop: string
-  is: any
-  hide: boolean | ((row, item: Item) => boolean)
-  get: (val: any, row: any) => any
-  set: (val: any, row: any) => any
-  out: (val: any, row: any) => any
-  lp: string | [string, string]
-  rules: Arrable<FormItemRule | ((row: any) => FormItemRule)>
-  options: Fnable<Awaitable<Opt[]>>
-}>>
+export type Opt = string | NormalizedOpt
+
+// export type Item = Partial<Omit<FormItemProps, 'prop' | 'rules'> & {
+//   type: string
+//   el: Record<string, any>
+//   prop: string
+//   is: any
+//   hide: boolean | ((row, item: Item) => boolean)
+//   get: (val: any, row: any) => any
+//   set: (val: any, row: any) => any
+//   out: (val: any, row: any) => any
+//   lp: string | [string, string]
+//   rules: Arrable<FormItemRule | ((row: any) => FormItemRule)>
+//   options: Fnable<Awaitable<Opt[]>>
+// }>
+
+export const formItemRenderProps = {
+  ...formItemProps,
+  type: String,
+  el: Object,
+  prop: String,
+  defaultValue: null,
+  is: null,
+  hide: [Boolean, Function] as PropType<boolean | ((row, item) => boolean)>,
+  get: Function as PropType<(val: any, row: any) => any>,
+  set: Function as PropType<(val: any, row: any) => any>,
+  out: Function as PropType<(val: any, row: any) => any>,
+  lp: [String, Array] as PropType<string | [string, string]>,
+  rules: [Object, Array, Function] as PropType<Arrable<FormItemRule | ((row: any) => FormItemRule)>>,
+  options: [Array, Object, Function] as PropType<Fnable<Awaitable<Opt[]>>>
+}
+
+export type Item = ExtractPropTypes<typeof formItemRenderProps>
 
 export const formRenderProps = {
   ...formProps,
@@ -31,24 +55,40 @@ export const formRenderProps = {
   readonly: [Boolean, Function] as PropType<Fnable<boolean>>
 }
 
-const solveLP = (lp: string | string[] | undefined) => Array.isArray(lp) ? lp : lp?.split(' ')
+export type FormRenderProps = ExtractPropTypes<typeof formRenderProps>
 
-export const label = (item: Item) => item.label || solveLP(item.lp)?.[0]
-export const prop = (item: Item) => item.prop || solveLP(item.lp)?.[1]
+const solveLP = (lp: Item['lp']) => Array.isArray(lp) ? lp : (lp ? [lp, camelize(lp!)] : [])
 
-export const optValue = (opt?: Opt) => (opt && 'value' in opt) ? opt.value : opt?.label
-export const showOpt = (opt?: Opt) => opt?.label ?? opt?.value
+export const label = (item: Item) => item.label || solveLP(item.lp)[0]
+export const prop = (item: Item) => item.prop || solveLP(item.lp)[1]
+export const elIs = (item: Item) => item.el?.is ?? 'el-' + (item.type || 'input')
+export const normalizeItem = (item: Item) => ({
+  label: label(item),
+  prop: prop(item),
+  ...item,
+  options: solveOptions(item.options),
+  el: { is: elIs(item), ...item.el }
+})
 
 // ==============================================================================================
 // ==============================================================================================
 
-const waekMap = new WeakMap<any, Ref<Opt[]>>()
+const waekMap = new WeakMap<any, Ref<NormalizedOpt[]>>()
 
 export const solveOptions = (opts?: Item['options']) => {
   if (!opts) return undefined
   if (waekMap.has(opts)) return waekMap.get(opts)!.value
-  const ret = ref<Opt[]>([])
+  const ret = ref<NormalizedOpt[]>([])
   waekMap.set(opts, ret)
-  ;(async () => ret.value = await unFn(opts))()
+  // solve
+  const val = unFn(opts)
+  if (isPromise(val)) val.then(val => ret.value = val.map(normalizeOpt))
+  else ret.value = val.map(normalizeOpt)
+  // 
   return ret.value
 }
+
+export const optValue = (opt?: NormalizedOpt) => (opt && 'value' in opt) ? opt.value : opt?.label
+export const showOpt = (opt?: NormalizedOpt) => opt?.label ?? opt?.value
+
+const normalizeOpt = (opt: Opt): NormalizedOpt => isString(opt) ? ({ label: opt, value: opt }) : opt

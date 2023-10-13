@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { h, reactive } from 'vue'
 import ElFormRender, { Item } from 'el-form-render'
 
 const model = reactive({})

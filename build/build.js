@@ -1,20 +1,29 @@
 import { rollup } from 'rollup'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
-import Vue from 'unplugin-vue/rollup'
-// import Vue from '@vitejs/plugin-vue'
+import chalk from 'chalk'
+// import Vue from 'unplugin-vue/rollup'
+import Vue from '@vitejs/plugin-vue'
 import VueMacros from 'unplugin-vue-macros/rollup'
+import ImportMetaGlob from './rollup-plugin-import-meta-glob.js'
 import esbuild from 'rollup-plugin-esbuild'
 import dts from 'rollup-plugin-dts'
+import scss from 'rollup-plugin-scss'
 import path from 'path'
 import fs from 'fs'
-import fg from 'fast-glob'
 import { execSync } from 'child_process'
+import Postcss from 'rollup-plugin-postcss'
+
+import Icons from 'unplugin-icons/rollup'
+import IconsResolver from 'unplugin-icons/resolver'
+import Components from 'unplugin-vue-components/rollup'
 
 import plugins from './plugins/index.js'
 
+const log = console.log
+
 const formats = {
   esm: 'mjs',
-  cjs: 'cjs',
+  cjs: 'cjs', // todo >
   // iife: 'iife.js'
 }
 
@@ -22,7 +31,7 @@ const cwd = process.cwd()
 const pkgDir = (...args) => path.join('packages', ...args)
 
 export async function build(pack) {
-  execSync(`rimraf ${pkgDir(pack, 'dist')}`)
+  execSync(`rimraf ${pkgDir(pack, 'dist')}/*`)
   
   const jsonPath = pkgDir(pack, 'package.json')
   if (!fs.existsSync(jsonPath)) return
@@ -31,16 +40,24 @@ export async function build(pack) {
   const bundle = await rollup({
     input: pkgDir(pack, 'index.ts'),
     external: Object.keys({ ...pkg.dependencies, ...pkg.peerDependencies }) ?? [],
+    treeshake: 'smallest',
     plugins: [
       nodeResolve(),
+      ImportMetaGlob({ include: /\.ts$/ }),
       VueMacros({
         plugins: {
           vue: Vue(),
           // vueJsx: VueJsx(), // if needed
         },
       }),
-      esbuild({ target: ['chrome58', 'ios13'] }),
-      // esbuild({ minify: true, target: ['chrome58', 'ios13'] }),
+      // Vue(),
+      // scss({ include: /css$/ }),
+      
+      Components({ resolvers: [IconsResolver()] }),
+      Icons({ autoInstall: true }),
+
+      esbuild({ minify: false, target: ['chrome100'] }),
+      // esbuild({ minify: false, target: ['chrome58', 'ios13'] }),
       ...plugins(),
     ]
   })
@@ -48,7 +65,11 @@ export async function build(pack) {
   for (const [format, ext] of Object.entries(formats)) {
     await bundle.write({
         format,
-        file: pkgDir(pack, `dist/index.${ext}`),
+        dir: pkgDir(pack, `dist`),
+        chunkFileNames: `[name]-[hash].${ext}`,
+        entryFileNames: `[name].${ext}`,
+        exports: 'named'
+        // file: pkgDir(pack, `dist/[filename].${ext}`),
         // name: 'ElFormRender',
     })
   }
@@ -69,13 +90,13 @@ export async function buildFull() {
 async function buildDts(pack) {
   try {
     const comd =`node_modules\\.bin\\vue-tsc -d --emitDeclarationOnly --outDir ${pkgDir(pack, 'dist/types')} ${pkgDir(pack, 'index.ts')}`
-    console.log(comd);
+    log(chalk.blue(comd))
     execSync(comd, { cwd })
   } catch (e) {
 
   }
 
-  const bundle = await rollup({ 
+  const bundle = await rollup({
     input: pkgDir(pack, `dist/types/index.d.ts`),
     external: (id, importer, isResolved) => !isResolved && !/^[./]/.test(id),
     plugins: [
@@ -91,13 +112,18 @@ async function buildDts(pack) {
   execSync(`rimraf ${pkgDir(pack, '/dist/types')}`,  { cwd })
 
   await bundle.close()
+
+  log('')
 }
 
 // buildFull()
-await build('utils')
+// await build('utils')
 // await build('render')
-await build('el-form-render')
-await build('crud')
+// await build('el-form-render')
+// await build('crud')
+// await build('designer') // todo > unocss
+await build('el-lowcode')
 
+// buildDts('el-lowcode')
 // buildDts('crud')
 // buildDts('el-form-render')

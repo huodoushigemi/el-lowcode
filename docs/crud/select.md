@@ -28,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import CRUD from '@el-lowcode/crud'
 
 const selected = ref([])

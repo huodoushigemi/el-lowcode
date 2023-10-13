@@ -12,6 +12,7 @@
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
 import ElFormRender, { Item } from 'el-form-render'
 
 const model = reactive({})
@@ -50,6 +51,7 @@ const items: Item[] = [
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
 import ElFormRender, { Item } from 'el-form-render'
 
 const model = reactive({})
@@ -97,6 +99,7 @@ const onSubmit = () => {
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
 import ElFormRender, { Item } from 'el-form-render'
 
 const model = reactive({})
@@ -144,6 +147,7 @@ const items: Item[] = [
 </template>
 
 <script setup lang="ts">
+import { ref, reactive } from 'vue'
 import type { FormInstance } from 'element-plus'
 import ElFormRender, { Item } from 'el-form-render'
 
@@ -220,6 +224,7 @@ const submitForm = () => {
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
 import ElFormRender, { Item } from 'el-form-render'
 
 const model = reactive({})
@@ -248,6 +253,7 @@ const items: Item[] = [
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
 import ElFormRender, { Item } from 'el-form-render'
 
 const model = reactive({})
@@ -278,6 +284,7 @@ const items: Item[] = [
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
 import ElFormRender, { Item } from 'el-form-render'
 
 const model = reactive({})

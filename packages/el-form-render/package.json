@@ -17,7 +17,9 @@
   "files": [
     "dist"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "@vue/shared": "^3.2.0"
+  },
   "peerDependencies": {
     "element-plus": "^2.3.8",
     "vue": "^3.2.0"

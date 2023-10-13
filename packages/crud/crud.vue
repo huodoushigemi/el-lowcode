@@ -37,7 +37,7 @@
       <el-table-column v-if="hasOperation && (hasEdit || hasDel || btns || $slots.$btns)" label="操作" width="auto" fixed="right" v-bind="operation">
         <template #default="scope">
           <slot name="$btns" v-bind="scope" />
-          <el-button v-for="btn in btns?.(scope.row)" type="primary" size="small" v-bind="btn"><Render :render="btn.render" /></el-button>
+          <el-button v-for="btn in btns?.(scope.row)" type="primary" size="small" v-bind="btn"><Render :children="btn.children" /></el-button>
           <el-button v-if="hasEdit" size="small" type="primary" @click="openDialog(scope.row)">编辑</el-button>
           <el-button v-if="hasDel" size="small" type="danger" @click="_onDel(scope.row)">删除</el-button>
         </template>

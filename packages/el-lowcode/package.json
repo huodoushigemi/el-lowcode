@@ -1,0 +1,33 @@
+{
+  "name": "el-lowcode",
+  "version": "0.0.16",
+  "private": false,
+  "description": "el-lowcode",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/huodoushigemi/el-lowcode"
+  },
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "unpkg": "dist/index.iife.js",
+  "jsdelivr": "dist/index.iife.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@el-lowcode/crud": "^0.0.16",
+    "@el-lowcode/render": "^0.0.16",
+    "@vue/shared": "^3.2.0",
+    "el-form-render": "^0.0.16",
+    "wc-appbar": "^0.0.8",
+    "wc-fill-remain": "^0.0.7",
+    "wc-waterfall": "^0.0.7"
+  },
+  "peerDependencies": {
+    "element-plus": "^2.3.8",
+    "vue": "^3.2.0"
+  }
+}

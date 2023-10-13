@@ -1,7 +1,10 @@
 import path from 'path'
 import { defineConfig } from 'vitepress'
 import MarkdownPreview from 'vite-plugin-markdown-preview'
-import AutoImport from 'unplugin-auto-import/vite'
+import UnoCSS from 'unocss/vite'
+import Icons from 'unplugin-icons/vite'
+import IconsResolver from 'unplugin-icons/resolver'
+import Components from 'unplugin-vue-components/vite'
 import { ALL_PKGS } from '../../build/all-pkgs.js'
 import { cwd, pkgDir } from '../../build/utils.js'
 
@@ -38,6 +41,12 @@ export default defineConfig({
           { text: '获取值', link: '/crud/value' },
           { text: '勾选行', link: '/crud/select' },
         ]
+      },
+      {
+        text: 'designer',
+        items: [
+          { text: '快速开始', link: '/designer/basic' },
+        ]
       }
     ],
 
@@ -47,9 +56,9 @@ export default defineConfig({
   },
 
   base: '/el-lowcode',
+  outDir: './dest',
 
   vite: {
-    // base: 'el-lowcode',
     optimizeDeps: {
       exclude: ALL_PKGS,
     },
@@ -63,8 +72,10 @@ export default defineConfig({
       noExternal: ['vite-plugin-markdown-preview'],
     },
     plugins: [
-      AutoImport({ imports: 'vue' }),
       MarkdownPreview(),
+      UnoCSS(),
+      Components({ resolvers: [IconsResolver()] }),
+      Icons({ autoInstall: true }),
     ],
   },
 })
