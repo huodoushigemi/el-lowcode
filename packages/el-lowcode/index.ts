@@ -1,6 +1,6 @@
-import('wc-appbar')
-import('wc-fill-remain')
-import('wc-waterfall')
+if (typeof document != 'undefined') import('wc-appbar')
+if (typeof document != 'undefined') import('wc-fill-remain')
+if (typeof document != 'undefined') import('wc-waterfall')
 
 import { Plugin, inject } from 'vue'
 import { createRender } from '@el-lowcode/render'

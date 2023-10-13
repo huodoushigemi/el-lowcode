@@ -1,5 +1,5 @@
-import('wc-appbar')
-import('wc-waterfall')
+if (typeof document != 'undefined') import('wc-appbar')
+if (typeof document != 'undefined') import('wc-waterfall')
 
 import { keyBy } from "@el-lowcode/utils"
 import { parseAttrs } from './_utils'
