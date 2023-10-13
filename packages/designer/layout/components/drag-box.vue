@@ -82,7 +82,7 @@ const _el = computed(() => {
 })
 </script>
 
-<!-- <style scoped lang="scss">
+<style scoped lang="scss">
 .container-box {
   &:empty {
     &::after {
@@ -103,7 +103,7 @@ const _el = computed(() => {
   // pointer-events: none;
   z-index: -9;
 }
-</style> -->
+</style>
 
 <style>
 .fade-move,
