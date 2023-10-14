@@ -3,14 +3,12 @@ if (typeof document != 'undefined') import('wc-fill-remain')
 if (typeof document != 'undefined') import('wc-waterfall')
 
 import { Plugin, inject } from 'vue'
+import { deepClone, execExp } from '@el-lowcode/utils'
 import { createRender } from '@el-lowcode/render'
-
+import { ElFormRender } from 'el-form-render'
+import { CRUD } from '@el-lowcode/crud'
 import { components, pageCtxKey } from '@el-lowcode/designer'
 
-import { deepClone, execExp } from '@el-lowcode/utils'
-
-import ElFormRender from 'el-form-render'
-import Crud from '@el-lowcode/crud'
 
 export const Render = createRender({
   defaultIs: 'div',
@@ -40,6 +38,6 @@ export default {
       else app.component(e.name, e)
     })
     app.use(ElFormRender)
-    app.use(Crud)
+    app.use(CRUD)
  },
 } as Plugin

@@ -8,8 +8,6 @@ export type Props = {
   [k: string]: any
 }
 
-export default createRender()
-
 export function createRender({ defaultIs = 'div', processProps = (props: Props) => props } = {}) {
   return function Render(props: Props) {
     let { is, children, ...attrs } = processProps(props)
@@ -24,3 +22,7 @@ export function createRender({ defaultIs = 'div', processProps = (props: Props) 
     )
   }
 }
+
+export const Render = createRender()
+
+export default Render

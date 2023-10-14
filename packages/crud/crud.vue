@@ -84,8 +84,8 @@ import { ElMessageBox, ElMessage, ElTable, ElTableColumn, TableColumnCtx, ElButt
 // import 'element-plus/es/components/dialog/style/css'
 // import 'element-plus/es/components/button/style/css'
 
-import ElFormRender, { Item, label, prop, showOpt, solveOptions } from 'el-form-render'
-import Render from '@el-lowcode/render'
+import { ElFormRender, Item, label, prop, showOpt, solveOptions } from 'el-form-render'
+import { Render } from '@el-lowcode/render'
 import { get, set, unFn } from  '@el-lowcode/utils'
 
 import config from './config'
