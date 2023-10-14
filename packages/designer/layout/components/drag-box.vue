@@ -82,43 +82,21 @@ const _el = computed(() => {
 })
 </script>
 
-<style scoped lang="scss">
-.container-box {
-  &:empty {
-    &::after {
-      content: 'Drag and drop here';
-      display: grid;
-      place-items: center;
-      min-height: inherit;
-      text-align: center;
-      padding: 12px;
-      opacity: .4;
-      box-sizing: border-box;
-    }
-  }
+<style lang="scss">
+.container-box:empty::after {
+  content: 'Drag and drop here';
+  display: grid;
+  place-items: center;
+  min-height: inherit;
+  text-align: center;
+  padding: 12px;
+  opacity: .4;
+  box-sizing: border-box;
 }
+
 .empty-placeholder {
   padding: 12px;
   opacity: .4;
-  // pointer-events: none;
   z-index: -9;
-}
-</style>
-
-<style>
-.fade-move,
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.0s cubic-bezier(0.55, 0, 0.1, 1);
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  /* transform: scaleY(0.01) translate(30px, 0); */
-}
-
-.fade-leave-active {
-  position: absolute;
 }
 </style>
