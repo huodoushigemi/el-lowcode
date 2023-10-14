@@ -19,7 +19,7 @@
 import { computed, inject } from 'vue'
 import { parseStringStyle, stringifyStyle } from '@vue/shared'
 import { createRender } from '@el-lowcode/render'
-import ElFormRender, {  normalizeItem } from 'el-form-render'
+import { ElFormRender, normalizeItem } from 'el-form-render'
 import { designerCtxKey } from './interface'
 import { sloveConfig } from '../components/_utils'
 import Scriptable from './components/scriptable.vue'
