@@ -19,6 +19,7 @@
   ],
   "dependencies": {
     "@vue/shared": "^3.2.0",
+    "@el-lowcode/render": "^0.0.16",
     "el-form-render": "^0.0.16"
   },
   "peerDependencies": {
