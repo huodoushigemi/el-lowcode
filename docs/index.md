@@ -10,9 +10,9 @@ hero:
     - theme: brand
       text: Get Started
       link: /el-form-render/quickstart
-    # - theme: alt
-    #   text: API Examples
-    #   link: /api-examples
+    - theme: alt
+      text: Designer 
+      link: /designer
 
 features:
   - title: ✅ 表单渲染引擎

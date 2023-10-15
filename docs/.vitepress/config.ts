@@ -42,12 +42,21 @@ export default defineConfig({
           { text: '勾选行', link: '/crud/select' },
         ]
       },
+
       {
-        text: 'designer',
+        text: 'Render',
         items: [
-          { text: '快速开始', link: '/designer/basic' },
+          { text: '快速开始', link: '/render/quickstart' },
+          { text: '基础使用', link: '/render/basic' },
         ]
       }
+
+      // {
+      //   text: 'designer',
+      //   items: [
+      //     { text: '快速开始', link: '/designer/basic' },
+      //   ]
+      // }
     ],
 
     socialLinks: [
