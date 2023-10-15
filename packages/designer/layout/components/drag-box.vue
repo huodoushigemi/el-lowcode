@@ -29,7 +29,7 @@ import { deepClone, execExp } from '@el-lowcode/utils'
 import { sloveConfig } from '../../components/_utils'
 import { designerCtxKey } from '../../layout/interface'
 import { pageCtxKey } from '../../components/page/interface'
-import { BoxProps } from '../../components/box'
+import { BoxProps } from '../../components/type'
 
 defineOptions({
   name: 'DragBox'

@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import { PropType, computed, watchEffect } from 'vue'
-import { BoxProps } from '../../components/box'
+import { BoxProps } from '../../components/type'
 import { sloveConfig } from '../../components/_utils'
 
 const props = defineProps({

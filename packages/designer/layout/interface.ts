@@ -1,5 +1,5 @@
 import { CSSProperties, InjectionKey } from 'vue'
-import { BoxProps } from '../components/box'
+import { BoxProps } from '../components/type'
 import { Obj } from '@el-lowcode/utils'
 
 export interface DesignerCtx {

@@ -42,7 +42,6 @@
       <el-tab-pane lazy w200>
         <template #label><el-tooltip content="组件树" placement="right" :hide-after="0"><i-mdi:file-tree w22 h22 /></el-tooltip></template>
         <div px8 py12 text-22 b-b="1 solid [--el-border-color]">组件树</div>
-        <!-- todo > bug current-node-key -->
         <el-tree hfull overflow-overlay :data="tree" :props="{ label: (e) => e.el?.is ?? e.is }" :current-node-key="designerCtx.activeId" @current-change="designerCtx.activeId = $event._id" node-key="_id" default-expand-all highlight-current :indent="10" :expand-on-click-node="false" />
       </el-tab-pane>
       <el-tab-pane lazy w256>
@@ -85,7 +84,7 @@ import { keyBy, treeUtils } from '@el-lowcode/utils'
 import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
 import { components } from '../components'
 import { parseAttrs } from '../components/_utils'
-import { BoxProps } from '../components/box'
+import { BoxProps } from '../components/type'
 import { designerCtxKey } from './interface'
 import DragBox from './components/drag-box.vue'
 import SelectedLayer from './components/selected-layer.vue'

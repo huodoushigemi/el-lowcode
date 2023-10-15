@@ -2,9 +2,8 @@ import { ElCollapse, ElCollapseItem } from 'element-plus'
 import { v4 as uuidv4 } from 'uuid'
 import { Obj } from '@el-lowcode/utils'
 import { normalizeItem } from 'el-form-render'
-import { BoxProps } from './box'
 import { ENUM_SIZE } from '../const'
-import { ElLowcodeConfig } from './type'
+import { BoxProps, ElLowcodeConfig } from './type'
 import { el_lowcode_widgets } from './el_lowcode_widgets'
 
 export const formItemPropsConfig = ({ exclude = [''] } = {}) => [
