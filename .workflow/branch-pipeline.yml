@@ -2,7 +2,7 @@ version: '1.0'
 name: branch-pipeline
 displayName: BranchPipeline
 triggers:
-  trigger: auto
+  trigger: manual
 stages:
   - name: compile
     displayName: 编译
@@ -23,7 +23,7 @@ stages:
         artifacts:
           - name: BUILD_ARTIFACT
             path:
-              - ./docs
+              - ./docs/.vitepress/dest
         caches: []
         strategy: {}
       - step: publish@general_artifacts
