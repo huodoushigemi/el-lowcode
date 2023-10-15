@@ -18,6 +18,7 @@ import IconsResolver from 'unplugin-icons/resolver'
 import Components from 'unplugin-vue-components/rollup'
 
 import plugins from './plugins/index.js'
+import { importGlobPlugin } from './importMetaGlob.js'
 
 const log = console.log
 
@@ -44,7 +45,8 @@ export async function build(pack) {
     plugins: [
       nodeResolve(),
       // Commonjs({ defaultIsModuleExports: 'auto', include: [/\.cjs/], extensions: ['.js', '.cjs'] }),
-      ImportMetaGlob({ include: /\.ts$/ }),
+      // ImportMetaGlob({ include: /\.js$/ }),
+      importGlobPlugin({ root: process.cwd() }),
       VueMacros({
         plugins: {
           vue: Vue(),

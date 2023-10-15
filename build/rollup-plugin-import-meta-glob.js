@@ -1,4 +1,3 @@
-import { transformSync as ts2js } from 'esbuild'
 import { walk } from 'estree-walker'
 import MagicString from 'magic-string'
 import pluginutils from '@rollup/pluginutils'
@@ -21,7 +20,6 @@ function createPlugin(options) {
 		transform(code, id) {
 			if (!filter(id)) { return null; }
 			var ast = null;
-			code = ts2js(code, { loader: 'ts' }).code
 			try {
 				ast = this.parse(code);
 			} catch (err) {
