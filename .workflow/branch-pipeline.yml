@@ -22,7 +22,10 @@ stages:
         commands:
           - npm i -g pnpm
           - ''
-          - pnpm install && rm -rf ./docs && pnpm docs:build && pnpm build
+          - pnpm install
+          - rm -rf ./docs/.vitepress/dest
+          - pnpm docs:build
+          - pnpm build
         artifacts:
           - name: BUILD_ARTIFACT
             path:
