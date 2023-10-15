@@ -1,6 +1,6 @@
 {
   "name": "el-form-render",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "private": false,
   "description": "vue3 + element-plus render form-item easily",
   "license": "MIT",

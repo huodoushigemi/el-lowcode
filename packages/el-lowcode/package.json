@@ -1,6 +1,6 @@
 {
   "name": "el-lowcode",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "private": false,
   "description": "el-lowcode",
   "license": "MIT",
@@ -18,10 +18,10 @@
     "dist"
   ],
   "dependencies": {
-    "@el-lowcode/crud": "^0.0.16",
-    "@el-lowcode/render": "^0.0.16",
+    "@el-lowcode/crud": "^0.0.17",
+    "@el-lowcode/render": "^0.0.17",
     "@vue/shared": "^3.2.0",
-    "el-form-render": "^0.0.16",
+    "el-form-render": "^0.0.17",
     "wc-appbar": "^0.0.8",
     "wc-fill-remain": "^0.0.7",
     "wc-waterfall": "^0.0.7"

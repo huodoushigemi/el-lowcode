@@ -1,14 +1,16 @@
 {
   "name": "@el-lowcode/render",
   "private": false,
-  "version": "0.0.2",
+  "version": "0.0.17",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "unpkg": "dist/index.iife.js",
   "jsdelivr": "dist/index.iife.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@vue/shared": "^3.2.0"
   },

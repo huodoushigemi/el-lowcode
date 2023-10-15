@@ -1,6 +1,6 @@
 {
   "private": false,
-  "version": "0.0.16",
+  "version": "0.0.17",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -39,6 +39,7 @@
   "devDependencies": {
     "@iconify/json": "^2.2.121",
     "@rollup/plugin-alias": "^5.0.0",
+    "@rollup/plugin-commonjs": "^25.0.5",
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@rollup/plugin-typescript": "^11.1.2",
     "@rollup/pluginutils": "^5.0.4",
