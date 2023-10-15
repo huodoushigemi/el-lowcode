@@ -3,12 +3,6 @@ name: branch-pipeline
 displayName: BranchPipeline
 triggers:
   trigger: auto
-  push:
-    branches:
-      include:
-        - .*
-      exclude:
-        - master
 stages:
   - name: compile
     displayName: 编译
