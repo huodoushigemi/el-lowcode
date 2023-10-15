@@ -7,11 +7,11 @@ import VueMacros from 'unplugin-vue-macros/rollup'
 import ImportMetaGlob from './rollup-plugin-import-meta-glob.js'
 import esbuild from 'rollup-plugin-esbuild'
 import dts from 'rollup-plugin-dts'
-import scss from 'rollup-plugin-scss'
+// import scss from 'rollup-plugin-scss'
 import path from 'path'
 import fs from 'fs'
 import { execSync } from 'child_process'
-import Postcss from 'rollup-plugin-postcss'
+// import Commonjs from '@rollup/plugin-commonjs'
 
 import Icons from 'unplugin-icons/rollup'
 import IconsResolver from 'unplugin-icons/resolver'
@@ -23,7 +23,7 @@ const log = console.log
 
 const formats = {
   esm: 'mjs',
-  cjs: 'cjs', // todo >
+  cjs: 'cjs',
   // iife: 'iife.js'
 }
 
@@ -43,6 +43,7 @@ export async function build(pack) {
     treeshake: 'smallest',
     plugins: [
       nodeResolve(),
+      // Commonjs({ defaultIsModuleExports: 'auto', include: [/\.cjs/], extensions: ['.js', '.cjs'] }),
       ImportMetaGlob({ include: /\.ts$/ }),
       VueMacros({
         plugins: {
@@ -56,8 +57,7 @@ export async function build(pack) {
       Components({ resolvers: [IconsResolver()] }),
       Icons({ autoInstall: true }),
 
-      esbuild({ minify: false, target: ['chrome100'] }),
-      // esbuild({ minify: false, target: ['chrome58', 'ios13'] }),
+      esbuild({ minify: false, target: ['chrome58', 'ios13'] }),
       ...plugins(),
     ]
   })
@@ -68,8 +68,6 @@ export async function build(pack) {
         dir: pkgDir(pack, `dist`),
         chunkFileNames: `[name]-[hash].${ext}`,
         entryFileNames: `[name].${ext}`,
-        exports: 'named'
-        // file: pkgDir(pack, `dist/[filename].${ext}`),
         // name: 'ElFormRender',
     })
   }
@@ -118,9 +116,9 @@ async function buildDts(pack) {
 
 // buildFull()
 // await build('utils')
-// await build('render')
-// await build('el-form-render')
-// await build('crud')
+await build('render')
+await build('el-form-render')
+await build('crud')
 // await build('designer') // todo > unocss
 await build('el-lowcode')
 

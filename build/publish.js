@@ -17,8 +17,10 @@ function verSync(pack) {
 // 发布
 function publish(pack) {
   verSync(pack)
-  execSync(`cd ${pkgDir(pack)} && npm publish`)
+  execSync(`cd ${pkgDir(pack)} && npm publish --access public`)
 }
 
+publish('render')
 publish('el-form-render')
 publish('crud')
+publish('el-lowcode')
