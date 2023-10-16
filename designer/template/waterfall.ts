@@ -1,6 +1,7 @@
 import cover from './waterfall.png'
 
 export default {
+  id: 'waterfall',
   title: '瀑布流',
   cover,
   schema: () => ({

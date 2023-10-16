@@ -1,6 +1,7 @@
 import cover from './questionnaire.png'
 
 export default {
+  id: 'questionnaire',
   title: '麦当劳调查问卷',
   cover,
   schema: () => ({

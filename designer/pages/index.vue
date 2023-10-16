@@ -1,17 +1,28 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, ref, watchPostEffect } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import Designer from '@el-lowcode/designer'
 import { computedAsync } from '@vueuse/core'
 
 const router = useRouter()
+const route = useRoute()
 
 const designer = ref()
 const encodeSchema = (schema) => encodeURIComponent(JSON.stringify(schema))
 const schema = computed(() => encodeSchema(designer.value.root))
 
 const templateModules = Object.values(import.meta.glob('../template/*.ts'))
-const templates = computedAsync(async () => ((await Promise.all(templateModules.map(e => e()))).map(e => e.default).filter(e => e)))
+const templatesPromise = async () => ((await Promise.all(templateModules.map(e => e()))).map(e => e.default).filter(e => e))
+const templates = computedAsync(templatesPromise)
+
+// query.templateId
+templatesPromise().then(async templates => {
+  watchPostEffect(() => {
+    const temp = templates.find(e => e.id == route.query.templateId)
+    if (temp) onEdit(temp)
+    router.replace({ query: { ...route.query, templateId: undefined } })
+  })
+})
 
 function onEdit(item) {
   designer.value.root = item.schema()

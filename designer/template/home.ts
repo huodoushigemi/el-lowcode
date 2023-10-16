@@ -1,6 +1,7 @@
 import cover from './home.png'
 
 export default {
+  id: 'home',
   title: '首页',
   cover,
   schema: () => ({

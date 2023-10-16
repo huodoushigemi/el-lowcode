@@ -1,6 +1,7 @@
 import cover from './choice-question.png'
 
 export default {
+  id: 'choice-question',
   title: '选择填空',
   cover,
   schema: () => ({

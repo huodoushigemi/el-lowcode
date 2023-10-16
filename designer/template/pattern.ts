@@ -1,6 +1,7 @@
 import cover from './pattern.png'
 
 export default {
+  id: 'pattern',
   title: '表单校验',
   cover,
   schema: () => ({

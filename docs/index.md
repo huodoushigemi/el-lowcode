@@ -11,8 +11,8 @@ hero:
       text: Get Started
       link: /el-form-render/quickstart
     - theme: alt
-      text: Designer 
-      link: /designer/index
+      text: Designer
+      link: http://httpsgiteecomepalserver.gitee.io/el-lowcode/designer
 
 features:
   - title: ✅ 表单渲染引擎

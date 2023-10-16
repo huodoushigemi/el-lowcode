@@ -1,6 +1,7 @@
 import cover from './enter.png'
 
 export default {
+  id: 'enter',
   title: '用户信息录入',
   cover,
   schema: () => ({
