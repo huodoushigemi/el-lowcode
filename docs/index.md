@@ -12,7 +12,7 @@ hero:
       link: /el-form-render/quickstart
     - theme: alt
       text: Designer 
-      link: /designer
+      link: /designer/index
 
 features:
   - title: ✅ 表单渲染引擎
