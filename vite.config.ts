@@ -20,7 +20,7 @@ export default defineConfig({
     alias: entries
   },
   build: {
-    outDir: 'docs/.vitepress/dest/designer',
+    outDir: 'docs/dest/designer',
     rollupOptions: {
       output: {
         manualChunks: (id) => {
