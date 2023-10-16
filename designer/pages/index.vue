@@ -18,7 +18,9 @@ const templates = computedAsync(templatesPromise)
 // query.templateId
 templatesPromise().then(async templates => {
   watchPostEffect(() => {
-    const temp = templates.find(e => e.id == route.query.templateId)
+    const { templateId } = route.query
+    if (!templateId) return
+    const temp = templates.find(e => e.id == templateId)
     if (temp) onEdit(temp)
     router.replace({ query: { ...route.query, templateId: undefined } })
   })
