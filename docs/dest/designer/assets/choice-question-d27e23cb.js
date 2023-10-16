@@ -1,4 +1,4 @@
-const e="/el-lowcode/designer/assets/choice-question-200f5adf.png",a={title:"选择填空",cover:e,schema:()=>({children:[{is:"Form",_id:"15870304-528c-4f18-b4c2-7529dcb30837",labelWidth:"20",style:{overflow:"hidden"},children:[{is:"h2",_id:"44ad8bba-071b-4e13-ba07-a1fe02cc8c21",children:"选择题"},{is:"p",_id:"e8528607-9d5c-4d57-b770-8f9be6017490",children:"1. 哪一个是正确的？"},{is:"Code",_id:"c63abc01-0ace-492e-8215-f35828d04e87",children:`const bird = {
+const e="/el-lowcode/designer/assets/choice-question-200f5adf.png",a={id:"choice-question",title:"选择填空",cover:e,schema:()=>({children:[{is:"Form",_id:"15870304-528c-4f18-b4c2-7529dcb30837",labelWidth:"20",style:{overflow:"hidden"},children:[{is:"h2",_id:"44ad8bba-071b-4e13-ba07-a1fe02cc8c21",children:"选择题"},{is:"p",_id:"e8528607-9d5c-4d57-b770-8f9be6017490",children:"1. 哪一个是正确的？"},{is:"Code",_id:"c63abc01-0ace-492e-8215-f35828d04e87",children:`const bird = {
   size: 'small'
 }
 

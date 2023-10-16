@@ -8,7 +8,7 @@
     "clean": "rimraf --glob dist \"packages/*/dist\"",
     "preview": "vite preview",
     "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
+    "docs:build": "vitepress build docs && pnpm build",
     "docs:preview": "vitepress preview docs",
     "packages:build": "node build/build.js",
     "packages:publish": "node build/publish.js"
