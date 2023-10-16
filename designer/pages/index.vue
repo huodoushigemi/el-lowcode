@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watchPostEffect } from 'vue'
+import { computed, ref, watch, watchPostEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Designer from '@el-lowcode/designer'
 import { computedAsync } from '@vueuse/core'
@@ -17,13 +17,11 @@ const templates = computedAsync(templatesPromise)
 
 // query.templateId
 templatesPromise().then(async templates => {
-  watchPostEffect(() => {
-    const { templateId } = route.query
-    if (!templateId) return
-    const temp = templates.find(e => e.id == templateId)
+  watch(() => route.query.templateId, id => {
+    const temp = templates.find(e => e.id == id)
     if (temp) onEdit(temp)
-    router.replace({ query: { ...route.query, templateId: undefined } })
-  })
+    router.replace({ query: { ...route.query, templateId: null } })
+  }, { immediate: true, flush: 'post' })
 })
 
 function onEdit(item) {
