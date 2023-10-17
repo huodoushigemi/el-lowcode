@@ -12,6 +12,12 @@
         <Render v-for="item in styles" v-bind="item" />
       </el-form-render>
     </el-tab-pane>
+
+    <el-tab-pane label="common" lazy>
+      <el-form-render :model="model" label-width="auto" size="small" label-position="top">
+        <Render v-for="item in commons" v-bind="item" />
+      </el-form-render>
+    </el-tab-pane>
   </el-tabs>
 </template>
 
@@ -52,7 +58,6 @@ const config = computed(() => {
 const _items = computed(() => config.value?.props?.map(_normalizeItem))
 
 const styles = [
-  { lp: 'class' },
   { lp: ['position', 'style.position'], type: 'select', options: ['static', 'relative', 'absolute', 'fixed', 'sticky'], el: { placeholder: 'static' } },
   { lp: ['layout', 'style.display'], type: 'radio-group', options: ['inline', 'block', 'flex'] },
   { lp: ['background-color', 'style.backgroundColor'], type: 'color-picker' },
@@ -63,6 +68,12 @@ const styles = [
   { lp: ['border', 'style.border'], el: { placeholder: '0px solid #00' } },
   { lp: ['rounded', 'style.borderRadius'], type: 'slider', get: v => parseInt(v), set: v => v + 'px' },
   { lp: 'style', get: val => stringifyStyle(val).replace(/;/g, ';\n'), set: val => parseStringStyle(val), el: { is: Input, type: 'textarea', placeholder: 'font-size: inherit;\ncolor: inherit;', autosize: { minRows: 4, maxRows: 12 } } },
+].map(_normalizeItem)
+
+const commons = [
+  { lp: 'id' },
+  { lp: 'class' },
+  { lp: 'condition', type: 'switch', set: v => v == true ? undefined : v, displayValue: true }
 ].map(_normalizeItem)
 </script>
 

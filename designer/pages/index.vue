@@ -48,7 +48,7 @@ function demoUrl(schema) {
           <div px8 py12 text-22 b-b="1 solid [--el-border-color]">在线模板</div>
           <div pl12 pr8 overflow-overlay>
             <el-card v-for="item in templates" shadow="hover" body-class="p0" my12>
-              <el-image :src="item.cover" :preview-src-list="[item.cover]" />
+              <el-image v-if="item.cover" :src="item.cover" :preview-src-list="[item.cover]" />
               <div py8 px12>
                 <div font-bold>{{ item.title }}</div>
                 <div text-right>

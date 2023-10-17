@@ -32,6 +32,7 @@ const calcVal = () => {
   let v = get(model.value, prop(item)!)
   if (item.get) v = item.get(v, model.value)
   if (item.defaultValue !== undefined && (v === undefined || v === '')) set(model.value, prop(item), v = unFn(item.defaultValue))
+  if (item.displayValue !== undefined && (v === undefined || v === '')) v = unFn(item.displayValue)
   return v
 }
 

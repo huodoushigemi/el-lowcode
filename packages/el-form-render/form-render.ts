@@ -36,6 +36,7 @@ export const formItemRenderProps = {
   el: Object,
   prop: String,
   defaultValue: null,
+  displayValue: null,
   is: null,
   hide: [Boolean, Function] as PropType<boolean | ((row, item) => boolean)>,
   get: Function as PropType<(val: any, row: any) => any>,
