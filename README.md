@@ -1,4 +1,4 @@
-# Vue3 + Element Plus
+# Vue3 + Element Plus / Lowcode
 
 ## [Docs](http://httpsgiteecomepalserver.gitee.io/el-lowcode)
 
