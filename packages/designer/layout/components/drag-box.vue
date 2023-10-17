@@ -1,5 +1,5 @@
 <template>
-  <component ref="elRef" :is="el.is" v-bind="_el" :class="[config?.layout && 'container-box']" @mouseover.stop="designerCtx.hoverId = el._id" @mousedown.stop="designerCtx.activeId = el._id">
+  <component v-if="condition" ref="elRef" :is="el.is" v-bind="_el" :class="[config?.layout && 'container-box']" @mouseover.stop="designerCtx.hoverId = el._id" @mousedown.stop="designerCtx.activeId = el._id">
 
     <template v-if="config?.layout">
       <drag-box v-if="isArray(el.children) && el.children.length" v-for="item in (el.children as BoxProps[])" :key="item._id" :parent="el" :el="item" />
@@ -80,6 +80,8 @@ const _el = computed(() => {
   el = deepClone(el, _execExp)
   return el
 })
+
+const condition = computed(() => props.el.condition == null || !!_el.value.condition)
 </script>
 
 <style lang="scss">

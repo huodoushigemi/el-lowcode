@@ -26,12 +26,15 @@ const onInput = (val) => {
   if (item.set) set(model.value, prop(item)!, item.set!(val, model.value))
   else set(model.value, prop(item)!, val)
   if (item.out) Object.assign(model.value!, item.out!(val, model.value))
+  val = get(model.value, prop(item)!)
+  if (item.displayValue !== undefined && val === unFn(item.displayValue)) set(model.value, prop(item)!, undefined)
 }
 
 const calcVal = () => {
   let v = get(model.value, prop(item)!)
   if (item.get) v = item.get(v, model.value)
   if (item.defaultValue !== undefined && (v === undefined || v === '')) set(model.value, prop(item), v = unFn(item.defaultValue))
+  if (item.displayValue !== undefined && (v === undefined || v === '')) v = unFn(item.displayValue)
   return v
 }
 
