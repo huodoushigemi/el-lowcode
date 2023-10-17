@@ -1,5 +1,5 @@
 export default {
-  id: 'enter',
+  id: 'condition',
   title: '组件联动',
   schema: () => ({
     is: 'Page',
