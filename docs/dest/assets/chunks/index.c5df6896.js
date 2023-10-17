@@ -1,1 +1,0 @@
-import{a3 as d,a6 as m,as as n,t,x as f}from"./framework.395f5f56.js";import{u as l}from"./index.67ff842b.js";function p({defaultIs:e="div",processProps:i=a=>a}={}){return function a(o){let{is:c,children:r,...u}=i(o);return r=l(r),d(f(c??e),u,m(r)?r.map(s=>n(s)?t(a,s):s):n(r)?t(a,r):r)}}const b=p();export{b as R,p as c};
