@@ -58,6 +58,7 @@ watchEffect(() => {
   useDraggableReturn = useDraggable(config.value?.layout ? elRef : boxRef, props.el.children, {
     group: 'shared',
     filter: '.empty-placeholder',
+    emptyInsertThreshold: 32,
     onStart: () => drag.value = true,
     onEnd: () => nextTick(() => drag.value = false)
   })
