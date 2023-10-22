@@ -73,7 +73,7 @@ const styles = [
 const commons = [
   { lp: 'id' },
   { lp: 'class' },
-  { lp: 'condition', type: 'switch', displayValue: true }
+  { lp: ['condition', '$.condition'], type: 'switch', displayValue: true }
 ].map(_normalizeItem)
 </script>
 

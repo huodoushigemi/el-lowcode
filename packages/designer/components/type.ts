@@ -16,6 +16,10 @@ export interface BoxProps {
   _id?: string
   el?: Obj
   children?: string | number | BoxProps[]
-  condition: any
+  $?: {
+    loop: string
+    loopArgs: [string, string]
+    condition: any
+  }
   [k: string]: any
 }
