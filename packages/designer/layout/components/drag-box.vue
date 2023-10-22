@@ -78,11 +78,14 @@ const _el = computed(() => {
   let el: BoxProps = { ...props.el }
   delete el.is
   delete el.children
+  delete el.$
   el = deepClone(el, _execExp)
   return el
 })
 
-const condition = computed(() => props.el.condition == null || !!_el.value.condition)
+const _$ = computed(() => deepClone(props.el.$, _execExp) as BoxProps['$'])
+
+const condition = computed(() => props.el.$?.condition == null || !!_$.value?.condition)
 </script>
 
 <style lang="scss">

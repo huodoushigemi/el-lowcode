@@ -80,7 +80,9 @@ export default {
                   showWordLimit: true,
                   placeholder: '为男时隐藏',
                 },
-                condition: "{{state.formData.sex != '1'}}",
+                $: {
+                  condition: "{{state.formData.sex != '1'}}",
+                }
               },
               {
                 is: 'ElDivider',

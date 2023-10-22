@@ -5,15 +5,19 @@ import { unFn, Fnable, Arrable } from '@el-lowcode/utils'
 export type Props = {
   is?: any
   children?: Fnable<string | number | Arrable<Props>>
-  condition: any
+  $?: {
+    condition: any
+    loop: string
+    loopArgs: [string, string]
+  }
   [k: string]: any
 }
 
 export function createRender({ defaultIs = 'div', processProps = (props: Props) => props } = {}) {
   return function Render(props: Props) {
-    let { is, children, condition, ...attrs } = processProps(props)
+    let { is, children, $, ...attrs } = processProps(props)
     children = unFn(children)
-    return (props.condition == null || !!condition) && h(
+    return (props.$?.condition == null || !!$?.condition) && h(
       resolveDynamicComponent(is ?? defaultIs),
       attrs,
       // render children

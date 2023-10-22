@@ -35,6 +35,8 @@ export default {
             style: {
               overflow: 'hidden',
             },
+            onFinish: "{{() => alert('success')}}",
+            onFinishFailed: "{{() => alert('failed')}}",
             children: [
               {
                 is: 'ElFormItemRender',
@@ -60,7 +62,7 @@ export default {
                 },
                 required: true,
                 rules: {
-                  validator: "{{() => {\r\n  if (state.formData.pass != state.formData.checkPass) {\r\n    return new Error(`Two inputs don't match!`)\r\n  }\r\n}}}",
+                  validator: "{{(rule, val, cb) => {\r\n  if (state.formData.pass != state.formData.checkPass) {\r\n    return new Error(`Two inputs don't match!`)\r\n  } else {\r\n    cb()\r\n  }\r\n}}}",
                 },
               },
               {
