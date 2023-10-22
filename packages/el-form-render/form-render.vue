@@ -7,22 +7,29 @@ import FormItemRender from './form-item-render.vue'
 
 defineOptions({ name: 'ElFormRender' })
 
+const emit = defineEmits<{
+  finish: []
+  finishFailed: []
+}>()
+
 const props = defineProps(formRenderProps)
 
 const formRef = ref<FormInstance>()
 
 defineExpose(new Proxy({}, {
-  get(t, k) {
-    return formRef.value?.[k]
-  },
-  has(t, k) {
-    return k in (formRef.value || {})
-  }
+  get(t, k) { return formRef.value?.[k] },
+  has(t, k) { return k in (formRef.value || {}) }
 }))
+
+async function onSubmit() {
+  await formRef.value!.validate()
+    .then(() => emit('finish'))
+    .catch(() => emit('finishFailed'))
+}
 </script>
 
 <template>
-  <el-form ref="formRef" v-bind="props" :items="undefined" @submit.prevent="formRef!.validate()">
+  <el-form ref="formRef" v-bind="props" :items="undefined" @submit.prevent="onSubmit">
     <template v-for="item in items" :key="prop(item)">
       <component :is="item.is ?? FormItemRender" v-bind="item">
         <slot :name="prop(item)" />
