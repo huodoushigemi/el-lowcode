@@ -16,6 +16,9 @@ export interface BoxProps {
   _id?: string
   el?: Obj
   children?: string | number | BoxProps[]
+  esm?: Record<string, string>
+  customComponents?: Record<string, string>
+  extraElLowcodeWidgets?: Record<string, string>
   $?: {
     loop: string
     loopArgs: [string, string]

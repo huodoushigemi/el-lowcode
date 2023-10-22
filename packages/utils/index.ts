@@ -38,7 +38,7 @@ export function set<T>(obj: any, path: string, val: T) {
   return obj[ks.at(-1)!] = val
 }
 
-export function deepClone(obj: Record<string | number, any>, iteratee = val => val) {
+export function deepClone(obj?: Record<string | number, any>, iteratee = val => val) {
   const temp = isArray(obj) ? [] : {}
   for (const key in obj) temp[key] = isObject(obj[key]) ? deepClone(obj[key], iteratee) : iteratee(obj[key])
   return temp

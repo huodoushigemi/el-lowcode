@@ -17,7 +17,10 @@ import { entries } from './build/plugins/alias'
 export default defineConfig({
   base: '/el-lowcode/designer',
   resolve: {
-    alias: entries
+    alias: [
+      ...entries,
+      { find: 'vue', replacement: 'https://play.vuejs.org/vue.runtime.esm-browser.js' }
+    ]
   },
   build: {
     outDir: 'docs/dest/designer',

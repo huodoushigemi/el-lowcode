@@ -38,6 +38,14 @@ export const parseAttrs = (config: ElLowcodeConfig, extra?: Obj): BoxProps => {
 export const sloveConfig = (el?: BoxProps) => {
   if (!el) return
   const is = el.el?.is || el.is
-  if (!el_lowcode_widgets[is]) console.error(`${is}: Unable to find a matching configuration of ${is}`, el)
+  if (!el_lowcode_widgets[is]) console.error(`${is}: Unable to find a matching el_lowcode configuration of ${is}`, el)
   return el_lowcode_widgets[is]
+}
+
+const importCache = {} as Record<string, Promise<any> | undefined>
+export function importJs(js: string) {
+  if (importCache[js]) return importCache[js]
+  const blob = new Blob([js], { type: "text/javascript" })
+  const url = URL.createObjectURL(blob)
+  return importCache[js] = import(/* @vite-ignore */ url)
 }

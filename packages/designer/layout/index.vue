@@ -21,17 +21,19 @@
 
     <!-- Left -->
     <el-tabs tab-position="left" type="border-card" hfull b-r="1px solid [--el-border-color]" box-border>
-      <el-tab-pane w200>
+      <el-tab-pane w200 ref="dropZone" :class="isOverDropZone && `after-content-[''] after-absolute after-inset-0 after-bg-gray/40`">
         <template #label><el-tooltip content="组件库" placement="right" :hide-after="0"><i-mdi:widgets-outline w22 h22 /></el-tooltip></template>
         <div px8 py12 text-22 b-b="1 solid [--el-border-color]">组件</div>
         <el-collapse v-model="collapse" pl12 pr8 hfull overflow-overlay>
-          <el-collapse-item v-for="group in groups" :title="group.title" :name="group.title">
-            <vue-draggable :model-value="group.list" grid="~ cols-2" gap-8 hfull overflow-overlay :group="{ name: 'shared', pull: 'clone', put: false }" :sort="false" :clone="clone" @end="onEnd">
-              <template v-for="wgt in group.list">
-                <div class="cell" truncate>{{ wgt!.label }}</div>
-              </template>
-            </vue-draggable>
-          </el-collapse-item>
+          <template v-for="group in groups">
+            <el-collapse-item v-if="group.list.length" :title="group.title" :name="group.title">
+              <vue-draggable :model-value="group.list" grid="~ cols-2" gap-8 hfull overflow-overlay :group="{ name: 'shared', pull: 'clone', put: false }" :sort="false" :clone="clone" @end="onEnd">
+                <template v-for="wgt in group.list">
+                  <div class="cell" truncate>{{ wgt!.label }}</div>
+                </template>
+              </vue-draggable>
+            </el-collapse-item>
+          </template>
         </el-collapse>
         <!-- <vue-draggable :model-value="list" grid="~ cols-2" gap-8 p8 hfull overflow-overlay :group="{ name: 'shared', pull: 'clone', put: false }" :sort="false" :clone="clone" @end="onEnd">
           <template v-for="wgt in list">
@@ -75,30 +77,56 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, reactive, ref, toRefs } from 'vue'
+import { computed, getCurrentInstance, provide, reactive, ref, toRefs } from 'vue'
 import { isArray, remove, stringifyStyle } from '@vue/shared'
+import { v4 as uuid } from 'uuid'
 import { VueDraggable } from 'vue-draggable-plus'
-import { useDebouncedRefHistory, useEventListener, useLocalStorage } from '@vueuse/core'
+import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
 import { keyBy, treeUtils } from '@el-lowcode/utils'
 
 import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
 import { components } from '../components'
-import { parseAttrs } from '../components/_utils'
+import { parseAttrs, importJs } from '../components/_utils'
 import { BoxProps } from '../components/type'
-import { designerCtxKey } from './interface'
+import { DesignerCtx, designerCtxKey } from './interface'
 import DragBox from './components/drag-box.vue'
 import SelectedLayer from './components/selected-layer.vue'
 import SettingPanel from './setting-panel.vue'
 import StateDrawer from './components/state-drawer.vue'
 import CurrentState from './components/current-state.vue'
 import Schema from './components/schema.vue'
+import { vue2esm } from './vue2esm'
 
 defineOptions({
   components: keyBy(components, 'name')
 })
 
-const findWgts = (arr: string[]) => arr.map(e => el_lowcode_widgets[e])
-const groups = [
+const ins = getCurrentInstance()!
+
+// 本地持久化
+const root = useLocalStorage(
+  '@el-lowcode/designer-page',
+  parseAttrs(el_lowcode_widgets.Page!),
+  { listenToStorageChanges: false, deep: true }
+)
+
+// 时间旅行
+const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500 })
+
+const tree = computed<BoxProps[]>(() => treeUtils.changeProp([root.value], [['children', 'children', v => isArray(v) ? v : undefined]]))
+
+const findWgts = (arr: string[]) => arr.map(e => el_lowcode_widgets[e]).filter(e => e)
+const groups = reactive([
+  {
+    title: '自定义组件',
+    list: computedAsync(() => Promise.all(Object.values(root.value.extraElLowcodeWidgets ?? {}).map(async id => {
+      const { default: comp, el_lowcode } = await importJs(root.value.esm![id!] as string)
+      const name = el_lowcode.is ??= comp?.name
+      console.log(el_lowcode);
+      
+      return el_lowcode_widgets[name] = el_lowcode
+    })), [])
+  },
   {
     title: '数据输入',
     list: findWgts(['Form', 'ElInput', 'ElInputNumber', 'ElSlider', 'ElRate', 'ElRadioGroup', 'ElCheckboxGroup', 'ElSwitch', 'ElDatePicker', 'ElTimePicker', 'DateTime', 'ElColorPicker'])
@@ -119,24 +147,9 @@ const groups = [
     title: '其他',
     list: findWgts(['iframe'])
   }
-]
+])
 const collapse = ref(groups.map(e => e.title))
 
-// 本地持久化
-const root = useLocalStorage(
-  '@el-lowcode/designer-page',
-  parseAttrs(el_lowcode_widgets.Page!),
-  { listenToStorageChanges: false, deep: true }
-)
-
-// 时间旅行
-const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500 })
-
-const tree = computed<BoxProps[]>(() => treeUtils.changeProp([root.value], [['children', 'children', v => isArray(v) ? v : undefined]]))
-
-/**
- * @type {import('./interface').DesignerCtx}
- */
 const designerCtx = reactive({
   activeId: root.value._id,
   hoverId: undefined,
@@ -146,7 +159,7 @@ const designerCtx = reactive({
   root,
   get active() { return treeUtils.find([root.value], this.activeId, { key: '_id' }) as unknown as BoxProps },
   get hover() { return treeUtils.find([root.value], this.hoverId, { key: '_id' }) as unknown as BoxProps }
-})
+}) as DesignerCtx
 
 const canvasWidth = computed({
   get: () => designerCtx.canvas.style.width,
@@ -170,7 +183,7 @@ useEventListener('keydown', (e) => {
   if (e.key !== 'Delete') return
   if (!designerCtx.activeId) return
   const flated = treeUtils.flat([root.value]) as BoxProps[]
-  const parent = flated.find(e => isArray(e.children) ? e.children.includes(designerCtx.active) : false)
+  const parent = flated.find(e => isArray(e.children) ? e.children.includes(designerCtx.active!) : false)
   if (parent) {
     remove(parent.children as [], designerCtx.active)
     designerCtx.activeId = undefined
@@ -179,6 +192,41 @@ useEventListener('keydown', (e) => {
     root.value.children = []
   }
 })
+
+// 拖拽 .vue 自定义组件
+const dropZone = ref<HTMLDivElement>(), { isOverDropZone } = useDropZone(dropZone, onDrop)
+async function onDrop(fs: File[] | null) {
+  fs?.forEach(async file => {
+    let jscode = ''
+    if (file.name.endsWith('.vue')) {
+      jscode = await vue2esm(await file.text(), file.name)
+    }
+    else if (file.name.endsWith('.js')) {
+      jscode = await file.text()
+    }
+    else {
+      return alert(`不支持该文件类型：${file.name}`)
+    }
+    
+    // 导入 esm 模块
+    const { default: comp, el_lowcode } = await importJs(jscode)
+    const name = el_lowcode.is ??= comp?.name
+
+    // const id = uuid()
+    const id = name
+    root.value.esm ??= {}
+    root.value.esm[id] = jscode
+    
+    if (comp?.name) {
+      root.value.customComponents ??= {}
+      root.value.customComponents[name] = id
+    }
+    if (el_lowcode) {
+      root.value.extraElLowcodeWidgets ??= {}
+      root.value.extraElLowcodeWidgets[name] = id
+    }
+  })
+}
 </script>
 
 <style scoped lang="scss">

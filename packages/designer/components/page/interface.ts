@@ -5,4 +5,5 @@ export const pageCtxKey: InjectionKey<PageCtx> = Symbol('pageCtxKey')
 
 export interface PageCtx {
   state: Obj
+  customComponents?: Record<string, string | undefined>
 }

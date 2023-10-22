@@ -5,9 +5,10 @@
 </template>
 
 <script setup lang="ts">
-import { inject, provide, reactive, watch, watchEffect } from 'vue'
+import { defineAsyncComponent, getCurrentInstance, inject, provide, reactive, watch, watchEffect } from 'vue'
 import { pageCtxKey } from './interface'
 import { refWithWatch } from '../hooks'
+import { importJs } from '../_utils'
 import { designerCtxKey } from '../../layout/interface'
 
 defineOptions({
@@ -15,8 +16,12 @@ defineOptions({
 })
 
 const props = defineProps({
-  state: { type: Object, default: () => ({}) }
+  state: { type: Object, default: () => ({}) },
+  esm: Object,
+  customComponents: Object,
 })
+
+const ins = getCurrentInstance()!
 
 const state = refWithWatch(() => JSON.parse(JSON.stringify(props.state)))
 
@@ -33,6 +38,20 @@ watchEffect(() => {
 provide(pageCtxKey, reactive({
   state
 }))
+
+// 
+watchEffect(() => {
+  Object.values(props.esm ?? {}).forEach(js => {
+    importJs(js)
+  })
+})
+
+// custom components
+watchEffect(() => {
+  Object.entries(props.customComponents ?? {}).forEach(([name, id]) => {
+    ins.appContext.app.component(name, defineAsyncComponent(async () => (await importJs(props.esm![id])).default))
+  })
+})
 
 defineExpose({ state })
 </script>
