@@ -6,12 +6,12 @@
         <i-ep:eleme w44 h44 c="[--el-color-primary]" />
         <b ml8 text-22>El lowcode</b>
       </div>
-      <div class="[&>*]:p4 [&>*]:w24 [&>*]:h24 [&>.is-active]:c-[--el-color-primary]" flex-1 flex justify-center space-x-4>
+      <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32 [&>.is-active]:c-[--el-color-primary]" flex-1 flex justify-center space-x-4>
         <i-mdi:desktop-mac :class="canvasWidth == '100%' && 'is-active'" bg-hover @click="canvasWidth = '100%'" />
         <i-raphael:ipad :class="canvasWidth == '768px' && 'is-active'" bg-hover @click="canvasWidth = '768px'" />
         <i-mdi:cellphone-android :class="canvasWidth == '480px' && 'is-active'" bg-hover @click="canvasWidth = '480px'" />
       </div>
-      <div class="[&>*]:p4 [&>*]:w24 [&>*]:h24" flex space-x-20 px20 shrink-0>
+      <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32" flex space-x-20 px20 shrink-0>
         <el-tooltip content="clear"><i-mdi:close bg-hover @click="root = parseAttrs(el_lowcode_widgets.Page!)" /></el-tooltip>
         <i-mdi:undo-variant :op="!canUndo && '20'" bg-hover @click="undo()" />
         <i-mdi:redo-variant :op="!canRedo && '20'" bg-hover @click="redo()" ml4="!" />
@@ -21,8 +21,8 @@
 
     <!-- Left -->
     <el-tabs tab-position="left" type="border-card" hfull b-r="1px solid [--el-border-color]" box-border>
-      <el-tab-pane w200 ref="dropZone" :class="isOverDropZone && `after-content-[''] after-absolute after-inset-0 after-bg-gray/40`">
-        <template #label><el-tooltip content="组件库" placement="right" :hide-after="0"><i-mdi:widgets-outline w22 h22 /></el-tooltip></template>
+      <el-tab-pane w200 ref="dropZone" :class="isOverDropZone && `overlay`">
+        <template #label><el-tooltip content="组件库" placement="right" :hide-after="0"><i-mdi:widgets-outline /></el-tooltip></template>
         <div px8 py12 text-22 b-b="1 solid [--el-border-color]">组件</div>
         <el-collapse v-model="collapse" pl12 pr8 hfull overflow-overlay>
           <template v-for="group in groups">
@@ -42,17 +42,17 @@
         </vue-draggable> -->
       </el-tab-pane>
       <el-tab-pane lazy w200>
-        <template #label><el-tooltip content="组件树" placement="right" :hide-after="0"><i-mdi:file-tree w22 h22 /></el-tooltip></template>
+        <template #label><el-tooltip content="组件树" placement="right" :hide-after="0"><i-mdi:file-tree /></el-tooltip></template>
         <div px8 py12 text-22 b-b="1 solid [--el-border-color]">组件树</div>
         <el-tree hfull overflow-overlay :data="tree" :props="{ label: (e) => e.el?.is ?? e.is }" :current-node-key="designerCtx.activeId" @current-change="designerCtx.activeId = $event._id" node-key="_id" default-expand-all highlight-current :indent="10" :expand-on-click-node="false" />
       </el-tab-pane>
       <el-tab-pane lazy w256>
-        <template #label><el-tooltip content="当前状态" placement="right" :hide-after="0"><i-mdi:code-json w22 h22 /></el-tooltip></template>
+        <template #label><el-tooltip content="当前状态" placement="right" :hide-after="0"><i-mdi:code-json /></el-tooltip></template>
         <div px8 py12 text-22 b-b="1 solid [--el-border-color]">当前状态</div>
         <current-state hfull />
       </el-tab-pane>
       <el-tab-pane lazy w512>
-        <template #label><el-tooltip content="Schema" placement="right" :hide-after="0"><i-mdi:code-tags w22 h22 /></el-tooltip></template>
+        <template #label><el-tooltip content="Schema" placement="right" :hide-after="0"><i-mdi:code-tags /></el-tooltip></template>
         <div px8 py12 text-22 b-b="1 solid [--el-border-color]">Schema 源码</div>
         <schema hfull />
       </el-tab-pane>
@@ -122,10 +122,8 @@ const groups = reactive([
     list: computedAsync(() => Promise.all(Object.values(root.value.extraElLowcodeWidgets ?? {}).map(async id => {
       const { default: comp, el_lowcode } = await importJs(root.value.esm![id!] as string)
       const name = el_lowcode.is ??= comp?.name
-      console.log(el_lowcode);
-      
       return el_lowcode_widgets[name] = el_lowcode
-    })), [])
+    })), [], { onError: e => console.error(e) })
   },
   {
     title: '数据输入',
@@ -270,13 +268,14 @@ async function onDrop(fs: File[] | null) {
     border: unset !important;
     margin: 0 !important;
     outline: unset !important;
-    bor
     &:hover {
       background: var(--el-fill-color-extra-light) !important;
     }
 
     &>:first-child {
-      padding: 12px;
+      padding: 8px;
+      width: 36px;
+      height: 36px;
       outline: unset;
     }
     &.is-active {

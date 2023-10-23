@@ -18,5 +18,6 @@ export default defineConfig({
   // ],
   shortcuts: {
     'bg-hover': 'hover:bg-[--el-fill-color-light] active:bg-[--el-fill-color-dark]! rd-6 [&.is-active]:bg-[--el-fill-color-light]',
+    'overlay': `relative after-content-[''] after-absolute after-inset-0 after-bg-gray/40`
   }
 })

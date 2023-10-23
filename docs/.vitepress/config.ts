@@ -49,14 +49,15 @@ export default defineConfig({
           { text: '快速开始', link: '/render/quickstart' },
           { text: '基础使用', link: '/render/basic' },
         ]
-      }
+      },
 
-      // {
-      //   text: 'designer',
-      //   items: [
-      //     { text: '快速开始', link: '/designer/basic' },
-      //   ]
-      // }
+      {
+        text: 'Designer',
+        items: [
+          // { text: '快速开始', link: '/designer/basic' },
+          { text: '自定义组件', link: '/designer/custom-component' },
+        ]
+      }
     ],
 
     socialLinks: [
