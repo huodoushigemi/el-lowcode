@@ -27,10 +27,10 @@ templatesPromise().then(async templates => {
 
 // query.schema
 const schema = useRouteQuery<string | undefined>('schema')
-watch(schema, val => {
-  if (!val) return
+watch([schema, designer], ([val, designer]) => {
+  if (!val || !designer) return
   const json = JSON.parse(val)
-  designer.value.root = json
+  designer.root = json
   schema.value = undefined
 }, { immediate: true, flush: 'post' })
 
