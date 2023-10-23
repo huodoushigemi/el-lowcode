@@ -81,7 +81,7 @@ import { getCurrentInstance, onMounted } from 'vue'
 const ins = getCurrentInstance()
 
 onMounted(() => {
-  ;[...ins.ctx.$el.querySelectorAll('a[download]')].forEach(el => {
+  ;[...ins.proxy.$el.querySelectorAll('a[download]')].forEach(el => {
     el.addEventListener('click', e => {
       e.preventDefault()
       e.stopPropagation()
