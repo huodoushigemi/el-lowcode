@@ -24,6 +24,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'docs/dest/designer',
+    emptyOutDir: false,
     rollupOptions: {
       output: {
         manualChunks: (id) => {
