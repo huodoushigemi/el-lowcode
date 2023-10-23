@@ -23,6 +23,7 @@
     "@vue/compiler-sfc": "^3.3.6",
     "@vue/shared": "^3.3.4",
     "@vueuse/core": "^10.5.0",
+    "@vueuse/router": "^10.5.0",
     "axios": "^1.4.0",
     "designer": "^1.0.2",
     "el-form-render": "workspace:*",
