@@ -39,9 +39,7 @@ function onExport() {
   const a = document.createElement('a')
   a.href = url
   a.download = file.name
-  document.body.append(a)
   a.click()
-  a.remove()
   URL.revokeObjectURL(url)
 }
 </script>

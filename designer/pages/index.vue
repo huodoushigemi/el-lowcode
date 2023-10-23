@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { computedAsync } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
 import Designer from '@el-lowcode/designer'
+import { download } from '@el-lowcode/utils'
 
 const router = useRouter()
 const route = useRoute()
@@ -31,13 +32,20 @@ watch(schema, val => {
   const json = JSON.parse(val)
   designer.value.root = json
   schema.value = undefined
-})
+}, { immediate: true, flush: 'post' })
 
 function onEdit(item) {
   designer.value.root = item.schema()
 }
 function demoUrl(schema) {
   return router.resolve({ path: '/demo', query: { schema: encodeSchema(schema) } })
+}
+
+function onDownload() {
+  const html = `<script>
+  window.location.href = \`http://httpsgiteecomepalserver.gitee.io/el-lowcode/designer/#/?schema=${encodeSchema(designer.value.root)}\`
+<\/script>`
+  download(html, `el-lowcode-${+new Date}.html`)
 }
 </script>
 
@@ -47,6 +55,7 @@ function demoUrl(schema) {
       <!-- 额外按钮 -->
       <template #actions>
         <el-tooltip content="preview"><i-mdi:play-circle-outline bg-hover @click="$router.push(demoUrl(designer.root).fullPath)" /></el-tooltip>
+        <el-tooltip content="download"><i-mdi:folder-download bg-hover @click="onDownload" /></el-tooltip>
         <a href="https://github.com/huodoushigemi/el-lowcode" target="_blank" c="unset" bg-hover><i-bytesize:github wfull hfull /></a>
       </template>
       

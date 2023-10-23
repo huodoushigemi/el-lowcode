@@ -5,6 +5,7 @@ import type { AddPrefixToKeys, Arrable, Fnable, Obj } from './types'
 
 export * from './types'
 export * from './tree'
+export * from './file'
 export * from './execExp'
 
 type SFCWithInstall<T> = T & Plugin
