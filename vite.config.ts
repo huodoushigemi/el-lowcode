@@ -1,12 +1,4 @@
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import VueMacros from 'unplugin-vue-macros/vite'
-import UnoCss from 'unocss/vite'
-import Icons from 'unplugin-icons/vite'
-import IconsResolver from 'unplugin-icons/resolver'
-import Components from 'unplugin-vue-components/vite'
-import Pages from 'vite-plugin-pages'
-import { visualizer } from 'rollup-plugin-visualizer'
 import { ALL_DEPS } from './build/all-pkgs.js'
 
 // console.log(ALL_DEPS);
@@ -14,7 +6,7 @@ import { ALL_DEPS } from './build/all-pkgs.js'
 import { entries } from './build/plugins/alias'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(async () => ({
   base: '/el-lowcode/designer',
   resolve: {
     alias: [
@@ -33,21 +25,23 @@ export default defineConfig({
         }
       },
       plugins: [
-        visualizer()
+        (await import('rollup-plugin-visualizer')).visualizer()
       ]
     }
   },
   plugins: [
     // vue(),
-    VueMacros({
+    (await import('unplugin-vue-macros/vite')).default({
       plugins: {
-        vue: vue(),
-        // vueJsx: VueJsx(), // if needed
-      },
+        vue: (await import('@vitejs/plugin-vue')).default(),
+        vueJsx: (await import('@vitejs/plugin-vue-jsx')).default(), // if needed
+      }
     }),
-    UnoCss(),
-    Components({ resolvers: [IconsResolver()] }),
-    Icons({ autoInstall: true }),
-    Pages({ dirs: 'designer/pages' })
+    (await import('unocss/vite')).default(),
+    (await import('unplugin-vue-components/vite')).default({
+      resolvers: [(await import('unplugin-icons/resolver')).default()]
+    }),
+    (await import('unplugin-icons/vite')).default({ autoInstall: true }),
+    (await import('vite-plugin-pages')).default({ dirs: 'designer/pages' })
   ]
-})
+}))

@@ -11,7 +11,7 @@ export * from './execExp'
 type SFCWithInstall<T> = T & Plugin
 type Comp = Component & { name: string } & Partial<Plugin>
 
-export function withInstall<T extends Comp>(comp: T, arr?: T[]) {
+export function withInstall<T extends Comp>(comp: T, arr?: Comp[]) {
   comp.install = (app: App) => {
     app.component(comp.name, comp)
     arr?.forEach(e => app.component(e.name, e))
