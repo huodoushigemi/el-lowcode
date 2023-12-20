@@ -1,8 +1,8 @@
-import { ComponentObjectPropsOptions, InjectionKey, PropType, computed, defineComponent, inject, provide, ref, ExtractPropTypes, mergeProps, camelize, resolveDynamicComponent, createVNode, onUpdated, onBeforeUpdate } from 'vue'
+import { InjectionKey, PropType, computed, defineComponent, inject, provide, ref, ExtractPropTypes, mergeProps, camelize, renderSlot } from 'vue'
 import { objectPick } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
 import { Fnable, Obj, get, ks, set, unFn, withInstall } from '@el-lowcode/utils'
-import { Opt, solveOptions } from '.'
+import { Opt } from '.'
 
 type Awaitable<T> = Promise<T> | T
 
@@ -21,6 +21,8 @@ type CreateFormRenderOptions<F, FI> = {
     modelValue?: string | ((item) => string)
     /** @default 'rules' */
     rules?: string
+    /** @default 'default' */
+    inputSlot: string
   }
 }
 
@@ -29,6 +31,7 @@ const defaultFields = {
   prop: 'prop',
   modelValue: 'modelValue',
   rules: 'rules',
+  inputSlot: 'default'
 }
 
 export function createFormRender<F extends Obj, FI extends Obj>({ Form, formProps, FormItem, formItemProps, Input, fields }: CreateFormRenderOptions<F, FI>) {
@@ -100,8 +103,12 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formProp
         )
         return !unFn(props.hide, model.value)
           ? (
-            <FormItem {...itemProps} v-slots={slots}>
-              {slots.default?.() || <Input {...props} el={elProps} />}
+            <FormItem {...itemProps}>
+              {{
+                ...slots,
+                default: undefined,
+                [_fields.inputSlot]: () => (slots.default?.() || <Input {...props} el={elProps} />)
+              }}
             </FormItem>
           )
           : undefined

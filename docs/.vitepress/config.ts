@@ -29,6 +29,7 @@ export default defineConfig({
           { text: '自定义组件', link: '/el-form-render/is' },
           { text: 'ant-design-vue', link: '/el-form-render/antdv' },
           { text: 'naive-ui', link: '/el-form-render/naive-ui' },
+          { text: 'vant-ui', link: '/el-form-render/vant' },
           // { text: 'Runtime API Examples', link: '/markdown-examples' },
         ]
       },
