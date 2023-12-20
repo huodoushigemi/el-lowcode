@@ -1,7 +1,7 @@
 import { readFileSync, existsSync, writeFileSync } from 'fs'
 import path from 'path'
 
-export const cwd = process.cwd()
+export const cwd = process.cwd().replaceAll('\\', '/')
 export const pkgDir = (...args) => path.join('packages', ...args)
 export const pkgJsonPath = (dir) => pkgDir(dir, 'package.json')
 

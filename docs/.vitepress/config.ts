@@ -1,12 +1,11 @@
-import path from 'path'
 import { defineConfig } from 'vitepress'
+import Jsx from '@vitejs/plugin-vue-jsx'
 import MarkdownPreview from 'vite-plugin-markdown-preview'
 import UnoCSS from 'unocss/vite'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import Components from 'unplugin-vue-components/vite'
 import { ALL_PKGS } from '../../build/all-pkgs.js'
-import { cwd, pkgDir } from '../../build/utils.js'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -28,6 +27,8 @@ export default defineConfig({
           { text: '基础使用', link: '/el-form-render/basic' },
           { text: 'options 属性', link: '/el-form-render/options' },
           { text: '自定义组件', link: '/el-form-render/is' },
+          { text: 'ant-design-vue', link: '/el-form-render/antdv' },
+          { text: 'naive-ui', link: '/el-form-render/naive-ui' },
           // { text: 'Runtime API Examples', link: '/markdown-examples' },
         ]
       },
@@ -72,18 +73,13 @@ export default defineConfig({
     optimizeDeps: {
       exclude: ALL_PKGS,
     },
-    resolve: {
-      alias: ALL_PKGS.map(pkg => ({
-        find: pkg,
-        replacement: path.join(cwd, pkgDir(pkg.replace('@el-lowcode/', ''), 'index.ts'))
-      }))
-    },
     ssr: {
       noExternal: ['vite-plugin-markdown-preview'],
     },
     plugins: [
       MarkdownPreview(),
       UnoCSS(),
+      Jsx(),
       Components({ resolvers: [IconsResolver()] }),
       Icons({ autoInstall: true }),
     ],

@@ -3,7 +3,7 @@ import DefaultTheme from 'vitepress/theme'
 import { EnhanceAppContext } from 'vitepress'
 import { CodePreview } from 'vmp:components'
 
-import { useMounted } from '@vueuse/core'
+import { useDark, useMounted } from '@vueuse/core'
 import ElementPlus, { ID_INJECTION_KEY } from 'element-plus'
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'

@@ -241,6 +241,37 @@ const items: Item[] = [
 </script>
 ```
 
+## disabled
+
+通过设置 `disabled` 动态禁用表单项。
+
+```vue preview
+<template>
+  <el-form-render :model="model" :items="items" label-width="60" label-position="left" />
+  
+  <code><pre>model: {{ JSON.stringify(model, null, '  ') }}</pre></code>
+</template>
+
+<script setup lang="ts">
+import { reactive } from 'vue'
+import ElFormRender, { Item } from 'el-form-render'
+
+const model = reactive({})
+
+const items: Item[] = [
+  {
+    lp: 'control',
+    type: 'radio-group',
+    options: [{ value: 'disabled' }, { value: 'enable' }]
+  },
+  {
+    lp: 'name',
+    el: { disabled: (model) => model.control == 'disabled' }
+  }
+]
+</script>
+```
+
 ## 隐藏项
 
 通过设置 `hide` 动态隐藏表单项。
@@ -260,12 +291,11 @@ const model = reactive({})
 
 const items: Item[] = [
   {
-    lp: ['control', 'control'],
-    type: 'select',
+    lp: 'control',
     options: [{ value: 'show' }, { value: 'hide' }]
   },
   {
-    lp: ['name', 'name'],
+    lp: 'name',
     hide: () => model.control !== 'show'
   }
 ]

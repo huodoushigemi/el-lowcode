@@ -11,6 +11,13 @@
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "development": "./index.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "dependencies": {
     "@vue/shared": "^3.2.0"
   },

@@ -17,6 +17,13 @@
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "development": "./index.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "dependencies": {
     "@el-lowcode/crud": "^0.0.17",
     "@el-lowcode/render": "^0.0.17",

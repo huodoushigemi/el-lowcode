@@ -1,4 +1,4 @@
-import { ComponentObjectPropsOptions, InjectionKey, PropType, computed, defineComponent, inject, provide, ref, toRefs, ExtractPropTypes, toRef, mergeProps, camelize, renderSlot, resolveDynamicComponent, createVNode } from 'vue'
+import { ComponentObjectPropsOptions, InjectionKey, PropType, computed, defineComponent, inject, provide, ref, ExtractPropTypes, mergeProps, camelize, resolveDynamicComponent, createVNode, onUpdated, onBeforeUpdate } from 'vue'
 import { objectPick } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
 import { Fnable, Obj, get, ks, set, unFn, withInstall } from '@el-lowcode/utils'
@@ -11,28 +11,27 @@ type CreateFormRenderOptions<F, FI> = {
   formProps: F
   FormItem: any
   formItemProps: FI
-  Options: any
-  /**
-   * 为 ```item.type``` 添加的前缀
-   */
-  prefix: string
+  Input: any
   fields?: {
     /** @default 'label' */
     label?: string
     /** @default 'prpo' */
-    prop: string
+    prop?: string
     /** @default 'modelValue' */
-    modelValue: string
+    modelValue?: string | ((item) => string)
+    /** @default 'rules' */
+    rules?: string
   }
 }
 
 const defaultFields = {
   label: 'label',
   prop: 'prop',
-  modelValue: 'modelValue'
+  modelValue: 'modelValue',
+  rules: 'rules',
 }
 
-export function createFormRender<F extends Obj, FI extends Obj>({ Form, formProps, FormItem, formItemProps, Options, fields, prefix }: CreateFormRenderOptions<F, FI>) {
+export function createFormRender<F extends Obj, FI extends Obj>({ Form, formProps, FormItem, formItemProps, Input, fields }: CreateFormRenderOptions<F, FI>) {
   const _fields = { ...defaultFields, ...fields }
   const formItemKs = ks(formItemProps) as any[]
   const formRenderContextKey: InjectionKey<{ model: Obj } & Obj> = Symbol()
@@ -48,10 +47,12 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formProp
     type: String,
     defaultValue: null,
     displayValue: null,
+    hide: [Boolean, Function] as PropType<boolean | ((row: any) => boolean)>,
     get: Function as PropType<(val: any, row: any) => any>,
     set: Function as PropType<(val: any, row: any) => any>,
     out: Function as PropType<(val: any, row: any) => any>,
     options: [Array, Object, Function] as PropType<Fnable<Awaitable<Opt[]>>>,
+    rules: null,
     el: Object,
   }
   const formItemRenderProps = {
@@ -81,18 +82,29 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formProp
       }
 
       return () => {
-        const elProps = mergeProps({ [_fields.modelValue]: calcVal(), [`onUpdate:${_fields.modelValue}`]: onInput }, props.el || {})
-        return (
-          <FormItem {...{ ...objectPick(props, formItemKs), [_fields.label]: _label(props) }} v-slot={slots}>
-            {
-              slots.default?.() || (
-                props.options
-                  ? <Options {...props} options={solveOptions(props.options)} el={elProps} />
-                  : createVNode(resolveDynamicComponent(props.el?.is || (`${prefix}${props.type || 'input'}`)), elProps)
-              )
-            }
-          </FormItem>
+        const itemProps = {
+          ...objectPick(props, formItemKs),
+          [_fields.label]: _label(props),
+          [_fields.prop]: _prop(props),
+          [_fields.rules]: unFn(props[_fields.rules], model.value)
+        }
+        const elProps = mergeProps(
+          {
+            [unFn(_fields.modelValue, props)]: calcVal(),
+            [`onUpdate:${unFn(_fields.modelValue, props)}`]: onInput
+          },
+          {
+            ...(props.el || {}),
+            disabled: unFn(props.el?.disabled, model.value)
+          }
         )
+        return !unFn(props.hide, model.value)
+          ? (
+            <FormItem {...itemProps} v-slots={slots}>
+              {slots.default?.() || <Input {...props} el={elProps} />}
+            </FormItem>
+          )
+          : undefined
       }
     }
   })
