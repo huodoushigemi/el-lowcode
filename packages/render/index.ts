@@ -17,10 +17,9 @@ type CreateRender = {
   /** @default 'div' */
   defaultIs?: any
   processProps?: (props: Props) => Props
-  slots?: { [k: string]: any }
 }
 
-export function createRender({ defaultIs = 'div', processProps = (props: Props) => props, slots }: CreateRender) {
+export function createRender({ defaultIs = 'div', processProps = (props: Props) => props }: CreateRender) {
   return function Render(props: Props) {
     let { is, children, $, ...attrs } = processProps(props)
     children = unFn(children)
@@ -30,7 +29,6 @@ export function createRender({ defaultIs = 'div', processProps = (props: Props) 
             resolveDynamicComponent(is ?? defaultIs),
             attrs,
             // render children
-            !is || is == defaultIs ? slots?.default?.(attrs) :
             isArray(children) ? children.map(e => isPlainObject(e) ? createVNode(Render, e) : e) :
             isPlainObject(children) ? createVNode(Render, children) :
             children
