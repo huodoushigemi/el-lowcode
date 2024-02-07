@@ -65,7 +65,7 @@ const data = [
 
 ## 额外按钮
 
-通过设置 `btns` 或 `#$btns` 自定义操作列按钮
+通过设置 `btns` 或 `#btns` 自定义操作列按钮
 
 ```vue preview
 <template>
@@ -77,11 +77,11 @@ const data = [
     :formItems="['id', 'name', 'age']"
     :operation="{ width: 300 }"
     :btns="(row) => [
-      { render: 'btns', type: 'primary', onClick: () => ElMessage('btns') }
+      { children: 'btns', type: 'primary', onClick: () => ElMessage('btns') }
     ]"
   >
-    <template #$btns="{ row }">
-      <el-button type="primary" link @click="ElMessage('#$btns')">#$btns</el-button>
+    <template #btns="{ row }">
+      <el-button type="primary" link @click="ElMessage('#btns')">#btns</el-button>
     </template>
   </CRUD>
 </template>
@@ -109,9 +109,9 @@ const schema = [
   <CRUD
     url="/user"
     :schema="schema"
-    :columns="['id', 'name', 'sex', 'age', 'type']"
-    :searchItems="['name', 'sex', 'type']"
-    :formItems="['id', 'name', 'sex', 'age', 'type']"
+    :columns="['id', 'name', 'sex', 'age']"
+    :searchItems="['name', 'sex']"
+    :formItems="['id', 'name', 'sex', 'age']"
     :operation="{ width: 200 }"
   />
 </template>
@@ -124,16 +124,6 @@ const schema = [
   { lp: ['姓名', 'name'] },
   { lp: ['年龄', 'age'] },
   { lp: ['性别', 'sex'], type: 'select', options: [{ label: '男', value: 0 }, { label: '女', value: 1 }] },
-  {
-    lp: ['Activity type', 'type'],
-    type: 'checkbox-group',
-    options: [
-      { label: 'Online activities' },
-      { label: 'Promotion activities' },
-      { label: 'Offline activities' },
-      { label: 'Simple brand exposure' },
-    ]
-  },
 ]
 </script>
 ```

@@ -213,7 +213,7 @@ const submitForm = () => {
 <template>
   <el-form-render ref="form" :model="model" :items="items" label-width="120px">
     <el-form-item>
-      <el-button type="primary" native-type="submit">Submit</el-button>
+      <el-button type="primary" @click="$refs.form.validate()">Submit</el-button>
       <el-button @click="$refs.form.resetFields()">Reset</el-button>
     </el-form-item>
 
@@ -259,15 +259,8 @@ import ElFormRender, { Item } from 'el-form-render'
 const model = reactive({})
 
 const items: Item[] = [
-  {
-    lp: 'control',
-    type: 'radio-group',
-    options: [{ value: 'disabled' }, { value: 'enable' }]
-  },
-  {
-    lp: 'name',
-    el: { disabled: (model) => model.control == 'disabled' }
-  }
+  { lp: 'control', type: 'radio-group', options: ['disabled', 'enable'] },
+  { lp: 'name', el: { disabled: (model) => model.control == 'disabled' } }
 ]
 </script>
 ```
@@ -290,14 +283,8 @@ import ElFormRender, { Item } from 'el-form-render'
 const model = reactive({})
 
 const items: Item[] = [
-  {
-    lp: 'control',
-    options: [{ value: 'show' }, { value: 'hide' }]
-  },
-  {
-    lp: 'name',
-    hide: () => model.control !== 'show'
-  }
+  { lp: 'control', options: ['show', 'hide'] },
+  { lp: 'name', hide: () => model.control != 'show' }
 ]
 </script>
 ```
@@ -324,7 +311,7 @@ const items: Item[] = [
     lp: ['range', 'time'],
     type: 'date-picker',
     el: { type: 'daterange', valueFormat: 'YYYY-MM-DD' },
-    get: (val, row) => ([row.start, row.end]),
+    get: (val, row) => [row.start, row.end],
     set: (val, row) => null,
     out: (val, row) => ({ start: val?.[0], end: val?.[1] }),
   }

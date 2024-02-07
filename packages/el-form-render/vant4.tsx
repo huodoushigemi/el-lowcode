@@ -14,29 +14,28 @@ const { FormRender, FormItemRender } = createFormRender({
     const is = el?.is || `van-${type || 'field'}`
     if (!item.options) {
       return createVNode(resolveDynamicComponent(is), mergeProps({ style: 'padding: 0' }, el))
-    } else {
-      const options = solveOptions(item.options)!
-      if (el?.is) {
-        return createVNode(resolveDynamicComponent(is), { options, ...el })
-      }
-      else if (type == 'checkbox-group') {
-        return (
-          <van-checkbox-group {...el}>
-            {options.map(opt => (
-              <van-checkbox name={optValue(opt)} {...opt}>{showOpt(opt)}</van-checkbox>
-            ))}
-          </van-checkbox-group>
-        )
-      }
-      else if (type == 'radio-group') {
-        return (
-          <van-radio-group {...el}>
-            {options.map(opt => (
-              <van-radio name={optValue(opt)} {...opt}>{showOpt(opt)}</van-radio>
-            ))}
-          </van-radio-group>
-        )
-      }
+    }
+    const options = solveOptions(item.options)!
+    if (el?.is) {
+      return createVNode(resolveDynamicComponent(is), { options, ...el })
+    }
+    else if (type == 'checkbox-group') {
+      return (
+        <van-checkbox-group {...el}>
+          {options.map(opt => (
+            <van-checkbox name={optValue(opt)} {...opt}>{showOpt(opt)}</van-checkbox>
+          ))}
+        </van-checkbox-group>
+      )
+    }
+    else if (type == 'radio-group') {
+      return (
+        <van-radio-group {...el}>
+          {options.map(opt => (
+            <van-radio name={optValue(opt)} {...opt}>{showOpt(opt)}</van-radio>
+          ))}
+        </van-radio-group>
+      )
     }
   },
   fields: {

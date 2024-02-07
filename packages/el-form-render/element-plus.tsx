@@ -14,40 +14,39 @@ const { FormRender, FormItemRender } = createFormRender({
     const is = el?.is || (`el-${type || 'input'}`)
     if (!item.options) {
       return createVNode(resolveDynamicComponent(is), el)
-    } else {
-      const options = solveOptions(item.options)!
-      if (el?.is) {
-        return createVNode(resolveDynamicComponent(is), { options, ...el })
-      }
-      else if (type == 'select' || !type) {
-        return (
-          <ElSelect {...el}>
-            {options.map(opt => <ElOption {...opt} />)}
-          </ElSelect>
-        )
-      }
-      else if (type == 'checkbox-group') {
-        return (
-          <ElCheckboxGroup {...el}>
-            {options.map(opt => (
-              el!.type == 'button'
-                ? <ElCheckboxButton {...opt} label={optValue(opt)}>{showOpt(opt)}</ElCheckboxButton>
-                : <ElCheckbox {...opt} label={optValue(opt)}>{showOpt(opt)}</ElCheckbox>
-            ))}
-          </ElCheckboxGroup>
-        )
-      }
-      else if (type == 'radio-group') {
-        return (
-          <ElRadioGroup {...el}>
-            {options.map(opt => (
-              el!.type == 'button'
-                ? <ElRadioButton {...opt} label={optValue(opt)}>{showOpt(opt)}</ElRadioButton>
-                : <ElRadio {...opt} label={optValue(opt)}>{showOpt(opt)}</ElRadio>
-            ))}
-          </ElRadioGroup>
-        )
-      }
+    }
+    const options = solveOptions(item.options)!
+    if (el?.is) {
+      return createVNode(resolveDynamicComponent(is), { options, ...el })
+    }
+    else if (type == 'select' || !type) {
+      return (
+        <ElSelect {...el}>
+          {options.map(opt => <ElOption {...opt} />)}
+        </ElSelect>
+      )
+    }
+    else if (type == 'checkbox-group') {
+      return (
+        <ElCheckboxGroup {...el}>
+          {options.map(opt => (
+            el!.type == 'button'
+              ? <ElCheckboxButton {...opt} label={optValue(opt)}>{showOpt(opt)}</ElCheckboxButton>
+              : <ElCheckbox {...opt} label={optValue(opt)}>{showOpt(opt)}</ElCheckbox>
+          ))}
+        </ElCheckboxGroup>
+      )
+    }
+    else if (type == 'radio-group') {
+      return (
+        <ElRadioGroup {...el}>
+          {options.map(opt => (
+            el!.type == 'button'
+              ? <ElRadioButton {...opt} label={optValue(opt)}>{showOpt(opt)}</ElRadioButton>
+              : <ElRadio {...opt} label={optValue(opt)}>{showOpt(opt)}</ElRadio>
+          ))}
+        </ElRadioGroup>
+      )
     }
   },
   fields: {

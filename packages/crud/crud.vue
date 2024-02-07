@@ -1,23 +1,23 @@
 <template>
   <div class="crud">
       <!-- 搜索 -->
-    <el-form-render v-if="needReq" ref="searchRef" class="crud-search" :inline="true" :model="params" :items="_searchItems" v-bind="searchAttrs" @keyup.enter="getData()">
-      <template v-for="e in Object.keys($slots).map(e => e.split('$search:')[1]).filter(e => e)" #[e]>
-        <slot :name="'$search:' + e" :row="params" :model="params" />
+    <el-form-render v-if="needReq" ref="searchRef" class="crud-search" :inline="true" :model="params" :items="_searchItems" v-bind="searchAttrs" hide-required-asterisk @keyup.enter="getData()">
+      <template v-for="e in Object.keys($slots).map(e => e.split('search:')[1]).filter(e => e)" #[`$${e}`]>
+        <slot :name="'search:' + e" :row="params" :model="params" />
       </template>
-      <slot name="$search" :row="params" :model="params" />
+      <slot name="search" :row="params" :model="params" />
       <el-form-item>
         <el-button type="primary" @click="getData()">查询</el-button>
         <el-button @click="resetSearch()">重置</el-button>
       </el-form-item>
     </el-form-render>
 
-    <div v-if="hasNew || $slots.$header" class="crud-header" v-bind="headerAttrs">
+    <div v-if="hasNew || $slots.header" class="crud-header" v-bind="headerAttrs">
       <el-button v-if="hasNew" type="primary" @click="openDialog()">新增</el-button>
-      <slot name="$header" />
+      <slot name="header" />
     </div>
 
-    <slot name="$table-above" />
+    <slot name="table-above" />
 
     <!-- 表格内容展示 -->
     <el-table ref="tableRef" class="crud-table" v-bind="tableAttrs" :data="_data" @select="_onSelect" @select-all="onSelectAll">
@@ -27,16 +27,16 @@
       <template v-for="col in _columns" :key="col.prop">
         <el-table-column v-bind="col">
           <template #default="{ row, column, $index }">
-            <slot :name="col.prop" v-bind="{ row, column, $index }">
+            <slot :name="`$${col.prop}`" v-bind="{ row, column, $index }">
               {{ column.formatter ? column.formatter(row, column, row[column.property], $index) : row[column.property] }}
             </slot>
           </template>
         </el-table-column>
       </template>
 
-      <el-table-column v-if="hasOperation && (hasEdit || hasDel || btns || $slots.$btns)" label="操作" width="auto" fixed="right" v-bind="operation">
+      <el-table-column v-if="hasOperation && (hasEdit || hasDel || btns || $slots.btns)" label="操作" width="auto" fixed="right" v-bind="operation">
         <template #default="scope">
-          <slot name="$btns" v-bind="scope" />
+          <slot name="btns" v-bind="scope" />
           <el-button v-for="btn in btns?.(scope.row)" type="primary" size="small" v-bind="btn"><Render :children="btn.children" /></el-button>
           <el-button v-if="hasEdit" size="small" type="primary" @click="openDialog(scope.row)">编辑</el-button>
           <el-button v-if="hasDel" size="small" type="danger" @click="_onDel(scope.row)">删除</el-button>
@@ -60,10 +60,10 @@
     <!-- 表单 -->
     <el-dialog v-model="visible" :title="row?.id ? '编辑' : '新增'" width="800" destroy-on-close v-bind="dialogAttrs">
       <el-form-render ref="formRef" :model="row" :items="_formItems" label-width="auto" v-bind="formAttrs">
-        <template v-for="e in Object.keys($slots).map(e => e.split('$form:')[1]).filter(e => e)" #[e]>
-          <slot :name="'$form:' + e" :row="row" :model="row" />
+        <template v-for="e in Object.keys($slots).map(e => e.split('form:')[1]).filter(e => e)" #[`$${e}`]>
+          <slot :name="'form:' + e" :row="row" :model="row" />
         </template>
-        <slot name="$form" :row="row" :model="row" />
+        <slot name="form" :row="row" :model="row" />
       </el-form-render>
 
       <template #footer>

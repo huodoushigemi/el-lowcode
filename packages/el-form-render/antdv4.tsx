@@ -15,26 +15,25 @@ const { FormRender, FormItemRender } = createFormRender({
     const is = el?.is || (`a-${type || 'input'}`)
     if (!item.options) {
       return createVNode(resolveDynamicComponent(is), el)
-    } else {
-      const options = solveOptions(item.options)!
-      if (el?.is) {
-        return createVNode(resolveDynamicComponent(is), { options, ...el })
-      }
-      else if (type == 'select' || !type) {
-        return (
-          <a-select {...el} options={options} />
-        )
-      }
-      else if (type == 'checkbox-group') {
-        return (
-          <a-checkbox-group {...el} options={options} />
-        )
-      }
-      else if (type == 'radio-group') {
-        return (
-          <a-radio-group {...el} options={options} />
-        )
-      }
+    }
+    const options = solveOptions(item.options)!
+    if (el?.is) {
+      return createVNode(resolveDynamicComponent(is), { options, ...el })
+    }
+    else if (type == 'select' || !type) {
+      return (
+        <a-select {...el} options={options} />
+      )
+    }
+    else if (type == 'checkbox-group') {
+      return (
+        <a-checkbox-group {...el} options={options} />
+      )
+    }
+    else if (type == 'radio-group') {
+      return (
+        <a-radio-group {...el} options={options} />
+      )
     }
   },
   fields: {

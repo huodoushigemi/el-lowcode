@@ -1,5 +1,5 @@
 import { InjectionKey, PropType, computed, defineComponent, inject, provide, ref, ExtractPropTypes, mergeProps, camelize, renderSlot } from 'vue'
-import { objectPick } from '@vueuse/core'
+import { objectPick, toReactive } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
 import { Fnable, Obj, get, ks, set, unFn, withInstall } from '@el-lowcode/utils'
 import { Opt } from '.'
@@ -22,7 +22,7 @@ type CreateFormRenderOptions<F, FI> = {
     /** @default 'rules' */
     rules?: string
     /** @default 'default' */
-    inputSlot: string
+    inputSlot?: string
   }
 }
 
@@ -130,13 +130,14 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formProp
   const FormRender = defineComponent({
     props: formRenderProps,
     setup(props: ExtractPropTypes<typeof _formRenderProps>, { slots, expose }) {
-      const _FormItemRender = createRender({ defaultIs: FormItemRender, slots: { default: (item) => slots[_prop(item)]?.() } })
-      const formRef = ref()
+      const _FormItemRender = createRender({
+        defaultIs: (item) => (
+          <FormItemRender {...item}>{{ default: slots[`$${_prop(item)}`] }}</FormItemRender>
+        )
+      })
       
-      expose(new Proxy({}, {
-        get(t, k) { return formRef.value?.[k] },
-        has(t, k) { return k in formRef.value! }
-      }))
+      const formRef = ref({})
+      expose(toReactive(formRef))
 
       provide(formRenderContextKey, props)
 

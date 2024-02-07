@@ -1,6 +1,6 @@
 # AFormRender 表单渲染
 
-支持 [`a-form`](https://element-plus.gitee.io/zh-CN/component/form.html#form-attributes) 所有属性
+支持 [`a-form`](https://www.antdv.com/components/form-cn/) 所有属性
 
 ## 基础用法
 

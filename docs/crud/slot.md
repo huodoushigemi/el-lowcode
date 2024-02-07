@@ -4,7 +4,7 @@
 
 ## 自定义列
 
-通过设置 `#xxx` 自定义列内容。
+通过设置 `#$xxx` 自定义列内容。
 
 ```vue preview
 <template>
@@ -16,7 +16,7 @@
     :formItems="['id', 'name', 'age', 'is']"
     :operation="{ width: 200 }"
   >
-    <template #is="{ row }">
+    <template #$is="{ row }">
       <el-switch v-model="row.is" @change="onEdit(row)" />
     </template>
   </CRUD>
@@ -42,7 +42,7 @@ async function onEdit(row) {
 
 ## 自定义操作列
 
-通过设置 `#$btns` 自定义操作列按钮。
+通过设置 `#btns` 自定义操作列按钮。
 
 ```vue preview
 <template>
@@ -54,7 +54,7 @@ async function onEdit(row) {
     :formItems="['id', 'name', 'age', 'is']"
     :operation="{ width: 250 }"
   >
-    <template #$btns="{ row }">
+    <template #btns="{ row }">
       <el-button link type="primary">xxx</el-button>
       <el-button link type="primary">ooo</el-button>
     </template>
@@ -76,7 +76,7 @@ const schema = [
 
 ## 自定义搜索
 
-通过设置 `#$search:xxx` 自定义搜索。
+通过设置 `#search:xxx` 自定义搜索。
 
 ```vue preview
 <template>
@@ -88,10 +88,10 @@ const schema = [
     :formItems="['id', 'name', 'age', 'is']"
     :operation="{ width: 200 }"
   >
-    <template #$search:name="{ row }">
+    <template #search:name="{ row }">
       <input v-model="row.name" style="border: solid;" />
     </template>
-    <template #$search:age="{ row }">
+    <template #search:age="{ row }">
       <input v-model="row.age" type="range" />
       {{ row.age }}
     </template>
@@ -112,7 +112,7 @@ const schema = [
 
 ## 自定义表单
 
-通过设置 `#$form:xxx` 自定义表单。
+通过设置 `#form:xxx` 自定义表单。
 
 ```vue preview
 <template>
@@ -124,10 +124,10 @@ const schema = [
     :formItems="['id', 'name', 'age', 'is']"
     :operation="{ width: 200 }"
   >
-    <template #$form:name="{ row }">
+    <template #form:name="{ row }">
       <input v-model="row.name" style="border: solid;" />
     </template>
-    <template #$form:age="{ row }">
+    <template #form:age="{ row }">
       <input v-model="row.age" type="range" />
       {{ row.age }}
     </template>
