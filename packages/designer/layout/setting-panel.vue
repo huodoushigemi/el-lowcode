@@ -32,7 +32,7 @@ import Scriptable from './components/scriptable.vue'
 import Input from './components/input.vue'
 
 const _normalizeItem = (item) => {
-  item = normalizeItem(item)
+  // item = normalizeItem(item)
   item.el ??= {}
   if (item.type == 'radio-group') item.el.type ??= 'button'
   if (item.type == 'color-picker') {

@@ -7,25 +7,6 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    'IBytesize:github': typeof import('~icons/bytesize/github')['default']
-    'IEp:eleme': typeof import('~icons/ep/eleme')['default']
-    'IMdi:applicationImport': typeof import('~icons/mdi/application-import')['default']
-    'IMdi:cellphoneAndroid': typeof import('~icons/mdi/cellphone-android')['default']
-    'IMdi:close': typeof import('~icons/mdi/close')['default']
-    'IMdi:codeJson': typeof import('~icons/mdi/code-json')['default']
-    'IMdi:codeTags': typeof import('~icons/mdi/code-tags')['default']
-    'IMdi:desktopMac': typeof import('~icons/mdi/desktop-mac')['default']
-    'IMdi:export': typeof import('~icons/mdi/export')['default']
-    'IMdi:eyeOutline': typeof import('~icons/mdi/eye-outline')['default']
-    'IMdi:fileTree': typeof import('~icons/mdi/file-tree')['default']
-    'IMdi:folderDownload': typeof import('~icons/mdi/folder-download')['default']
-    'IMdi:playCircleOutline': typeof import('~icons/mdi/play-circle-outline')['default']
-    'IMdi:progressDownload': typeof import('~icons/mdi/progress-download')['default']
-    'IMdi:redoVariant': typeof import('~icons/mdi/redo-variant')['default']
-    'IMdi:shoppingOutline': typeof import('~icons/mdi/shopping-outline')['default']
-    'IMdi:undoVariant': typeof import('~icons/mdi/undo-variant')['default']
-    'IMdi:widgetsOutline': typeof import('~icons/mdi/widgets-outline')['default']
-    'IRaphael:ipad': typeof import('~icons/raphael/ipad')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

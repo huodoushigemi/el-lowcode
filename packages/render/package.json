@@ -1,21 +1,17 @@
 {
   "name": "@el-lowcode/render",
   "private": false,
-  "version": "0.0.17",
+  "version": "1.0.1",
   "type": "module",
-  "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
-  "unpkg": "dist/index.iife.js",
-  "jsdelivr": "dist/index.iife.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "main": "index.cjs",
+  "module": "index.mjs",
+  "unpkg": "index.iife.js",
+  "jsdelivr": "index.iife.js",
+  "types": "index.d.ts",
   "exports": {
     ".": {
-      "development": "./index.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./index.mjs",
+      "require": "./index.cjs"
     }
   },
   "dependencies": {

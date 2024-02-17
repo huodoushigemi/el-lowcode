@@ -25,8 +25,8 @@
 <script setup>
 import { computed, inject, ref } from 'vue'
 import { isString } from '@vue/shared'
-import { ElDialog, ElTag, formContextKey } from 'element-plus'
-import { ElFormItemRender, formItemRenderProps } from 'el-form-render'
+import { ElDialog, ElTag, formContextKey, formItemProps } from 'element-plus'
+import { ElFormItemRender, formItemRenderPropsBase } from 'el-form-render'
 import { get, set } from '@el-lowcode/utils'
 import { sloveConfig } from '../../components/_utils'
 import { designerCtxKey } from '../interface'
@@ -34,7 +34,8 @@ import MonacoEditor from './monaco-editor.vue'
 import { refWithWatch } from '../../components/hooks'
 
 const props = defineProps({
-  ...formItemRenderProps,
+  ...formItemProps,
+  ...formItemRenderPropsBase,
   scriptable: { type: Boolean, default: undefined }
 })
 

@@ -20,8 +20,8 @@
     <slot name="table-above" />
 
     <!-- 表格内容展示 -->
-    <el-table ref="tableRef" class="crud-table" v-bind="tableAttrs" :data="_data" @select="_onSelect" @select-all="onSelectAll">
-      <el-table-column v-if="selection && !unFn(selection.hide)" type="selection" width="60" reserve-selection v-bind="selection" :selectable="_selectable" />
+    <el-table ref="tableRef" class="crud-table" v-bind="tableAttrs" :data="_data" @select="onSelect" @select-all="onSelectAll">
+      <el-table-column v-if="selection && !unFn(selection.hide)" type="selection" width="60" reserve-selection v-bind="selection" :selectable="selectable" />
       <el-table-column v-if="showIndex" type="index" label="序号" width="80" />
 
       <template v-for="col in _columns" :key="col.prop">
@@ -77,23 +77,20 @@
 <script setup lang="ts">
 import { computed, h, nextTick, reactive, ref, watch } from 'vue'
 import { isObject, isString } from '@vue/shared'
-
+import { toReactive } from '@vueuse/core'
 import { ElMessageBox, ElMessage, ElTable, ElTableColumn, TableColumnCtx, ElButton, ElPagination, ElDialog, FormInstance } from 'element-plus'
-// import 'element-plus/es/components/table/style/css'
-// import 'element-plus/es/components/pagination/style/css'
-// import 'element-plus/es/components/dialog/style/css'
-// import 'element-plus/es/components/button/style/css'
 
 import { ElFormRender, Item, label, prop, showOpt, solveOptions } from 'el-form-render'
 import { Render } from '@el-lowcode/render'
 import { get, set, unFn } from  '@el-lowcode/utils'
 
 import config from './config'
-import { crudProps, Column } from './crud'
+import { crudProps, Column } from './props'
 
 // utils
 const fn_true = () => true
-const isSelected = (row) => props.selected?.some(e => get(e, props.tableAttrs!.rowKey!) == get(row, props.tableAttrs!.rowKey!))
+const eqRow = (a, b) => get(a, tableAttrs.rowKey!) == get(b, tableAttrs.rowKey!)
+const isSelected = (row, arr = props.selected) => arr!.some(e => eqRow(row, e))
 
 defineOptions({ name: 'crud' })
 const emit = defineEmits(['update:search', 'update:form', 'update:selected'])
@@ -102,27 +99,25 @@ const props = defineProps(crudProps)
 const _request = props.request || config.request
 const _field = computed(() => ({ ...props.field, ...config.field }))
 const _pagination = computed(() => ({ ...props.pagination, ...config.pagination }))
+const tableAttrs = toReactive(computed(() => props.tableAttrs || {}))
 
-const remainSeletable = () => props.selection?.limit != null ? props.selection.limit > (props.selected?.length || 0) : true
-const _selectable = ((row, i) => (
-  remainSeletable() && (props.selection?.selectable || fn_true)(row, i)) ||
+const selectable = ((row, i: number) => (
+  // limit
+  (props.selection!.limit != null ? props.selection!.limit > props.selected!.length : true) &&
+  // selectable
+  (props.selection!.selectable || fn_true)(row, i)) ||
+  // 
   isSelected(row)
-) as TableColumnCtx<any>['selectable']
+)
 
 const needReq = computed(() => props.url || props.request)
-
-defineExpose({
-  getData,
-  getList: getData,
-  resetSearch
-})
 
 // 分页查询
 const searchRef = ref<FormInstance>()
 const params = reactive<Record<string, any>>(props.search ?? {})
 const _total = ref(0)
 const _list = ref([])
-const _data = computed(() => props.tableAttrs?.data ?? props.data ?? _list.value)
+const _data = computed(() => props.data ?? _list.value)
 
 const _page = computed({
   get() { return get(params, _field.value.page) },
@@ -171,36 +166,32 @@ async function _onDel(row) {
 const tableRef = ref<InstanceType<typeof import('element-plus')['ElTable']>>()
 
 watch(
-  () => [...props.selected ?? []],
+  () => [...props.selected || []],
   async (val) => {
-    await nextTick()
-    tableRef.value?.clearSelection()
+    if (!tableRef.value) await nextTick()
+    tableRef.value!.clearSelection()
     val?.forEach(e => {
-      e = _data.value.find(row => get(row, props.tableAttrs!.rowKey!) == get(e, props.tableAttrs!.rowKey!)) ?? e
+      e = _data.value.find(row => eqRow(row, e)) ?? e
       tableRef.value!.toggleRowSelection(e, true)
     })
   },
   { immediate: true }
 )
 
-function _onSelect(selected: any[], row) {
-  setTimeout(() => {
-    // 单选
-    if (!props.multiple) {
-      tableRef.value!.clearSelection()
-      tableRef.value!.toggleRowSelection(row, selected.includes(row))
-    }
-    setTimeout(() => {
-      props.onSelect?.(tableRef.value!.getSelectionRows(), row)
-      emit('update:selected', tableRef.value!.getSelectionRows())
-    }, 0);
-  }, 0);
+function onSelect(selected: any[], row) {
+  // 单选
+  if (!props.multiple) {
+    tableRef.value!.clearSelection()
+    tableRef.value!.toggleRowSelection(row, isSelected(row, selected))
+  }
+  emit('update:selected', tableRef.value!.getSelectionRows())
 }
 function onSelectAll() {
   // 单选
   if (!props.multiple) {
     tableRef.value!.clearSelection()
   }
+  emit('update:selected', tableRef.value!.getSelectionRows())
 }
 
 // dialog
@@ -250,15 +241,17 @@ const _formItems = computed(() => props.formItems?.map(e => isString(e) ? _schem
 const _columns = computed(() => props.columns?.map(_2column))
 
 function _2column(e: string | Column): Column {
-  const item = (isString(e) ? _schemaBy.value[e] : _schemaBy.value[prop(e)!]) || { lp: [] }
-  const col = isObject(e) ? e : {}
+  const key = isString(e) ? e : prop(e)
+  const item = _schemaBy.value[key]
+  const col = isObject(e) ? e : undefined
+
   return {
-    label: label(item) ?? label(col),
-    prop: prop(item) ?? prop(col),
+    label: (col && label(col)) ?? (item && label(item)) ?? e,
+    prop: key,
     formatter: (_row, _column, val, _index) => {
       return (
-        item.el?.options ? showOpt(solveOptions(item.el!.options)!.find(e => e.value == val)) :
-        item.options ? showOpt(solveOptions(item.options)!.find(e => e.value == val)) :
+        item?.el?.options ? showOpt(solveOptions(item.el!.options)!.find(e => e.value == val)) :
+        item?.options ? showOpt(solveOptions(item.options)!.find(e => e.value == val)) :
         val
       ) ?? val
     },
@@ -268,13 +261,14 @@ function _2column(e: string | Column): Column {
 
 function _2searchItem(e: string | Item) {
   const schema = (isString(e) ? _schemaBy.value[e] : _schemaBy.value[prop(e)!]) || {}
-  let item = isObject(e) ? e : {}
+  let item = isObject(e) ? e : {} as Item
   const type = item.type || schema.type
   const elType = item.el?.type || schema.el?.type
   return {
     ...schema,
     ...item,
     rules: undefined,
+    required: undefined,
     type: (
       type === 'checkbox-group' ? 'select' :
       type === 'radio-group' ? 'select' :
@@ -294,10 +288,20 @@ function _2searchItem(e: string | Item) {
     }
   }
 }
+
+defineExpose({
+  searchRef,
+  formRef,
+  tableRef,
+  openDialog,
+  getData,
+  getList: getData,
+  resetSearch
+} as any)
 </script>
 
-<style scoped>
-:deep(.is-disabled .el-checkbox__inner) {
+<style>
+.crud-table .is-disabled > .el-checkbox__inner {
   background-color: #80808040 !important;
 }
 
@@ -307,16 +311,16 @@ function _2searchItem(e: string | Item) {
   background-color: var(--el-bg-color);
 }
 
-.crud-search.el-form--inline :deep(.el-form-item) {
+.crud-search.el-form--inline .el-form-item {
   margin-bottom: 10px;
   margin-right: 14px;
 }
 
-.crud-search.el-form--inline :deep(.el-form-item__label) {
+.crud-search.el-form--inline .el-form-item__label {
   padding-right: 8px;
 }
 
-.crud-search.el-form--inline :deep(.el-input__suffix) {
+.crud-search.el-form--inline .el-input__suffix {
   position: absolute;
   right: 11px;
 }
@@ -326,4 +330,4 @@ function _2searchItem(e: string | Item) {
   padding: 14px 8px;
   background-color: var(--el-bg-color);
 }
-</style>
+</style>./props./crud

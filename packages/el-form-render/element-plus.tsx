@@ -1,13 +1,15 @@
 import { createVNode, resolveDynamicComponent } from 'vue'
-import { ElCheckbox, ElCheckboxButton, ElCheckboxGroup, ElForm, ElFormItem, ElOption, ElRadio, ElRadioButton, ElRadioGroup, ElSelect, formItemProps, formProps } from 'element-plus'
+import { ElForm, ElFormItem, formItemProps, formProps } from 'element-plus'
 
 import { createFormRender } from './createFormRender'
-import { optValue, showOpt, solveOptions } from './form-render'
+import { showOpt, solveOptions } from './utils'
 
-const { FormRender, FormItemRender } = createFormRender({
+const { FormRender, FormItemRender, formRenderProps, formItemRenderProps } = createFormRender({
   Form: ElForm,
+  formName: 'ElFormRender',
   formProps: formProps,
   FormItem: ElFormItem,
+  formItemName: 'ElFormItemRender',
   formItemProps: formItemProps,
   Input: (item) => {
     const { type, el } = item
@@ -21,45 +23,47 @@ const { FormRender, FormItemRender } = createFormRender({
     }
     else if (type == 'select' || !type) {
       return (
-        <ElSelect {...el}>
-          {options.map(opt => <ElOption {...opt} />)}
-        </ElSelect>
+        <el-select {...el}>
+          {options.map(opt => <el-option {...opt} />)}
+        </el-select>
       )
     }
     else if (type == 'checkbox-group') {
       return (
-        <ElCheckboxGroup {...el}>
+        <el-checkbox-group {...el}>
           {options.map(opt => (
             el!.type == 'button'
-              ? <ElCheckboxButton {...opt} label={optValue(opt)}>{showOpt(opt)}</ElCheckboxButton>
-              : <ElCheckbox {...opt} label={optValue(opt)}>{showOpt(opt)}</ElCheckbox>
+              ? <el-checkbox-button {...opt} label={opt.value}>{showOpt(opt)}</el-checkbox-button>
+              : <el-checkbox {...opt} label={opt.value}>{showOpt(opt)}</el-checkbox>
           ))}
-        </ElCheckboxGroup>
+        </el-checkbox-group>
       )
     }
     else if (type == 'radio-group') {
       return (
-        <ElRadioGroup {...el}>
+        <el-radio-group {...el}>
           {options.map(opt => (
             el!.type == 'button'
-              ? <ElRadioButton {...opt} label={optValue(opt)}>{showOpt(opt)}</ElRadioButton>
-              : <ElRadio {...opt} label={optValue(opt)}>{showOpt(opt)}</ElRadio>
+              ? <el-radio-button {...opt} label={opt.value}>{showOpt(opt)}</el-radio-button>
+              : <el-radio {...opt} label={opt.value}>{showOpt(opt)}</el-radio>
           ))}
-        </ElRadioGroup>
+        </el-radio-group>
       )
     }
   },
   fields: {
     modelValue: (item) => ({
       upload: 'fileList'
-    }[item.type] || 'modelValue')
+    }[item.is!] || 'modelValue')
   }
 })
 
-FormRender.name = 'ElFormRender'
-FormItemRender.name = 'ElFormItemRender'
-
 export const ElFormRender = FormRender
 export const ElFormItemRender = FormItemRender
+
+export {
+  formRenderProps,
+  formItemRenderProps
+}
 
 export default ElFormRender

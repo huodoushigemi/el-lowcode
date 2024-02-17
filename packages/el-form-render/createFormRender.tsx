@@ -1,26 +1,26 @@
-import { InjectionKey, PropType, computed, defineComponent, inject, provide, ref, ExtractPropTypes, mergeProps, camelize, renderSlot } from 'vue'
+import { InjectionKey, computed, defineComponent, inject, provide, ref, ExtractPropTypes, mergeProps, camelize, renderSlot, PropType } from 'vue'
 import { objectPick, toReactive } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
-import { Fnable, Obj, get, ks, set, unFn, withInstall } from '@el-lowcode/utils'
-import { Opt } from '.'
-
-type Awaitable<T> = Promise<T> | T
+import { Obj, get, ks, set, unFn, withInstall } from '@el-lowcode/utils'
+import { Item, formItemRenderPropsBase } from './props'
 
 type CreateFormRenderOptions<F, FI> = {
   Form: any
+  formName: string
   formProps: F
   FormItem: any
+  formItemName: any
   formItemProps: FI
   Input: any
   fields?: {
     /** @default 'label' */
-    label?: string
+    label?: keyof FI
     /** @default 'prpo' */
-    prop?: string
+    prop?: keyof FI
     /** @default 'modelValue' */
-    modelValue?: string | ((item) => string)
+    modelValue?: string | ((item: Item) => string)
     /** @default 'rules' */
-    rules?: string
+    rules?: keyof FI
     /** @default 'default' */
     inputSlot?: string
   }
@@ -34,37 +34,27 @@ const defaultFields = {
   inputSlot: 'default'
 }
 
-export function createFormRender<F extends Obj, FI extends Obj>({ Form, formProps, FormItem, formItemProps, Input, fields }: CreateFormRenderOptions<F, FI>) {
+export function createFormRender<F extends Obj, FI extends Obj>({ Form, formName, formProps, FormItem, formItemName, formItemProps, Input, fields }: CreateFormRenderOptions<F, FI>) {
   const _fields = { ...defaultFields, ...fields }
   const formItemKs = ks(formItemProps) as any[]
-  const formRenderContextKey: InjectionKey<{ model: Obj } & Obj> = Symbol()
+  const formRenderContextKey: InjectionKey<{ model?: Obj } & Obj> = Symbol()
 
-  const solveLP = (lp) => Array.isArray(lp) ? lp : (lp ? [lp, camelize(lp!)] : [])
+  const solveLP = (lp: Item['lp']) => Array.isArray(lp) ? lp : (lp ? [lp, camelize(lp!)] : [])
   const _label = (item) => item[_fields.label] || solveLP(item.lp)[0]
   const _prop = (item) => item[_fields.prop] || solveLP(item.lp)[1]
+  const _rules = (item, val) => unFn(item[_fields.rules], val)
 
   // FormItemRender ========================================================================================================
-
-  const _formItemRenderProps = {
-    lp: [String, Array],
-    type: String,
-    defaultValue: null,
-    displayValue: null,
-    hide: [Boolean, Function] as PropType<boolean | ((row: any) => boolean)>,
-    get: Function as PropType<(val: any, row: any) => any>,
-    set: Function as PropType<(val: any, row: any) => any>,
-    out: Function as PropType<(val: any, row: any) => any>,
-    options: [Array, Object, Function] as PropType<Fnable<Awaitable<Opt[]>>>,
-    rules: null,
-    el: Object,
-  }
+  
   const formItemRenderProps = {
     ...formItemProps,
-    ..._formItemRenderProps
+    ...formItemRenderPropsBase
   }
+
   const FormItemRender = defineComponent({
-    props: formItemRenderProps,
-    setup(props: ExtractPropTypes<typeof _formItemRenderProps>, { slots }) {
+    props: formItemRenderProps as any,
+    name: formName,
+    setup(props: Item, { slots }) {
       const form = inject(formRenderContextKey)
       const model = computed(() => form?.model || {})
 
@@ -84,12 +74,14 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formProp
         if (props.displayValue !== undefined && val === unFn(props.displayValue)) set(model.value, _prop(props), undefined)
       }
 
+      props.rules
+
       return () => {
         const itemProps = {
           ...objectPick(props, formItemKs),
           [_fields.label]: _label(props),
           [_fields.prop]: _prop(props),
-          [_fields.rules]: unFn(props[_fields.rules], model.value)
+          [_fields.rules]: _rules(props, model.value)
         }
         const elProps = mergeProps(
           {
@@ -128,6 +120,7 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formProp
   }
 
   const FormRender = defineComponent({
+    name: formItemName,
     props: formRenderProps,
     setup(props: ExtractPropTypes<typeof _formRenderProps>, { slots, expose }) {
       const _FormItemRender = createRender({

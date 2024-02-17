@@ -2,12 +2,14 @@ import { createVNode, mergeProps, resolveDynamicComponent } from 'vue'
 import { Form, formProps, Field, fieldProps } from 'vant'
 
 import { createFormRender } from './createFormRender'
-import { optValue, showOpt, solveOptions } from './form-render'
+import { showOpt, solveOptions } from './utils'
 
 const { FormRender, FormItemRender } = createFormRender({
   Form: Form,
+  formName: 'VanFormRender',
   formProps: formProps,
   FormItem: Field,
+  formItemName: 'VanFormItemRender',
   formItemProps: fieldProps,
   Input: (item) => {
     const { type, el } = item
@@ -23,7 +25,7 @@ const { FormRender, FormItemRender } = createFormRender({
       return (
         <van-checkbox-group {...el}>
           {options.map(opt => (
-            <van-checkbox name={optValue(opt)} {...opt}>{showOpt(opt)}</van-checkbox>
+            <van-checkbox name={opt.value} {...opt}>{showOpt(opt)}</van-checkbox>
           ))}
         </van-checkbox-group>
       )
@@ -32,7 +34,7 @@ const { FormRender, FormItemRender } = createFormRender({
       return (
         <van-radio-group {...el}>
           {options.map(opt => (
-            <van-radio name={optValue(opt)} {...opt}>{showOpt(opt)}</van-radio>
+            <van-radio name={opt.value} {...opt}>{showOpt(opt)}</van-radio>
           ))}
         </van-radio-group>
       )
@@ -43,9 +45,6 @@ const { FormRender, FormItemRender } = createFormRender({
     inputSlot: 'input',
   }
 })
-
-FormRender.name = 'VanFormRender'
-FormItemRender.name = 'VanFormItemRender'
 
 export const VanFormRender = FormRender
 export const VanFormItemRender = FormItemRender

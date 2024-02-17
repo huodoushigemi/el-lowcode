@@ -2,12 +2,14 @@ import { createVNode, resolveDynamicComponent } from 'vue'
 import { NForm, NFormItem, formProps, formItemProps } from 'naive-ui'
 
 import { createFormRender } from './createFormRender'
-import { solveOptions } from './form-render'
+import { solveOptions } from './utils'
 
 const { FormRender, FormItemRender } = createFormRender({
   Form: NForm,
+  formName: 'NFormRender',
   formProps: formProps,
   FormItem: NFormItem,
+  formItemName: 'NFormItemRender',
   formItemProps: formItemProps,
   Input: (item) => {
     const { type, el } = item
@@ -46,14 +48,13 @@ const { FormRender, FormItemRender } = createFormRender({
     }
   },
   fields: {
-    label: 'label',
     prop: 'path',
     rules: 'rule',
     modelValue: (item) => ({
       radio: 'checked',
       checkbox: 'checked',
       upload: 'fileList',
-    }[item.type] || 'value'),
+    }[item.type!] || 'value'),
   }
 })
 

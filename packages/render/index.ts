@@ -26,7 +26,8 @@ export function createRender({ defaultIs = 'div', processProps = (props: Props) 
     return (
       props.$?.condition == null || !!$?.condition
         ? h(
-            resolveDynamicComponent(is ?? defaultIs),
+            // @ts-ignore
+            resolveDynamicComponent(is || defaultIs),
             attrs,
             // render children
             isArray(children) ? children.map(e => isPlainObject(e) ? createVNode(Render, e) : e) :

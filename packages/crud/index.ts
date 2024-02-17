@@ -1,7 +1,7 @@
 import { withInstall } from '@el-lowcode/utils'
 import _CRUD from './crud.vue'
 import config, { setConfig } from './config'
-export * from './crud'
+export * from './props'
 
 export const CRUD = Object.assign(
   withInstall(_CRUD),
@@ -10,4 +10,5 @@ export const CRUD = Object.assign(
     setConfig
   }
 )
+
 export default CRUD

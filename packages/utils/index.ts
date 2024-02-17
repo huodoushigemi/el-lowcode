@@ -25,7 +25,7 @@ export const toArr = <T>(arr?: Arrable<T>) => Array.isArray(arr) ? arr : (arr ==
 
 type UnFn <T> = T extends (...args) => infer R ? R : T
 type UnP<T> = T extends (...args: infer P) => any ? P : []
-export const unFn = <T extends Fnable<any>>(fn: T, ...args: UnP<T>): UnFn<T> => typeof fn === 'function' ? (fn as Function)(...args) : fn
+export const unFn = <T extends Fnable<any>>(fn: T, ...args: UnP<T>): UnFn<T> => typeof fn === 'function' ? fn(...args) : fn
 
 export function get(obj: any, path: string | ((...args) => any)) {
   if (typeof path === 'function') return path(obj)
@@ -36,7 +36,7 @@ export function get(obj: any, path: string | ((...args) => any)) {
 export function set<T>(obj: any, path: string, val: T) {
   const ks = path.split('.')
   ks.slice(0, -1).forEach(k => obj = obj[k] ??= {})
-  return obj[ks.at(-1)!] = val
+  return obj[ks.slice(-1)[0]] = val
 }
 
 export function deepClone(obj?: Record<string | number, any>, iteratee = val => val) {

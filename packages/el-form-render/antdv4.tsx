@@ -3,12 +3,14 @@ import { Form, FormItem } from 'ant-design-vue'
 import { formProps, formItemProps } from 'ant-design-vue/es/form'
 
 import { createFormRender } from './createFormRender'
-import { solveOptions } from './form-render'
+import { solveOptions } from './utils'
 
 const { FormRender, FormItemRender } = createFormRender({
   Form: Form,
+  formName: 'AFormRender',
   formProps: formProps(),
   FormItem: FormItem,
+  formItemName: 'AFormItemRender',
   formItemProps: formItemProps(),
   Input: (item) => {
     const { type, el } = item
@@ -37,7 +39,6 @@ const { FormRender, FormItemRender } = createFormRender({
     }
   },
   fields: {
-    label: 'label',
     prop: 'name',
     modelValue: (item) => ({
       switch: 'checked',
@@ -45,12 +46,9 @@ const { FormRender, FormItemRender } = createFormRender({
       checkbox: 'checked',
       upload: 'fileList',
       transfer: 'targetKeys'
-    }[item.type] || 'value'),
+    }[item.type!] || 'value'),
   }
 })
-
-FormRender.name = 'AFormRender'
-FormItemRender.name = 'AFormItemRender'
 
 export const AFormRender = FormRender
 export const AFormItemRender = FormItemRender

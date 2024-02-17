@@ -1,5 +1,5 @@
 import type { ExtractPropTypes, PropType } from 'vue'
-import { ButtonProps, DialogProps, FormProps, TableProps, TableColumnCtx } from 'element-plus'
+import { ButtonProps, DialogProps, FormProps, TableProps, TableColumnCtx, PaginationProps } from 'element-plus'
 import type { Item } from 'el-form-render'
 import { Fnable } from '@el-lowcode/utils'
 import config, { Config } from './config'
@@ -14,15 +14,15 @@ export const crudProps = {
   url: String,
   extraQuery: Object,
   data: Array,
-  tableAttrs: Object as PropType<Partial<TableProps<any> & { [k: string]: any }>>,
+  tableAttrs: Object as PropType<Partial<TableProps<any>>>,
   columns: Array as PropType<(string | (TableColumnCtx<any> & { lp?: [string, string?] }))[]>,
   showIndex: Boolean,
   selected: Array,
   selection: Object as PropType<Column & { limit?: number; hide: Fnable<boolean> }>,
   multiple: Boolean,
   //
-  field: { type: Object, default: () => config.field },
-  pagination: { type: Object, default: () => config.pagination },
+  field: { type: Object as PropType<Config['field']>, default: () => config.field },
+  pagination: { type: Object as PropType<PaginationProps>, default: () => config.pagination },
   hasPagination: { default: true },
   //
   hasNew: { default: true },
@@ -46,8 +46,6 @@ export const crudProps = {
   form: Object,
   formAttrs: Object as PropType<FormProps>,
   formItems: Array as PropType<(string | Item)[]>,
-  //
-  onSelect: Function as PropType<(selected: any[], row) => void>,
   // 
   headerAttrs: Object
 }

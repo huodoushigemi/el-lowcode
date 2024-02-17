@@ -1,4 +1,5 @@
 import { execSync } from 'child_process'
+import fse from 'fs-extra'
 import { pkgDir, pkgJson } from './utils.js'
 import { ALL_PKGS } from '../build/all-pkgs.js'
 import rootPkg from '../package.json' assert { type: 'json' }
@@ -12,12 +13,14 @@ function verSync(pack) {
     pkg.peerDependencies?.[name] && (pkg.peerDependencies[name] = `^${pkg.version}`);
   }
   pkgJson(pack, pkg)
+
+  fse.copyFileSync(pkgDir(pack, 'package.json'), pkgDir(pack, 'dist/package.json'))
 }
 
 // 发布
 function publish(pack) {
   verSync(pack)
-  execSync(`cd ${pkgDir(pack)} && npm publish --access public`)
+  execSync(`npm publish --access public`, { cwd: pkgDir(pack, 'dist') })
 }
 
 publish('render')

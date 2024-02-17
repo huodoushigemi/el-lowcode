@@ -91,7 +91,7 @@ onMounted(() => {
 })
 
 async function download(url) {
-  const filename = url.split('/').at(-1)
+  const filename = url.split('/').slice(-1)[0]
   const res = await fetch(url)
   const blob = await res.blob()
   url = URL.createObjectURL(blob)

@@ -5,7 +5,8 @@ import UnoCSS from 'unocss/vite'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import Components from 'unplugin-vue-components/vite'
-import { ALL_PKGS } from '../../build/all-pkgs.js'
+import { ALL_PKGS, } from '../../build/all-pkgs.js'
+import path from 'path'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -71,6 +72,18 @@ export default defineConfig({
   outDir: './dest',
 
   vite: {
+    resolve: {
+      alias: ALL_PKGS.reduce((o, e) => {
+        //  new RegExp(e)
+        const dir = e.replace(/@el-lowcode\//, '')
+        o[e] = path.join(process.cwd(), 'packages', dir, '/index')
+        return o
+      }, {
+        'el-form-render/antdv4': path.join(process.cwd(), 'packages/el-form-render/antdv4'),
+        'el-form-render/naive-ui': path.join(process.cwd(), 'packages/el-form-render/naive-ui'),
+        'el-form-render/vant4': path.join(process.cwd(), 'packages/el-form-render/vant4'),
+      })
+    },
     optimizeDeps: {
       exclude: ALL_PKGS,
     },
