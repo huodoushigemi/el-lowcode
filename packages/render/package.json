@@ -1,12 +1,9 @@
 {
   "name": "@el-lowcode/render",
   "private": false,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
-  "main": "index.cjs",
   "module": "index.mjs",
-  "unpkg": "index.iife.js",
-  "jsdelivr": "index.iife.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
