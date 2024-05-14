@@ -18,17 +18,14 @@ const { FormRender, FormItemRender, formRenderProps, formItemRenderProps } = cre
       return createVNode(resolveDynamicComponent(is), el)
     }
     const options = solveOptions(item.options)!
-    if (el?.is) {
-      return createVNode(resolveDynamicComponent(is), { options, ...el })
-    }
-    else if (type == 'select' || !type) {
+    if (type == 'select' || is == 'ElSelect' || (!is && !type)) {
       return (
         <el-select {...el}>
           {options.map(opt => <el-option {...opt} />)}
         </el-select>
       )
     }
-    else if (type == 'checkbox-group') {
+    else if (type == 'checkbox-group' || is == 'ElCheckboxGroup') {
       return (
         <el-checkbox-group {...el}>
           {options.map(opt => (
@@ -39,7 +36,7 @@ const { FormRender, FormItemRender, formRenderProps, formItemRenderProps } = cre
         </el-checkbox-group>
       )
     }
-    else if (type == 'radio-group') {
+    else if (type == 'radio-group' || is == 'ElRadioGroup') {
       return (
         <el-radio-group {...el}>
           {options.map(opt => (
@@ -49,6 +46,9 @@ const { FormRender, FormItemRender, formRenderProps, formItemRenderProps } = cre
           ))}
         </el-radio-group>
       )
+    }
+    else if (el?.is) {
+      return createVNode(resolveDynamicComponent(is), { options, ...el })
     }
   },
   fields: {

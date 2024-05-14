@@ -14,7 +14,8 @@
   "exports": {
     ".": {
       "import": "./index.mjs",
-      "require": "./index.cjs"
+      "require": "./index.cjs",
+      "types": "./index.d.ts"
     },
     "./*": {
       "import": "./*.mjs",

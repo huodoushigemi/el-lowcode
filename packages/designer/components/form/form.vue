@@ -1,6 +1,6 @@
 <template>
   <ElFormRender ref="form" v-bind="{ ...$props, ...$attrs }">
-    <slot></slot>
+    <slot />
 
     <el-form-item label="">
       <el-button type="primary" native-type="submit">Submit</el-button>

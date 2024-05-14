@@ -32,7 +32,7 @@ import Scriptable from './components/scriptable.vue'
 import Input from './components/input.vue'
 
 const _normalizeItem = (item) => {
-  // item = normalizeItem(item)
+  item = normalizeItem(item)
   item.el ??= {}
   if (item.type == 'radio-group') item.el.type ??= 'button'
   if (item.type == 'color-picker') {
@@ -75,6 +75,12 @@ const commons = [
   { lp: 'class' },
   { lp: ['condition', '$.condition'], type: 'switch', displayValue: true },
   { lp: ['slot', 'slot'] },
+  // { is: 'ElCollapse', class: 'mb18', children: { is: 'ElCollapseItem', title: 'event', children: [
+  //   { lp: 'onClick', scriptable: true }
+  // ] }}
+  { is: 'h1', children: 'Event' },
+  { lp: 'onClick', scriptable: true },
+  { lp: 'onChange', scriptable: true },
 ].map(_normalizeItem)
 </script>
 

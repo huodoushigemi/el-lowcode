@@ -34,9 +34,7 @@ export function get(obj: any, path: string | ((...args) => any)) {
 }
 
 export function set<T>(obj: any, path: string, val: T) {
-  const ks = path.split('.')
-  ks.slice(0, -1).forEach(k => obj = obj[k] ??= {})
-  return obj[ks.slice(-1)[0]] = val
+  return path.split('.').reduce((o, k, i, ks) => o[k] = i == ks.length - 1 ? val : (o[k] ?? {}), obj)
 }
 
 export function deepClone(obj?: Record<string | number, any>, iteratee = val => val) {

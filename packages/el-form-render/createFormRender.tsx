@@ -1,7 +1,7 @@
 import { InjectionKey, computed, defineComponent, inject, provide, ref, ExtractPropTypes, mergeProps, camelize, renderSlot, PropType } from 'vue'
 import { objectPick, toReactive } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
-import { Obj, get, ks, set, unFn, withInstall } from '@el-lowcode/utils'
+import { Obj, get, set, ks, unFn, withInstall } from '@el-lowcode/utils'
 import { Item, formItemRenderPropsBase } from './props'
 
 type CreateFormRenderOptions<F, FI> = {
@@ -53,35 +53,34 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formName
 
   const FormItemRender = defineComponent({
     props: formItemRenderProps as any,
-    name: formName,
+    name: formItemName,
     setup(props: Item, { slots }) {
       const form = inject(formRenderContextKey)
-      const model = computed(() => form?.model || {})
+      const model = new Proxy({}, { get: (t, k: string) => form?.model?.[k], set: (t, k: string, v) => (form?.model && (form.model[k] = v), true) })
 
       const calcVal = () => {
-        let v = get(model.value, _prop(props))
-        if (props.get) v = props.get(v, model.value)
-        if (props.defaultValue !== undefined && (v === undefined || v === '')) set(model.value, _prop(props), v = unFn(props.defaultValue))
+        let v = get(model, _prop(props))
+        if (props.get) v = props.get(v, model)
+        if (props.defaultValue !== undefined && (v === undefined || v === '')) set(model, _prop(props), v = unFn(props.defaultValue))
         if (props.displayValue !== undefined && (v === undefined || v === '')) v = unFn(props.displayValue)
         return v
       }
 
       const onInput = (val) => {
-        if (props.set) set(model.value, _prop(props), props.set(val, model.value))
-        else set(model.value, _prop(props), val)
-        if (props.out) Object.assign(model.value!, props.out!(val, model.value))
-        val = get(model.value, _prop(props))
-        if (props.displayValue !== undefined && val === unFn(props.displayValue)) set(model.value, _prop(props), undefined)
+        if (props.set) set(model, _prop(props), props.set(val, model))
+          else set(model, _prop(props), val)
+        // console.log(model, _prop(props), get(model, _prop(props)));
+        if (props.out) Object.assign(model, props.out!(val, model))
+        val = get(model, _prop(props))
+        if (props.displayValue !== undefined && val === unFn(props.displayValue)) set(model, _prop(props), undefined)
       }
-
-      props.rules
 
       return () => {
         const itemProps = {
           ...objectPick(props, formItemKs),
           [_fields.label]: _label(props),
           [_fields.prop]: _prop(props),
-          [_fields.rules]: _rules(props, model.value)
+          [_fields.rules]: _rules(props, model)
         }
         const elProps = mergeProps(
           {
@@ -90,16 +89,18 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formName
           },
           {
             ...(props.el || {}),
-            disabled: unFn(props.el?.disabled, model.value)
+            disabled: unFn(props.el?.disabled, model)
           }
         )
-        return !unFn(props.hide, model.value)
+        
+        return !unFn(props.hide, model)
           ? (
             <FormItem {...itemProps}>
               {{
                 ...slots,
                 default: undefined,
-                [_fields.inputSlot]: () => (slots.default?.() || <Input {...props} el={elProps} />)
+                // [_fields.inputSlot]: () => (console.log(slots.default?.()), slots.default?.() || <Input {...props} el={elProps} />)
+                [_fields.inputSlot]: () => renderSlot(slots, 'default', undefined, () => [<Input {...props} el={elProps} />])
               }}
             </FormItem>
           )
@@ -120,7 +121,7 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formName
   }
 
   const FormRender = defineComponent({
-    name: formItemName,
+    name: formName,
     props: formRenderProps,
     setup(props: ExtractPropTypes<typeof _formRenderProps>, { slots, expose }) {
       const _FormItemRender = createRender({

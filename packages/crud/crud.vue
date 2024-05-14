@@ -93,7 +93,7 @@ const eqRow = (a, b) => get(a, tableAttrs.rowKey!) == get(b, tableAttrs.rowKey!)
 const isSelected = (row, arr = props.selected) => arr!.some(e => eqRow(row, e))
 
 defineOptions({ name: 'crud' })
-const emit = defineEmits(['update:search', 'update:form', 'update:selected'])
+const emit = defineEmits(['update:search', 'update:form', 'update:selected', 'reset'])
 
 const props = defineProps(crudProps)
 const _request = props.request || config.request
@@ -147,6 +147,7 @@ async function getData(query = params) {
 }
 
 function resetSearch() {
+  emit('reset')
   searchRef.value!.resetFields()
   return getData()
 }
@@ -293,6 +294,7 @@ defineExpose({
   searchRef,
   formRef,
   tableRef,
+  params,
   openDialog,
   getData,
   getList: getData,

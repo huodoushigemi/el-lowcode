@@ -2,14 +2,14 @@
   <component v-if="condition" ref="elRef" :is="el.is" v-bind="_el" :class="[config?.layout && 'container-box']" @mouseover.stop="designerCtx.hoverId = el._id" @mousedown.stop="designerCtx.activeId = el._id">
 
     <template v-if="config?.layout">
-      <drag-box v-if="isArray(el.children) && el.children.length" v-for="item in (el.children as BoxProps[])" :key="item._id" :parent="el" :el="item" />
+      <drag-box v-if="isArray(el.children) && el.children.length" v-for="item in (el.children as BoxProps[])" :key="item._id" :el="item" />
       <!-- <div v-else-if="isArray(el.children)" class="empty-placeholder">Drag and drop here</div> -->
       <template v-else-if="isArray(el.children)"></template>
       <template v-else-if="el.children != null">{{ _execExp(el.children) }}</template>
     </template>
 
     <div v-else-if="isArray(el.children)" ref="boxRef" class="container-box">
-      <drag-box v-for="item in el.children" :key="item._id" :parent="el" :el="item" />
+      <drag-box v-for="item in el.children" :key="item._id" :el="item" />
       <!-- <div v-if="!el.children.length" class="empty-placeholder">Drag and drop here</div> -->
       <template v-if="!el.children"></template>
     </div>
@@ -17,7 +17,7 @@
     <template v-else-if="el.children != null">
       {{ _execExp(el.children) }}
     </template>
-    
+
   </component>
 </template>
 
@@ -36,7 +36,6 @@ defineOptions({
 })
 
 const props = defineProps({
-  parent: Object as PropType<BoxProps>,
   el: { type: Object as PropType<BoxProps>, default: (() => ({})) }
 })
 
@@ -44,6 +43,7 @@ const designerCtx = inject(designerCtxKey)!
 const pageCtx = inject(pageCtxKey)!
 
 const config = computed(() => sloveConfig(props.el))
+
 
 // 拖拽
 const elRef = ref<HTMLDivElement>()

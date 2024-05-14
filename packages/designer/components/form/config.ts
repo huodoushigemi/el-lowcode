@@ -9,6 +9,7 @@ import { FormItemProps } from 'element-plus'
 export default {
   is: 'Form',
   label: 'form',
+  layout: true,
   props: [
     { is: JsonSchemaDialog },
     { lp: 'model', required: true, scriptable: true },

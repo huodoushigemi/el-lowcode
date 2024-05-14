@@ -1,16 +1,21 @@
 <template>
   <el-form-item-render v-bind="$props">
+
     <template v-if="_scriptable" #label="{ label }">
       {{ label }}
-      <el-tag v-if="scriptable !== true" :effect="isScript ? 'dark' : 'plain'" :type="isScript ? 'primary' : 'info'" size="small" ml8 cursor-pointer @click="isScript = !isScript">JS</el-tag>
+      <el-tag v-if="scriptable !== true" :effect="isScript ? 'dark' : 'plain'" :type="isScript ? 'primary' : 'info'" size="small" ml8 cursor-pointer @click="visible = !isScript; value = isScript ? '' : value">JS</el-tag>
     </template>
-    <template v-if="scriptable === true || isScript">
-      <div flex justify-between px8 wfull bg="[--el-fill-color-light]" bg-hover cursor-pointer :c="exp || '[--el-text-color-placeholder]'" style="border: var(--el-border)" @click="visible = true">
-        <span>{{ '\{\{' }}</span>
-        <span mx12 line-clamp-2 class="empty:after:content-['JS_Expression']">{{ exp }}</span>
-        <span>{{ '\}\}' }}</span>
-      </div>
-      <el-dialog v-model="visible" title="JS Expression" class="[&_.el-dialog\_\_footer]:pt0" destroy-on-close>
+
+    <div v-if="isScript || scriptable === true" flex justify-between px8 wfull bg="[--el-fill-color-light]" bg-hover cursor-pointer :c="exp || '[--el-text-color-placeholder]'" style="border: var(--el-border)" @click="visible = true">
+      <span>{{ `{\{` }}</span>
+      <span mx12 line-clamp-2 class="empty:after:content-['JS_Expression']">{{ exp }}</span>
+      <span>{{ `}\}` }}</span>
+    </div>
+    
+    <el-form-item-render v-else v-bind="$props" class="[&_.el-form-item\_\_label]:hidden!" wfull />
+
+    <template v-if="scriptable === true || isScript || visible">
+      <el-dialog v-model="visible" title="JS Expression" destroy-on-close>
         <monaco-editor v-model:value="code" @save="onSave" :tsExtraLibs="tsExtraLibs" language="typescript" height="300px" />
         <template #footer>
           <el-button size="default" @click="visible = false">Cancel</el-button>
@@ -18,7 +23,7 @@
         </template>
       </el-dialog>
     </template>
-    <el-form-item-render v-else v-bind="$props" class="[&_.el-form-item\_\_label]:hidden!" wfull />
+
   </el-form-item-render>
 </template>
 
@@ -43,27 +48,18 @@ const formCtx = inject(formContextKey)
 const model = computed(() => formCtx.model)
 const value = computed({
   get: () => get(model.value, props.prop || ''),
-  set: val => set(model.value, props.prop, val)
+  set: val => set(model.value, props.prop, val ?? defaultValue.value)
 })
 
 const designerCtx = inject(designerCtxKey)
 const config = computed(() => sloveConfig(designerCtx.active))
 const defaultValue = computed(() => get(config.value?.defaultProps?.() || {}, props.prop) ?? props.defaultValue)
 
-const _scriptable = computed(() => (
-  props.scriptable === undefined ? true : props.scriptable
-))
+const _scriptable = computed(() => props.scriptable === undefined ? true : props.scriptable)
 
 const expReg = /^\{\{([\d\D]*)\}\}$/
 
-const isScript = computed({
-  get() {
-    return isString(value.value) ? expReg.test(value.value) : false
-  },
-  set(val) {
-    value.value = val ? '{{}}' : defaultValue.value
-  }
-})
+const isScript = computed(() => isString(value.value) ? expReg.test(value.value) : false)
 
 const tsExtraLibs = computed(() => (console.log(JSON.stringify(designerCtx.currentState)), {
   'state.ts': `const state = ${JSON.stringify(designerCtx.currentState)}`
