@@ -37,7 +37,7 @@ const calcStyle = (el?: HTMLElement | null) => {
   const rect1 = vp?.getBoundingClientRect()
   const rect2 = el.getBoundingClientRect()
   if (!rect1) return
-  return { top: rect2.top + 'px', left: rect2.left + 'px', width: el.offsetWidth + 'px', height: el.offsetHeight + 'px' }
+  return { top: rect2.top + 'px', left: rect2.left + 'px', width: rect2.width + 'px', height: rect2.height + 'px' }
 }
 
 const ins = getCurrentInstance()!

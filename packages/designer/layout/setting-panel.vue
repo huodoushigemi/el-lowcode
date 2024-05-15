@@ -45,7 +45,7 @@ const _normalizeItem = (item) => {
   if (item.type == 'color-picker') {
     item.el.size ??= 'default'
     item.el.showAlpha ??= true
-    item.displayValue ??= '#00000000'
+    item.displayValue ??= '#00000010'
   }
   item.el.clearable ??= true
   item.el.placeholder ??= ''

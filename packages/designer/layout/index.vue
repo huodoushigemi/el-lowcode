@@ -7,7 +7,7 @@
         <b ml8 text-22>El lowcode</b>
       </div>
       <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32 [&>.is-active]:c-[--el-color-primary]" flex-1 flex justify-center space-x-4>
-        <i-mdi:desktop-mac :class="canvasWidth == '100%' && 'is-active'" bg-hover @click="canvasWidth = '100%'" />
+        <i-mdi:desktop-mac :class="canvasWidth == '1280px' && 'is-active'" bg-hover @click="canvasWidth = '1280px'" />
         <i-raphael:ipad :class="canvasWidth == '768px' && 'is-active'" bg-hover @click="canvasWidth = '768px'" />
         <i-mdi:cellphone-android :class="canvasWidth == '480px' && 'is-active'" bg-hover @click="canvasWidth = '480px'" />
       </div>
@@ -60,12 +60,16 @@
     </el-tabs>
     
     <!-- Canvas Viewport -->
-    <main id="canvas-viewport" flex-1 p12 bg="[--el-fill-color-lighter]" overflow-overlay>
-      <!-- <page :root="root" /> -->
+    <main id="canvas-viewport" flex-1 bg="[--el-fill-color-lighter]" overflow-overlay>
       <selected-layer />
-      <wc-fill-remain ma :style="stringifyStyle(designerCtx.canvas.style)">
+      <!-- <wc-fill-remain ma :style="stringifyStyle(designerCtx.canvas.style)">
         <drag-box id="root" :el="root" min-hinherit mb0="!" />
-      </wc-fill-remain>
+      </wc-fill-remain> -->
+      <infinite-viewer wfull hfull>
+        <div :style="{ width: canvasWidth }" style="background: var(--el-fill-color-extra-light)">
+          <drag-box id="root" :el="root" min-hinherit mb0="!" h1080 />
+        </div>
+      </infinite-viewer>
     </main>
     
     <!-- Setting -->
@@ -94,6 +98,7 @@ import SelectedLayer from './components/selected-layer.vue'
 import SettingPanel from './setting-panel.vue'
 import StateDrawer from './components/state-drawer.vue'
 import CurrentState from './components/current-state.vue'
+import InfiniteViewer from './components/infinite-viewer.vue'
 import Schema from './components/schema.vue'
 import { vue2esm } from './vue2esm'
 
