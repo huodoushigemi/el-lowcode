@@ -4,6 +4,7 @@
     <el-tab-pane label="attrs">
       <el-form-render :model="model" label-width="auto" size="small" label-position="top">
         <Render v-for="item in _items" v-bind="item" />
+        <!-- <Render v-for="item in styles" v-bind="item" /> -->
       </el-form-render>
     </el-tab-pane>
 
@@ -22,7 +23,7 @@
 </template>
 
 <script setup>
-import { computed, inject } from 'vue'
+import { computed, inject, h } from 'vue'
 import { parseStringStyle, stringifyStyle } from '@vue/shared'
 import { createRender } from '@el-lowcode/render'
 import { ElFormRender, normalizeItem } from 'el-form-render'
@@ -31,6 +32,12 @@ import { sloveConfig } from '../components/_utils'
 import Scriptable from './components/scriptable.vue'
 import Input from './components/input.vue'
 
+import MaterialSymbolsLightFormatBold from '~icons/material-symbols-light/format-bold'
+import MaterialSymbolsLightFormatItalic from '~icons/material-symbols-light/format-italic'
+import MaterialSymbolsFormatBold from '~icons/material-symbols/format-bold'
+import MaterialSymbolsFormatItalic from '~icons/material-symbols/format-italic'
+
+
 const _normalizeItem = (item) => {
   item = normalizeItem(item)
   item.el ??= {}
@@ -38,6 +45,7 @@ const _normalizeItem = (item) => {
   if (item.type == 'color-picker') {
     item.el.size ??= 'default'
     item.el.showAlpha ??= true
+    item.displayValue ??= '#00000000'
   }
   item.el.clearable ??= true
   item.el.placeholder ??= ''
@@ -61,10 +69,17 @@ const styles = [
   { lp: ['position', 'style.position'], type: 'select', options: ['static', 'relative', 'absolute', 'fixed', 'sticky'], el: { placeholder: 'static' } },
   { lp: ['layout', 'style.display'], type: 'radio-group', options: ['inline', 'block', 'flex'] },
   { lp: ['background-color', 'style.backgroundColor'], type: 'color-picker' },
-  { lp: ['opacity', 'style.opacity'], type: 'slider', el: { min: 0, max: 1, step: .01, formatTooltip: val => (val * 100).toFixed(2) } },
+  { lp: ['opacity', 'style.opacity'], type: 'slider', displayValue: 1, el: { min: 0, max: 1, step: .01, formatTooltip: val => (val * 100).toFixed(2) } },
   { lp: ['overflow', 'style.overflow'], type: 'radio-group', options: ['visible', 'auto', 'hidden'] },
-  { lp: ['font-size', 'style.fontSize'] },
-  { lp: ['font-color', 'style.color'], type: 'color-picker' },
+  { is: 'h4', class: 'mb8', children: 'Text' },
+  { prop: 'style.fontSize', type: 'slider', class: 'mb8', scriptable: false, displayValue: '16px', get: v => parseInt(v), set: v => v + 'px', el: { min: 12, max: 64 } },
+  { is: 'div', class: 'flex space-x-4', children: [
+    { prop: 'style.color', type: 'color-picker', scriptable: false, el: { size: 'default' } },
+    { is: 'div', class: 'mla!' },
+    { prop: 'style.fontWeight', scriptable: false, el: { is: ({ modelValue: v }, { emit }) => h(MaterialSymbolsLightFormatBold, { class: 'bg-hover w28 h28', style: `background: ${v ? '#404040' : ''}`, onClick: () => emit('update:modelValue', v ? undefined : 'bold') }) } },
+    { prop: 'style.fontStyle', scriptable: false, el: { is: ({ modelValue: v }, { emit }) => h(MaterialSymbolsLightFormatItalic, { class: 'bg-hover w28 h28', style: `background: ${v ? '#404040' : ''}`, onClick: () => emit('update:modelValue', v ? undefined : 'italic') }) } },
+  ] },
+  { is: 'h4', class: 'mb8', children: 'Border' },
   { lp: ['border', 'style.border'], el: { placeholder: '0px solid #00' } },
   { lp: ['rounded', 'style.borderRadius'], type: 'slider', get: v => parseInt(v), set: v => v + 'px' },
   { lp: 'style', get: val => stringifyStyle(val).replace(/;/g, ';\n'), set: val => parseStringStyle(val), el: { is: Input, type: 'textarea', placeholder: 'font-size: inherit;\ncolor: inherit;', autosize: { minRows: 4, maxRows: 12 } } },
@@ -74,10 +89,11 @@ const commons = [
   { lp: 'id' },
   { lp: 'class' },
   { lp: ['condition', '$.condition'], type: 'switch', displayValue: true },
-  { lp: ['slot', 'slot'] },
+  // { lp: ['slot', 'slot'] },
   // { is: 'ElCollapse', class: 'mb18', children: { is: 'ElCollapseItem', title: 'event', children: [
   //   { lp: 'onClick', scriptable: true }
   // ] }}
+  { is: 'ElDivider' },
   { is: 'h1', children: 'Event' },
   { lp: 'onClick', scriptable: true },
   { lp: 'onChange', scriptable: true },

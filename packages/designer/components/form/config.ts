@@ -21,6 +21,9 @@ export default {
     { lp: 'label-suffix' },
     { lp: 'status-icon', type: 'switch' },
     { lp: 'scroll-to-error', type: 'switch' },
+    { is: 'ElDivider' },
+    { is: 'h1', children: 'Event' },
+    { lp: 'onSubmit', scriptable: true }
   ],
   defaultProps: () => ({
     labelWidth: 80,

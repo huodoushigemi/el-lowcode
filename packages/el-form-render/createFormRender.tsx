@@ -68,8 +68,7 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formName
 
       const onInput = (val) => {
         if (props.set) set(model, _prop(props), props.set(val, model))
-          else set(model, _prop(props), val)
-        // console.log(model, _prop(props), get(model, _prop(props)));
+        else set(model, _prop(props), val)
         if (props.out) Object.assign(model, props.out!(val, model))
         val = get(model, _prop(props))
         if (props.displayValue !== undefined && val === unFn(props.displayValue)) set(model, _prop(props), undefined)

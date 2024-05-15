@@ -1,5 +1,8 @@
 <template>
-  <component v-if="condition" ref="elRef" :is="el.is" v-bind="_el" :class="[config?.layout && 'container-box']" @mouseover.stop="designerCtx.hoverId = el._id" @mousedown.stop="designerCtx.activeId = el._id">
+  <component v-if="condition" ref="elRef" :is="el.is" v-bind="_el" :class="[config?.layout && 'container-box']"
+    @mouseover.stop="designerCtx.hoverId = el._id" @native:mouseover.stop="designerCtx.hoverId = el._id"
+    @mousedown.stop="designerCtx.activeId = el._id" @native:mousedown.stop="designerCtx.activeId = el._id" 
+  >
 
     <template v-if="config?.layout">
       <drag-box v-if="isArray(el.children) && el.children.length" v-for="item in (el.children as BoxProps[])" :key="item._id" :el="item" />
