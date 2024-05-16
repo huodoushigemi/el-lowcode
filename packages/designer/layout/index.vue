@@ -1,8 +1,8 @@
 <template>
   <div class="layout" grid="~ cols-[auto_1fr_auto] rows-[auto_1fr]" data-designer>
     <!-- Header -->
-    <header col-span-full h56 flex items-center b-b="1px solid [--el-border-color]">
-      <div flex items-center>
+    <header col-span-full h56 flex aic b-b="1px solid [--el-border-color]">
+      <div flex aic>
         <i-ep:eleme w44 h44 c="[--el-color-primary]" />
         <b ml8 text-22>El lowcode</b>
       </div>
@@ -60,12 +60,12 @@
     </el-tabs>
     
     <!-- Canvas Viewport -->
-    <main id="canvas-viewport" flex-1 overflow-overlay style="background: var(--el-fill-color-light)">
-      <infinite-viewer wfull hfull :body-style="`width: ${canvasWidth}; background: var(--el-fill-color-extra-light)`" body-class="relative">
+    <infinite-viewer wfull hfull style="background: var(--el-fill-color-light)">
+      <div class="viewport relative" :style="`width: ${canvasWidth}; background: var(--el-fill-color-extra-light)`">
         <drag-box id="root" :el="root" h1080 />
         <selected-layer />
-      </infinite-viewer>
-    </main>
+      </div>
+    </infinite-viewer>
     
     <!-- Setting -->
     <aside w256 b-l="1px solid [--el-border-color]" overflow-overlay>

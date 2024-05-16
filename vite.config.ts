@@ -11,7 +11,6 @@ export default defineConfig(async () => ({
   resolve: {
     alias: [
       ...entries,
-      { find: 'vue', replacement: 'https://play.vuejs.org/vue.runtime.esm-browser.js' }
     ]
   },
   build: {

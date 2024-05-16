@@ -1,6 +1,6 @@
 <template>
   <div flex="~ col" wfull space-y--1>
-    <div v-for="(item, i) in modelValue" class="focus:z-1 focus:relative" flex items-center tabindex="-1">
+    <div v-for="(item, i) in modelValue" class="focus:z-1 focus:relative" flex aic tabindex="-1">
       <pair-input :model-value="[item.label, item.value]" :placeholder="['label', 'value']" @update:modelValue="onInput(item, $event)" />
       <i-mdi:close ml6 p4 w22 h22 bg-hover @click="modelValue.splice(i, 1)" />
     </div>

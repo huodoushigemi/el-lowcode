@@ -30,6 +30,7 @@ export interface BoxProps {
 
 export interface Preset {
   name: string
+  icon?: string
   presets?: string[]
   customComponents?: Record<string, string>
   extraElLowcodeWidgets?: Record<string, string>

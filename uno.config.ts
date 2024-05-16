@@ -19,7 +19,8 @@ export default defineConfig({
   safelist: [
     'inline-block',
     'flex!',
-    'ml4', 'ml8', 'mla', 'mb0', 'mb4', 'mb8'
+    'text-12',
+    '-ml4', 'ml4', 'ml8', 'mla', 'mb0', 'mb4', 'mb8'
   ],
   shortcuts: {
     'bg-hover': 'hover:bg-[--el-fill-color-light] active:bg-[--el-fill-color-dark]! rd-6 [&.is-active]:bg-[--el-fill-color-light]',

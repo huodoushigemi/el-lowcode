@@ -1,4 +1,4 @@
-import { h, resolveDynamicComponent, createVNode } from 'vue'
+import { h, resolveDynamicComponent, createVNode, createTextVNode, toDisplayString } from 'vue'
 import { isArray, isPlainObject } from '@vue/shared'
 import { unFn, Fnable, Arrable } from '@el-lowcode/utils'
 
@@ -21,8 +21,8 @@ type CreateRender = {
 
 export function createRender({ defaultIs = 'div', processProps = (props: Props) => props }: CreateRender) {
   return function Render(props: Props) {
-    let { is, children, $, ...attrs } = processProps(props)
-    children = unFn(children)
+    const { is, _id, $, children, ...attrs } = processProps(props)
+    const childs = unFn(children)
     return (
       props.$?.condition == null || !!$?.condition
         ? h(
@@ -30,9 +30,12 @@ export function createRender({ defaultIs = 'div', processProps = (props: Props) 
             resolveDynamicComponent(is || defaultIs),
             attrs,
             // render children
-            isArray(children) ? children.map(e => isPlainObject(e) ? createVNode(Render, e) : e) :
-            isPlainObject(children) ? createVNode(Render, children) :
-            children
+            {
+              default: () =>
+                isArray(childs) ? childs.map(e => isPlainObject(e) ? createVNode(Render, e) : e) :
+                isPlainObject(childs) ? createVNode(Render, childs) :
+                childs
+            }
           )
         : null
     )
