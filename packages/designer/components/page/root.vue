@@ -19,6 +19,7 @@ const props = defineProps({
   state: { type: Object, default: () => ({}) },
   esm: Object,
   customComponents: Object,
+  preset: [Object, String]
 })
 
 const ins = getCurrentInstance()!

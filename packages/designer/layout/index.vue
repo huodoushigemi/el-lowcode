@@ -20,7 +20,7 @@
     </header>
 
     <!-- Left -->
-    <el-tabs tab-position="left" type="border-card" hfull b-r="1px solid [--el-border-color]" box-border>
+    <el-tabs tab-position="left" type="border-card" hfull b-r="1px solid [--el-border-color]" box-border> 
       <el-tab-pane w200 ref="dropZone" :class="isOverDropZone && `overlay`">
         <template #label><el-tooltip content="组件库" placement="right" :hide-after="0"><i-mdi:widgets-outline /></el-tooltip></template>
         <div px8 py12 text-22 b-b="1 solid [--el-border-color]">组件</div>
@@ -60,15 +60,10 @@
     </el-tabs>
     
     <!-- Canvas Viewport -->
-    <main id="canvas-viewport" flex-1 bg="[--el-fill-color-lighter]" overflow-overlay>
-      <selected-layer />
-      <!-- <wc-fill-remain ma :style="stringifyStyle(designerCtx.canvas.style)">
-        <drag-box id="root" :el="root" min-hinherit mb0="!" />
-      </wc-fill-remain> -->
-      <infinite-viewer wfull hfull>
-        <div :style="{ width: canvasWidth }" style="background: var(--el-fill-color-extra-light)">
-          <drag-box id="root" :el="root" min-hinherit mb0="!" h1080 />
-        </div>
+    <main id="canvas-viewport" flex-1 overflow-overlay style="background: var(--el-fill-color-light)">
+      <infinite-viewer wfull hfull :body-style="`width: ${canvasWidth}; background: var(--el-fill-color-extra-light)`" body-class="relative">
+        <drag-box id="root" :el="root" h1080 />
+        <selected-layer />
       </infinite-viewer>
     </main>
     
@@ -101,6 +96,7 @@ import CurrentState from './components/current-state.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import Schema from './components/schema.vue'
 import { vue2esm } from './vue2esm'
+import { onUpdated } from 'vue'
 
 defineOptions({
   components: keyBy(components, 'name')

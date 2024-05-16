@@ -45,7 +45,12 @@ export const sloveConfig = (el?: BoxProps) => {
 const importCache = {} as Record<string, Promise<any> | undefined>
 export function importJs(js: string) {
   if (importCache[js]) return importCache[js]
-  const blob = new Blob([js], { type: "text/javascript" })
-  const url = URL.createObjectURL(blob)
+  let url = ''
+  if (/^https?:/.test(js)) {
+    url = js
+  } else {
+    const blob = new Blob([js], { type: "text/javascript" })
+    url = URL.createObjectURL(blob)
+  }
   return importCache[js] = import(/* @vite-ignore */ url)
 }

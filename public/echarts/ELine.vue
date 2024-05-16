@@ -1,0 +1,109 @@
+<template>
+  <VueEcharts v-bind="$attrs" :option="option" />
+</template>
+
+<script setup>
+import { computed } from 'vue'
+
+// 按需引入 ECharts 图表和组件
+// https://echarts.apache.org/handbook/zh/basics/import#%E6%8C%89%E9%9C%80%E5%BC%95%E5%85%A5-echarts-%E5%9B%BE%E8%A1%A8%E5%92%8C%E7%BB%84%E4%BB%B6
+import { use } from 'echarts/core'
+import { TitleComponent, TooltipComponent, GridComponent, DatasetComponent, TransformComponent } from 'echarts/components'
+import { LabelLayout, UniversalTransition } from 'echarts/features'
+import { CanvasRenderer, SVGRenderer } from 'echarts/renderers'
+import VueEcharts from 'vue-echarts'
+
+import { LineChart } from 'echarts/charts'
+
+use([ TitleComponent, TooltipComponent, GridComponent, DatasetComponent, TransformComponent, LabelLayout, UniversalTransition, CanvasRenderer, SVGRenderer ])
+use([ LineChart ])
+
+
+console.log(VueEcharts);
+
+defineOptions({ name: 'ELine' })
+
+const props = defineProps({
+  data: Array,
+  fields: { type: Object, default: () => ({ x: 'x', y: 'y' }) },
+  options: Object
+})
+
+const option = computed(() => {
+  return {
+    xAxis: {
+      type: 'category',
+      data: props.data?.map(item => item[props.fields.x]) || []
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [
+      {
+        data: props.data?.map(item => item[props.fields.y]) || [],
+        type: 'line'
+      }
+    ]
+  }
+})
+</script>
+  
+<script>
+export const el_lowcode = {
+  is: 'ELine',
+  label: '线型图',
+  props: [
+    { lp: 'data', script: true },
+    { lp: 'fields', script: true },
+    { lp: 'autoresize', type: 'switch' },
+    // { lp: ['areaStyle', 'options.areaStyle'] },
+    { lp: ['svg', 'initOptions.renderer'], type: 'switch', el: { activeValue: 'svg', inactiveValue: null } },
+    { lp: ['dark', 'theme'], type: 'switch', el: { activeValue: 'dark', inactiveValue: null } },
+
+    { is: 'ElTabs', type: 'border-card', children: [
+      { is: 'ElTabPane', label: 'Grid', lazy: true, name: '1', children: [
+        { prop: 'grid.top', type: 'slider' },
+        { prop: 'grid.right', type: 'slider' },
+        { prop: 'grid.bottom', type: 'slider' },
+        { prop: 'grid.left', type: 'slider' },
+      ] },
+      { is: 'ElTabPane', label: 'axis', lazy: true, name: '2', children: [
+        // { is: 'h1', children: 'x' },
+      ] },
+    ] },
+    { is: 'ElCollapse', children: [
+      { is: 'ElCollapseItem', title: 'x', children: [
+        { is: 'h4', class: 'flex aic mb8', children: ['split-line', { prop: 'xAxis.splitLine.show', type: 'switch', displayValue: true, script: false, class: 'mla mb0' }] },
+        { is: 'div', class: 'flex aic', children: [
+          { prop: 'xAxis.splitLine.lineStyle.width', type: 'input-number', displayValue: 1, script: false, el: { max: 5 } },
+          { prop: 'xAxis.splitLine.lineStyle.color', type: 'color-picker', defaultValue: '#484753', script: false, class: 'ml8' },
+          { prop: 'xAxis.splitLine.lineStyle.type', options: ['solid', 'dash'], displayValue: 'solid', script: false },
+        ] },
+        { is: 'h4', class: 'flex aic mb8', children: ['axis-line', { prop: 'xAxis.axisLine.show', type: 'switch', displayValue: true, script: false, class: 'mla mb0' }] },
+        { is: 'div', class: 'flex aic', children: [
+          { prop: 'xAxis.axisLine.lineStyle.width', type: 'input-number', displayValue: 1, script: false, el: { max: 5 } },
+          { prop: 'xAxis.axisLine.lineStyle.color', type: 'color-picker', script: false, class: 'ml8' },
+          { prop: 'xAxis.axisLine.lineStyle.type', options: ['solid', 'dash'], displayValue: 'solid', script: false, class: 'ml8' },
+        ] },
+        { is: 'h4', class: 'flex aic mb8', children: ['axis-label', { prop: 'xAxis.axisLabel.show', type: 'switch', displayValue: true, script: false, class: 'mla mb0' }] },
+          { prop: 'xAxis.axisLabel.rotate', type: 'slider', displayValue: 0, script: false, class: '', el: { min: -90, max: 90, formatTooltip: v => `rotate: ${v}°` } },
+          { label: 'margin', prop: 'xAxis.axisLabel.margin', type: 'input-number', displayValue: 8, script: false, class: 'flex!'},
+          { label: 'size', prop: 'xAxis.axisLabel.fontSize', type: 'input-number', displayValue: 12, script: false, class: 'flex!'},
+      ] }
+    ] },
+
+    { is: 'ElDivider' },
+    { is: 'h1', children: 'Event' },
+    { lp: 'onFinished', script: true },
+    { lp: 'onSelectchanged', script: true },
+    { lp: 'onLegendselectchanged', script: true },
+    { lp: 'onLegendselected', script: true },
+  ],
+  defaultProps: () => ({
+    data: `{{${JSON.stringify([{ x: 'Mon', y: 150 }, { x: 'Tue', y: 230 }, { x: 'Wed', y: 224 }, { x: 'Thu', y: 218 }, { x: 'Fri', y: 135 }, { x: 'Sat', y: 147 }, { x: 'Sun', y: 260 }], undefined, ' ')}}}`,
+    fields: `{{{ x: 'x', y: 'y' }}}`,
+    autoresize: true,
+    style: { height: '300px', width: '400px' }
+  })
+}
+</script>

@@ -1,11 +1,11 @@
 <template>
   <div class="viewer" relative>
-    <div absolute w30 h30 z-1 @click="viewer.scrollCenter()" />
-    <div class="guides-x" absolute left-30 right-0 h30 z-1 />
-    <div class="guides-y" absolute top-30 bottom-0 w30 z-1 />
+    <div absolute w20 h20 z-1 @click="viewer.scrollCenter(); viewer.setZoom(1)" />
+    <div class="guides-x" absolute left-20 right-0 h20 z-1 />
+    <div class="guides-y" absolute top-20 bottom-0 w20 z-1 />
     <div class="infinite-viewer-wrapper">
         <div class="infinite-viewer-scroll-area"></div>
-        <div class="viewport">
+        <div class="viewport" :class="bodyClass" :style="bodyStyle">
           <slot />
         </div>
     </div>
@@ -21,6 +21,21 @@
 <script setup>
 import { ref, onMounted, onBeforeMount } from 'vue'
 import { useCurrentElement, useResizeObserver } from '@vueuse/core'
+import Guides from '@scena/guides'
+import InfiniteViewer from 'infinite-viewer'
+import { onUpdated } from 'vue';
+import { watchEffect } from 'vue';
+
+const props = defineProps({
+  bodyStyle: [String, Object],
+  bodyClass: String
+})
+
+onUpdated(() => {
+  // console.log('onUpdated');
+})
+
+watchEffect(() => console.log(props.bodyStyle, 'onUpdated'))
 
 const el = useCurrentElement()
 
@@ -33,6 +48,7 @@ onMounted(() => {
     snapThreshold: 5,
     snaps: [0, 300, 600],
     displayDragPos: true,
+    textOffset: [0, 8],
     dragPosFormat: v => `${v}px`,
   })
 
@@ -41,6 +57,7 @@ onMounted(() => {
     snapThreshold: 5,
     snaps: [0, 200, 400],
     displayDragPos: true,
+    textOffset: [8, 0],
     dragPosFormat: v => `${v}px`,
   })
 
@@ -56,7 +73,6 @@ onMounted(() => {
           e.stop()
       }
   }).on("scroll", e => {
-    console.log('xx');
       const zoom = viewer.zoom
       guidesX.scroll(e.scrollLeft, zoom)
       guidesX.scrollGuides(e.scrollTop, zoom)

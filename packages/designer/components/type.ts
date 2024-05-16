@@ -19,10 +19,18 @@ export interface BoxProps {
   esm?: Record<string, string>
   customComponents?: Record<string, string>
   extraElLowcodeWidgets?: Record<string, string>
+  presets?: string[]
   $?: {
     loop: string
     loopArgs: [string, string]
     condition: any
   }
   [k: string]: any
+}
+
+export interface Preset {
+  name: string
+  presets?: string[]
+  customComponents?: Record<string, string>
+  extraElLowcodeWidgets?: Record<string, string>
 }

@@ -16,8 +16,17 @@ export default defineConfig({
   // transformers: [
   //   transformerVariantGroup()
   // ],
+  safelist: [
+    'inline-block',
+    'flex!',
+    'ml4', 'ml8', 'mla', 'mb0', 'mb4', 'mb8'
+  ],
   shortcuts: {
     'bg-hover': 'hover:bg-[--el-fill-color-light] active:bg-[--el-fill-color-dark]! rd-6 [&.is-active]:bg-[--el-fill-color-light]',
-    'overlay': `relative after-content-[''] after-absolute after-inset-0 after-bg-gray/40`
+    'overlay': `relative after-content-[''] after-absolute after-inset-0 after-bg-gray/40`,
+    'aic': 'items-center',
+    'jcc': 'justify-center',
+    'jcsb': 'justify-between',
+    'jic': 'justify-items-center',
   }
 })
