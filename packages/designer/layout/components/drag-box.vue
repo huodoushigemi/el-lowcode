@@ -1,5 +1,5 @@
 <template>
-  <component v-if="condition" ref="elRef" :is="el.is" v-bind="_el" :class="[config?.layout && 'container-box']"
+  <component v-if="condition" ref="elRef" :is="el.is" v-bind="_el" :class="[config?.layout && 'container-box', 'drag']"
     @mouseover.stop="designerCtx.hoverId = el._id" @native:mouseover.stop="designerCtx.hoverId = el._id"
     @mousedown.stop="designerCtx.activeId = el._id" @native:mousedown.stop="designerCtx.activeId = el._id" 
   >
@@ -54,16 +54,41 @@ const boxRef = ref<HTMLDivElement>()
 const drag = ref(false)
 let useDraggableReturn: UseDraggableReturn
 
+let indicatorLine: HTMLElement
+let dragged: HTMLElement
+
 watchEffect(() => {
   if (!isArray(props.el.children)) return
   useDraggableReturn?.destroy()
   // @ts-ignore
   useDraggableReturn = useDraggable(config.value?.layout ? elRef : boxRef, props.el.children, {
     group: 'shared',
-    filter: '.empty-placeholder',
-    emptyInsertThreshold: 32,
-    onStart: () => drag.value = true,
-    onEnd: () => nextTick(() => drag.value = false)
+    draggable: '.drag',
+    // emptyInsertThreshold: 32,
+    onMove: (e) => {
+      if (e.related == e.to) {
+        e.related.append(indicatorLine)
+      }
+      else {
+        e.related.parentElement!.insertBefore(indicatorLine, e.willInsertAfter ? e.related.nextElementSibling : e.related)
+      }
+      if (dragged != e.dragged) console.log(e.dragged)
+      dragged = e.dragged
+      return false
+    },
+    onStart: () => {
+      indicatorLine ??= Object.assign(document.createElement('div'), { className: 'outline-1 outline-solid outline-red' })
+      drag.value = true
+      return false
+    },
+    onEnd: () => {
+      indicatorLine.remove()
+      drag.value = false
+      // dragged
+      // return true
+      return false
+    },
+    
   })
 })
 

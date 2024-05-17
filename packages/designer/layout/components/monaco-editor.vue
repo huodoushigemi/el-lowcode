@@ -1,5 +1,6 @@
 <template>
-  <div v-if="!isMount" v-loading="!isMount" absolute inset-0></div>
+  <div v-if="!isMount" v-loading="!isMount" absolute inset-0 z-1 />
+  <div v-if="!isMount" v-bind="$attrs" />
   <VueMonacoEditor
     @mount="onMount"
     @keydown="onKeydown"
@@ -13,6 +14,7 @@
       minimap: { enabled: false },
       formatOnType: true,
       tabSize: 2,
+      wordWrap: 'off',
       ...options,
     }"
   />
@@ -26,22 +28,22 @@ import { refWithWatch } from '../../components/hooks'
 // ==========================================================================================
 
 const VueMonacoEditor = defineAsyncComponent(async () => {
-  // const monaco = await import('monaco-editor')
+  const monaco = window.monaco = await import('monaco-editor')
   
-  // todo
-  // const editorWorker = (await import("monaco-editor/esm/vs/editor/editor.worker?worker")).default
-  // const jsonWorker = (await import('monaco-editor/esm/vs/language/json/json.worker?worker')).default
-  // const tsWorker = (await import('monaco-editor/esm/vs/language/typescript/ts.worker?worker')).default
+  const editorWorker = (await import("monaco-editor/esm/vs/editor/editor.worker?worker")).default
+  const jsonWorker = (await import('monaco-editor/esm/vs/language/json/json.worker?worker')).default
+  const tsWorker = (await import('monaco-editor/esm/vs/language/typescript/ts.worker?worker')).default
 
-  // self.MonacoEnvironment = {
-  //   getWorker: (_, label) => new {
-  //     editorWorkerService: editorWorker,
-  //     typescript: tsWorker,
-  //     json: jsonWorker,
-  //   }[label]()
-  // }
+  self.MonacoEnvironment = {
+    getWorker: (_, label) => new {
+      editorWorkerService: editorWorker,
+      typescript: tsWorker,
+      json: jsonWorker,
+    }[label]()
+  }
 
-  const { VueMonacoEditor } = await import('@guolao/vue-monaco-editor')
+  const { VueMonacoEditor, loader } = await import('@guolao/vue-monaco-editor')
+  loader.config({ monaco })
   return VueMonacoEditor
 })
 // ==========================================================================================

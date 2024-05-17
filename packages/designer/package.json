@@ -25,6 +25,7 @@
     "@vue/shared": "^3.2.0",
     "@vueuse/core": "^10.5.0",
     "el-form-render": "^0.0.17",
+    "monaco-editor": "^0.48.0",
     "uuid": "^9.0.1",
     "vue-draggable-plus": "^0.2.6",
     "wc-appbar": "^0.0.8",
@@ -32,8 +33,8 @@
     "wc-waterfall": "^0.0.7"
   },
   "peerDependencies": {
+    "@vue/compiler-sfc": "^3.2.0",
     "element-plus": "^2.3.8",
-    "vue": "^3.2.0",
-    "@vue/compiler-sfc": "^3.2.0"
+    "vue": "^3.2.0"
   }
 }

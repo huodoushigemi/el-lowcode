@@ -1,10 +1,8 @@
 <template>
-  <div flex="~ col">
-    <monaco-editor v-model:value="schema" flex-1 min-hinherit @save="ok" />
-    <div p8 text-right>
-      <el-button size="small" @click="onCancel">Cancel</el-button>
-      <el-button size="small" type="primary" @click="ok">Crtl+S</el-button>
-    </div>
+  <monaco-editor v-model:value="schema" flex-1 @save="ok" />
+  <div p8 text-right>
+    <el-button size="small" @click="onCancel">Cancel</el-button>
+    <el-button size="small" type="primary" @click="ok">Crtl+S</el-button>
   </div>
 </template>
 

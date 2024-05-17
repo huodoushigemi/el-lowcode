@@ -159,6 +159,9 @@ importers:
       import-meta-resolve:
         specifier: ^4.0.0
         version: 4.1.0
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
       magic-string:
         specifier: ^0.30.4
         version: 0.30.10
@@ -236,7 +239,7 @@ importers:
         version: 0.31.0(@vue/compiler-sfc@3.4.27)(vite@4.5.3(@types/node@20.12.12)(sass@1.77.1))
       vitepress:
         specifier: 1.0.0-beta.7
-        version: 1.0.0-beta.7(@algolia/client-search@4.23.3)(@types/node@20.12.12)(async-validator@4.2.5)(axios@1.6.8)(sass@1.77.1)(search-insights@2.13.0)(typescript@5.4.5)
+        version: 1.0.0-beta.7(@algolia/client-search@4.23.3)(@types/node@20.12.12)(async-validator@4.2.5)(axios@1.6.8)(sass@1.77.1)(search-insights@2.13.0)(sortablejs@1.15.2)(typescript@5.4.5)
       vue-demi:
         specifier: ^0.14.7
         version: 0.14.7(vue@3.4.27(typescript@5.4.5))
@@ -288,6 +291,9 @@ importers:
       element-plus:
         specifier: ^2.3.8
         version: 2.7.3(vue@3.4.27(typescript@5.4.5))
+      monaco-editor:
+        specifier: ^0.48.0
+        version: 0.48.0
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -3784,6 +3790,9 @@ packages:
     resolution: {integrity: sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==}
     engines: {node: '>=12'}
 
+  sortablejs@1.15.2:
+    resolution: {integrity: sha512-FJF5jgdfvoKn1MAKSdGs33bIqLi3LmsgVTliuX6iITj834F+JRQZN90Z93yql8h0K2t0RwDPBmxwlbZfDcxNZA==}
+
   source-map-js@1.2.0:
     resolution: {integrity: sha512-itJW8lvSA0TXEphiRoawsCksnlf8SyvmFzIhltqAHluXd88pkCd+cXJVHTDwdCr0IzwptSm035IHQktUu1QUMg==}
     engines: {node: '>=0.10.0'}
@@ -5793,7 +5802,7 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
-  '@vueuse/integrations@10.9.0(async-validator@4.2.5)(axios@1.6.8)(focus-trap@7.5.4)(vue@3.4.27(typescript@5.4.5))':
+  '@vueuse/integrations@10.9.0(async-validator@4.2.5)(axios@1.6.8)(focus-trap@7.5.4)(sortablejs@1.15.2)(vue@3.4.27(typescript@5.4.5))':
     dependencies:
       '@vueuse/core': 10.9.0(vue@3.4.27(typescript@5.4.5))
       '@vueuse/shared': 10.9.0(vue@3.4.27(typescript@5.4.5))
@@ -5802,6 +5811,7 @@ snapshots:
       async-validator: 4.2.5
       axios: 1.6.8
       focus-trap: 7.5.4
+      sortablejs: 1.15.2
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -8214,6 +8224,9 @@ snapshots:
 
   slash@4.0.0: {}
 
+  sortablejs@1.15.2:
+    optional: true
+
   source-map-js@1.2.0: {}
 
   source-map@0.6.1: {}
@@ -8674,14 +8687,14 @@ snapshots:
       fsevents: 2.3.3
       sass: 1.77.1
 
-  vitepress@1.0.0-beta.7(@algolia/client-search@4.23.3)(@types/node@20.12.12)(async-validator@4.2.5)(axios@1.6.8)(sass@1.77.1)(search-insights@2.13.0)(typescript@5.4.5):
+  vitepress@1.0.0-beta.7(@algolia/client-search@4.23.3)(@types/node@20.12.12)(async-validator@4.2.5)(axios@1.6.8)(sass@1.77.1)(search-insights@2.13.0)(sortablejs@1.15.2)(typescript@5.4.5):
     dependencies:
       '@docsearch/css': 3.6.0
       '@docsearch/js': 3.6.0(@algolia/client-search@4.23.3)(search-insights@2.13.0)
       '@vitejs/plugin-vue': 4.6.2(vite@4.5.3(@types/node@20.12.12)(sass@1.77.1))(vue@3.4.27(typescript@5.4.5))
       '@vue/devtools-api': 6.6.1
       '@vueuse/core': 10.9.0(vue@3.4.27(typescript@5.4.5))
-      '@vueuse/integrations': 10.9.0(async-validator@4.2.5)(axios@1.6.8)(focus-trap@7.5.4)(vue@3.4.27(typescript@5.4.5))
+      '@vueuse/integrations': 10.9.0(async-validator@4.2.5)(axios@1.6.8)(focus-trap@7.5.4)(sortablejs@1.15.2)(vue@3.4.27(typescript@5.4.5))
       body-scroll-lock: 4.0.0-beta.0
       focus-trap: 7.5.4
       mark.js: 8.11.1

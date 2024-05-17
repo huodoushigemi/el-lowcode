@@ -54,7 +54,7 @@
       <el-tab-pane lazy w512>
         <template #label><el-tooltip content="Schema" placement="right" :hide-after="0"><i-mdi:code-tags /></el-tooltip></template>
         <div px8 py12 text-22 b-b="1 solid [--el-border-color]">Schema 源码</div>
-        <schema hfull />
+        <schema />
       </el-tab-pane>
       <slot name="activity-bar"></slot>
     </el-tabs>
@@ -101,8 +101,6 @@ import { onUpdated } from 'vue'
 defineOptions({
   components: keyBy(components, 'name')
 })
-
-const ins = getCurrentInstance()!
 
 // 本地持久化
 const root = useLocalStorage(
@@ -171,10 +169,13 @@ defineExpose({ ...toRefs(designerCtx) })
 let cloned: BoxProps
 function clone(e) {
   return cloned = parseAttrs(e)
+  // return { is: 'div', _id: +new Date + '', children: 'xxx' }
+  // console.log(e);
 }
 function onEnd(e) {
   if (!(e.to as HTMLElement).classList.contains('container-box')) return
   setTimeout(() => designerCtx.activeId = cloned._id, 100);
+  // designerCtx.activeId
 }
 
 // 按 Delete 删除当前选中元素
@@ -193,7 +194,7 @@ useEventListener('keydown', (e) => {
 })
 
 // 拖拽 .vue 自定义组件
-const dropZone = ref<HTMLDivElement>(), { isOverDropZone } = useDropZone(dropZone, onDrop)
+// const dropZone = ref<HTMLDivElement>(), { isOverDropZone } = useDropZone(dropZone, onDrop)
 async function onDrop(fs: File[] | null) {
   fs?.forEach(async file => {
     let jscode = ''
