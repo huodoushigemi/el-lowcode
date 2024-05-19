@@ -1,19 +1,19 @@
 <template>
-  <component v-if="condition" ref="elRef" :is="el.is" v-bind="_el" :class="[config?.layout && 'container-box', 'drag']"
-    @mouseover.stop="designerCtx.hoverId = el._id" @native:mouseover.stop="designerCtx.hoverId = el._id"
-    @mousedown.stop="designerCtx.activeId = el._id" @native:mousedown.stop="designerCtx.activeId = el._id" 
+  <component v-if="condition" ref="elRef" :is="el.is" v-bind="_el" :class="['drag', config?.layout && 'container-box']"
+    @mouseover.stop="mouseover" @native:mouseover.stop="mouseover"
+    @mousedown.stop="mousedown" @native:mousedown.stop="mousedown" 
+    @mouseleave.stop="mouseleave"
   >
 
     <template v-if="config?.layout">
       <drag-box v-if="isArray(el.children) && el.children.length" v-for="item in (el.children as BoxProps[])" :key="item._id" :el="item" />
-      <!-- <div v-else-if="isArray(el.children)" class="empty-placeholder">Drag and drop here</div> -->
-      <template v-else-if="isArray(el.children)"></template>
+      <div v-else-if="emptyChildren" ref="empty" class="empty-placeholder" />
       <template v-else-if="el.children != null">{{ _execExp(el.children) }}</template>
     </template>
 
     <div v-else-if="isArray(el.children)" ref="boxRef" class="container-box">
       <drag-box v-for="item in el.children" :key="item._id" :el="item" />
-      <!-- <div v-if="!el.children.length" class="empty-placeholder">Drag and drop here</div> -->
+      <div v-if="emptyChildren" ref="empty" class="empty-placeholder" />
       <template v-if="!el.children"></template>
     </div>
     
@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, computed, inject, nextTick, ref, watchEffect } from 'vue'
+import { PropType, computed, inject, nextTick, ref, watch, watchEffect } from 'vue'
 import { isArray } from '@vue/shared'
 import { UseDraggableReturn, useDraggable } from 'vue-draggable-plus'
 import { deepClone, execExp } from '@el-lowcode/utils'
@@ -46,51 +46,59 @@ const designerCtx = inject(designerCtxKey)!
 const pageCtx = inject(pageCtxKey)!
 
 const config = computed(() => sloveConfig(props.el))
-
+const emptyChildren = computed(() => isArray(props.el.children) ? !props.el.children.length : false)
 
 // 拖拽
-const elRef = ref<HTMLDivElement>()
-const boxRef = ref<HTMLDivElement>()
-const drag = ref(false)
+const elRef = ref<HTMLElement>()
+const boxRef = ref<HTMLElement>()
+const empty = ref<HTMLElement>()
+const drag = computed(() => emptyChildren.value ? empty.value : (config.value?.layout ? elRef.value : boxRef.value))
 let useDraggableReturn: UseDraggableReturn
 
-let indicatorLine: HTMLElement
-let dragged: HTMLElement
+let cloned: HTMLElement
 
 watchEffect(() => {
-  if (!isArray(props.el.children)) return
   useDraggableReturn?.destroy()
+  if (!isArray(props.el.children)) return
+  if (!drag.value) return
+  
   // @ts-ignore
-  useDraggableReturn = useDraggable(config.value?.layout ? elRef : boxRef, props.el.children, {
+  useDraggableReturn = useDraggable(drag, props.el.children, {
     group: 'shared',
+    animation: 150,
     draggable: '.drag',
-    // emptyInsertThreshold: 32,
-    onMove: (e) => {
-      if (e.related == e.to) {
-        e.related.append(indicatorLine)
-      }
-      else {
-        e.related.parentElement!.insertBefore(indicatorLine, e.willInsertAfter ? e.related.nextElementSibling : e.related)
-      }
-      if (dragged != e.dragged) console.log(e.dragged)
-      dragged = e.dragged
-      return false
+    ghostClass: 'ghostClass',
+    // forceFallback: true,
+    // fallbackOnBody: true,
+    // fallbackClass: 'hidden',
+    onStart(e) {
+      designerCtx.draggedId = (props.el.children as BoxProps[])[e.oldIndex]._id
+      cloned = e.item.cloneNode(true)
+      cloned.classList.remove('ghostClass', 'drag')
+      cloned.classList.add('outline-1', 'outline-solid', 'outline-[--el-color-primary]', 'outline-offset--1')
+      cloned.removeAttribute('draggable')
+      e.item.parentElement.insertBefore(cloned, e.item)
     },
-    onStart: () => {
-      indicatorLine ??= Object.assign(document.createElement('div'), { className: 'outline-1 outline-solid outline-red' })
-      drag.value = true
-      return false
-    },
-    onEnd: () => {
-      indicatorLine.remove()
-      drag.value = false
-      // dragged
-      // return true
-      return false
-    },
-    
+    onEnd() {
+      cloned.remove()
+      designerCtx.draggedId = undefined
+    }
   })
 })
+
+// 选中状态处理
+function mouseover() {
+  if (designerCtx.draggedId) return
+  designerCtx.hoverId = props.el._id
+}
+function mousedown() {
+  if (designerCtx.draggedId) return
+  designerCtx.activeId = props.el._id
+}
+function mouseleave() {
+  if (designerCtx.root._id != props.el._id) return
+  designerCtx.hoverId = undefined
+}
 
 // 执行 JS 表达式
 const _execExp = (exp) => {
@@ -117,20 +125,27 @@ const condition = computed(() => props.el.$?.condition == null || !!_$.value?.co
 </script>
 
 <style lang="scss">
-.container-box:empty::after {
-  content: 'Drag and drop here';
-  display: grid;
-  place-items: center;
-  min-height: inherit;
-  text-align: center;
-  padding: 12px;
+.empty-placeholder {
+  position: relative;
+  padding: 18px;
+  height: 100%;
   opacity: .4;
-  box-sizing: border-box;
+  &::after {
+    content: 'Drag and drop here';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 }
 
-.empty-placeholder {
-  padding: 12px;
-  opacity: .4;
-  z-index: -9;
+.drag.ghostClass {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 0px !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  font-size: 0 !important;
+  outline: 2px solid var(--el-color-primary) !important;
 }
 </style>

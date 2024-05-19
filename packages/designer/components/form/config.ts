@@ -14,7 +14,7 @@ export default {
     { is: JsonSchemaDialog },
     { lp: 'model', required: true, scriptable: true },
     { lp: 'size', type: 'radio-group', options: ENUM_SIZE },
-    { lp: 'label-width' },
+    { lp: 'label-width', type: 'slider', el: { max: 200 } },
     { lp: 'label-position', type: 'radio-group', options: ['left', 'right', 'top'] },
     { lp: 'disabled', type: 'switch' },
     { lp: 'inline', type: 'switch' },

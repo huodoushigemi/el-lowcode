@@ -1,13 +1,13 @@
 <template>
   <div ref="el" class="selected-layer" absolute inset-0 pointer-events-none z-9>
-    <selected-rect :el="designerCtx.hover" second absolute outline="1 dashed [--el-color-primary]" outline-offset--1 :style="calcStyle(hoverEl())" />
+    <selected-rect :el="designerCtx.hover" absolute outline="1 dashed [--el-color-primary]" outline-offset--1 :style="calcStyle(hoverEl())" />
     <selected-rect :el="designerCtx.active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(activeEl())" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, inject, ref, watch } from 'vue'
-import { useElementBounding, useMounted, useMutationObserver } from '@vueuse/core';
+import { getCurrentInstance, inject, ref } from 'vue'
+import { useMounted, useMutationObserver } from '@vueuse/core'
 import SelectedRect from './selected-rect.vue'
 import { designerCtxKey } from '../interface'
 
@@ -15,22 +15,22 @@ const designerCtx = inject(designerCtxKey)!
  
 const isMounted = useMounted()
 
-// todo > endless loop
-// const el = useCurrentElement<HTMLElement>()
 const el = ref<HTMLDivElement>()
 const viewport = () => isMounted.value ? el.value!.offsetParent as HTMLElement : null
 
 const hoverEl = () => {
-  const id = designerCtx.hover?._id
+  const id = designerCtx.hoverId
   return viewport()?.querySelector<HTMLElement>(`[_id='${id}']`)
 }
 
 const activeEl = () => {
-  const id = designerCtx.active?._id
+  const id = designerCtx.activeId
   return viewport()?.querySelector<HTMLElement>(`[_id='${id}']`)
 }
 
 const calcStyle = (el?: HTMLElement | null) => {
+  // todo
+  // if (scrolling) return
   if (!el) return { display: 'none' }
   const vp = viewport()
   const rect1 = vp?.getBoundingClientRect()
@@ -42,10 +42,6 @@ const calcStyle = (el?: HTMLElement | null) => {
 
 const ins = getCurrentInstance()!
 const fu = () => requestAnimationFrame(ins.proxy!.$forceUpdate)
-
-// const hoverRect = useElementBounding(hoverEl)
-// const activeRect = useElementBounding(activeEl)
-// watch([...Object.values(hoverRect), ...Object.values(activeRect), isMounted], fu, { deep: true })
 
 useMutationObserver(viewport, () => fu(), { subtree: true, childList: true, attributes: true, characterData: true })
 </script>

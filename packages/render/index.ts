@@ -21,7 +21,7 @@ type CreateRender = {
 
 export function createRender({ defaultIs = 'div', processProps = (props: Props) => props }: CreateRender) {
   return function Render(props: Props) {
-    const { is, _id, $, children, ...attrs } = processProps(props)
+    const { is, $, children, ...attrs } = processProps(props)
     const childs = unFn(children)
     return (
       props.$?.condition == null || !!$?.condition

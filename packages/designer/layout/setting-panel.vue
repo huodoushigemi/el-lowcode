@@ -22,8 +22,8 @@
 </template>
 
 <script setup>
-import { computed, inject, h } from 'vue'
-import { isObject, parseStringStyle, stringifyStyle } from '@vue/shared'
+import { computed, inject, h, watch, watchEffect } from 'vue'
+import { isArray, isObject, parseStringStyle, stringifyStyle } from '@vue/shared'
 import { createRender } from '@el-lowcode/render'
 import { toArr, unFn } from '@el-lowcode/utils'
 import { ElFormRender, normalizeItem } from 'el-form-render'
@@ -46,12 +46,13 @@ const _normalizeItem = (item) => {
     if (item.type == 'color-picker') {
       item.el.size ??= 'default'
       item.el.showAlpha ??= true
-      item.displayValue ??= '#00000010'
+      item.displayValue ??= '#000000ff'
+      item.set ??= v => v ?? undefined
     }
     item.el.clearable ??= true
     item.el.placeholder ??= ''
   }
-  toArr(item.children).forEach(_normalizeItem)
+  if (isArray(item.children)) item.children = item.children.map(_normalizeItem)
   return item
 }
 
@@ -69,11 +70,11 @@ const config = computed(() => {
 const _items = computed(() => unFn(config.value?.props, model.value)?.map(_normalizeItem))
 
 const styles = [
-  { lp: ['position', 'style.position'], type: 'select', options: ['static', 'relative', 'absolute', 'fixed', 'sticky'], el: { placeholder: 'static' } },
+  { lp: ['position', 'style.position'], type: 'select', options: ['static', 'relative', 'absolute', 'fixed', 'sticky'], displayValue: 'static', el: { placeholder: 'static' } },
   { lp: ['layout', 'style.display'], type: 'radio-group', options: ['inline', 'block', 'flex'] },
   { lp: ['background-color', 'style.backgroundColor'], type: 'color-picker' },
   { lp: ['opacity', 'style.opacity'], type: 'slider', displayValue: 1, el: { min: 0, max: 1, step: .01, formatTooltip: val => (val * 100).toFixed(2) } },
-  { lp: ['overflow', 'style.overflow'], type: 'radio-group', options: ['visible', 'auto', 'hidden'] },
+  { lp: ['overflow', 'style.overflow'], type: 'radio-group', options: ['visible', 'auto', 'hidden'], displayValue: 'visible' },
   { is: 'h4', class: 'mb8', children: 'Text' },
   { prop: 'style.fontSize', type: 'slider', class: 'mb8', script: false, displayValue: '16px', get: v => parseInt(v), set: v => v + 'px', el: { min: 12, max: 64 } },
   { is: 'div', class: 'flex space-x-4', children: [

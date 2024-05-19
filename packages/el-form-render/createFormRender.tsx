@@ -122,7 +122,7 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formName
   const FormRender = defineComponent({
     name: formName,
     props: formRenderProps,
-    setup(props: ExtractPropTypes<typeof _formRenderProps>, { slots, expose }) {
+    setup(props: ExtractPropTypes<typeof _formRenderProps>, { attrs, slots, expose }) {
       const _FormItemRender = createRender({
         defaultIs: (item) => (
           <FormItemRender {...item}>{{ default: slots[`$${_prop(item)}`] }}</FormItemRender>
@@ -135,7 +135,7 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formName
       provide(formRenderContextKey, props)
 
       return () => (
-        <Form ref={formRef} {...props}>
+        <Form ref={formRef} {...{...props, ...attrs}}>
           {props.items?.map((item: any) => (
             <_FormItemRender {...item} key={_prop(item)} />
           ))}

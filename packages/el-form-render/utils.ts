@@ -37,4 +37,4 @@ export const solveOptions = (opts?: Item['options']) => {
 
 export const showOpt = (opt?: NormalizedOpt) => opt?.label ?? opt?.value
 
-const normalizeOpt = (opt: Opt): NormalizedOpt => isString(opt) ? ({ label: opt, value: opt }) : opt
+const normalizeOpt = (opt: Opt): NormalizedOpt => isString(opt) ? ({ label: opt, value: opt }) : isArray(opt) ? { label: opt[0], value: opt[1] } : opt

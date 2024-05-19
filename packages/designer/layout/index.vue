@@ -60,10 +60,10 @@
     </el-tabs>
     
     <!-- Canvas Viewport -->
-    <infinite-viewer wfull hfull style="background: var(--el-fill-color-light)">
-      <div class="viewport relative" :style="`width: ${canvasWidth}; background: var(--el-fill-color-extra-light)`">
+    <infinite-viewer wfull hfull style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined">
+      <div ref="viewport" class="viewport relative" :style="`width: ${canvasWidth}; background: var(--el-fill-color-extra-light)`" @click.stop>
         <drag-box id="root" :el="root" h1080 />
-        <selected-layer />
+        <selected-layer v-if="!designerCtx.draggedId" />
       </div>
     </infinite-viewer>
     
@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, getCurrentInstance, provide, reactive, ref, toRefs } from 'vue'
+import { MaybeRef, computed, getCurrentInstance, provide, reactive, ref, toRefs, watchEffect } from 'vue'
 import { isArray, remove, stringifyStyle } from '@vue/shared'
 import { v4 as uuid } from 'uuid'
 import { VueDraggable } from 'vue-draggable-plus'
@@ -97,6 +97,7 @@ import InfiniteViewer from './components/infinite-viewer.vue'
 import Schema from './components/schema.vue'
 import { vue2esm } from './vue2esm'
 import { onUpdated } from 'vue'
+import { parse } from '@vue/compiler-sfc'
 
 defineOptions({
   components: keyBy(components, 'name')
@@ -106,8 +107,14 @@ defineOptions({
 const root = useLocalStorage(
   '@el-lowcode/designer-page',
   parseAttrs(el_lowcode_widgets.Page!),
-  { listenToStorageChanges: false, deep: true }
+  { listenToStorageChanges: false, deep: true, shallow: false }
 )
+
+
+// watchEffect(() => {
+//   console.log(JSON.parse(JSON.stringify(root.value)));
+// })
+
 
 // 时间旅行
 const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500 })
@@ -147,21 +154,23 @@ const groups = reactive([
 ])
 const collapse = ref(groups.map(e => e.title))
 
-const designerCtx = reactive({
-  activeId: root.value._id,
-  hoverId: undefined,
-  openState: ref(false),
-  currentState: {},
-  canvas: { style: { width: '100%' } },
-  root,
-  get active() { return treeUtils.find([root.value], this.activeId, { key: '_id' }) as unknown as BoxProps },
-  get hover() { return treeUtils.find([root.value], this.hoverId, { key: '_id' }) as unknown as BoxProps }
-}) as DesignerCtx
-
+const viewport = ref<HTMLElement>()
 const canvasWidth = computed({
   get: () => designerCtx.canvas.style.width,
   set: val => designerCtx.canvas.style.width = val
 })
+
+const designerCtx = reactive({
+  activeId: root.value._id,
+  openState: ref(false),
+  currentState: {},
+  viewport,
+  canvas: { style: { width: '100%' } },
+  root,
+  active: computed(() => designerCtx.activeId && treeUtils.find([root.value], designerCtx.activeId, { key: '_id' })),
+  hover: computed(() => designerCtx.hoverId && treeUtils.find([root.value], designerCtx.hoverId, { key: '_id' })),
+  dragged: computed(() => designerCtx.draggedId && treeUtils.find([root.value], designerCtx.draggedId, { key: '_id' })),
+} as { [K in keyof DesignerCtx]: MaybeRef<DesignerCtx[K]> })
 
 provide(designerCtxKey, designerCtx)
 defineExpose({ ...toRefs(designerCtx) })
@@ -194,7 +203,7 @@ useEventListener('keydown', (e) => {
 })
 
 // 拖拽 .vue 自定义组件
-// const dropZone = ref<HTMLDivElement>(), { isOverDropZone } = useDropZone(dropZone, onDrop)
+const dropZone = ref<HTMLDivElement>(), { isOverDropZone } = useDropZone(dropZone, onDrop)
 async function onDrop(fs: File[] | null) {
   fs?.forEach(async file => {
     let jscode = ''

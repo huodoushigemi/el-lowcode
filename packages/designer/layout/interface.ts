@@ -7,11 +7,14 @@ export interface DesignerCtx {
   readonly active?: BoxProps
   hoverId?: BoxProps['_id']
   readonly hover?: BoxProps
+  draggedId?: BoxProps['_id'],
+  readonly dragged?: BoxProps,
   root: BoxProps
   openState: boolean
   currentState: Obj
+  readonly viewport: HTMLElement
   canvas: {
-    style: CSSProperties
+    style: Partial<CSSProperties>
   }
 }
 

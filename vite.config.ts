@@ -13,6 +13,9 @@ export default defineConfig(async () => ({
       ...entries,
     ]
   },
+  optimizeDeps: {
+    exclude: ['vue'],
+  },
   build: {
     outDir: 'docs/dest/designer',
     emptyOutDir: false,
