@@ -23,7 +23,7 @@
 
 <script setup>
 import { computed, inject, h, watch, watchEffect } from 'vue'
-import { isArray, isObject, parseStringStyle, stringifyStyle } from '@vue/shared'
+import { isArray, isObject, parseStringStyle, stringifyStyle, isOn } from '@vue/shared'
 import { createRender } from '@el-lowcode/render'
 import { toArr, unFn } from '@el-lowcode/utils'
 import { ElFormRender, normalizeItem } from 'el-form-render'
@@ -51,6 +51,7 @@ const _normalizeItem = (item) => {
     }
     item.el.clearable ??= true
     item.el.placeholder ??= ''
+    if (isOn(item.prop)) item.script ??= true
   }
   if (isArray(item.children)) item.children = item.children.map(_normalizeItem)
   return item
@@ -70,6 +71,8 @@ const config = computed(() => {
 const _items = computed(() => unFn(config.value?.props, model.value)?.map(_normalizeItem))
 
 const styles = [
+  { lp: ['width', 'style.width'], type: 'input-number', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined },
+  { lp: ['height', 'style.height'], type: 'input-number', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined },
   { lp: ['position', 'style.position'], type: 'select', options: ['static', 'relative', 'absolute', 'fixed', 'sticky'], displayValue: 'static', el: { placeholder: 'static' } },
   { lp: ['layout', 'style.display'], type: 'radio-group', options: ['inline', 'block', 'flex'] },
   { lp: ['background-color', 'style.backgroundColor'], type: 'color-picker' },
@@ -99,8 +102,8 @@ const commons = [
   // ] }}
   { is: 'ElDivider' },
   { is: 'h1', children: 'Event' },
-  { lp: 'onClick', script: true },
-  { lp: 'onChange', script: true },
+  { lp: 'onClick' },
+  { lp: 'onChange' },
 ].map(_normalizeItem)
 </script>
 
@@ -119,5 +122,8 @@ const commons = [
 }
 :deep(.el-tabs__content) {
   padding: 8px;
+}
+:deep(.el-collapse) {
+  --el-transition-duration: 100ms;
 }
 </style>

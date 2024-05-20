@@ -96,29 +96,22 @@ import CurrentState from './components/current-state.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import Schema from './components/schema.vue'
 import { vue2esm } from './vue2esm'
-import { onUpdated } from 'vue'
-import { parse } from '@vue/compiler-sfc'
 
 defineOptions({
   components: keyBy(components, 'name')
 })
 
-// 本地持久化
+// 根节点
 const root = useLocalStorage(
   '@el-lowcode/designer-page',
   parseAttrs(el_lowcode_widgets.Page!),
   { listenToStorageChanges: false, deep: true, shallow: false }
 )
 
-
-// watchEffect(() => {
-//   console.log(JSON.parse(JSON.stringify(root.value)));
-// })
-
-
 // 时间旅行
 const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500 })
 
+// 组件树
 const tree = computed<BoxProps[]>(() => treeUtils.changeProp([root.value], [['children', 'children', v => isArray(v) ? v : undefined]]))
 
 const findWgts = (arr: string[]) => arr.map(e => el_lowcode_widgets[e]).filter(e => e)
@@ -173,7 +166,7 @@ const designerCtx = reactive({
 } as { [K in keyof DesignerCtx]: MaybeRef<DesignerCtx[K]> })
 
 provide(designerCtxKey, designerCtx)
-defineExpose({ ...toRefs(designerCtx) })
+defineExpose(designerCtx)
 
 let cloned: BoxProps
 function clone(e) {

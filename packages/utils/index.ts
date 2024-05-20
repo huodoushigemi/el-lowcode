@@ -1,4 +1,4 @@
-import type { App, Component, Plugin } from 'vue'
+import type { App, Component, ObjectPlugin } from 'vue'
 import { isArray, isObject } from '@vue/shared'
 import { AnyFn } from '@vueuse/core'
 import type { AddPrefixToKeys, Arrable, Fnable, Obj } from './types'
@@ -8,8 +8,8 @@ export * from './tree'
 export * from './file'
 export * from './execExp'
 
-type SFCWithInstall<T> = T & Plugin
-type Comp = Component & { name: string } & Partial<Plugin>
+type SFCWithInstall<T> = T & ObjectPlugin
+type Comp = Component & { name: string } & ObjectPlugin
 
 export function withInstall<T extends Comp>(comp: T, arr?: Comp[]) {
   comp.install = (app: App) => {

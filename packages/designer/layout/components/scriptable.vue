@@ -29,7 +29,7 @@
 
 <script setup>
 import { computed, inject, ref } from 'vue'
-import { isString } from '@vue/shared'
+import { isOn, isString } from '@vue/shared'
 import { ElDialog, ElTag, formContextKey, formItemProps } from 'element-plus'
 import { ElFormItemRender, formItemRenderPropsBase } from 'el-form-render'
 import { get, set } from '@el-lowcode/utils'
@@ -51,7 +51,7 @@ const script = computed(() => props.script ?? props.scriptable)
 const formCtx = inject(formContextKey)
 const model = computed(() => formCtx.model)
 const value = computed({
-  get: () => get(model.value, props.prop || ''),
+  get: () => get(model.value, props.prop),
   set: val => set(model.value, props.prop, val ?? defaultValue.value)
 })
 
@@ -70,7 +70,7 @@ const tsExtraLibs = computed(() => (console.log(JSON.stringify(designerCtx.curre
 }))
 
 const interpolation = computed(() => isScript.value ? value.value : '{{}}')
-const code = refWithWatch(() => interpolation.value.match(expReg)[1])
+const code = refWithWatch(() => interpolation.value.match(expReg)[1] || (isOn(props.prop) ? `() => {\n  \n}` : ''))
 const exp = computed(() => interpolation.value.match(expReg)[1])
 
 const visible = ref(false)

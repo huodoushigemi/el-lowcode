@@ -4,19 +4,20 @@
 
 <script setup>
 import { computed, watchEffect } from 'vue'
-import { merge } from 'lodash-es'
+import merge from 'lodash-es/merge'
+// import { merge } from 'lodash-es'
 
 // 按需引入 ECharts 图表和组件
 // https://echarts.apache.org/handbook/zh/basics/import#%E6%8C%89%E9%9C%80%E5%BC%95%E5%85%A5-echarts-%E5%9B%BE%E8%A1%A8%E5%92%8C%E7%BB%84%E4%BB%B6
 import { use } from 'echarts/core'
-import { LegendComponent, TooltipComponent, GridComponent, DatasetComponent, TransformComponent } from 'echarts/components'
+import { LegendComponent, TooltipComponent, GridComponent, DatasetComponent, TransformComponent, ToolboxComponent } from 'echarts/components'
 import { LabelLayout, UniversalTransition } from 'echarts/features'
 import { CanvasRenderer, SVGRenderer } from 'echarts/renderers'
 import VueEcharts from 'vue-echarts'
 
 import { LineChart } from 'echarts/charts'
 
-use([ LegendComponent, TooltipComponent, GridComponent, DatasetComponent, TransformComponent, LabelLayout, UniversalTransition, CanvasRenderer, SVGRenderer ])
+use([ LegendComponent, TooltipComponent, GridComponent, DatasetComponent, TransformComponent, ToolboxComponent, LabelLayout, UniversalTransition, CanvasRenderer, SVGRenderer ])
 use([ LineChart ])
 
 defineOptions({ name: 'ELine' })
@@ -63,8 +64,8 @@ export const el_lowcode = {
     { lp: 'fields', script: true },
 
     { is: 'ElFormRender', model: option, size: 'small', children: [
-      { is: 'ElTabs', children: [
-        { is: 'ElTabPane', label: 'Grid', lazy: true, children: [
+      { is: 'ElCollapse', children: [
+        { is: 'ElCollapseItem', title: 'Grid', children: [
           {is: 'div', class: 'grid aic text-12', style: 'grid-template-columns: 50px 1fr; gap: 4px 0;', children: [
             'top', { prop: 'grid.top', type: 'slider', class: 'mb0' },
             'right', { prop: 'grid.right', type: 'slider', class: 'mb0'  },
@@ -73,93 +74,54 @@ export const el_lowcode = {
             { is: 'input', type: 'button', value: 'reset', onClick: () => option.grid = void 0 },
           ]}
         ] },
-        { is: 'ElTabPane', label: 'Axis', lazy: true, children: [
-          { is: 'ElCollapse', children: [
-            { is: 'ElCollapseItem', title: 'x axis', children: [
-              { is: 'h4', class: 'flex aic mb8', children: ['axis-label', { prop: 'xAxis.axisLabel.show', type: 'switch', defaultValue: true, class: 'mla mb0' }] },
-              { is: 'div', class: 'text-12', style: 'display: grid; grid-template-columns: 130px 1fr', children: [
-                { prop: 'xAxis.axisLabel.rotate', type: 'slider', defaultValue: 0, el: { min: -90, max: 90, formatTooltip: v => `rotate: ${v}°` } },
-                { prop: 'xAxis.axisLabel.color', type: 'color-picker' },
-                { prop: 'xAxis.axisLabel.margin', type: 'input-number', defaultValue: 8 }, 'gap',
-                { prop: 'xAxis.axisLabel.fontSize', type: 'input-number', displayValue: 12 }, 'size',
-              ] },
-              { is: 'h4', class: 'flex aic mb8', children: ['axis-line', { prop: 'xAxis.axisLine.show', type: 'switch', defaultValue: true, class: 'mla mb0' }] },
-              { is: 'div', class: 'flex aic', children: [
-                { prop: 'xAxis.axisLine.lineStyle.width', type: 'input-number', displayValue: 1, el: { max: 5 } },
-                { prop: 'xAxis.axisLine.lineStyle.color', type: 'color-picker', class: 'ml8' },
-                { prop: 'xAxis.axisLine.lineStyle.type', options: ['solid', 'dash'], displayValue: 'solid', class: 'ml8' },
-              ] },
-              { is: 'h4', class: 'flex aic mb8', children: ['split-line', { prop: 'xAxis.splitLine.show', type: 'switch', class: 'mla mb0' }] },
-              { is: 'div', class: 'flex aic', children: [
-                { prop: 'xAxis.splitLine.lineStyle.width', type: 'input-number', displayValue: 1, el: { max: 5 } },
-                { prop: 'xAxis.splitLine.lineStyle.color', type: 'color-picker', class: 'ml8' },
-                { prop: 'xAxis.splitLine.lineStyle.type', options: ['solid', 'dash'], displayValue: 'solid' },
-              ] },
-            ] },
-            { is: 'ElCollapseItem', title: 'y axis', children: [
-              { is: 'h4', class: 'flex aic mb8', children: ['axis-label', { prop: 'yAxis.axisLabel.show', type: 'switch', displayValue: true, class: 'mla mb0' }] },
-              { is: 'div', class: 'text-12', style: 'display: grid; grid-template-columns: 130px 1fr', children: [
-                { prop: 'yAxis.axisLabel.rotate', type: 'slider', defaultValue: 0, el: { min: -90, max: 90, formatTooltip: v => `rotate: ${v}°` } },
-                { prop: 'yAxis.axisLabel.color', type: 'color-picker' },
-                { prop: 'yAxis.axisLabel.margin', type: 'input-number', defaultValue: 8 }, 'gap',
-                { prop: 'yAxis.axisLabel.fontSize', type: 'input-number', displayValue: 12 }, 'size',
-              ] },
-              { is: 'h4', class: 'flex aic mb8', children: ['axis-line', { prop: 'yAxis.axisLine.show', type: 'switch', class: 'mla mb0' }] },
-              { is: 'div', class: 'flex aic', children: [
-                { prop: 'yAxis.axisLine.lineStyle.width', type: 'input-number', displayValue: 1, el: { max: 5 } },
-                { prop: 'yAxis.axisLine.lineStyle.color', type: 'color-picker', class: 'ml8' },
-                { prop: 'yAxis.axisLine.lineStyle.type', options: ['solid', 'dash'], displayValue: 'solid', class: 'ml8' },
-              ] },
-              { is: 'h4', class: 'flex aic mb8', children: ['split-line', { prop: 'yAxis.splitLine.show', type: 'switch', defaultValue: true, class: 'mla mb0' }] },
-              { is: 'div', class: 'flex aic', children: [
-                { prop: 'yAxis.splitLine.lineStyle.width', type: 'input-number', displayValue: 1, el: { max: 5 } },
-                { prop: 'yAxis.splitLine.lineStyle.color', type: 'color-picker', class: 'ml8' },
-                { prop: 'yAxis.splitLine.lineStyle.type', options: ['solid', 'dash'], displayValue: 'solid' },
-              ] },
-            ] }
+        { is: 'ElCollapseItem', title: 'XAxis', children: [
+          { is: 'p', class: 'flex aic mb8', children: ['axis-label', { prop: 'xAxis.axisLabel.show', type: 'switch', defaultValue: true, class: 'mla mb0' }] },
+          { is: 'div', class: 'text-12', style: 'display: grid; grid-template-columns: 130px 1fr', children: [
+            { prop: 'xAxis.axisLabel.rotate', type: 'slider', defaultValue: 0, el: { min: -90, max: 90, formatTooltip: v => `rotate: ${v}°` } },
+            { prop: 'xAxis.axisLabel.color', type: 'color-picker' },
+            { prop: 'xAxis.axisLabel.margin', type: 'input-number', defaultValue: 8 }, 'gap',
+            { prop: 'xAxis.axisLabel.fontSize', type: 'input-number', displayValue: 12 }, 'size',
+          ] },
+          { is: 'p', class: 'flex aic mb8', children: ['axis-line', { prop: 'xAxis.axisLine.show', type: 'switch', defaultValue: true, class: 'mla mb0' }] },
+          { is: 'div', class: 'flex aic', children: [
+            { prop: 'xAxis.axisLine.lineStyle.width', type: 'input-number', displayValue: 1, el: { max: 5 } },
+            { prop: 'xAxis.axisLine.lineStyle.color', type: 'color-picker', class: 'ml8' },
+            { prop: 'xAxis.axisLine.lineStyle.type', options: ['solid', 'dash'], displayValue: 'solid', class: 'ml8' },
+          ] },
+          { is: 'p', class: 'flex aic mb8', children: ['split-line', { prop: 'xAxis.splitLine.show', type: 'switch', class: 'mla mb0' }] },
+          { is: 'div', class: 'flex aic', children: [
+            { prop: 'xAxis.splitLine.lineStyle.width', type: 'input-number', displayValue: 1, el: { max: 5 } },
+            { prop: 'xAxis.splitLine.lineStyle.color', type: 'color-picker', class: 'ml8' },
+            { prop: 'xAxis.splitLine.lineStyle.type', options: ['solid', 'dash'], displayValue: 'solid' },
           ] },
         ] },
-        { is: 'ElTabPane', label: 'Series', lazy: true, children: [
-          { is: 'ElFormRender', model: option.series[0], size: 'small', children: [
-            { is: 'h4', class: 'flex aic mb8', children: ['label', { prop: 'label.show', type: 'switch', defaultValue: true, class: 'mla mb0' }] },
-            { is: 'div', class: 'flex aic', children: [
-              { prop: 'label.fontSize', type: 'input-number', displayValue: 12 },
-              { prop: 'label.color', type: 'color-picker', class: 'ml8' },
-              { prop: 'label.position', options: ['top', 'left', 'right', 'bottom'], displayValue: 'top', class: 'ml8' },
-            ] },
-            { is: 'h4', class: 'flex aic mb8', children:  'line' },
-            { is: 'div', class: 'flex aic', children: [
-              { prop: 'lineStyle.width', type: 'input-number', defaultValue: 2 },
-              { prop: 'lineStyle.color', type: 'color-picker', class: 'ml8' },
-              { prop: 'lineStyle.solid', options: ['solid', 'dashed', 'dotted'], displayValue: 'solid' },
-            ] },
-            { is: 'h4', class: 'flex aic mb8', children: ['area-style', { prop: 'areaStyle', type: 'switch', get: v => !!v, set: v => v ? {} : void 0, class: 'mla mb0' }] },
-            { is: 'div', class: 'flex aic', children: [
-              { prop: 'areaStyle.opacity', type: 'slider', displayValue: .7, class: 'flex-1', el: { min: 0, max: 1, step: .1, formatTooltip: v => `opacity: ${v * 100} %` } },
-              { prop: 'areaStyle.color', type: 'color-picker' },
-            ] },
-            { is: 'h4', class: 'flex aic mb8', children: ['shadow', { prop: 'lineStyle.shadowColor', type: 'switch', get: v => !!v, set: v => v ? 'rgb(128, 255, 165)' : void 0, class: 'mla mb0' }] },
-            { is: 'div', class: 'flex aic', children: [
-              { prop: 'lineStyle.shadowBlur', type: 'input-number', displayValue: 0 },
-              { prop: 'lineStyle.shadowColor', type: 'color-picker', class: 'ml8' },
-            ] },
-            { is: 'div', class: 'flex aic text-12', children: [
-              'x',
-              { prop: 'lineStyle.shadowOffsetX', type: 'slider', displayValue: 0, class: 'flex-1', el: { max: 20 } },
-              'y',
-              { prop: 'lineStyle.shadowOffsetY', type: 'slider', displayValue: 0, class: 'flex-1', el: { max: 20 }  },
-            ] },
-            { is: 'h4', class: 'flex aic mb8', children: ['smooth', { prop: 'smooth', type: 'switch', class: 'mla mb0' }] },
+        { is: 'ElCollapseItem', title: 'YAxis', children: [
+          { is: 'p', class: 'flex aic mb8', children: ['axis-label', { prop: 'yAxis.axisLabel.show', type: 'switch', displayValue: true, class: 'mla mb0' }] },
+          { is: 'div', class: 'text-12', style: 'display: grid; grid-template-columns: 130px 1fr', children: [
+            { prop: 'yAxis.axisLabel.rotate', type: 'slider', defaultValue: 0, el: { min: -90, max: 90, formatTooltip: v => `rotate: ${v}°` } },
+            { prop: 'yAxis.axisLabel.color', type: 'color-picker' },
+            { prop: 'yAxis.axisLabel.margin', type: 'input-number', defaultValue: 8 }, 'gap',
+            { prop: 'yAxis.axisLabel.fontSize', type: 'input-number', displayValue: 12 }, 'size',
+          ] },
+          { is: 'p', class: 'flex aic mb8', children: ['axis-line', { prop: 'yAxis.axisLine.show', type: 'switch', class: 'mla mb0' }] },
+          { is: 'div', class: 'flex aic', children: [
+            { prop: 'yAxis.axisLine.lineStyle.width', type: 'input-number', displayValue: 1, el: { max: 5 } },
+            { prop: 'yAxis.axisLine.lineStyle.color', type: 'color-picker', class: 'ml8' },
+            { prop: 'yAxis.axisLine.lineStyle.type', options: ['solid', 'dash'], displayValue: 'solid', class: 'ml8' },
+          ] },
+          { is: 'p', class: 'flex aic mb8', children: ['split-line', { prop: 'yAxis.splitLine.show', type: 'switch', defaultValue: true, class: 'mla mb0' }] },
+          { is: 'div', class: 'flex aic', children: [
+            { prop: 'yAxis.splitLine.lineStyle.width', type: 'input-number', displayValue: 1, el: { max: 5 } },
+            { prop: 'yAxis.splitLine.lineStyle.color', type: 'color-picker', class: 'ml8' },
+            { prop: 'yAxis.splitLine.lineStyle.type', options: ['solid', 'dash'], displayValue: 'solid' },
           ] },
         ] },
-        { is: 'ElTabPane', label: 'Tooltip', lazy: true, children: [
+        { is: 'ElCollapseItem', title: 'Tooltip', children: [
           { is: 'ElFormRender', model: option.tooltip, size: 'small', children: [
-            { is: 'h4', class: 'flex aic mb8', children: 'text' },
             { is: 'div', class: 'flex aic', children: [
               { prop: 'textStyle.fontSize', type: 'input-number', displayValue: 14 },
               { prop: 'textStyle.color', type: 'color-picker', class: 'ml8' },
             ] },
-            { is: 'h4', class: 'flex aic mb8', children: 'type' },
             { prop: 'axisPointer.type', type: 'radio-group', options: ['line', 'shadow', 'cross'], displayValue: 'line' },
             { is: 'div', class: 'flex aic', $: { condition: !option.tooltip.axisPointer?.type }, children: [
               { prop: 'axisPointer.lineStyle.width', type: 'input-number', displayValue: 1 },
@@ -176,7 +138,7 @@ export const el_lowcode = {
             ] },
           ] }
         ] },
-        { is: 'ElTabPane', label: 'Legend', lazy: true, children: [
+        { is: 'ElCollapseItem', title: 'Legend', children: [
           { is: 'ElFormRender', model: option.legend, size: 'small', children: [
             { is: 'div', class: 'flex aic', children: [
               { prop: 'textStyle.fontSize', type: 'input-number', displayValue: 12 },
@@ -189,26 +151,74 @@ export const el_lowcode = {
               'y', { prop: 'top', options: [['T', 'top'], ['C', 'middle'], ['B', 'bottom']], type: 'radio-group' },
               'g', { prop: 'itemGap', type: 'slider', displayValue: 10, el: { max: 20 } },
             ] },
-            { prop: 'orient', options: ['horizontal', 'vertical'], displayValue: 'horizontal', type: 'radio-group' },
+            { prop: 'orient', options: ['horizontal', 'vertical'], type: 'radio-group' },
           ] }
         ] },
-        { is: 'ElTabPane', label: 'Toolbox', lazy: true, children: [
-          
+        { is: 'ElCollapseItem', title: 'Toolbox', children: [
+          { is: 'ElFormRender', model: option.toolbox, size: 'small', children: [
+            { is: 'div', class: 'grid', style: 'grid-template-columns: 1fr 1fr;', children: [
+              { lp: ['data-zoom', 'feature.dataZoom'], type: 'switch', get: v => !!v, set: v => v ? {} : void 0 },
+              { lp: ['data-view', 'feature.dataView'], type: 'switch', get: v => !!v, set: v => v ? {} : void 0 },
+              { lp: ['restore', 'feature.restore'], type: 'switch', get: v => !!v, set: v => v ? {} : void 0 },
+              { lp: ['save-image', 'feature.saveAsImage'], type: 'switch', get: v => !!v, set: v => v ? {} : void 0 },
+              { lp: ['size', 'itemSize'], type: 'slider', el: { max: 30 } },
+              { lp: ['gap', 'itemGap'], type: 'slider', el: { max: 16 } },
+            ] },
+            { prop: 'orient', options: ['horizontal', 'vertical'], type: 'radio-group' },
+          ] }
+        ] },
+        { is: 'ElCollapseItem', title: 'Series', children: [
+          { is: 'ElTabs', children: [
+            { is: 'ElTabPane', label: 'Series', lazy: true, children: [
+              { is: 'ElFormRender', model: option.series[0], size: 'small', children: [
+                { is: 'p', class: 'flex aic mb8', children: ['label', { prop: 'label.show', type: 'switch', defaultValue: true, class: 'mla mb0' }] },
+                { is: 'div', class: 'flex aic', children: [
+                  { prop: 'label.fontSize', type: 'input-number', displayValue: 12 },
+                  { prop: 'label.color', type: 'color-picker', class: 'ml8' },
+                  { prop: 'label.position', options: ['top', 'left', 'right', 'bottom'], displayValue: 'top', class: 'ml8' },
+                ] },
+                { is: 'p', class: 'flex aic mb8', children:  'line' },
+                { is: 'div', class: 'flex aic', children: [
+                  { prop: 'lineStyle.width', type: 'input-number', defaultValue: 2 },
+                  { prop: 'lineStyle.color', type: 'color-picker', class: 'ml8' },
+                  { prop: 'lineStyle.solid', options: ['solid', 'dashed', 'dotted'], displayValue: 'solid' },
+                ] },
+                { is: 'p', class: 'flex aic mb8', children: ['area-style', { prop: 'areaStyle', type: 'switch', get: v => !!v, set: v => v ? {} : void 0, class: 'mla mb0' }] },
+                { is: 'div', class: 'flex aic', children: [
+                  { prop: 'areaStyle.opacity', type: 'slider', displayValue: .7, class: 'flex-1', el: { min: 0, max: 1, step: .1, formatTooltip: v => `opacity: ${v * 100} %` } },
+                  { prop: 'areaStyle.color', type: 'color-picker' },
+                ] },
+                { is: 'p', class: 'flex aic mb8', children: ['shadow', { prop: 'lineStyle.shadowColor', type: 'switch', get: v => !!v, set: v => v ? 'rgb(128, 255, 165)' : void 0, class: 'mla mb0' }] },
+                { is: 'div', class: 'flex aic', children: [
+                  { prop: 'lineStyle.shadowBlur', type: 'input-number', displayValue: 0 },
+                  { prop: 'lineStyle.shadowColor', type: 'color-picker', class: 'ml8' },
+                ] },
+                { is: 'div', class: 'flex aic text-12', children: [
+                  'x',
+                  { prop: 'lineStyle.shadowOffsetX', type: 'slider', displayValue: 0, class: 'flex-1', el: { max: 20 } },
+                  'y',
+                  { prop: 'lineStyle.shadowOffsetY', type: 'slider', displayValue: 0, class: 'flex-1', el: { max: 20 }  },
+                ] },
+                { is: 'p', class: 'flex aic mb8', children: ['smooth', { prop: 'smooth', type: 'switch', class: 'mla mb0' }] },
+              ] },
+            ] },
+          ] },
         ] },
       ] },
-
     ] },
 
     { is: 'ElDivider' },
     { is: 'h1', children: 'Common' },
-    { lp: 'autoresize', type: 'switch' },
-    { lp: ['svg', 'initOptions.renderer'], type: 'switch', get: v => !!v, set: v => v ? 'svg' : void 0 },
-    { lp: ['dark', 'theme'], type: 'switch', get: v => !!v, set: v => v ? 'dark' : void 0 },
+    { is: 'div', class: 'grid', style: 'grid-template-columns: 1fr 1fr 1fr;', children: [
+      { lp: 'autoresize', type: 'switch' },
+      { lp: ['svg', 'initOptions.renderer'], type: 'switch', get: v => !!v, set: v => v ? 'svg' : void 0 },
+      { lp: ['dark', 'theme'], type: 'switch', get: v => !!v, set: v => v ? 'dark' : void 0 },
+    ] },
 
     { is: 'ElDivider' },
     { is: 'h1', children: 'Event' },
     { lp: 'onFinished', script: true },
-    { lp: 'onSelectchanged', displayValue: `{{() => {\n  \n}}}`, script: true },
+    { lp: 'onSelectchanged', script: true },
     { lp: 'onLegendselectchanged', script: true },
     { lp: 'onLegendselected', script: true },
   ]),
@@ -220,6 +230,7 @@ export const el_lowcode = {
     option: {
       legend: {},
       tooltip:{ trigger: 'axis' },
+      toolbox: {},
       series: [{ label: { show: true } }]
     },
   })

@@ -11,6 +11,10 @@
 <script setup lang="ts">
 import PairInput from '../pair-input'
 
+defineOptions({
+  name: 'OptionsInput'
+})
+
 type Opt = { label: string; value: string }
 
 const props = defineProps<{

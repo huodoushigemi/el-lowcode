@@ -33,10 +33,7 @@ export const Render = createRender({
 
 export default {
  install(app, ...options) {
-    components.forEach(e => {
-      if (e.install) e.install(app)
-      else app.component(e.name, e)
-    })
+    components.forEach(e => e.install(app))
     app.use(ElFormRender)
     app.use(CRUD)
  },

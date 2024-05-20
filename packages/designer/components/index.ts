@@ -1,5 +1,4 @@
-import { keyBy, mapValues } from '@el-lowcode/utils'
-import { components } from './components'
+import { keyBy } from '@el-lowcode/utils'
 import native from './native'
 import { el_lowcode_widgets } from './el_lowcode_widgets'
 
