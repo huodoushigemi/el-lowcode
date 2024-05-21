@@ -76,17 +76,17 @@
 </template>
 
 <script setup lang="ts">
-import { MaybeRef, computed, getCurrentInstance, provide, reactive, ref, toRefs, watchEffect } from 'vue'
-import { isArray, remove, stringifyStyle } from '@vue/shared'
-import { v4 as uuid } from 'uuid'
+import { MaybeRef, computed, provide, reactive, ref } from 'vue'
+import { isArray, isObject, isPlainObject, remove } from '@vue/shared'
+import { ElLoading } from 'element-plus'
 import { VueDraggable } from 'vue-draggable-plus'
 import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
-import { keyBy, treeUtils } from '@el-lowcode/utils'
+import { Arrable, keyBy, toArr, treeUtils } from '@el-lowcode/utils'
 
 import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
 import { components } from '../components'
 import { parseAttrs, importJs } from '../components/_utils'
-import { BoxProps } from '../components/type'
+import { BoxProps, ElLowcodeConfig } from '../components/type'
 import { DesignerCtx, designerCtxKey } from './interface'
 import DragBox from './components/drag-box.vue'
 import SelectedLayer from './components/selected-layer.vue'
@@ -119,10 +119,9 @@ const groups = reactive([
   {
     title: '自定义组件',
     list: computedAsync(() => Promise.all(Object.values(root.value.extraElLowcodeWidgets ?? {}).map(async id => {
-      const { default: comp, el_lowcode } = await importJs(root.value.esm![id!] as string)
-      const name = el_lowcode.is ??= comp?.name
-      return el_lowcode_widgets[name] = el_lowcode
-    })), [], { onError: e => console.error(e) })
+      const { default: config } = await importJs(id) as { default: Arrable<ElLowcodeConfig> }
+      return toArr(config).map(e => el_lowcode_widgets[e.is] = e)
+    })).then(e => e.flat()), [], { onError: e => console.error(e) })
   },
   {
     title: '数据输入',
@@ -197,37 +196,56 @@ useEventListener('keydown', (e) => {
 
 // 拖拽 .vue 自定义组件
 const dropZone = ref<HTMLDivElement>(), { isOverDropZone } = useDropZone(dropZone, onDrop)
-async function onDrop(fs: File[] | null) {
-  fs?.forEach(async file => {
-    let jscode = ''
-    if (file.name.endsWith('.vue')) {
-      jscode = await vue2esm(await file.text(), file.name)
-    }
-    else if (file.name.endsWith('.js')) {
-      jscode = await file.text()
-    }
-    else {
-      return alert(`不支持该文件类型：${file.name}`)
-    }
-    
-    // 导入 esm 模块
-    const { default: comp, el_lowcode } = await importJs(jscode)
-    const name = el_lowcode.is ??= comp?.name
+async function onDrop(_, e: DragEvent) {
 
-    // const id = uuid()
-    const id = name
-    root.value.esm ??= {}
-    root.value.esm[id] = jscode
+  const list = [] as FileSystemFileEntry[]
+  for (const item of e.dataTransfer!.items) scanFiles(item.webkitGetAsEntry(), list)
+
+  const loading = ElLoading.service({ lock: true })
+
+  try {
+    const fs = await Promise.all(list.map(e => new Promise<File>((s, j) => e.file(s, j))))
+    if (!fs.length) return
+
+    const widgets = root.value.extraElLowcodeWidgets ??= {}
+    const components = root.value.customComponents ??= {}
     
-    if (comp?.name) {
-      root.value.customComponents ??= {}
-      root.value.customComponents[name] = id
-    }
-    if (el_lowcode) {
-      root.value.extraElLowcodeWidgets ??= {}
-      root.value.extraElLowcodeWidgets[name] = id
-    }
-  })
+    fs!.forEach(async file => {
+      if (file.name.endsWith('.config.js')) {
+        widgets[file.name] = await file.text()
+      }
+      else if (file.name.endsWith('.vue') || file.name.endsWith('.js')) {
+        const jscode = file.name.endsWith('.vue')
+          ? await vue2esm(await file.text(), file.name)
+          : await file.text()
+        const { default: comp } = await importJs(jscode)
+        if (!comp) throw new Error(`文件 ${file.name} 没有默认导出`)
+        if (!isPlainObject(comp)) throw new Error(`文件 ${file.name} 应默认导出 vue 组件，但导出的是 ${typeof comp}`)
+        const name = comp.name || file.name.split('.')[0]
+        components[name] = jscode
+      }
+      else {
+        console.warn(`不支持的文件类型：${file.name}`)
+      }
+    })
+  } catch (e) {
+    alert('导入失败')
+    throw e
+  } finally {
+    loading.close()
+  }
+}
+
+function scanFiles(entry: FileSystemEntry | null, list: FileSystemFileEntry[] = []) {
+  if (!entry) return list
+  if (entry.isDirectory) {
+    let directoryReader = (entry as FileSystemDirectoryEntry).createReader()
+    directoryReader.readEntries((es) => list.push(...es.filter(e => e.isFile) as any[]))
+  }
+  else if (entry.isFile) {
+    list.push(entry as FileSystemFileEntry)
+  }
+  return list
 }
 </script>
 

@@ -40,17 +40,10 @@ provide(pageCtxKey, reactive({
   state
 }))
 
-// 
-watchEffect(() => {
-  Object.values(props.esm ?? {}).forEach(js => {
-    importJs(js)
-  })
-})
-
 // custom components
 watchEffect(() => {
   Object.entries(props.customComponents ?? {}).forEach(([name, id]) => {
-    ins.appContext.app.component(name, defineAsyncComponent(async () => (await importJs(props.esm![id])).default))
+    ins.appContext.app.component(name, defineAsyncComponent(async () => (await importJs(id)).default))
   })
 })
 

@@ -2,7 +2,7 @@ import { Obj } from "@el-lowcode/utils"
 import { Item } from "el-form-render"
 
 export interface ElLowcodeConfig {
-  is?: string
+  is: string
   label?: string
   layout?: boolean
   drag?: boolean
