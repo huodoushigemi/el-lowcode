@@ -16,12 +16,13 @@ export interface BoxProps {
   _id?: string
   el?: Obj
   children?: string | number | BoxProps[]
-  esm?: Record<string, string>
   customComponents?: Record<string, string>
   extraElLowcodeWidgets?: Record<string, string>
   presets?: string[]
   $?: {
+    // todo
     loop: string
+    // todo
     loopArgs: [string, string]
     condition: any
   }

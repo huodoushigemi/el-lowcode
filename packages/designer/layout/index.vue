@@ -77,7 +77,7 @@
 
 <script setup lang="ts">
 import { MaybeRef, computed, provide, reactive, ref } from 'vue'
-import { isArray, isObject, isPlainObject, remove } from '@vue/shared'
+import { isArray, isPlainObject, remove } from '@vue/shared'
 import { ElLoading } from 'element-plus'
 import { VueDraggable } from 'vue-draggable-plus'
 import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
@@ -197,16 +197,15 @@ useEventListener('keydown', (e) => {
 // 拖拽 .vue 自定义组件
 const dropZone = ref<HTMLDivElement>(), { isOverDropZone } = useDropZone(dropZone, onDrop)
 async function onDrop(_, e: DragEvent) {
-
   const list = [] as FileSystemFileEntry[]
   for (const item of e.dataTransfer!.items) scanFiles(item.webkitGetAsEntry(), list)
 
+  const fs = await Promise.all(list.map(e => new Promise<File>((s, j) => e.file(s, j))))
+  if (!fs.length) return
+  
   const loading = ElLoading.service({ lock: true })
 
   try {
-    const fs = await Promise.all(list.map(e => new Promise<File>((s, j) => e.file(s, j))))
-    if (!fs.length) return
-
     const widgets = root.value.extraElLowcodeWidgets ??= {}
     const components = root.value.customComponents ??= {}
     

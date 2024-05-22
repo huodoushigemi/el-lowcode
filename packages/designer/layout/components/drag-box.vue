@@ -1,7 +1,7 @@
 <template>
   <component v-if="condition" ref="elRef" :is="el.is" v-bind="_el" :class="['drag', config?.layout && 'container-box']"
     @mouseover.stop="mouseover" @native:mouseover.stop="mouseover"
-    @mousedown.stop="mousedown" @native:mousedown.stop="mousedown" 
+    @mousedown.stop.prevent="mousedown" @native:mousedown.stop.prevent="mousedown"
     @mouseleave.stop="mouseleave"
   >
 
@@ -25,10 +25,12 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, computed, inject, nextTick, ref, watch, watchEffect } from 'vue'
+import { PropType, computed, inject, nextTick, ref, watch, watchEffect, toRaw, onUpdated } from 'vue'
 import { isArray } from '@vue/shared'
+import { unrefElement } from '@vueuse/core'
 import { UseDraggableReturn, useDraggable } from 'vue-draggable-plus'
-import { deepClone, execExp } from '@el-lowcode/utils'
+import Moveable from 'moveable'
+import { deepClone, execExp, pick } from '@el-lowcode/utils'
 import { sloveConfig } from '../../components/_utils'
 import { designerCtxKey } from '../../layout/interface'
 import { pageCtxKey } from '../../components/page/interface'
@@ -68,9 +70,6 @@ watchEffect(() => {
     animation: 150,
     draggable: '.drag',
     ghostClass: 'ghostClass',
-    // forceFallback: true,
-    // fallbackOnBody: true,
-    // fallbackClass: 'hidden',
     onStart(e) {
       designerCtx.draggedId = (props.el.children as BoxProps[])[e.oldIndex]._id
       cloned = e.item.cloneNode(true)
@@ -85,6 +84,47 @@ watchEffect(() => {
     }
   })
 })
+
+// moveable
+let moveable: Moveable
+watch(elRef, v => {
+  if (v == null) return
+  v = unrefElement(v)
+  moveable?.destroy()
+  moveable = new Moveable(v.parentElement!, {
+    target: unrefElement(v),
+    draggable: true,
+    resizable: true,
+    // rotatable: true,
+    useResizeObserver: true,
+    origin: true,
+  })
+  moveable
+    .on('dragStart', e => {
+      e.inputEvent.stopPropagation()
+    })
+    .on('drag', e => {
+      Object.assign(e.target.style, { top: e.top.toFixed(0) + 'px', left: e.left.toFixed(0) + 'px' })
+    })
+    .on('dragEnd', e => {
+      Object.assign(props.el.style ??= {}, pick(e.target.style, ['top', 'left']))
+    })
+  moveable
+    .on('resizeStart', e => {
+      e.inputEvent.stopPropagation()
+    })
+    .on('resize', ({ target, width, height, delta }) => {
+      const setw = width != target.offsetWidth
+      const seth = height != target.offsetHeight
+      setw && (target.style.width = `${width}px`)
+      seth && (target.style.height = `${height}px`)
+    })
+    .on('resizeEnd', e => {
+      Object.assign(props.el.style ??= {}, pick(e.target.style, ['width', 'height']))
+    })
+})
+
+onUpdated(() => console.log('onUpdated'))
 
 // 选中状态处理
 function mouseover() {

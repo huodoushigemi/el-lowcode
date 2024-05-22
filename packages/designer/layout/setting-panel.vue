@@ -34,8 +34,6 @@ import Input from './components/input.vue'
 
 import MaterialSymbolsLightFormatBold from '~icons/material-symbols-light/format-bold'
 import MaterialSymbolsLightFormatItalic from '~icons/material-symbols-light/format-italic'
-import MaterialSymbolsFormatBold from '~icons/material-symbols/format-bold'
-import MaterialSymbolsFormatItalic from '~icons/material-symbols/format-italic'
 
 
 const _normalizeItem = (item) => {
