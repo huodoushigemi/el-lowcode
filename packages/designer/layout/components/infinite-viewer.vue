@@ -1,5 +1,5 @@
 <template>
-  <div class="infinite-viewer" relative @mousedown.prevent="onMousedown">
+  <div class="infinite-viewer" relative>
     <div absolute w20 h20 z-1 @click="viewer.scrollCenter(); viewer.setZoom(1)" />
     <div class="guides-x" absolute left-20 right-0 h20 z-1 />
     <div class="guides-y" absolute top-20 bottom-0 w20 z-1 />
@@ -17,15 +17,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeMount } from 'vue'
+import { onMounted, onBeforeMount } from 'vue'
 import { useCurrentElement, useResizeObserver } from '@vueuse/core'
 import Guides from '@scena/guides'
-import InfiniteViewer from 'infinite-viewer'
+import InfiniteViewer, { EVENTS } from 'infinite-viewer'
 
 const props = defineProps({
   bodyStyle: [String, Object],
   bodyClass: String
 })
+
+const emit = defineEmits(EVENTS)
 
 const el = useCurrentElement()
 
@@ -56,6 +58,7 @@ onMounted(() => {
     useWheelScroll: true,
     useAutoZoom: true,
     zoomRange: [0.4, 2.5],
+    preventWheelClick: false,
     maxPinchWheel: 10,
   }).on("dragStart", e => {
       const target = e.inputEvent.target
@@ -74,6 +77,8 @@ onMounted(() => {
       guidesX.zoom = zoom
   })
 
+  EVENTS.forEach(name => viewer.on(name, e => emit(name, e)))
+
   requestAnimationFrame(() => {
     viewer.scrollCenter()
   })
@@ -89,8 +94,4 @@ onMounted(() => {
     guidesY.destroy()
   })
 })
-
-function onMousedown(e) {
-  // e.preventDefault()
-}
 </script>

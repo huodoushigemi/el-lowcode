@@ -14,6 +14,7 @@ export interface DesignerCtx {
   currentState: Obj
   readonly viewport: HTMLElement
   canvas: {
+    zoom: number
     style: Partial<CSSProperties>
   }
 }

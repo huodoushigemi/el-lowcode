@@ -1,7 +1,7 @@
 <template>
   <div class="selected-rect">
     <div :class="[
-      'absolute bottom-[100%] px8 text-12 c-white bg-[--el-color-primary] pointer-events-auto',
+      'absolute bottom-[100%] px8 text-12 c-white bg-[--el-color-primary]',
       second && 'op75'
     ]">{{ config?.label }}</div>
   </div>

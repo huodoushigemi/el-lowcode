@@ -1,7 +1,7 @@
 <template>
-  <component v-if="condition" ref="elRef" :is="el.is" v-bind="_el" :class="['drag', config?.layout && 'container-box']"
+  <component v-if="condition" ref="elRef" :is="el.is" v-bind="_el" :class="[absolute ? 'moveable' : 'drag', config?.layout && 'container-box']"
     @mouseover.stop="mouseover" @native:mouseover.stop="mouseover"
-    @mousedown.stop.prevent="mousedown" @native:mousedown.stop.prevent="mousedown"
+    @mousedown.left.stop="mousedown" @native:mousedown.left.stop="mousedown"
     @mouseleave.stop="mouseleave"
   >
 
@@ -21,16 +21,18 @@
       {{ _execExp(el.children) }}
     </template>
 
+    <Moveable v-if="absolute && actived" :target="unrefElement(elRef)" :draggable="true" :resizable="true" :rotatable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @drag="onDrag" @dragEnd="onDragEnd" @resize="onResize" @resizeEnd="onResizeEnd" @rotate="onDrag" @rotateEnd="onDragEnd" />
+
   </component>
 </template>
 
 <script setup lang="ts">
-import { PropType, computed, inject, nextTick, ref, watch, watchEffect, toRaw, onUpdated } from 'vue'
+import { PropType, computed, inject, ref, watch, watchEffect, onUpdated } from 'vue'
 import { isArray } from '@vue/shared'
-import { unrefElement } from '@vueuse/core'
+import { unrefElement, useEventListener } from '@vueuse/core'
 import { UseDraggableReturn, useDraggable } from 'vue-draggable-plus'
-import Moveable from 'moveable'
-import { deepClone, execExp, pick } from '@el-lowcode/utils'
+import Moveable from './Moveable.vue'
+import { deepClone, execExp, get, pick, set } from '@el-lowcode/utils'
 import { sloveConfig } from '../../components/_utils'
 import { designerCtxKey } from '../../layout/interface'
 import { pageCtxKey } from '../../components/page/interface'
@@ -49,6 +51,8 @@ const pageCtx = inject(pageCtxKey)!
 
 const config = computed(() => sloveConfig(props.el))
 const emptyChildren = computed(() => isArray(props.el.children) ? !props.el.children.length : false)
+const actived = computed(() => props.el._id == designerCtx.activeId)
+const absolute = computed(() => props.el.style?.position == 'absolute')
 
 // 拖拽
 const elRef = ref<HTMLElement>()
@@ -69,6 +73,7 @@ watchEffect(() => {
     group: 'shared',
     animation: 150,
     draggable: '.drag',
+    // filter: '.moveable',
     ghostClass: 'ghostClass',
     onStart(e) {
       designerCtx.draggedId = (props.el.children as BoxProps[])[e.oldIndex]._id
@@ -86,43 +91,22 @@ watchEffect(() => {
 })
 
 // moveable
-let moveable: Moveable
-watch(elRef, v => {
-  if (v == null) return
-  v = unrefElement(v)
-  moveable?.destroy()
-  moveable = new Moveable(v.parentElement!, {
-    target: unrefElement(v),
-    draggable: true,
-    resizable: true,
-    // rotatable: true,
-    useResizeObserver: true,
-    origin: true,
-  })
-  moveable
-    .on('dragStart', e => {
-      e.inputEvent.stopPropagation()
-    })
-    .on('drag', e => {
-      Object.assign(e.target.style, { top: e.top.toFixed(0) + 'px', left: e.left.toFixed(0) + 'px' })
-    })
-    .on('dragEnd', e => {
-      Object.assign(props.el.style ??= {}, pick(e.target.style, ['top', 'left']))
-    })
-  moveable
-    .on('resizeStart', e => {
-      e.inputEvent.stopPropagation()
-    })
-    .on('resize', ({ target, width, height, delta }) => {
-      const setw = width != target.offsetWidth
-      const seth = height != target.offsetHeight
-      setw && (target.style.width = `${width}px`)
-      seth && (target.style.height = `${height}px`)
-    })
-    .on('resizeEnd', e => {
-      Object.assign(props.el.style ??= {}, pick(e.target.style, ['width', 'height']))
-    })
-})
+function onDrag(e) {
+  e.target.style.transform = e.transform
+}
+function onDragEnd(e) {
+  (props.el.style ??= {}).transform = e.target.style.transform
+}
+function onResize({ target, width, height, transform }) {
+  const setw = width != target.offsetWidth
+  const seth = height != target.offsetHeight
+  setw && (target.style.width = `${width}px`)
+  seth && (target.style.height = `${height}px`)
+  target.style.transform = transform
+}
+function onResizeEnd(e) {
+  Object.assign(props.el.style ??= {}, pick(e.target.style, ['width', 'height', 'transform']))
+}
 
 onUpdated(() => console.log('onUpdated'))
 
@@ -167,11 +151,12 @@ const condition = computed(() => props.el.$?.condition == null || !!_$.value?.co
 <style lang="scss">
 .empty-placeholder {
   position: relative;
-  padding: 18px;
+  padding: 18px 72px;
   height: 100%;
   opacity: .4;
   &::after {
     content: 'Drag and drop here';
+    text-wrap: nowrap;
     position: absolute;
     top: 50%;
     left: 50%;

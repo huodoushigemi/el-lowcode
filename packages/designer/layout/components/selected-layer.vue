@@ -7,41 +7,43 @@
 
 <script setup lang="ts">
 import { getCurrentInstance, inject, ref } from 'vue'
-import { useMounted, useMutationObserver } from '@vueuse/core'
+import { useMutationObserver, useResizeObserver } from '@vueuse/core'
 import SelectedRect from './selected-rect.vue'
 import { designerCtxKey } from '../interface'
 
 const designerCtx = inject(designerCtxKey)!
- 
-const isMounted = useMounted()
 
 const el = ref<HTMLDivElement>()
-const viewport = () => isMounted.value ? el.value!.offsetParent as HTMLElement : null
 
 const hoverEl = () => {
   const id = designerCtx.hoverId
-  return viewport()?.querySelector<HTMLElement>(`[_id='${id}']`)
+  return designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${id}']`)
 }
 
 const activeEl = () => {
   const id = designerCtx.activeId
-  return viewport()?.querySelector<HTMLElement>(`[_id='${id}']`)
+  return designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${id}']`)
 }
 
+const rootEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.root._id}']`)
+
 const calcStyle = (el?: HTMLElement | null) => {
-  // todo
-  // if (scrolling) return
   if (!el) return { display: 'none' }
-  const vp = viewport()
-  const rect1 = vp?.getBoundingClientRect()
+  // 提取 transform 的 xy
+  const transform = el.style.transform
+  const offset = (transform.match(/translate\(([^\)]+?)\)/)?.[1].split(',').map(e => parseInt(e)) ?? [0, 0])
+  // 计算位置
+  const vp = designerCtx.viewport
+  const zoom = designerCtx.canvas.zoom
+  const rect1 = vp.getBoundingClientRect()
   const rect2 = el.getBoundingClientRect()
-  if (!rect1) return
-  
-  return { top: rect2.top - rect1.top + 'px', left: rect2.left - rect1.left + 'px', width: el.offsetWidth + 'px', height: el.offsetHeight + 'px' }
+  return { top: (rect2.top - rect1.top) / zoom - offset[1] + 'px', left: (rect2.left - rect1.left) / zoom - offset[0] + 'px', width: el.offsetWidth + 'px', height: el.offsetHeight + 'px', transform }
 }
 
 const ins = getCurrentInstance()!
 const fu = () => requestAnimationFrame(ins.proxy!.$forceUpdate)
 
-useMutationObserver(viewport, () => fu(), { subtree: true, childList: true, attributes: true, characterData: true })
+useMutationObserver(rootEl, () => fu(), { subtree: true, childList: true, attributes: true, characterData: true })
+
+useResizeObserver(rootEl, () => fu())
 </script>

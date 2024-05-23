@@ -69,10 +69,10 @@ const config = computed(() => {
 const _items = computed(() => unFn(config.value?.props, model.value)?.map(_normalizeItem))
 
 const styles = [
-  { lp: ['width', 'style.width'], type: 'input-number', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined },
-  { lp: ['height', 'style.height'], type: 'input-number', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined },
   { lp: ['position', 'style.position'], type: 'select', options: ['static', 'relative', 'absolute', 'fixed', 'sticky'], displayValue: 'static', el: { placeholder: 'static' } },
   { lp: ['layout', 'style.display'], type: 'radio-group', options: ['inline', 'block', 'flex'] },
+  { lp: ['width', 'style.width'], type: 'input-number', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined },
+  { lp: ['height', 'style.height'], type: 'input-number', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined },
   { lp: ['background-color', 'style.backgroundColor'], type: 'color-picker' },
   { lp: ['opacity', 'style.opacity'], type: 'slider', displayValue: 1, el: { min: 0, max: 1, step: .01, formatTooltip: val => (val * 100).toFixed(2) } },
   { lp: ['overflow', 'style.overflow'], type: 'radio-group', options: ['visible', 'auto', 'hidden'], displayValue: 'visible' },

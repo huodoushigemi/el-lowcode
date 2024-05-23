@@ -60,7 +60,7 @@
     </el-tabs>
     
     <!-- Canvas Viewport -->
-    <infinite-viewer wfull hfull style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined">
+    <infinite-viewer wfull hfull :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle="middlePressed = true" @mouseup.middle="middlePressed = false" @pinch="designerCtx.canvas.zoom = $event.zoom">
       <div ref="viewport" class="viewport relative" :style="`width: ${canvasWidth}; background: var(--el-fill-color-extra-light)`" @click.stop>
         <drag-box id="root" :el="root" h1080 />
         <selected-layer v-if="!designerCtx.draggedId" />
@@ -80,8 +80,8 @@ import { MaybeRef, computed, provide, reactive, ref } from 'vue'
 import { isArray, isPlainObject, remove } from '@vue/shared'
 import { ElLoading } from 'element-plus'
 import { VueDraggable } from 'vue-draggable-plus'
-import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
-import { Arrable, keyBy, toArr, treeUtils } from '@el-lowcode/utils'
+import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage, useMousePressed } from '@vueuse/core'
+import { Arrable, get, keyBy, set, toArr, treeUtils } from '@el-lowcode/utils'
 
 import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
 import { components } from '../components'
@@ -157,7 +157,7 @@ const designerCtx = reactive({
   openState: ref(false),
   currentState: {},
   viewport,
-  canvas: { style: { width: '100%' } },
+  canvas: { zoom: 1, style: { width: '100%' } },
   root,
   active: computed(() => designerCtx.activeId && treeUtils.find([root.value], designerCtx.activeId, { key: '_id' })),
   hover: computed(() => designerCtx.hoverId && treeUtils.find([root.value], designerCtx.hoverId, { key: '_id' })),
@@ -179,6 +179,9 @@ function onEnd(e) {
   // designerCtx.activeId
 }
 
+// 中建按下
+const middlePressed = ref(false)
+
 // 按 Delete 删除当前选中元素
 useEventListener('keydown', (e) => {
   if (e.key !== 'Delete') return
@@ -192,6 +195,19 @@ useEventListener('keydown', (e) => {
   } else {
     root.value.children = []
   }
+})
+
+// ↑ → ↓ ←
+useEventListener('keydown', e => {
+  if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return
+  const node = designerCtx.active
+  const plus = (prop, v) => (e.preventDefault(), set(node, `style.${prop}`, parseInt(get(node, `style.${prop}`) || 0) + v + 'px'))
+  const absolute = node.style?.position == 'absolute'
+  const offset = e.shiftKey ? 10 : 1
+  if (e.key == 'ArrowUp') plus(absolute ? 'top' : 'marginTop', -offset)
+  if (e.key == 'ArrowLeft') plus(absolute ? 'left' : 'marginLeft', -offset)
+  if (e.key == 'ArrowDown') plus(absolute ? 'top' : 'marginTop', offset)
+  if (e.key == 'ArrowRight') plus(absolute ? 'left' : 'marginLeft', offset)
 })
 
 // 拖拽 .vue 自定义组件
