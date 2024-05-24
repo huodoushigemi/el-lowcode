@@ -21,7 +21,8 @@
 
     <!-- Left -->
     <el-tabs tab-position="left" type="border-card" hfull b-r="1px solid [--el-border-color]" box-border> 
-      <el-tab-pane w200 ref="dropZone" :class="isOverDropZone && `overlay`">
+      <el-tab-pane w200 ref="dropZone">
+        <div v-if="isOverDropZone" absolute inset-0 bg="gray/40" pointer-events-none />
         <template #label><el-tooltip content="组件库" placement="right" :hide-after="0"><i-mdi:widgets-outline /></el-tooltip></template>
         <div px8 py12 text-22 b-b="1 solid [--el-border-color]">组件</div>
         <el-collapse v-model="collapse" pl12 pr8 hfull overflow-overlay>
@@ -61,9 +62,11 @@
     
     <!-- Canvas Viewport -->
     <infinite-viewer wfull hfull :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle="middlePressed = true" @mouseup.middle="middlePressed = false" @pinch="designerCtx.canvas.zoom = $event.zoom">
-      <div ref="viewport" class="viewport relative" :style="`width: ${canvasWidth}; background: var(--el-fill-color-extra-light)`" @click.stop>
+      <div ref="viewport" class="viewport relative" :style="`width: ${canvasWidth}; background: var(--el-fill-color-extra-light)`" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
         <drag-box id="root" :el="root" h1080 />
         <selected-layer v-if="!designerCtx.draggedId" />
+        <Moveable :target="activeEl()" :resizable="true" :rotatable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotate="onDrag" @rotateEnd="onDragEnd" />
+        <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
       </div>
     </infinite-viewer>
     
@@ -81,7 +84,7 @@ import { isArray, isPlainObject, remove } from '@vue/shared'
 import { ElLoading } from 'element-plus'
 import { VueDraggable } from 'vue-draggable-plus'
 import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage, useMousePressed } from '@vueuse/core'
-import { Arrable, get, keyBy, set, toArr, treeUtils } from '@el-lowcode/utils'
+import { Arrable, get, keyBy, pick, set, toArr, treeUtils } from '@el-lowcode/utils'
 
 import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
 import { components } from '../components'
@@ -96,6 +99,8 @@ import CurrentState from './components/current-state.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import Schema from './components/schema.vue'
 import { vue2esm } from './vue2esm'
+// import Moveable from './components/Moveable.vue'
+import Moveable from 'vue3-moveable'
 
 defineOptions({
   components: keyBy(components, 'name')
@@ -179,6 +184,47 @@ function onEnd(e) {
   // designerCtx.activeId
 }
 
+const activeEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.activeId}']`)
+const hoverEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.hoverId}']`)
+const rootEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.root._id}']`)
+
+// moveable
+const moveable = ref()
+function onDragStart(e) {
+  designerCtx.draggedId = e.target.getAttribute('_id')
+  // const setVar = (k, v) => e.target.style.getPropertyValue(k) || e.target.style.setProperty(k, v)
+  // const getVar = (k) => e.target.style.getPropertyValue(k)
+  // setVar('--x', '0px')
+  // setVar('--y', '0px')
+  // setVar('--r', '0deg')
+  // e.target.style.transform = `translate(${getVar('--x')}, ${getVar('--y')}) rotate(${getVar('--r')})`
+}
+function onDrag(e) {
+  // if (e.translate) e.target.style.setProperty('--x', e.translate[0] + 'px')
+  // if (e.translate) e.target.style.setProperty('--y', e.translate[1] + 'px')
+  // if (e.rotate) e.target.style.setProperty('--r', e.rotate + 'deg')
+  e.target.style.transform = e.transform
+}
+function onDragEnd(e) {
+  // ['--x', '--y', '--r'].forEach(k => (designerCtx.dragged.style ??= {})[k] = e.target.style.getPropertyValue(k))
+  // designerCtx.dragged.style.transform = `translate(var(--x), var(--y)) rotate(var(--r))`
+  (designerCtx.dragged.style ??= {}).transform = e.target.style.transform
+  designerCtx.draggedId = undefined
+}
+function onResize({ target, width, height, transform, ...e }) {
+  console.log(e);
+  
+  const setw = width != target.offsetWidth
+  const seth = height != target.offsetHeight
+  setw && (target.style.width = `${width}px`)
+  seth && (target.style.height = `${height}px`)
+  target.style.transform = transform
+}
+function onResizeEnd(e) {
+  Object.assign(designerCtx.dragged.style ??= {}, pick(e.target.style, ['width', 'height', 'transform']))
+  designerCtx.draggedId = undefined
+}
+
 // 中建按下
 const middlePressed = ref(false)
 
@@ -200,14 +246,25 @@ useEventListener('keydown', (e) => {
 // ↑ → ↓ ←
 useEventListener('keydown', e => {
   if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return
+  if (!['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(e.key)) return
   const node = designerCtx.active
-  const plus = (prop, v) => (e.preventDefault(), set(node, `style.${prop}`, parseInt(get(node, `style.${prop}`) || 0) + v + 'px'))
-  const absolute = node.style?.position == 'absolute'
+  if (!node) return
+  e.preventDefault()
   const offset = e.shiftKey ? 10 : 1
-  if (e.key == 'ArrowUp') plus(absolute ? 'top' : 'marginTop', -offset)
-  if (e.key == 'ArrowLeft') plus(absolute ? 'left' : 'marginLeft', -offset)
-  if (e.key == 'ArrowDown') plus(absolute ? 'top' : 'marginTop', offset)
-  if (e.key == 'ArrowRight') plus(absolute ? 'left' : 'marginLeft', offset)
+  const absolute = node.style?.position == 'absolute'
+  if (absolute) {
+    const plus = (str: string, v) => {
+      const matched = str.match(/translate\(([^\)]+?)\)/)
+      if (!matched) set(node, 'style.transform', ``)
+    }
+  }
+  else {
+    const plus = (prop, v) => set(node, `style.${prop}`, parseInt(get(node, `style.${prop}`) || 0) + v + 'px')
+    if (e.key == 'ArrowUp') plus('marginTop', -offset)
+    if (e.key == 'ArrowLeft') plus('marginLeft', -offset)
+    if (e.key == 'ArrowDown') plus('marginTop', offset)
+    if (e.key == 'ArrowRight') plus('marginLeft', offset)
+  }
 })
 
 // 拖拽 .vue 自定义组件

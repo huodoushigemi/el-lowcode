@@ -2,7 +2,6 @@
   <component v-if="condition" ref="elRef" :is="el.is" v-bind="_el" :class="[absolute ? 'moveable' : 'drag', config?.layout && 'container-box']"
     @mouseover.stop="mouseover" @native:mouseover.stop="mouseover"
     @mousedown.left.stop="mousedown" @native:mousedown.left.stop="mousedown"
-    @mouseleave.stop="mouseleave"
   >
 
     <template v-if="config?.layout">
@@ -20,8 +19,6 @@
     <template v-else-if="el.children != null">
       {{ _execExp(el.children) }}
     </template>
-
-    <Moveable v-if="absolute && actived" :target="unrefElement(elRef)" :draggable="true" :resizable="true" :rotatable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @drag="onDrag" @dragEnd="onDragEnd" @resize="onResize" @resizeEnd="onResizeEnd" @rotate="onDrag" @rotateEnd="onDragEnd" />
 
   </component>
 </template>
@@ -90,24 +87,6 @@ watchEffect(() => {
   })
 })
 
-// moveable
-function onDrag(e) {
-  e.target.style.transform = e.transform
-}
-function onDragEnd(e) {
-  (props.el.style ??= {}).transform = e.target.style.transform
-}
-function onResize({ target, width, height, transform }) {
-  const setw = width != target.offsetWidth
-  const seth = height != target.offsetHeight
-  setw && (target.style.width = `${width}px`)
-  seth && (target.style.height = `${height}px`)
-  target.style.transform = transform
-}
-function onResizeEnd(e) {
-  Object.assign(props.el.style ??= {}, pick(e.target.style, ['width', 'height', 'transform']))
-}
-
 onUpdated(() => console.log('onUpdated'))
 
 // 选中状态处理
@@ -118,10 +97,6 @@ function mouseover() {
 function mousedown() {
   if (designerCtx.draggedId) return
   designerCtx.activeId = props.el._id
-}
-function mouseleave() {
-  if (designerCtx.root._id != props.el._id) return
-  designerCtx.hoverId = undefined
 }
 
 // 执行 JS 表达式
