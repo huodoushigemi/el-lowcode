@@ -65,7 +65,7 @@
       <div ref="viewport" class="viewport relative" :style="`width: ${canvasWidth}; background: var(--el-fill-color-extra-light)`" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
         <drag-box id="root" :el="root" h1080 />
         <selected-layer v-if="!designerCtx.draggedId" />
-        <Moveable :target="activeEl()" :resizable="true" :rotatable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotate="onDrag" @rotateEnd="onDragEnd" />
+        <Moveable :target="activeEl()" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active!)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
         <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
       </div>
     </infinite-viewer>
@@ -79,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { MaybeRef, computed, provide, reactive, ref } from 'vue'
+import { MaybeRef, computed, nextTick, provide, reactive, ref } from 'vue'
 import { isArray, isPlainObject, remove } from '@vue/shared'
 import { ElLoading } from 'element-plus'
 import { VueDraggable } from 'vue-draggable-plus'
@@ -167,7 +167,8 @@ const designerCtx = reactive({
   active: computed(() => designerCtx.activeId && treeUtils.find([root.value], designerCtx.activeId, { key: '_id' })),
   hover: computed(() => designerCtx.hoverId && treeUtils.find([root.value], designerCtx.hoverId, { key: '_id' })),
   dragged: computed(() => designerCtx.draggedId && treeUtils.find([root.value], designerCtx.draggedId, { key: '_id' })),
-} as { [K in keyof DesignerCtx]: MaybeRef<DesignerCtx[K]> })
+// } as { [K in keyof DesignerCtx]: MaybeRef<DesignerCtx[K]> })
+}) as DesignerCtx
 
 provide(designerCtxKey, designerCtx)
 defineExpose(designerCtx)
@@ -189,31 +190,17 @@ const hoverEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${
 const rootEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.root._id}']`)
 
 // moveable
-const moveable = ref()
 function onDragStart(e) {
   designerCtx.draggedId = e.target.getAttribute('_id')
-  // const setVar = (k, v) => e.target.style.getPropertyValue(k) || e.target.style.setProperty(k, v)
-  // const getVar = (k) => e.target.style.getPropertyValue(k)
-  // setVar('--x', '0px')
-  // setVar('--y', '0px')
-  // setVar('--r', '0deg')
-  // e.target.style.transform = `translate(${getVar('--x')}, ${getVar('--y')}) rotate(${getVar('--r')})`
 }
 function onDrag(e) {
-  // if (e.translate) e.target.style.setProperty('--x', e.translate[0] + 'px')
-  // if (e.translate) e.target.style.setProperty('--y', e.translate[1] + 'px')
-  // if (e.rotate) e.target.style.setProperty('--r', e.rotate + 'deg')
   e.target.style.transform = e.transform
 }
 function onDragEnd(e) {
-  // ['--x', '--y', '--r'].forEach(k => (designerCtx.dragged.style ??= {})[k] = e.target.style.getPropertyValue(k))
-  // designerCtx.dragged.style.transform = `translate(var(--x), var(--y)) rotate(var(--r))`
-  (designerCtx.dragged.style ??= {}).transform = e.target.style.transform
+  (designerCtx.dragged!.style ??= {}).transform = e.target.style.transform
   designerCtx.draggedId = undefined
 }
 function onResize({ target, width, height, transform, ...e }) {
-  console.log(e);
-  
   const setw = width != target.offsetWidth
   const seth = height != target.offsetHeight
   setw && (target.style.width = `${width}px`)
@@ -221,8 +208,11 @@ function onResize({ target, width, height, transform, ...e }) {
   target.style.transform = transform
 }
 function onResizeEnd(e) {
-  Object.assign(designerCtx.dragged.style ??= {}, pick(e.target.style, ['width', 'height', 'transform']))
+  Object.assign(designerCtx.dragged!.style ??= {}, pick(e.target.style, ['width', 'height', 'transform']))
   designerCtx.draggedId = undefined
+}
+function resizeDir(node: BoxProps) {
+  return node.style?.position == 'absolute' ? undefined : ['e', 'se', 's']
 }
 
 // 中建按下
@@ -253,10 +243,17 @@ useEventListener('keydown', e => {
   const offset = e.shiftKey ? 10 : 1
   const absolute = node.style?.position == 'absolute'
   if (absolute) {
-    const plus = (str: string, v) => {
-      const matched = str.match(/translate\(([^\)]+?)\)/)
-      if (!matched) set(node, 'style.transform', ``)
+    const plus = (i, v) => {
+      if (!node.style?.transform) set(node, 'style.transform', `translate(0px, 0px)`)
+      const matched = node.style.transform.match(/translate\(([^\)]+?)\)/)
+      const xy = matched[1].split(',').map(e => parseInt(e))
+      xy[i] += v
+      node.style.transform = node.style.transform.replace(matched[0], `translate(${xy[0]}px, ${xy[1]}px)`)
     }
+    if (e.key == 'ArrowUp') plus(1, -offset)
+    if (e.key == 'ArrowLeft') plus(0, -offset)
+    if (e.key == 'ArrowDown') plus(1, offset)
+    if (e.key == 'ArrowRight') plus(0, offset)
   }
   else {
     const plus = (prop, v) => set(node, `style.${prop}`, parseInt(get(node, `style.${prop}`) || 0) + v + 'px')
