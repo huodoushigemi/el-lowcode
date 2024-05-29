@@ -65,7 +65,7 @@
       <div ref="viewport" class="viewport relative" :style="`width: ${canvasWidth}; background: var(--el-fill-color-extra-light)`" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
         <drag-box id="root" :el="root" h1080 />
         <selected-layer v-if="!designerCtx.draggedId" />
-        <Moveable :target="activeEl()" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active!)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
+        <Moveable :target="activeEl()" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
         <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
       </div>
     </infinite-viewer>
@@ -79,11 +79,11 @@
 </template>
 
 <script setup lang="ts">
-import { MaybeRef, computed, nextTick, provide, reactive, ref } from 'vue'
+import { computed, provide, reactive, ref } from 'vue'
 import { isArray, isPlainObject, remove } from '@vue/shared'
 import { ElLoading } from 'element-plus'
 import { VueDraggable } from 'vue-draggable-plus'
-import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage, useMousePressed } from '@vueuse/core'
+import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
 import { Arrable, get, keyBy, pick, set, toArr, treeUtils } from '@el-lowcode/utils'
 
 import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
@@ -99,7 +99,6 @@ import CurrentState from './components/current-state.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import Schema from './components/schema.vue'
 import { vue2esm } from './vue2esm'
-// import Moveable from './components/Moveable.vue'
 import Moveable from 'vue3-moveable'
 
 defineOptions({
@@ -211,7 +210,8 @@ function onResizeEnd(e) {
   Object.assign(designerCtx.dragged!.style ??= {}, pick(e.target.style, ['width', 'height', 'transform']))
   designerCtx.draggedId = undefined
 }
-function resizeDir(node: BoxProps) {
+function resizeDir(node?: BoxProps) {
+  if (!node) return undefined
   return node.style?.position == 'absolute' ? undefined : ['e', 'se', 's']
 }
 
@@ -237,9 +237,12 @@ useEventListener('keydown', (e) => {
 useEventListener('keydown', e => {
   if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return
   if (!['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(e.key)) return
+  console.log('xx');
+  
   const node = designerCtx.active
   if (!node) return
   e.preventDefault()
+  if (node == designerCtx.root) return
   const offset = e.shiftKey ? 10 : 1
   const absolute = node.style?.position == 'absolute'
   if (absolute) {
@@ -276,12 +279,12 @@ async function onDrop(_, e: DragEvent) {
   const loading = ElLoading.service({ lock: true })
 
   try {
-    const widgets = root.value.extraElLowcodeWidgets ??= {}
-    const components = root.value.customComponents ??= {}
+    root.value.extraElLowcodeWidgets ??= {}
+    root.value.customComponents ??= {}
     
-    fs!.forEach(async file => {
+    for (const file of fs) {
       if (file.name.endsWith('.config.js')) {
-        widgets[file.name] = await file.text()
+        root.value.extraElLowcodeWidgets[file.name] = await file.text()
       }
       else if (file.name.endsWith('.vue') || file.name.endsWith('.js')) {
         const jscode = file.name.endsWith('.vue')
@@ -291,12 +294,12 @@ async function onDrop(_, e: DragEvent) {
         if (!comp) throw new Error(`文件 ${file.name} 没有默认导出`)
         if (!isPlainObject(comp)) throw new Error(`文件 ${file.name} 应默认导出 vue 组件，但导出的是 ${typeof comp}`)
         const name = comp.name || file.name.split('.')[0]
-        components[name] = jscode
+        root.value.customComponents[name] = jscode
       }
       else {
         console.warn(`不支持的文件类型：${file.name}`)
       }
-    })
+    }
   } catch (e) {
     alert('导入失败')
     throw e
@@ -398,6 +401,14 @@ function scanFiles(entry: FileSystemEntry | null, list: FileSystemFileEntry[] = 
   }
   &:hover::-webkit-scrollbar-thumb {
     display: block;
+  }
+}
+
+#moveable-layer {
+  pointer-events: none;
+  > * {
+    transition: unset;
+    pointer-events: auto;
   }
 }
 </style>

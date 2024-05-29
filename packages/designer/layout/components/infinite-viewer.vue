@@ -1,6 +1,6 @@
 <template>
   <div class="infinite-viewer" relative>
-    <div absolute w20 h20 z-1 @click="viewer.scrollCenter(); viewer.setZoom(1)" />
+    <div absolute w20 h20 z-1 @click="viewer.scrollCenter(); viewer.setZoom(1); viewer.emit('pinch', { zoom: 1 })" />
     <div class="guides-x" absolute left-20 right-0 h20 z-1 />
     <div class="guides-y" absolute top-20 bottom-0 w20 z-1 />
     <div class="infinite-viewer-wrapper">

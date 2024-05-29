@@ -64,6 +64,7 @@ watchEffect(() => {
   useDraggableReturn?.destroy()
   if (!isArray(props.el.children)) return
   if (!drag.value) return
+  if (props.el._id == 'moveable-layer') return
   
   // @ts-ignore
   useDraggableReturn = useDraggable(drag, props.el.children, {
@@ -147,5 +148,6 @@ const condition = computed(() => props.el.$?.condition == null || !!_$.value?.co
   overflow: hidden !important;
   font-size: 0 !important;
   outline: 2px solid var(--el-color-primary) !important;
+  border: 0 !important;
 }
 </style>
