@@ -73,6 +73,7 @@ watchEffect(() => {
     draggable: '.drag',
     // filter: '.moveable',
     ghostClass: 'ghostClass',
+    invertSwap: true,
     onStart(e) {
       designerCtx.draggedId = (props.el.children as BoxProps[])[e.oldIndex]._id
       cloned = e.item.cloneNode(true)
@@ -87,8 +88,6 @@ watchEffect(() => {
     }
   })
 })
-
-onUpdated(() => console.log('onUpdated'))
 
 // 选中状态处理
 function mouseover() {

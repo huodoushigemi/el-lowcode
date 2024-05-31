@@ -6,6 +6,7 @@ export interface ElLowcodeConfig {
   label?: string
   layout?: boolean
   drag?: boolean
+  cover?: string
   JSONSchemaOutput?(props: Obj): Obj
   props?: Item[]
   defaultProps?(): Obj
@@ -31,8 +32,8 @@ export interface BoxProps {
 
 export interface Preset {
   name: string
+  description?: string
   icon?: string
   presets?: string[]
-  customComponents?: Record<string, string>
   extraElLowcodeWidgets?: Record<string, string>
 }

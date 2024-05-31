@@ -42,6 +42,9 @@
           </template>
         </vue-draggable> -->
       </el-tab-pane>
+      <!-- <el-tab-pane lazy w200>
+        
+      </el-tab-pane> -->
       <el-tab-pane lazy w200>
         <template #label><el-tooltip content="组件树" placement="right" :hide-after="0"><i-mdi:file-tree /></el-tooltip></template>
         <div px8 py12 text-22 b-b="1 solid [--el-border-color]">组件树</div>
@@ -61,10 +64,10 @@
     </el-tabs>
     
     <!-- Canvas Viewport -->
-    <infinite-viewer wfull hfull :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle="middlePressed = true" @mouseup.middle="middlePressed = false" @pinch="designerCtx.canvas.zoom = $event.zoom">
+    <infinite-viewer wfull hfull :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" @pinch="designerCtx.canvas.zoom = $event.zoom">
       <div ref="viewport" class="viewport relative" :style="`width: ${canvasWidth}; background: var(--el-fill-color-extra-light)`" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
         <drag-box id="root" :el="root" h1080 />
-        <selected-layer v-if="!designerCtx.draggedId" />
+        <selected-layer />
         <Moveable :target="activeEl()" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
         <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
       </div>
@@ -79,13 +82,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, reactive, ref } from 'vue'
+import { computed, provide, reactive, ref, onUpdated } from 'vue'
 import { isArray, isPlainObject, remove } from '@vue/shared'
+import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
 import { ElLoading } from 'element-plus'
 import { VueDraggable } from 'vue-draggable-plus'
-import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
-import { Arrable, get, keyBy, pick, set, toArr, treeUtils } from '@el-lowcode/utils'
+import Moveable from 'vue3-moveable'
 
+import { Arrable, get, keyBy, pick, set, toArr, treeUtils } from '@el-lowcode/utils'
 import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
 import { components } from '../components'
 import { parseAttrs, importJs } from '../components/_utils'
@@ -99,7 +103,6 @@ import CurrentState from './components/current-state.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import Schema from './components/schema.vue'
 import { vue2esm } from './vue2esm'
-import Moveable from 'vue3-moveable'
 
 defineOptions({
   components: keyBy(components, 'name')

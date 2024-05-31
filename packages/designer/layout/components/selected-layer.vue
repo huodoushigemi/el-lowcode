@@ -1,6 +1,6 @@
 <template>
   <div ref="el" class="selected-layer" absolute inset-0 pointer-events-none z-9>
-    <selected-rect :el="designerCtx.hover" absolute outline="1 dashed [--el-color-primary]" outline-offset--1 :style="calcStyle(hoverEl())" />
+    <selected-rect v-if="!designerCtx.draggedId" :el="designerCtx.hover" absolute outline="1 dashed [--el-color-primary]" outline-offset--1 :style="calcStyle(hoverEl())" />
     <selected-rect :el="designerCtx.active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(activeEl())" />
   </div>
 </template>
@@ -10,6 +10,7 @@ import { getCurrentInstance, inject, ref } from 'vue'
 import { useMutationObserver, useResizeObserver } from '@vueuse/core'
 import SelectedRect from './selected-rect.vue'
 import { designerCtxKey } from '../interface'
+import { onUpdated } from 'vue';
 
 const designerCtx = inject(designerCtxKey)!
 
@@ -41,9 +42,10 @@ const calcStyle = (el?: HTMLElement | null) => {
 }
 
 const ins = getCurrentInstance()!
-const fu = () => requestAnimationFrame(ins.proxy!.$forceUpdate)
+// const fu = () => requestAnimationFrame(ins.proxy!.$forceUpdate)
+const fu = () => ins.proxy!.$forceUpdate()
 
-useMutationObserver(rootEl, () => fu(), { subtree: true, childList: true, attributes: true, characterData: true })
+useMutationObserver(rootEl, fu, { subtree: true, childList: true, attributes: true, characterData: true })
 
-useResizeObserver(rootEl, () => fu())
+useResizeObserver(rootEl, fu)
 </script>

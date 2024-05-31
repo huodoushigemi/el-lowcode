@@ -137,6 +137,8 @@ function add2absolute(node) {
   const { root } = designerCtx
   const flated = treeUtils.flat([root])
   const parent = flated.find(e => isArray(e.children) ? e.children.includes(node) : false)
+  if (parent._id == 'moveable-layer') return
+  
   remove(parent.children, node)
   
   if (root.children[root.children.length - 1]._id != 'moveable-layer') designerCtx.root.children.push({ is: 'div', _id: 'moveable-layer', id: 'moveable-layer', style: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }, children: [] })
