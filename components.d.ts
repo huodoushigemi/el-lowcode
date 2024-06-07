@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     'IBytesize:github': typeof import('~icons/bytesize/github')['default']
     'IEp:eleme': typeof import('~icons/ep/eleme')['default']
+    'IEp:plus': typeof import('~icons/ep/plus')['default']
     'IMaterialSymbolsLight:code': typeof import('~icons/material-symbols-light/code')['default']
     'IMdi:applicationImport': typeof import('~icons/mdi/application-import')['default']
     'IMdi:cellphoneAndroid': typeof import('~icons/mdi/cellphone-android')['default']
@@ -21,6 +22,7 @@ declare module 'vue' {
     'IMdi:fileTree': typeof import('~icons/mdi/file-tree')['default']
     'IMdi:folderDownload': typeof import('~icons/mdi/folder-download')['default']
     'IMdi:playCircleOutline': typeof import('~icons/mdi/play-circle-outline')['default']
+    'IMdi:powerPlugOutline': typeof import('~icons/mdi/power-plug-outline')['default']
     'IMdi:progressDownload': typeof import('~icons/mdi/progress-download')['default']
     'IMdi:redoVariant': typeof import('~icons/mdi/redo-variant')['default']
     'IMdi:shoppingOutline': typeof import('~icons/mdi/shopping-outline')['default']

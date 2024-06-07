@@ -45,6 +45,8 @@ export function deepClone(obj?: Record<string | number, any>, iteratee = val => 
 
 export const keyBy = <T>(arr: T[], path: string) => arr.reduce((o, e) => (o[get(e, path)] = e, o), {}) as Record<string, T>
 
+export const groupBy = <T>(arr: T[], path: string) => arr.reduce((o, e) => ((o[get(e, path)] ??= []).push(e), o), {}) as Record<string, T[]>
+
 export const pick = <T extends object, KS extends (keyof T)[]>(obj: T, arr: KS) => arr.reduce((o, k) => (o[k] = obj[k], o), {} as Pick<T, KS[number]>)
 
 export const mapValues = (obj: Obj, fn: AnyFn) => Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fn(v)]))

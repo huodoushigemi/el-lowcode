@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { computed, inject, h, watch, watchEffect, ref } from 'vue'
+import { computed, inject, h, ref } from 'vue'
 import { isArray, isObject, parseStringStyle, stringifyStyle, isOn, remove } from '@vue/shared'
 import { createRender } from '@el-lowcode/render'
 import { mapValues, pick, set, toArr, treeUtils, unFn } from '@el-lowcode/utils'
@@ -41,6 +41,7 @@ import { sloveConfig } from '../components/_utils'
 import Scriptable from './components/scriptable.vue'
 import Input from './components/input.vue'
 import MonacoEditorDialog from './components/MonacoEditorDialog.vue'
+import LcSlider from './components/LcSlider.vue'
 
 import MSLBold from '~icons/material-symbols-light/format-bold'
 import MSLItalic from '~icons/material-symbols-light/format-italic'
@@ -89,6 +90,7 @@ const config = computed(() => {
 const _items = computed(() => unFn(config.value?.props, model.value)?.map(_normalizeItem))
 
 const styles = [
+  { lp: 'xxx', el: { is: LcSlider, label: '大小' } },
   { lp: ['position', 'style.position'], type: 'select', options: ['static', 'relative', 'absolute', 'fixed', 'sticky'], displayValue: 'static', el: { placeholder: 'static' } },
   { lp: ['layout', 'style.display'], type: 'radio-group', options: ['inline', 'block', 'inline-block', 'flex'] },
   // { lp: ['width', 'style.width'], type: 'input-number', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined },

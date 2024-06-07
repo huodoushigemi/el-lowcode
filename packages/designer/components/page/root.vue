@@ -5,11 +5,12 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, getCurrentInstance, inject, provide, reactive, watch, watchEffect } from 'vue'
+import { defineAsyncComponent, getCurrentInstance, inject, provide, reactive, watch, watchEffect, Plugin } from 'vue'
 import { pageCtxKey } from './interface'
 import { refWithWatch } from '../hooks'
 import { importJs } from '../_utils'
 import { designerCtxKey } from '../../layout/interface'
+import { PropType } from 'vue'
 
 defineOptions({
   name: 'Page'
@@ -18,6 +19,7 @@ defineOptions({
 const props = defineProps({
   state: { type: Object, default: () => ({}) },
   esm: Object,
+  plugins: Array as PropType<string[]>,
   customComponents: Object,
   preset: [Object, String],
 })
@@ -46,6 +48,15 @@ watchEffect(() => {
     ins.appContext.app.component(name, defineAsyncComponent(async () => (await importJs(id)).default))
   })
 })
+
+// load plugin
+watch(() => props.plugins, async function loadPlugins(urls) {
+  for (const url of urls || []) {
+    const plugin = (await import(/* @vite-ignore */ url + '/index.js')).default as Plugin & { plugins?: string[] }
+    await loadPlugins(plugin.plugins)
+    ins.appContext.app.use(plugin)
+  }
+}, { immediate: true })
 
 defineExpose({ state })
 </script>

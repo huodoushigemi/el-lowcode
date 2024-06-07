@@ -1,37 +1,15 @@
 import { ElCollapse, ElCollapseItem } from 'element-plus'
 import { v4 as uuidv4 } from 'uuid'
-import { Obj, unFn } from '@el-lowcode/utils'
+import { Obj, unFn, treeUtils } from '@el-lowcode/utils'
 import { normalizeItem } from 'el-form-render'
 import { ENUM_SIZE } from '../const'
 import { BoxProps, ElLowcodeConfig } from './type'
 import { el_lowcode_widgets } from './el_lowcode_widgets'
 
-export const formItemPropsConfig = ({ exclude = [''] } = {}) => [
-  { lp: ['key', 'prop'], required: true, scriptable: false, el: { clearable: false } },
-  { lp: 'label' },
-  { lp: 'description', el: { type: 'textarea', autosize: { minRows: 2, maxRows: 4 } } },
-  { is: ElCollapse, class: 'mb18', children: { is: ElCollapseItem, title: '校验', children: 
-    [
-      { lp: ['validator', 'rules.validator'], scriptable: true },
-      { lp: ['pattern', 'rules.pattern'] },
-      { lp: ['pattern-hint', 'rules.message'] }
-    ]
-    .map(e => normalizeItem(e))
-  }},
-  { lp: 'required', type: 'switch' },
-  { lp: ['disabled', 'el.disabled'], type: 'switch' },
-  { lp: ['readonly', 'el.readonly'], type: 'switch' },
-  { lp: ['clearable', 'el.clearable'], type: 'switch' },
-  { lp: ['size', 'el.size'], type: 'radio-group', options: ENUM_SIZE },
-  { lp: ['placeholder', 'el.placeholder'] },
-]
-  // @ts-ignore
-  .map(e => normalizeItem(e))
-  .filter(e => !exclude.includes(e.label))
-
 export const parseAttrs = (config: ElLowcodeConfig, extra?: Obj): BoxProps => {
-  const attrs = {} as BoxProps
-  Object.assign(attrs, { is: config.is, _id: uuidv4() }, config.defaultProps?.(), extra)
+  const attrs = { is: config.is } as BoxProps
+  Object.assign(attrs, config.defaultProps?.(), extra)
+  treeUtils.flat([attrs]).forEach(e => e._id ||= uuidv4())
   return attrs
 }
 

@@ -20,7 +20,7 @@
     </header>
 
     <!-- Left -->
-    <el-tabs tab-position="left" type="border-card" hfull b-r="1px solid [--el-border-color]" box-border> 
+    <el-tabs tab-position="left" type="border-card" hfull b-r="1px solid [--el-border-color]" box-border>
       <el-tab-pane w200 ref="dropZone">
         <div v-if="isOverDropZone" absolute inset-0 bg="gray/40" pointer-events-none />
         <template #label><el-tooltip content="组件库" placement="right" :hide-after="0"><i-mdi:widgets-outline /></el-tooltip></template>
@@ -36,26 +36,58 @@
             </el-collapse-item>
           </template>
         </el-collapse>
-        <!-- <vue-draggable :model-value="list" grid="~ cols-2" gap-8 p8 hfull overflow-overlay :group="{ name: 'shared', pull: 'clone', put: false }" :sort="false" :clone="clone" @end="onEnd">
-          <template v-for="wgt in list">
-            <div class="cell" truncate>{{ wgt.label }}</div>
-          </template>
-        </vue-draggable> -->
       </el-tab-pane>
-      <!-- <el-tab-pane lazy w200>
-        
-      </el-tab-pane> -->
-      <el-tab-pane lazy w200>
+
+      <!-- Installed plugins -->
+      <el-tab-pane v-for="[url, pkg] in root.plugins?.map(e => [e, loadPkg(e)])" lazy w200>
+        <template #label><el-tooltip v-if="pkg" :content="pkg.name" placement="right" :hide-after="0"><img :src="pkg.icon" :alt="pkg.name" /></el-tooltip></template>
+        <div v-if="pkg" flex aic px8 py12 text-22 b-b="1 solid [--el-border-color]">
+          <img :src="pkg.icon" :alt="pkg.name" mr8 w32 h32 />
+          {{ pkg.name }}
+        </div>
+        <div v-for="(list, category) in groupBy(loadConfig(url) || [], 'category')" p8>
+          <div mt4 mb8 text-16 font-bold>{{ category == 'undefined' ? '其他' : category }}</div>
+          <div grid="~ cols-2" gap-8>
+            <div v-for="wgtConfig in list.filter(e => e.drag != false)" class="cell" text-14 truncate>{{ wgtConfig.label }}</div>
+          </div>
+        </div>
+      </el-tab-pane>
+
+      <el-tab-pane name="plugins" lazy w250>
+        <template #label><el-tooltip content="插件市场" placement="right" :hide-after="0"><i-mdi:power-plug-outline /></el-tooltip></template>
+        <div flex aic px8 py12 text-22 b-b="1 solid [--el-border-color]">
+          插件市场
+          <el-tooltip content="远程插件"><i-ep:plus mla p6 text-24 bg-hover cursor-pointer @click="addRemotePlugin()" /></el-tooltip>
+        </div>
+        <div>
+          <template v-for="[url, pkg] in plugins.map(e => [e, loadPkg(e)])">
+            <div v-if="pkg" :key="url" class="focus:bg-[--el-fill-color-light] focus:b-y-1" flex aic pr8 py8 h74 bg-hover rd-0 cursor-pointer select-none :title="`${pkg.name}\n\n${pkg.description}`" tabindex="1">
+              <img :src="pkg.icon" :alt="pkg.name" mx16 w42 h42 />
+              <div w0 flex-1>
+                <div truncate text-18>{{ pkg.name }}</div>
+                <div truncate text-12 op60>{{ pkg.description }}</div>
+                <div flex text-12 mt4>
+                  <div op40>{{ pkg.author }}</div>
+                  <el-button v-if="!root.plugins?.includes(url)" class="py0! px4! rd-0!" type="info" size="small" mla op80 style="height: 16px" @click="(root.plugins ??= []).push(url)">install</el-button>
+                  <div v-else></div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </el-tab-pane>
+
+      <el-tab-pane name="tree" lazy w200>
         <template #label><el-tooltip content="组件树" placement="right" :hide-after="0"><i-mdi:file-tree /></el-tooltip></template>
         <div px8 py12 text-22 b-b="1 solid [--el-border-color]">组件树</div>
         <el-tree hfull overflow-overlay :data="tree" :props="{ label: (e) => e.el?.is ?? e.is }" :current-node-key="designerCtx.activeId" @current-change="designerCtx.activeId = $event._id" node-key="_id" default-expand-all highlight-current :indent="10" :expand-on-click-node="false" />
       </el-tab-pane>
-      <el-tab-pane lazy w256>
+      <el-tab-pane name="state" lazy w256>
         <template #label><el-tooltip content="当前状态" placement="right" :hide-after="0"><i-mdi:code-json /></el-tooltip></template>
         <div px8 py12 text-22 b-b="1 solid [--el-border-color]">当前状态</div>
         <current-state hfull />
       </el-tab-pane>
-      <el-tab-pane lazy w512>
+      <el-tab-pane name="schema" lazy w512>
         <template #label><el-tooltip content="Schema" placement="right" :hide-after="0"><i-mdi:code-tags /></el-tooltip></template>
         <div px8 py12 text-22 b-b="1 solid [--el-border-color]">Schema 源码</div>
         <schema />
@@ -85,13 +117,13 @@
 import { computed, provide, reactive, ref, onUpdated } from 'vue'
 import { isArray, isPlainObject, remove } from '@vue/shared'
 import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
-import { ElLoading } from 'element-plus'
+import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
 import { VueDraggable } from 'vue-draggable-plus'
 import Moveable from 'vue3-moveable'
 
-import { Arrable, get, keyBy, pick, set, toArr, treeUtils } from '@el-lowcode/utils'
+import { Arrable, get, keyBy, groupBy, pick, set, toArr, treeUtils } from '@el-lowcode/utils'
 import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
-import { components } from '../components'
+import { PageCtx, components } from '../components'
 import { parseAttrs, importJs } from '../components/_utils'
 import { BoxProps, ElLowcodeConfig } from '../components/type'
 import { DesignerCtx, designerCtxKey } from './interface'
@@ -111,7 +143,7 @@ defineOptions({
 // 根节点
 const root = useLocalStorage(
   '@el-lowcode/designer-page',
-  parseAttrs(el_lowcode_widgets.Page!),
+  parseAttrs(el_lowcode_widgets.Page!) as PageCtx,
   { listenToStorageChanges: false, deep: true, shallow: false }
 )
 
@@ -130,28 +162,36 @@ const groups = reactive([
       return toArr(config).map(e => el_lowcode_widgets[e.is] = e)
     })).then(e => e.flat()), [], { onError: e => console.error(e) })
   },
-  {
-    title: '数据输入',
-    list: findWgts(['Form', 'ElInput', 'ElInputNumber', 'ElSlider', 'ElRate', 'ElRadioGroup', 'ElCheckboxGroup', 'ElSwitch', 'ElDatePicker', 'ElTimePicker', 'DateTime', 'ElColorPicker'])
-  },
-  {
-    title: '布局容器',
-    list: findWgts(['div', 'wc-waterfall', 'a', 'Grid', 'ElCard', 'ElTabs'])
-  },
-  {
-    title: '通用',
-    list: findWgts(['span', 'p', 'h1', 'img', 'ElText', 'ElLink', 'ElButton'])
-  },
-  {
-    title: '展示',
-    list: findWgts(['ElAlert', 'ElStatistic', 'Descriptions', 'ElCarousel', 'ElProgress', 'ElDivider', 'ElTooltip', 'ElTag', 'Code', 'wc-appbar'])
-  },
-  {
-    title: '其他',
-    list: findWgts(['iframe'])
-  }
+  ...Object.entries(groupBy(Object.values(el_lowcode_widgets), 'category')).map(([title, list]) => ({ title, list }))
 ])
 const collapse = ref(groups.map(e => e.title))
+
+
+const plugins = [
+  '/el-lowcode/designer/packages/designer/plugins/element-plus',
+  '/el-lowcode/designer/packages/designer/plugins/echarts',
+  '/el-lowcode/designer/packages/designer/plugins/ant-design-vue',
+  '/el-lowcode/designer/packages/designer/plugins/naive-ui',
+  '/el-lowcode/designer/packages/designer/plugins/shoelace',
+]
+
+const pkgCache = {}
+function loadPkg(url) {
+  return (pkgCache[url] ??= computedAsync(() => fetch(`${url}/package.json`).then(e => e.json()))).value
+}
+
+const configCache = {}
+function loadConfig(url) {
+  return (configCache[url] ??= computedAsync(() => import(/* @vite-ignore */ `${url}/.lowcode/config.js`).then(e => e.default))).value
+}
+
+async function addRemotePlugin(url?) {
+  const { value } = await ElMessageBox.prompt('', '远程插件', { inputValue: url, inputPlaceholder: 'http://xxx' })
+  if (!/https?:\/\//.test(value)) return ElMessage.error({ message: '地址错误' })
+  const plugins = root.value.plugins ??= []
+  plugins.push(value)
+}
+
 
 const viewport = ref<HTMLElement>()
 const canvasWidth = computed({

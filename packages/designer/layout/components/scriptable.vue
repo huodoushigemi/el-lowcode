@@ -3,7 +3,7 @@
 
     <template v-if="_scriptable" #label="{ label }">
       {{ label }}
-      <el-tag v-if="script !== true" :effect="isScript ? 'dark' : 'plain'" :type="isScript ? 'primary' : 'info'" size="small" ml8 cursor-pointer @click="visible = !isScript; value = isScript ? '' : value">JS</el-tag>
+      <el-tag v-if="script !== true" :effect="isScript ? 'dark' : 'plain'" :type="isScript ? 'primary' : 'info'" size="small" ml8 cursor-pointer @click.prevent="visible = !isScript; value = isScript ? '' : value">JS</el-tag>
     </template>
 
     <div v-if="isScript || script === true" flex justify-between px8 wfull bg="[--el-fill-color-light]" bg-hover cursor-pointer :c="exp || '[--el-text-color-placeholder]'" style="border: var(--el-border)" @click="visible = true">
@@ -11,20 +11,17 @@
       <span mx12 line-clamp-2 class="empty:after:content-['JS_Expression']">{{ exp }}</span>
       <span>{{ `}\}` }}</span>
     </div>
-    
-    <el-form-item-render v-else v-bind="$props" class="[&_.el-form-item\_\_label]:hidden!" wfull />
-
-    <template v-if="script === true || isScript || visible">
-      <el-dialog v-model="visible" title="JS Expression" destroy-on-close>
-        <monaco-editor v-model:value="code" @save="onSave" :tsExtraLibs="tsExtraLibs" language="typescript" height="500px" />
-        <template #footer>
-          <el-button size="default" @click="visible = false">Cancel</el-button>
-          <el-button size="default" type="primary" @click="onSave">Crtl+S</el-button>
-        </template>
-      </el-dialog>
-    </template>
-
   </el-form-item-render>
+
+  <template v-if="script === true || isScript || visible">
+    <el-dialog v-model="visible" title="JS Expression" destroy-on-close>
+      <monaco-editor v-model:value="code" @save="onSave" :tsExtraLibs="tsExtraLibs" language="typescript" height="500px" />
+      <template #footer>
+        <el-button size="default" @click="visible = false">Cancel</el-button>
+        <el-button size="default" type="primary" @click="onSave">Crtl+S</el-button>
+      </template>
+    </el-dialog>
+  </template>
 </template>
 
 <script setup>

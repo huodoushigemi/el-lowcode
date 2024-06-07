@@ -42,7 +42,6 @@ const calcStyle = (el?: HTMLElement | null) => {
 }
 
 const ins = getCurrentInstance()!
-// const fu = () => requestAnimationFrame(ins.proxy!.$forceUpdate)
 const fu = () => ins.proxy!.$forceUpdate()
 
 useMutationObserver(rootEl, fu, { subtree: true, childList: true, attributes: true, characterData: true })

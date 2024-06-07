@@ -4,7 +4,7 @@
     :style="{
       display: 'grid',
       gridTemplateColumns: _cols,
-      gap: gap + 'px'
+      gap: isArray(gap) ? `${gap[0]}px ${gap[1]}px` : gap + 'px'
     }"
   >
     <slot></slot>
@@ -13,14 +13,15 @@
 
 <script setup>
 import { computed } from 'vue'
+import { isArray } from '@vue/shared'
 
 defineOptions({
   name: 'Grid'
 })
 
 const props = defineProps({
-  cols: [String, Number],
-  gap: Number
+  cols: Number,
+  gap: [Number, Array]
 })
 
 const _cols = computed(() => +props.cols ? `repeat(${props.cols}, minmax(0, 1fr))` : props.cols)

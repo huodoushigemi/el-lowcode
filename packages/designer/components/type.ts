@@ -17,9 +17,6 @@ export interface BoxProps {
   _id?: string
   el?: Obj
   children?: string | number | BoxProps[]
-  customComponents?: Record<string, string>
-  extraElLowcodeWidgets?: Record<string, string>
-  presets?: string[]
   $?: {
     // todo
     loop: string
@@ -28,12 +25,4 @@ export interface BoxProps {
     condition: any
   }
   [k: string]: any
-}
-
-export interface Preset {
-  name: string
-  description?: string
-  icon?: string
-  presets?: string[]
-  extraElLowcodeWidgets?: Record<string, string>
 }
