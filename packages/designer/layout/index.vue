@@ -19,9 +19,9 @@
       </div>
     </header>
 
-    <!-- Left -->
+    <!-- Activity bar -->
     <el-tabs tab-position="left" type="border-card" hfull b-r="1px solid [--el-border-color]" box-border>
-      <el-tab-pane w200 ref="dropZone">
+      <!-- <el-tab-pane w200 ref="dropZone">
         <div v-if="isOverDropZone" absolute inset-0 bg="gray/40" pointer-events-none />
         <template #label><el-tooltip content="组件库" placement="right" :hide-after="0"><i-mdi:widgets-outline /></el-tooltip></template>
         <div px8 py12 text-22 b-b="1 solid [--el-border-color]">组件</div>
@@ -36,23 +36,24 @@
             </el-collapse-item>
           </template>
         </el-collapse>
-      </el-tab-pane>
+      </el-tab-pane> -->
 
       <!-- Installed plugins -->
-      <el-tab-pane v-for="[url, pkg] in root.plugins?.map(e => [e, loadPkg(e)])" lazy w200>
+      <el-tab-pane v-for="[url, pkg] in installedPlugins?.map(e => [e, loadPkg(e)])" lazy w200>
         <template #label><el-tooltip v-if="pkg" :content="pkg.name" placement="right" :hide-after="0"><img :src="pkg.icon" :alt="pkg.name" /></el-tooltip></template>
         <div v-if="pkg" flex aic px8 py12 text-22 b-b="1 solid [--el-border-color]">
           <img :src="pkg.icon" :alt="pkg.name" mr8 w32 h32 />
           {{ pkg.name }}
         </div>
-        <div v-for="(list, category) in groupBy(loadConfig(url) || [], 'category')" p8>
-          <div mt4 mb8 text-16 font-bold>{{ category == 'undefined' ? '其他' : category }}</div>
-          <div grid="~ cols-2" gap-8>
+        <div v-for="(list, category) in groupBy(asyncConfig(url) || [], 'category')" p8>
+          <div mt4 mb10 text-16 font-bold>{{ category == 'undefined' ? '其他' : category }}</div>
+          <vue-draggable :model-value="list" grid="~ cols-2" gap-8 :group="{ name: 'shared', pull: 'clone', put: false }" :sort="false" :clone="clone" @end="onEnd">
             <div v-for="wgtConfig in list.filter(e => e.drag != false)" class="cell" text-14 truncate>{{ wgtConfig.label }}</div>
-          </div>
+          </vue-draggable>
         </div>
       </el-tab-pane>
 
+      <!-- plugins market -->
       <el-tab-pane name="plugins" lazy w250>
         <template #label><el-tooltip content="插件市场" placement="right" :hide-after="0"><i-mdi:power-plug-outline /></el-tooltip></template>
         <div flex aic px8 py12 text-22 b-b="1 solid [--el-border-color]">
@@ -114,7 +115,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, reactive, ref, onUpdated } from 'vue'
+import { computed, provide, reactive, ref, onUpdated, watch, watchEffect } from 'vue'
 import { isArray, isPlainObject, remove } from '@vue/shared'
 import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
 import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
@@ -123,7 +124,6 @@ import Moveable from 'vue3-moveable'
 
 import { Arrable, get, keyBy, groupBy, pick, set, toArr, treeUtils } from '@el-lowcode/utils'
 import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
-import { PageCtx, components } from '../components'
 import { parseAttrs, importJs } from '../components/_utils'
 import { BoxProps, ElLowcodeConfig } from '../components/type'
 import { DesignerCtx, designerCtxKey } from './interface'
@@ -135,17 +135,24 @@ import CurrentState from './components/current-state.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import Schema from './components/schema.vue'
 import { vue2esm } from './vue2esm'
-
-defineOptions({
-  components: keyBy(components, 'name')
-})
+import { PageCtx } from '../plugins/web/page'
+import { plugins, builtins } from './config'
 
 // 根节点
 const root = useLocalStorage(
   '@el-lowcode/designer-page',
-  parseAttrs(el_lowcode_widgets.Page!) as PageCtx,
+  { is: 'div' } as PageCtx,
   { listenToStorageChanges: false, deep: true, shallow: false }
 )
+
+;(async () => {
+  for (const url of builtins) {
+    const config = await loadConfig(url)
+    Object.assign(el_lowcode_widgets, keyBy(config, 'is'))
+  }
+  root.value = parseAttrs(el_lowcode_widgets.Page!) as PageCtx
+})()
+
 
 // 时间旅行
 const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500 })
@@ -153,27 +160,29 @@ const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, {
 // 组件树
 const tree = computed<BoxProps[]>(() => treeUtils.changeProp([root.value], [['children', 'children', v => isArray(v) ? v : undefined]]))
 
-const findWgts = (arr: string[]) => arr.map(e => el_lowcode_widgets[e]).filter(e => e)
-const groups = reactive([
-  {
-    title: '自定义组件',
-    list: computedAsync(() => Promise.all(Object.values(root.value.extraElLowcodeWidgets ?? {}).map(async id => {
-      const { default: config } = await importJs(id) as { default: Arrable<ElLowcodeConfig> }
-      return toArr(config).map(e => el_lowcode_widgets[e.is] = e)
-    })).then(e => e.flat()), [], { onError: e => console.error(e) })
-  },
-  ...Object.entries(groupBy(Object.values(el_lowcode_widgets), 'category')).map(([title, list]) => ({ title, list }))
-])
-const collapse = ref(groups.map(e => e.title))
+// const groups = reactive([
+//   {
+//     title: '自定义组件',
+//     list: computedAsync(() => Promise.all(Object.values(root.value.extraElLowcodeWidgets ?? {}).map(async id => {
+//       const { default: config } = await importJs(id) as { default: Arrable<ElLowcodeConfig> }
+//       return toArr(config).map(e => el_lowcode_widgets[e.is] = e)
+//     })).then(e => e.flat()), [], { onError: e => console.error(e) })
+//   },
+//   ...Object.entries(groupBy(Object.values(el_lowcode_widgets), 'category')).map(([title, list]) => ({ title, list }))
+// ])
+// const collapse = ref(groups.map(e => e.title))
 
+const installedPlugins = computed(() => [...new Set([...root.value?.plugins || [], builtins])])
 
-const plugins = [
-  '/el-lowcode/designer/packages/designer/plugins/element-plus',
-  '/el-lowcode/designer/packages/designer/plugins/echarts',
-  '/el-lowcode/designer/packages/designer/plugins/ant-design-vue',
-  '/el-lowcode/designer/packages/designer/plugins/naive-ui',
-  '/el-lowcode/designer/packages/designer/plugins/shoelace',
-]
+// 加载插件 config
+watchEffect(() => {
+  installedPlugins.value.forEach(async url => {
+    const config = await loadConfig(url)
+    if (isArray(config)) {
+      Object.assign(el_lowcode_widgets, keyBy(config, 'is'))
+    }
+  })
+})
 
 const pkgCache = {}
 function loadPkg(url) {
@@ -181,8 +190,12 @@ function loadPkg(url) {
 }
 
 const configCache = {}
-function loadConfig(url) {
-  return (configCache[url] ??= computedAsync(() => import(/* @vite-ignore */ `${url}/.lowcode/config.js`).then(e => e.default))).value
+function asyncConfig(url): ElLowcodeConfig[] {
+  return (configCache[url] ??= computedAsync(() => loadConfig(url))).value
+}
+
+function loadConfig(url): Promise<ElLowcodeConfig[]> {
+  return import(/* @vite-ignore */ `${url}/.lowcode/config.js`).then(e => e.default)
 }
 
 async function addRemotePlugin(url?) {

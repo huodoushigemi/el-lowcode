@@ -24,15 +24,12 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, computed, inject, ref, watch, watchEffect, onUpdated } from 'vue'
+import { PropType, computed, inject, ref, watchEffect } from 'vue'
 import { isArray } from '@vue/shared'
-import { unrefElement, useEventListener } from '@vueuse/core'
 import { UseDraggableReturn, useDraggable } from 'vue-draggable-plus'
-import Moveable from './Moveable.vue'
 import { deepClone, execExp, get, pick, set } from '@el-lowcode/utils'
 import { sloveConfig } from '../../components/_utils'
 import { designerCtxKey } from '../../layout/interface'
-import { pageCtxKey } from '../../components/page/interface'
 import { BoxProps } from '../../components/type'
 
 defineOptions({
@@ -44,7 +41,7 @@ const props = defineProps({
 })
 
 const designerCtx = inject(designerCtxKey)!
-const pageCtx = inject(pageCtxKey)!
+const pageCtx = inject('pageCtx')
 
 const config = computed(() => sloveConfig(props.el))
 const emptyChildren = computed(() => isArray(props.el.children) ? !props.el.children.length : false)

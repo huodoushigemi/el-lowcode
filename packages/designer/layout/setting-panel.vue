@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { computed, inject, h, ref } from 'vue'
+import { computed, inject, h, ref, getCurrentInstance } from 'vue'
 import { isArray, isObject, parseStringStyle, stringifyStyle, isOn, remove } from '@vue/shared'
 import { createRender } from '@el-lowcode/render'
 import { mapValues, pick, set, toArr, treeUtils, unFn } from '@el-lowcode/utils'
@@ -49,6 +49,13 @@ import MSLLeft from '~icons/material-symbols-light/align-horizontal-left'
 import MSLCenter from '~icons/material-symbols-light/align-horizontal-center'
 import MSLRight from '~icons/material-symbols-light/align-horizontal-right'
 import MSLClose from '~icons/material-symbols-light/close-small-outline-rounded'
+
+import OptionsInput from '../components/options-input'
+import PairInput from '../components/pair-input'
+
+const ins = getCurrentInstance()
+ins.appContext.app.use(OptionsInput)
+ins.appContext.app.use(PairInput)
 
 const visible = ref(false)
 const internalProps = ['_id', 'is', 'children']

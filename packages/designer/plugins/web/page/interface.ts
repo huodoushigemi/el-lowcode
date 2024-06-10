@@ -1,6 +1,6 @@
-import { FunctionPlugin, InjectionKey } from 'vue'
+import { InjectionKey } from 'vue'
 import { Obj } from '@el-lowcode/utils'
-import { BoxProps, ElLowcodeConfig } from '../type'
+import { BoxProps } from '../../../components/type'
 
 export const pageCtxKey: InjectionKey<PageCtx> = Symbol('pageCtxKey')
 

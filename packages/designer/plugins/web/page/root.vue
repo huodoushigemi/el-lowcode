@@ -7,9 +7,9 @@
 <script setup lang="ts">
 import { defineAsyncComponent, getCurrentInstance, inject, provide, reactive, watch, watchEffect, Plugin } from 'vue'
 import { pageCtxKey } from './interface'
-import { refWithWatch } from '../hooks'
-import { importJs } from '../_utils'
-import { designerCtxKey } from '../../layout/interface'
+import { refWithWatch } from '../../../components/hooks'
+import { importJs } from '../../../components/_utils'
+import { designerCtxKey } from '../../../layout/interface'
 import { PropType } from 'vue'
 
 defineOptions({
