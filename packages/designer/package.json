@@ -27,6 +27,7 @@
     "el-form-render": "^0.0.17",
     "monaco-editor": "^0.48.0",
     "moveable": "^0.53.0",
+    "tree-tool": "^1.1.8",
     "uuid": "^9.0.1",
     "vue-draggable-plus": "^0.2.6",
     "vue3-moveable": "^0.28.0",

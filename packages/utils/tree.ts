@@ -36,8 +36,20 @@ function changeProp<T>(tree: T[], replaces: [string, string, ((val: any, item: T
   return clone(tree)
 }
 
+function findParent<T>(tree: T[], val: any, props: Partial<typeof PROPS>, parent?: T): T | undefined {
+  const attrs = { ...PROPS, ...props }
+  for (const e of tree) {
+    if (e[attrs.key] == val) return parent
+    if (isArray(e[attrs.children])) {
+      const parent = findParent(e[attrs.children], val, attrs, e)
+      if (parent) return parent
+    }
+  }
+}
+
 export const treeUtils = {
   find,
+  findParent,
   flat,
-  changeProp
+  changeProp,
 }
