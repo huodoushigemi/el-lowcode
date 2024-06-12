@@ -56,26 +56,7 @@
       <!-- plugins market -->
       <el-tab-pane name="plugins" lazy w250>
         <template #label><el-tooltip content="插件市场" placement="right" :hide-after="0"><i-mdi:power-plug-outline /></el-tooltip></template>
-        <div flex aic px8 py12 text-22 b-b="1 solid [--el-border-color]">
-          插件市场
-          <el-tooltip content="远程插件"><i-ep:plus mla p6 text-24 bg-hover cursor-pointer @click="addRemotePlugin()" /></el-tooltip>
-        </div>
-        <div>
-          <template v-for="[url, pkg] in plugins.map(e => [e, loadPkg(e)])">
-            <div v-if="pkg" :key="url" class="focus:bg-[--el-fill-color-light] focus:b-y-1" flex aic pr8 py8 h74 bg-hover rd-0 cursor-pointer select-none :title="`${pkg.name}\n\n${pkg.description}`" tabindex="1">
-              <img :src="pkg.icon" :alt="pkg.name" mx16 w42 h42 />
-              <div w0 flex-1>
-                <div truncate text-18>{{ pkg.name }}</div>
-                <div truncate text-12 op60>{{ pkg.description }}</div>
-                <div flex text-12 mt4>
-                  <div op40>{{ pkg.author }}</div>
-                  <el-button v-if="!root.plugins?.includes(url)" class="py0! px4! rd-0!" type="info" size="small" mla op80 style="height: 16px" @click="(root.plugins ??= []).push(url)">install</el-button>
-                  <div v-else></div>
-                </div>
-              </div>
-            </div>
-          </template>
-        </div>
+        <PluginsMarket />
       </el-tab-pane>
 
       <el-tab-pane name="tree" lazy w200>
@@ -132,8 +113,10 @@ import SelectedLayer from './components/selected-layer.vue'
 import SettingPanel from './setting-panel.vue'
 import StateDrawer from './components/state-drawer.vue'
 import CurrentState from './components/current-state.vue'
+import PluginsMarket from './components/PluginsMarket.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import Schema from './components/schema.vue'
+import MD from './components/MD.vue'
 import { vue2esm } from './vue2esm'
 import { PageCtx } from '../plugins/web/page'
 import { plugins, builtins } from './config'
@@ -172,7 +155,7 @@ const tree = computed<BoxProps[]>(() => treeUtils.changeProp([root.value], [['ch
 // ])
 // const collapse = ref(groups.map(e => e.title))
 
-const installedPlugins = computed(() => [...new Set([...root.value?.plugins || [], builtins])])
+const installedPlugins = computed(() => [...new Set([...root.value?.plugins || [], ...builtins])])
 
 // 加载插件 config
 watchEffect(() => {
@@ -225,6 +208,7 @@ const designerCtx = reactive({
 }) as DesignerCtx
 
 provide(designerCtxKey, designerCtx)
+provide('designerCtx', designerCtx)
 defineExpose(designerCtx)
 
 let cloned: BoxProps
