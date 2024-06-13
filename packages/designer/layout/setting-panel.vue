@@ -140,6 +140,12 @@ const commons = [
   { is: 'h1', children: 'Event' },
   { lp: 'onClick' },
   { lp: 'onChange' },
+  // { is: 'el-divider' },
+  { is: 'details', children: [
+    { is: 'summary', class: 'mb.8em', children: 'Advanced' },
+    { lp: 'onVnodeMounted' },
+    { lp: 'onVnodeBeforeMount' },
+  ] }
 ].map(_normalizeItem)
 
 function add2absolute(node) {

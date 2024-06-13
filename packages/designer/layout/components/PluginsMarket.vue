@@ -5,7 +5,7 @@
   </div>
   <div>
     <template v-for="[url, pkg] in plugins.map(e => [e, loadPkg(e)])">
-      <div v-if="pkg" :key="url" class="focus:bg-[--el-fill-color-light] focus:b-y-1" flex aic pr8 py8 h74 bg-hover rd-0 cursor-pointer select-none :title="`${pkg.name}\n\n${pkg.description}`" tabindex="1" @click="showMD(url)">
+      <div v-if="pkg" :key="url" :class="[url == drawer.url && 'is-active b-y-1']" flex aic pr8 py8 h74 bg-hover rd-0 cursor-pointer select-none :title="`${pkg.name}\n\n${pkg.description}`" tabindex="1" @click="showMD(url)">
         <img :src="pkg.icon" :alt="pkg.name" mx16 w42 h42 />
         <div w0 flex-1>
           <div truncate text-18>{{ pkg.name }}</div>
@@ -21,7 +21,7 @@
   </div>
 
   <!-- README -->
-  <el-drawer v-model="drawer.vis" class="[&>.el-drawer\_\_body]:p0" size="80%" :with-header="false" destroy-on-close>
+  <el-drawer v-model="drawer.vis" class="[&>.el-drawer\_\_body]:p0" modal-class="bg-#000/20" size="80%" :with-header="false" destroy-on-close>
     <MD :url="drawer.url + '/README.md'" wfull />
   </el-drawer>
 </template>

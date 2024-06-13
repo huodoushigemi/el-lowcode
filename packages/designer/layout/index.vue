@@ -133,7 +133,9 @@ const root = useLocalStorage(
     const config = await loadConfig(url)
     Object.assign(el_lowcode_widgets, keyBy(config, 'is'))
   }
-  root.value = parseAttrs(el_lowcode_widgets.Page!) as PageCtx
+  if (root.value.is != 'Page') {
+    root.value = parseAttrs(el_lowcode_widgets.Page!) as PageCtx
+  }
 })()
 
 
