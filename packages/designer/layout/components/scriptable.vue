@@ -3,7 +3,7 @@
 
     <template v-if="_scriptable" #label="{ label }">
       {{ label }}
-      <el-tag v-if="script !== true" :effect="isScript ? 'dark' : 'plain'" :type="isScript ? 'primary' : 'info'" size="small" ml8 cursor-pointer @click.prevent="visible = !isScript; value = isScript ? '' : value">JS</el-tag>
+      <el-tag v-if="script !== true" class="exp-flag" :effect="isScript ? 'dark' : 'plain'" :type="isScript ? 'primary' : 'info'" size="small" ml8 cursor-pointer @click.prevent="visible = !isScript; value = isScript ? '' : value">JS</el-tag>
     </template>
 
     <div v-if="isScript || script === true" flex justify-between px8 wfull bg="[--el-fill-color-light]" bg-hover cursor-pointer :c="exp || '[--el-text-color-placeholder]'" style="border: var(--el-border)" @click="visible = true">
@@ -78,3 +78,10 @@ function onSave() {
   visible.value = false
 }
 </script>
+
+<style lang="scss">
+.el-form-item {
+  &:hover .exp-flag { display: unset; }
+  .exp-flag { display: none; }
+}
+</style>

@@ -1,5 +1,5 @@
 import { CSSProperties, InjectionKey } from 'vue'
-import { BoxProps } from '../components/type'
+import { BoxProps, BoxCtx } from '../components/type'
 import { Obj } from '@el-lowcode/utils'
 
 export interface DesignerCtx {
@@ -9,7 +9,12 @@ export interface DesignerCtx {
   readonly hover?: BoxProps
   draggedId?: BoxProps['_id'],
   readonly dragged?: BoxProps,
+
   root: BoxProps
+  flated: BoxProps[]
+  keyed: Record<string, BoxProps>
+  // keyedCtx: Record<string, BoxCtx> // todo
+
   openState: boolean
   currentState: Obj
   readonly viewport: HTMLElement

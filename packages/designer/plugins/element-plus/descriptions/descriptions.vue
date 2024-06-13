@@ -9,7 +9,7 @@ import { PropType } from 'vue'
 import { ElDescriptions, ElDescriptionsItem, descriptionProps } from 'element-plus'
 
 defineOptions({
-  name: 'ElDescriptions$$'
+  name: 'ElDescriptions-2'
 })
 
 defineProps({

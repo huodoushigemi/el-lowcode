@@ -47,7 +47,7 @@
         </div>
         <div v-for="(list, category) in groupBy(asyncConfig(url) || [], 'category')" p8>
           <div mt4 mb10 text-16 font-bold>{{ category == 'undefined' ? '其他' : category }}</div>
-          <vue-draggable :model-value="list" grid="~ cols-2" gap-8 :group="{ name: 'shared', pull: 'clone', put: false }" :sort="false" :clone="clone" @end="onEnd">
+          <vue-draggable :model-value="list.filter(e => e.drag != false)" grid="~ cols-2" gap-8 :group="{ name: 'shared', pull: 'clone', put: false }" :sort="false" :clone="clone" @end="onEnd">
             <div v-for="wgtConfig in list.filter(e => e.drag != false)" class="cell" text-14 truncate>{{ wgtConfig.label }}</div>
           </vue-draggable>
         </div>
@@ -203,6 +203,8 @@ const designerCtx = reactive({
   viewport,
   canvas: { zoom: 1, style: { width: '100%' } },
   root,
+  flated: computed(() => treeUtils.flat([root.value])),
+  keyed: computed(() => keyBy(designerCtx.flated, '_id')),
   active: computed(() => designerCtx.activeId && treeUtils.find([root.value], designerCtx.activeId, { key: '_id' })),
   hover: computed(() => designerCtx.hoverId && treeUtils.find([root.value], designerCtx.hoverId, { key: '_id' })),
   dragged: computed(() => designerCtx.draggedId && treeUtils.find([root.value], designerCtx.draggedId, { key: '_id' })),

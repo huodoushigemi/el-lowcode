@@ -1,11 +1,11 @@
 <template>
   <div class="Page">
-    <slot></slot>
+    <slot v-if="!loading"></slot>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, getCurrentInstance, inject, provide, reactive, watch, watchEffect, Plugin } from 'vue'
+import { defineAsyncComponent, getCurrentInstance, inject, provide, reactive, watch, watchEffect, Plugin, ref } from 'vue'
 import { pageCtxKey } from './interface'
 import { refWithWatch } from '../../../components/hooks'
 import { importJs } from '../../../components/_utils'
@@ -38,9 +38,14 @@ watchEffect(() => {
   designerCtx.currentState = state.value
 })
 
+provide('pageCtx', reactive({
+  state
+}))
 provide(pageCtxKey, reactive({
   state
 }))
+
+const loading = ref(true)
 
 // custom components
 watchEffect(() => {
@@ -56,6 +61,7 @@ watch(() => props.plugins, async function loadPlugins(urls) {
     await loadPlugins(plugin.plugins)
     ins.appContext.app.use(plugin)
   }
+  loading.value = false
 }, { immediate: true })
 
 defineExpose({ state })

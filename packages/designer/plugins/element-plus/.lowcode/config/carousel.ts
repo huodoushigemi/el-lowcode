@@ -1,3 +1,7 @@
+import OptionsInput from '../../options-input.vue'
+
+const item = i => ({ is: 'ElCarouselItem', children: [{ is: 'h1', children: `item${i + 1}` }] })
+
 export default {
   is: 'ElCarousel',
   label: 'carousel',
@@ -11,13 +15,15 @@ export default {
     { lp: 'loop', type: 'switch', defaultValue: true },
     { lp: 'direction', type: 'radio-group', defaultValue: 'horizontal', options: ['horizontal', 'vertical'] },
     { lp: 'autoplay', type: 'switch', defaultValue: true },
+    { lp: 'motion-blur', type: 'switch' },
+    { lp: ['items', 'children'], el: { is: OptionsInput, props: { V: 'name' }, new: item } }
   ],
   defaultProps: () => ({
     autoplay: true,
     height: '150px',
     children: [
-      { is: 'ElCarouselItem', label: 'item1', children: [{ is: 'h1', children: 'item1' }] },
-      { is: 'ElCarouselItem', label: 'item2', children: [{ is: 'h1', children: 'item2' }] },
+      item(0),
+      item(1),
     ]
   })
 }

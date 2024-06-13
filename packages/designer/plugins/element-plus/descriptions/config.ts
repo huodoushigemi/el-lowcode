@@ -2,7 +2,7 @@ import { ENUM_SIZE } from '../utils'
 import OptionsInput from '../options-input.vue'
 
 export default {
-  is: 'ElDescriptions$$',
+  is: 'ElDescriptions-2',
   label: 'descriptions',
   props: [
     { lp: 'title' },

@@ -163,7 +163,7 @@ function add2absolute(node) {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 :deep(.el-tabs__header) {
   position: sticky;
   top: 0;

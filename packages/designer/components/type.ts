@@ -26,3 +26,14 @@ export interface BoxProps {
   }
   [k: string]: any
 }
+
+export interface BoxCtx {
+  parent?: BoxProps
+  node: BoxProps
+  index: number
+  active2parent?: undefined | (() => void)
+  swap?: undefined | ((d?: number) => void)
+  remove?: undefined | (() => void)
+  copy?: undefined | (() => void)
+  config: ElLowcodeConfig
+}
