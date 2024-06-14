@@ -1,4 +1,4 @@
-import OptionsInput from '../../options-input.vue'
+import OptionsInput from '../../../../components/options-input'
 
 const item = (label, prop) => ({ is: 'ElTableColumn', label, prop })
 

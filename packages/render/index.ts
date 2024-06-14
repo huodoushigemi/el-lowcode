@@ -32,8 +32,8 @@ export function createRender({ defaultIs = 'div', processProps = (props: Props) 
             // render children
             {
               default: () =>
-                isArray(childs) ? childs.map(e => isPlainObject(e) ? createVNode(Render, e) : e) :
-                isPlainObject(childs) ? createVNode(Render, childs) :
+                isArray(childs) ? childs.map(e => isPlainObject(e) ? Render(e) : e) :
+                isPlainObject(childs) ? Render(childs) :
                 childs
             }
           )

@@ -1,5 +1,5 @@
 import { ENUM_SIZE } from '../utils'
-import OptionsInput from '../options-input.vue'
+import OptionsInput from '../../../components/options-input'
 
 export default {
   is: 'ElDescriptions-2',

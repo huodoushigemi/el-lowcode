@@ -13,7 +13,7 @@ defineProps<{
   modelValue: string[]
   placeholder?: string[]
   size?: 'large' | 'default' | 'small'
-  separator: string
+  separator?: string
 }>()
 
 defineEmits<{

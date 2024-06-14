@@ -1,5 +1,5 @@
 import TabPane from './tab-pane'
-import OptionsInput from '../../options-input.vue'
+import OptionsInput from '../../../../components/options-input'
 
 export default {
   is: 'ElTabs',
