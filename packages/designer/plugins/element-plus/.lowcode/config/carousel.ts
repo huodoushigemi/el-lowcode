@@ -1,4 +1,4 @@
-import OptionsInput from '../../options-input.vue'
+import OptionsInput from '../../../../components/options-input'
 
 const item = i => ({ is: 'ElCarouselItem', children: [{ is: 'h1', children: `item${i + 1}` }] })
 

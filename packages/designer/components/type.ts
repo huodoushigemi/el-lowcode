@@ -6,6 +6,7 @@ export interface ElLowcodeConfig {
   label?: string
   layout?: boolean
   drag?: boolean
+  sortablePut?: boolean
   cover?: string
   JSONSchemaOutput?(props: Obj): Obj
   props?: Item[]

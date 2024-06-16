@@ -80,7 +80,8 @@
     <!-- Canvas Viewport -->
     <infinite-viewer wfull hfull :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" @pinch="designerCtx.canvas.zoom = $event.zoom">
       <div ref="viewport" class="viewport relative" :style="`width: ${canvasWidth}; background: var(--el-fill-color-extra-light)`" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
-        <drag-box id="root" :el="root" h1080 overflow-auto />
+        <!-- <drag-box id="root" :el="root" h1080 overflow-auto /> -->
+        <DragBox2 id="root" :el="root" h1080 overflow-auto />
         <selected-layer />
         <Moveable :target="activeEl()" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
         <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
@@ -109,6 +110,7 @@ import { parseAttrs, importJs } from '../components/_utils'
 import { BoxProps, ElLowcodeConfig } from '../components/type'
 import { DesignerCtx, designerCtxKey } from './interface'
 import DragBox from './components/drag-box.vue'
+import DragBox2 from './components/drag-box2.vue'
 import SelectedLayer from './components/selected-layer.vue'
 import SettingPanel from './setting-panel.vue'
 import StateDrawer from './components/state-drawer.vue'
@@ -198,10 +200,10 @@ const canvasWidth = computed({
 })
 
 const designerCtx = reactive({
-  openState: ref(false),
   currentState: {},
   viewport,
   canvas: { zoom: 1, style: { width: '100%' } },
+  widgets: el_lowcode_widgets,
   root,
   flated: computed(() => treeUtils.flat([root.value])),
   keyed: computed(() => keyBy(designerCtx.flated, '_id')),

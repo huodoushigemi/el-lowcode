@@ -54,7 +54,6 @@ const boxRef = ref<HTMLElement>()
 const empty = ref<HTMLElement>()
 const drag = computed(() => emptyChildren.value ? empty.value : (config.value?.layout ? elRef.value : boxRef.value))
 let useDraggableReturn: UseDraggableReturn
-
 let cloned: HTMLElement
 
 watchEffect(() => {

@@ -6,8 +6,12 @@ export default {
   is: 'ElTable',
   label: 'table',
   category: '数据展示',
+  sortablePut: false,
   props: [
-    { lp: ['cols', 'children'], el: { is: OptionsInput, props: { V: 'prop' }, new: i => item(`title${i + 1}`, `key${i + 1}`) } }
+    { lp: 'data' },
+    { lp: ['cols', 'children'], el: { is: OptionsInput, props: { V: 'prop' }, new: i => item(`title${i + 1}`, `key${i + 1}`) } },
+    { lp: 'stripe', type: 'switch' },
+    { lp: 'border', type: 'switch' },
   ],
   defaultProps: () => ({
     children: [

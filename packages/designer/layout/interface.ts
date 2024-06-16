@@ -1,5 +1,5 @@
 import { CSSProperties, InjectionKey } from 'vue'
-import { BoxProps, BoxCtx } from '../components/type'
+import { BoxProps, BoxCtx, ElLowcodeConfig } from '../components/type'
 import { Obj } from '@el-lowcode/utils'
 
 export interface DesignerCtx {
@@ -15,13 +15,13 @@ export interface DesignerCtx {
   keyed: Record<string, BoxProps>
   // keyedCtx: Record<string, BoxCtx> // todo
 
-  openState: boolean
   currentState: Obj
   readonly viewport: HTMLElement
   canvas: {
     zoom: number
     style: Partial<CSSProperties>
   }
+  widgets: Record<string, ElLowcodeConfig | undefined>
 }
 
 export const designerCtxKey: InjectionKey<DesignerCtx> = Symbol('designerCtxKey')

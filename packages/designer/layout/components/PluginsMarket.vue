@@ -5,7 +5,7 @@
   </div>
   <div>
     <template v-for="[url, pkg] in plugins.map(e => [e, loadPkg(e)])">
-      <div v-if="pkg" :key="url" :class="[url == drawer.url && 'is-active b-y-1']" flex aic pr8 py8 h74 bg-hover rd-0 cursor-pointer select-none :title="`${pkg.name}\n\n${pkg.description}`" tabindex="1" @click="showMD(url)">
+      <div v-if="pkg" :key="url" :class="[url == drawer.url && 'is-active b-y-1']" flex aic pr8 py8 h74 bg-hover rd-0 cursor-pointer select-none :title="`${pkg.name}\n\n${pkg.description}`" @click="showMD(url)">
         <img :src="pkg.icon" :alt="pkg.name" mx16 w42 h42 />
         <div w0 flex-1>
           <div truncate text-18>{{ pkg.name }}</div>
@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import { computed, provide, reactive, ref, onUpdated, watch, watchEffect, inject } from 'vue'
 import { isArray, isPlainObject, remove } from '@vue/shared'
-import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
+import { computedAsync, unrefElement, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
 import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
 
 import { ElLowcodeConfig } from '../../components/type'

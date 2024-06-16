@@ -1,8 +1,5 @@
-import { ElCollapse, ElCollapseItem } from 'element-plus'
 import { v4 as uuidv4 } from 'uuid'
 import { Obj, unFn, treeUtils } from '@el-lowcode/utils'
-import { normalizeItem } from 'el-form-render'
-import { ENUM_SIZE } from '../const'
 import { BoxProps, ElLowcodeConfig } from './type'
 import { el_lowcode_widgets } from './el_lowcode_widgets'
 
@@ -17,7 +14,7 @@ export const sloveConfig = (el?: BoxProps) => {
   if (!el) return
   const is = el.el?.is || el.is
   if (!el_lowcode_widgets[is]) console.error(`${is}: Unable to find a matching el_lowcode configuration of ${is}`, el)
-  return unFn(el_lowcode_widgets[is])
+  return el_lowcode_widgets[is]
 }
 
 const importCache = {} as Record<string, Promise<any> | undefined>
