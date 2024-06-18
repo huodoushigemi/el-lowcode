@@ -8,7 +8,7 @@
     </div>
     <!-- <selected-rect :el="designerCtx.active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(activeEl())" /> -->
     <div v-if="active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(activeEl())">
-      <div v-if="active.style?.position != 'absolute'" class="actions absolute bottom-[100%] flex text-15 pointer-events-auto c-white bg-[--el-color-primary]">  
+      <div v-if="active.style?.position != 'absolute' && designerCtx.draggedId == null" class="actions absolute bottom-[100%] flex text-15 pointer-events-auto c-white bg-[--el-color-primary]">  
         <div flex aic px12 bg="#17d57e">{{ active['data-layer'] || activeConfig?.label }}</div>
         <i-solar:arrow-to-top-right-bold v-if="activeCtx?.active2parent" class="icon" @click="activeCtx?.active2parent" />
         <i-solar:arrow-up-linear v-if="activeCtx?.moveUp" class="icon" @click="activeCtx?.moveUp" />

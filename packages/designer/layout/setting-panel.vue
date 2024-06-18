@@ -4,7 +4,7 @@
     <div v-if="model" bg-hover w28 h28 ml8 :bg="model.style?.position == 'absolute' ? '#404040' : ''" @click="add2absolute(model)"></div>
     <i-material-symbols-light:code bg-hover mla w28 h28 p4 @click="visible = true" />
   </div>
-  <el-tabs v-if="config">
+  <el-tabs v-if="config" class="tabs">
     <el-tab-pane label="attrs">
       <el-form-render :model="model" label-width="auto" size="small" label-position="top">
         <Render v-for="item in _items" v-bind="item" />
@@ -181,5 +181,14 @@ function add2absolute(node) {
 }
 :deep(.el-collapse) {
   --el-transition-duration: 100ms;
+}
+
+.tabs {
+  --el-border-radius-base: 0;
+  --el-border-radius-small: 0;
+
+  :deep(.el-color-picker__trigger) {
+    border-radius: 0;
+  }
 }
 </style>
