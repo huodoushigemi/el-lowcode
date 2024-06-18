@@ -105,7 +105,7 @@ function setup(props: BoxProps, designer: DesignerCtx) {
     onEnd() {
       cloned.remove()
       designer.draggedId = undefined
-    }
+    },
   })
 
   watch(box, el => {

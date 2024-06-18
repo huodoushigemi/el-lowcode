@@ -97,7 +97,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, reactive, ref, onUpdated, watch, watchEffect } from 'vue'
+import { computed, provide, reactive, ref, onUpdated, watch, watchEffect, getCurrentInstance } from 'vue'
 import { isArray, isPlainObject, remove } from '@vue/shared'
 import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
 import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
@@ -122,6 +122,10 @@ import MD from './components/MD.vue'
 import { vue2esm } from './vue2esm'
 import { PageCtx } from '../plugins/web/page'
 import { plugins, builtins } from './config'
+import OptionsInput from '../components/options-input'
+
+const app = getCurrentInstance()?.appContext.app
+app?.use(OptionsInput)
 
 // 根节点
 const root = useLocalStorage(

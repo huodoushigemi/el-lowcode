@@ -8,7 +8,7 @@
     </div>
     <!-- <selected-rect :el="designerCtx.active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(activeEl())" /> -->
     <div v-if="active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(activeEl())">
-      <div v-if="active.style?.position != 'absolute' && designerCtx.draggedId == null" class="actions absolute bottom-[100%] flex text-15 pointer-events-auto c-white bg-[--el-color-primary]">  
+      <div v-if="active.style?.position != 'absolute' && designerCtx.draggedId == null" class="actions absolute bottom-[100%] flex text-15 text-nowrap pointer-events-auto c-white bg-[--el-color-primary]">  
         <div flex aic px12 bg="#17d57e">{{ active['data-layer'] || activeConfig?.label }}</div>
         <i-solar:arrow-to-top-right-bold v-if="activeCtx?.active2parent" class="icon" @click="activeCtx?.active2parent" />
         <i-solar:arrow-up-linear v-if="activeCtx?.moveUp" class="icon" @click="activeCtx?.moveUp" />
@@ -71,6 +71,7 @@ const activeCtx = computed(() => {
     moveDown: i != children.length - 1 ? () => swap(children, i, i + 1) : undefined,
     active2parent: () => designerCtx.activeId = parent._id,
     remove: () => designerCtx.activeId = (remove(children, designerCtx.active), void 0),
+    // todo
     copy: () => children.splice(i + 1, 0, { ...deepClone(active), _id: uuidv4() })
   }
 })

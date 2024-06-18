@@ -1,3 +1,5 @@
+import { v4 } from 'uuid'
+
 const createH = (is) => ({
   is,
   label: is,
@@ -93,4 +95,55 @@ export default [
       src: 'https://element-plus.gitee.io'
     })
   },
+
+  {
+    is: 'details',
+    label: 'details',
+    layout: true,
+    props: [
+      { lp: ['summary', 'children.0.children'] }
+    ],
+    defaultProps: () => ({
+      children: [
+        { is: 'summary', children: 'title' },
+        { is: 'div', children: [] }
+      ]
+    })
+  },
+
+  {
+    is: 'summary',
+    label: 'summary',
+    layout: true,
+    drag: false,
+    props: [
+      { lp: ['title', 'children'] }
+    ]
+  },
+
+  {
+    is: 'ul',
+    label: 'ul',
+    sortablePut: false,
+    props: [
+      // todo
+      { lp: ['title', 'children'], el: { is: 'OptionsInput', new: () => ({ is: 'li', _id: v4(), children: [] }) } },
+      { lp: ['list-style', 'style.listStyle'], type: 'select', options: ['simp-chinese-informal', 'decimal', 'disc', 'circle' ,'square'], displayValue: 'disc' },
+    ],
+    defaultProps: () => ({
+      children: [
+        { is: 'li', children: [] },
+        { is: 'li', children: [] }
+      ]
+    })
+  },
+
+  {
+    is: 'li',
+    label: 'li',
+    layout: true,
+    props: [
+
+    ]
+  }
 ]

@@ -48,7 +48,7 @@ const script = computed(() => props.script ?? props.scriptable)
 const formCtx = inject(formContextKey)
 const model = computed(() => formCtx.model)
 const value = computed({
-  get: () => get(model.value, props.prop),
+  get: () => get(model.value, props.prop) || props.displayValue,
   set: val => set(model.value, props.prop, val ?? defaultValue.value)
 })
 
@@ -67,7 +67,7 @@ const tsExtraLibs = computed(() => (console.log(JSON.stringify(designerCtx.curre
 }))
 
 const interpolation = computed(() => isScript.value ? value.value : '{{}}')
-const code = refWithWatch(() => interpolation.value.match(expReg)[1] || (isOn(props.prop) ? `() => {\n  \n}` : ''))
+const code = refWithWatch(() => interpolation.value.match(expReg)[1] || (isOn(props.prop) ? `(e) => {\n  \n}` : ''))
 const exp = computed(() => interpolation.value.match(expReg)[1])
 
 const visible = ref(false)

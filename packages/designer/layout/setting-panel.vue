@@ -79,7 +79,7 @@ const _normalizeItem = (item) => {
     item.el.placeholder ??= ''
     if (isOn(item.prop)) item.script ??= true
   }
-  if (isArray(item.children)) item.children = item.children.map(_normalizeItem)
+  if (isArray(item.children)) item.children = item.children.filter(e => e).map(_normalizeItem)
   return item
 }
 
@@ -94,7 +94,7 @@ const config = computed(() => {
   return sloveConfig(model.value)
 })
 
-const _items = computed(() => unFn(config.value?.props, model.value)?.map(_normalizeItem))
+const _items = computed(() => unFn(config.value?.props, model.value)?.filter(e => e).map(_normalizeItem))
 
 const styles = [
   { lp: 'xxx', el: { is: LcSlider, label: '大小' } },
