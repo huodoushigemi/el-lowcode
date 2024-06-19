@@ -28,6 +28,9 @@ const button = (is, sortablePull = false) => ({
     { lp: 'href', el: { placeholder: 'http://……' } },
     { lp: 'type', type: 'select', options: ['text', 'reset', 'submit'], displayValue: 'submit' }
   ],
+  defaultProps: () => ({
+    children: 'button'
+  })
 })
 
 const iconButton = (is, sortablePull = false) => ({
@@ -117,5 +120,5 @@ export default [
     ]
   },
 
-
+  ...(await import('./config/tabs')).default
 ]
