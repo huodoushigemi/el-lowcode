@@ -27,7 +27,7 @@ const href = props => ({ is: 'div', class: 'flex', children: [
   { lp: 'href', el: { placeholder: 'http://……' } },
   { lp: 'target', type: 'select', options: ['_blank', '_self'], displayValue: '_self', $: { condition: !!props.href } },
 ] })
-const btnType = { lp: 'type', type: 'select', options: ['submit', 'reset', 'button'], displayValue: 'button' }
+const btnType = options('type', ['submit', 'reset', 'button'], 'button')
 
 const min = { lp: 'min', type: 'input-number', displayValue: 0 }
 const max = { lp: 'max', type: 'input-number', displayValue: 100 }
@@ -95,7 +95,7 @@ export default [
     props: props => [
       kv,
       fullWidth,
-      { lp: 'selects', type: 'select', options: ['single', 'multiple'] },
+      options('selects', ['single', 'multiple']),
       disabled,
       required,
       OptionsInput(['', 'children'], { L: 'children', V: 'value' }, 'mdui-segmented-button'),
