@@ -228,7 +228,7 @@ function clone(e) {
   // console.log(e);
 }
 function onEnd(e) {
-  if (!(e.to as HTMLElement).classList.contains('container-box')) return
+  // if (!(e.to as HTMLElement).classList.contains('container-box')) return
   setTimeout(() => designerCtx.activeId = cloned._id, 100);
   // designerCtx.activeId
 }

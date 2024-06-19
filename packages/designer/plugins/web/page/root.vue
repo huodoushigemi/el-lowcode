@@ -5,12 +5,11 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, getCurrentInstance, inject, provide, reactive, watch, watchEffect, Plugin, ref } from 'vue'
+import { defineAsyncComponent, getCurrentInstance, inject, provide, reactive, watch, watchEffect, Plugin, ref, PropType, nextTick } from 'vue'
 import { pageCtxKey } from './interface'
 import { refWithWatch } from '../../../components/hooks'
 import { importJs } from '../../../components/_utils'
 import { designerCtxKey } from '../../../layout/interface'
-import { PropType } from 'vue'
 
 defineOptions({
   name: 'Page'
@@ -45,7 +44,7 @@ provide(pageCtxKey, reactive({
   state
 }))
 
-const loading = ref(true)
+const loading = ref(false)
 
 // custom components
 watchEffect(() => {
@@ -55,14 +54,22 @@ watchEffect(() => {
 })
 
 // load plugin
-watch(() => props.plugins, async function loadPlugins(urls) {
+watch(() => props.plugins, async (urls) => {
+  try {
+    loading.value = true
+    await loadPlugins(urls)
+  } finally {
+    loading.value = false
+  }
+}, { immediate: true })
+
+async function loadPlugins(urls) {
   for (const url of urls || []) {
     const plugin = (await import(/* @vite-ignore */ url + '/index.js')).default as Plugin & { plugins?: string[] }
     await loadPlugins(plugin.plugins)
     ins.appContext.app.use(plugin)
   }
-  loading.value = false
-}, { immediate: true })
+}
 
 defineExpose({ state })
 </script>
