@@ -19,6 +19,7 @@ export default defineConfig({
   safelist: [
     'inline-block',
     'flex!',
+    'grid', 'grid-cols-3', 'grid-cols-4',
     'text-12',
     '-ml4', 'ml4', 'ml8', 'mla', 'mb0', 'mb4', 'mb8'
   ],

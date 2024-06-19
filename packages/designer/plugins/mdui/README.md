@@ -1,86 +1,85 @@
-# Material Web
+<p align="center">
+  <a href="https://www.mdui.org/">
+    <img src="https://raw.githubusercontent.com/zdhxiong/mdui/953011ce2911e2e64b6cb242729df82664f6a78a/packages/jetbrains-plugin/src/main/resources/META-INF/pluginIcon.svg" alt="mdui logo" width="165" height="165"/>
+  </a>
+</p>
 
-<img src="https://github.com/material-components/material-web/raw/main/docs/images/material-web.gif"
-  title="Material web components"
-  alt="A collection of Material web components"
-  style="border-radius: 32px">
+<h1 align="center">mdui</h1>
 
-[![Published on npm](https://img.shields.io/npm/v/%40material%2Fweb)](https://www.npmjs.com/package/@material/web)
-[![Join our Discord](https://img.shields.io/badge/discord-join%20chat-5865F2.svg?logo=discord&logoColor=fff&label=%23material)](https://lit.dev/discord/)
-[![Test status](https://github.com/material-components/material-web/actions/workflows/test.yml/badge.svg)](https://github.com/material-components/material-web/actions/workflows/test.yml)
-[![npm Downloads](https://img.shields.io/npm/dm/%40material%2Fweb?label=npm%20downloads)](https://npm-stat.com/charts.html?package=%40material%2Fweb)
-[![jsDelivr hits (npm)](https://img.shields.io/jsdelivr/npm/hm/%40material%2Fweb)](https://www.jsdelivr.com/package/npm/@material/web?tab=stats)
+<p align="center">
+  A Material Design 3 (Material You) library of Web Components.
+  <br/>
+  <a href="https://www.mdui.org"><strong>https://www.mdui.org</strong></a>
+  <br/>
+  <br/>
+  <a href="https://www.npmjs.com/package/mdui">
+    <img src="https://img.shields.io/npm/v/mdui.svg" alt="npm version"/>
+  </a>
+  <a href="https://cdn.jsdelivr.net/npm/mdui/mdui.css">
+    <img src="https://badgen.net/badgesize/gzip/https://cdn.jsdelivr.net/npm/mdui/mdui.css?label=CSS%20gzip%20size" alt="CSS gzip size"/>
+  </a>
+  <a href="https://cdn.jsdelivr.net/npm/mdui/mdui.esm.js">
+    <img src="https://badgen.net/badgesize/gzip/https://cdn.jsdelivr.net/npm/mdui/mdui.esm.js?label=JS%20gzip%20size" alt="JS gzip size"/>
+  </a>
+  <a href="https://www.npmjs.com/package/mdui">
+    <img src="https://badgen.net/npm/dt/mdui" alt="downloads"/>
+  </a>
+  <a href="https://github.com/zdhxiong/mdui/blob/v2/packages/mdui/LICENSE">
+    <img src="https://badgen.net/npm/license/mdui" alt="license"/>
+  </a>
+</p>
 
-`@material/web` is a library of
-[web components](https://developer.mozilla.org/en-US/docs/Web/Web_Components)<!-- {.external} -->
-that helps build beautiful and accessible web applications. It uses
-[Material 3](https://m3.material.io/)<!-- {.external} -->, the latest version of Google's
-open-source design system.
+<hr/>
 
-**Note:
-[MWC is in maintenance mode pending new maintainers](https://github.com/material-components/material-web/discussions/5642).**
+* 🧩 Works with all frameworks
+* 🚛 Works with CDNs
+* 🏙️ Material 3 design system
+* 🌛 Includes dark theme and dynamic color
+* 🆚 Optimized for WebStorm and VSCode
+* 😸 Open source
 
-## Resources
+## Docs
 
--   [Introduction](./docs/intro.md)
--   [Roadmap](./docs/roadmap.md)
--   [Component docs](./docs/components/)
--   [Bundle size](./docs/size.md)
--   [Browser support and FAQ](./docs/support.md)
+* [English](https://www.mdui.org/en/docs/2/)
+* [简体中文](https://www.mdui.org/zh-cn/docs/2/)
 
-## Quick start
+## Installation
 
-> Tip: Using Angular? We recommend using
-> [Angular Material](https://material.angular.io/)<!-- {.external} --> components
-> instead.
-
-This code snippet is a buildless example that loads `@material/web` from a CDN.
-Check out the [quick start](./docs/quick-start.md) guide to install and build
-for production.
-
-<!-- LINT.IfChange -->
-
-```html
-<head>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <script type="importmap">
-    {
-      "imports": {
-        "@material/web/": "https://esm.run/@material/web/"
-      }
-    }
-  </script>
-  <script type="module">
-    import '@material/web/all.js';
-    import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
-
-    document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
-  </script>
-</head>
-<body>
-  <h1 class="md-typescale-display-medium">Hello Material!</h1>
-  <form>
-    <p class="md-typescale-body-medium">Check out these controls in a form!</p>
-    <md-checkbox></md-checkbox>
-    <div>
-      <md-radio name="group"></md-radio>
-      <md-radio name="group"></md-radio>
-      <md-radio name="group"></md-radio>
-    </div>
-
-    <md-outlined-text-field label="Favorite color" value="Purple"></md-outlined-text-field>
-
-    <md-outlined-button type="reset">Reset</md-outlined-button>
-  </form>
-  <style>
-    form {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 16px;
-    }
-  </style>
-</body>
+```sh
+npm install mdui --save
 ```
 
-<!-- LINT.ThenChange(./g3doc/docs/quick-start.md) -->
+## Usage
+
+Import CSS and JS:
+
+```js
+import 'mdui/mdui.css';
+import 'mdui';
+```
+
+Use the component:
+
+```html
+<mdui-button>Button</mdui-button>
+```
+
+## Using CDN
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://unpkg.com/mdui@2/mdui.css">
+    <script src="https://unpkg.com/mdui@2/mdui.global.js"></script>
+  </head>
+  <body>
+    <mdui-button>Hello, world!</mdui-button>
+  </body>
+</html>
+```
+
+## License
+
+[MIT](https://github.com/zdhxiong/mdui/blob/v2/packages/mdui/LICENSE)

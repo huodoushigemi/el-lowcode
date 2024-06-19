@@ -1,9 +1,7 @@
 <template>
   <div class="lc-slider flex" :class="[isFocus && 'is-focus']" @click="inputRef.focus()">
-    <label flex-1>
-      <div absolute top--14 px8 op75 lh-18 cursor-w-resize select-none @mousedown="mousedown">{{ label }}</div>
-      <input ref="inputRef" :value="_value" @input="_value = $event.target.value" type="number" px8 @focus="isFocus = true" @blur="isFocus = false" />
-    </label>
+    <div w8 cursor-w-resize select-none @mousedown="mousedown"></div>
+    <input ref="inputRef" :value="_value" @input="_value = $event.target.value" type="number" @focus="isFocus = true" @blur="isFocus = false" />
     <select ref="selectRef" :value="unit" px8 bg-hover rd-0 appearance-none outline-0 @click.stop @change="unit = $event.target.value; _value = _value">
       <option v-for="opt in units" :value="opt">{{ opt }}</option>
     </select>
@@ -60,22 +58,33 @@ function mousedown(e) {
 
 <style lang="scss">
 .lc-slider {
-  border: 1px solid var(--el-input-border-color, var(--el-border-color));
-  // border-radius: var(--el-input-border-radius,var(--el-border-radius-base));
+  color: var(--el-text-color-regular);
+  border-radius: var(--el-input-border-radius,var(--el-border-radius-base));
+  padding: 2px 2px 2px 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 24px;
+  line-height: 20px;
+  box-shadow: 0 0 0 1px var(--el-border-color) inset;
 
   &.is-focus {
     border-color: var(--el-color-primary);
   }
 
-  > label {
-    > input {
-      outline: 0;
-
-      &::-webkit-inner-spin-button, &::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-      }
+  > input {
+    background: none;
+    padding: 0 8px 0 0;
+    flex: 1;
+    &::-webkit-inner-spin-button, &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
+  }
+
+  > select, > input {
+    color: inherit;
+    outline: none;
+    border: none;
   }
 }
 </style>

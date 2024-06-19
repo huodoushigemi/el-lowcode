@@ -4,8 +4,9 @@ const ICONS = ['search', 'arrow_forward', 'downloading', 'attach_file']
 const SIZES = ['normal', 'small', 'large']
 
 const variant = (options, displayValue) => ({ lp: 'variant', type: 'select', options, displayValue })
-const options = (lp, options, displayValue) => ({ lp, type: 'select', options, displayValue })
+const options = (lp, options, displayValue, extra) => ({ lp, type: 'select', options, displayValue, ...extra })
 const boolean = (lp, displayValue = false) => ({ lp, type: 'switch', displayValue })
+const number = (lp, displayValue) => ({ lp, type: 'input-number', displayValue })
 const selectable = (props) => ({ is: 'div', class: 'flex', children: [
   { lp: 'selectable', type: 'switch', displayValue: false },
   { lp: 'selected', type: 'switch', displayValue: false },
@@ -67,7 +68,7 @@ export default [
       btnType,
     ],
     defaultProps: () => ({
-      
+      icon: 'menu'
     })
   },
 
@@ -187,9 +188,9 @@ export default [
     ],
     defaultProps: () => ({
       children: [
-        { is: 'mdui-radio', vlaue: '1', children: 'Radio-1' },
-        { is: 'mdui-radio', vlaue: '2', children: 'Radio-2' },
-        { is: 'mdui-radio', vlaue: '3', children: 'Radio-3' },
+        { is: 'mdui-radio', value: '1', children: 'Radio-1' },
+        { is: 'mdui-radio', value: '2', children: 'Radio-2' },
+        { is: 'mdui-radio', value: '3', children: 'Radio-3' },
       ]
     })
   },
@@ -265,7 +266,7 @@ export default [
     layout: true,
     drag: false,
     props: [
-      { lp: 'value' },
+      value,
       disabled,
     ],
     defaultProps: () => ({
@@ -340,6 +341,53 @@ export default [
       children: [
         { is: 'mdui-menu-item', value: 'item-1', children: 'Item 1' },
         { is: 'mdui-menu-item', value: 'item-2', children: 'Item 2' },
+      ]
+    })
+  },
+
+  {
+    is: 'mdui-text-field',
+    label: 'text-field',
+    props: props => [
+      variant(['filled', 'outlined']),
+      kv,
+      { is: 'div', class: 'flex', children: [{ lp: 'label' }, { lp: 'helper' }] },
+      { is: 'div', class: 'flex', children: [boolean('clearable'), boolean('counter')] },
+      { is: 'div', class: 'flex', children: [icon, endIcon] },
+      options('type', ['text', 'number', 'password', 'url', 'email', 'search', 'tel', 'date', 'datetime-local', 'month', 'time', 'week']),
+      { is: 'div', class: 'flex', children: [number('minlength'), number('maxlength')], $: { condition: ['text', 'password', 'url', 'email', 'search', 'tel'].includes(props.type) } },
+      { is: 'div', class: 'flex', children: [number('min-rows'), number('max-rows')], $: { condition: props.type == 'text' } },
+      { is: 'div', class: 'flex', children: [number('min'), number('max')], $: { condition: props.type == 'number' } },
+      boolean('autosize'),
+      { lp: 'pattern' },
+      readonly,
+      disabled,
+      required,
+    ],
+    defaultProps: () => ({
+      label: 'Label',
+      type: 'text',
+      children: [
+        { is: 'mdui-menu-item', value: 'item-1', children: 'Item 1' },
+        { is: 'mdui-menu-item', value: 'item-2', children: 'Item 2' },
+      ]
+    })
+  },
+
+  {
+    is: 'mdui-top-app-bar',
+    label: 'app-bar',
+    sortablePut: false,
+    props: [
+      { lp: ['title', 'children.1.children'] },
+      options(['icon', 'children.0.icon'], ICONS),
+      { lp: 'variant', type: 'radio-group', options: [['center', 'center-aligned'], 'small', 'medium', 'large'], el: { type: 'button' } },
+      { lp: 'scroll-behavior', type: 'checkbox-group', options: ['hide', 'shrink', 'elevate'], get: v => v?.split(' '), set: v => v.join(' '), el: { type: 'button' } }
+    ],
+    defaultProps: () => ({
+      children: [
+        { is: 'mdui-button-icon', icon: 'menu' },
+        { is: 'mdui-top-app-bar-title', children: 'Title' },
       ]
     })
   },
