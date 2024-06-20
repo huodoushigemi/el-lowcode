@@ -1,5 +1,5 @@
 <template>
-  <el-form-item-render v-bind="$props">
+  <el-form-item-render v-bind="{ ...$props, ...$attrs }">
 
     <template v-if="_scriptable" #label="{ label }">
       {{ label }}

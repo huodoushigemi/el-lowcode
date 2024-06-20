@@ -189,6 +189,12 @@ function add2absolute(node) {
   --el-border-radius-base: 0;
   --el-border-radius-small: 0;
 
+  :deep(.el-color-picker--small) {
+    > .el-color-picker__trigger {
+      padding: 2px;
+    }
+  }
+
   :deep(.el-color-picker__trigger) {
     border-radius: 0;
   }

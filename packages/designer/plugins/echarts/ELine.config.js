@@ -1,3 +1,11 @@
+import { get } from "@el-lowcode/utils"
+
+const FONT_STYLES = ['normal', 'italic', 'oblique']
+const FONT_WEIGHTS = ['normal', 'bold', 'bolder', 'lighter']
+const FONT_FAMILYS = ['sans-serif', 'serif', 'monospace', 'Arial', 'Courier New', 'Microsoft YaHei']
+const FONT_OVERFLOWS = ['none', 'truncate', 'break', 'breakAll']
+const LINE_TYPES = ['solid', 'dashed', 'dotted']
+
 function normalized(arr) {
   arr.forEach(e => {
     if (typeof e == 'object' && !e.is) e.script ??= false
@@ -5,6 +13,21 @@ function normalized(arr) {
   })
   return arr
 }
+
+const enable = (model, label, prop, defaultValue, children) => ({ is: 'div', style: 'padding: 1px 12px; background: var(--el-fill-color-light);', children: [
+  { is: 'div', class: 'flex aic', style: 'margin: 6px 0; font-weight: bold', children: [
+    { is: 'div', children: label },
+    { prop, type: 'switch', class: 'mla mb0', defaultValue }
+  ] },
+  ...(get(model, prop) ? children : [])
+] })
+
+const number = (lp, opt) => ({ lp, ...opt, el: { is: 'InputNumber', unit: null, hideUnit: true, ...opt?.el } })
+const number1 = (prop, opt) => ({ prop, ...opt, el: { is: 'InputNumber', unit: null, hideUnit: true } })
+
+const color = (lp, opt) => ({ lp, type: 'color-picker', ...opt })
+const opts = (lp, options, opt) => ({ lp, type: 'select', options, ...opt })
+// const slider1 = (props) => ({  })
 
 export default {
   is: 'ELine',
@@ -16,77 +39,112 @@ export default {
     { is: 'ElFormRender', model: option, size: 'small', children: [
       { is: 'ElCollapse', children: [
         { is: 'ElCollapseItem', title: 'Grid', children: [
-          {is: 'div', class: 'grid aic text-12', style: 'grid-template-columns: 50px 1fr; gap: 4px 0;', children: [
-            'top', { prop: 'grid.top', type: 'slider', class: 'mb0' },
-            'right', { prop: 'grid.right', type: 'slider', class: 'mb0'  },
-            'bottom', { prop: 'grid.bottom', type: 'slider', class: 'mb0'  },
-            'left', { prop: 'grid.left', type: 'slider', class: 'mb0'  },
-            { is: 'input', type: 'button', value: 'reset', onClick: () => option.grid = void 0 },
-          ]}
+          { is: 'div', class: '[&>*]:mb8', style: 'display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0 8px', children: [
+            number(['top', 'grid.top']),
+            number(['right', 'grid.right']),
+            number(['bottom', 'grid.bottom']),
+            number(['left', 'grid.left']),
+          ] }
         ] },
         { is: 'ElCollapseItem', title: 'XAxis', children: [
-          { is: 'p', class: 'flex aic mb8', children: ['axis-label', { prop: 'xAxis.axisLabel.show', type: 'switch', defaultValue: true, class: 'mla mb0' }] },
-          { is: 'div', class: 'text-12', style: 'display: grid; grid-template-columns: 130px 1fr', children: [
-            { prop: 'xAxis.axisLabel.rotate', type: 'slider', defaultValue: 0, el: { min: -90, max: 90, formatTooltip: v => `rotate: ${v}°` } },
-            { prop: 'xAxis.axisLabel.color', type: 'color-picker' },
-            { prop: 'xAxis.axisLabel.margin', type: 'input-number', defaultValue: 8 }, 'gap',
-            { prop: 'xAxis.axisLabel.fontSize', type: 'input-number', displayValue: 12 }, 'size',
+          { is: 'ElFormRender', model: option.xAxis.axisLabel, size: 'small', children: [
+            enable(option.xAxis.axisLabel, 'label', 'show', true, [
+              { is: 'div', class: '[&>*]:mb8', style: 'display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 8px', children: [
+                number(['size', 'fontSize'], { displayValue: 12 }),
+                number(['offset', 'margin'], { defaultValue: 8 }),
+                // number(['w', 'width']),
+                // number(['h', 'height']),
+                color(['color', 'color'], { el: { size: 'small' } }),
+                opts(['style', 'fontStyle'], FONT_STYLES),
+                opts(['weight', 'fontWeight'], FONT_WEIGHTS),
+                opts(['family', 'fontFamily'], FONT_FAMILYS),
+                opts(['overflow', 'overflow'], FONT_OVERFLOWS),
+                { lp: ['format', 'formatter'], displayValue: '{value}' },
+                number(['rotate', 'rotate'], { el: { min: -90, max: 90 } }),
+              ] },
+            ]),
           ] },
-          { is: 'p', class: 'flex aic mb8', children: ['axis-line', { prop: 'xAxis.axisLine.show', type: 'switch', defaultValue: true, class: 'mla mb0' }] },
-          { is: 'div', class: 'flex aic', children: [
-            { prop: 'xAxis.axisLine.lineStyle.width', type: 'input-number', displayValue: 1, el: { max: 5 } },
-            { prop: 'xAxis.axisLine.lineStyle.color', type: 'color-picker', class: 'ml8' },
-            { prop: 'xAxis.axisLine.lineStyle.type', options: ['solid', 'dash'], displayValue: 'solid', class: 'ml8' },
+          { is: 'div', class: 'mb4' },
+          { is: 'ElFormRender', model: option.xAxis.axisLine, size: 'small', children: [
+            enable(option.xAxis.axisLine, 'line', 'show', true, [
+              { is: 'div', class: '[&>*]:mb8', style: 'display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 8px', children: [
+                number(['size', 'lineStyle.width'], { displayValue: 1, el: { max: 5, min: 0 } }),
+                opts(['type', 'lineStyle.type'], LINE_TYPES),
+                color(['color', 'lineStyle.color'], { el: { size: 'small' } }),
+              ] },
+            ]),
           ] },
-          { is: 'p', class: 'flex aic mb8', children: ['split-line', { prop: 'xAxis.splitLine.show', type: 'switch', class: 'mla mb0' }] },
-          { is: 'div', class: 'flex aic', children: [
-            { prop: 'xAxis.splitLine.lineStyle.width', type: 'input-number', displayValue: 1, el: { max: 5 } },
-            { prop: 'xAxis.splitLine.lineStyle.color', type: 'color-picker', class: 'ml8' },
-            { prop: 'xAxis.splitLine.lineStyle.type', options: ['solid', 'dash'], displayValue: 'solid' },
+          { is: 'div', class: 'mb4' },
+          { is: 'ElFormRender', model: option.xAxis.splitLine, size: 'small', children: [
+            enable(option.xAxis.splitLine, 'split-line', 'show', false, [
+              { is: 'div', class: '[&>*]:mb8', style: 'display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 8px', children: [
+                number(['size', 'lineStyle.width'], { displayValue: 1, el: { max: 5, min: 0 } }),
+                opts(['type', 'lineStyle.type'], LINE_TYPES),
+                color(['color', 'lineStyle.color'], { el: { size: 'small' } }),
+              ] },
+            ]),
+          ] },
+          { is: 'div', class: 'mb4' },
+          { is: 'ElFormRender', model: option.xAxis.axisTick, size: 'small', children: [
+            enable(option.xAxis.axisTick, 'tick', 'show', true, [
+              { is: 'div', class: '[&>*]:mb8', style: 'display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px', children: [
+                number(['len', 'length'], { displayValue: 5, el: { max: 30, min: 0 } }),
+                number(['size', 'lineStyle.width'], { displayValue: 1, el: { max: 5, min: 0 } }),
+                opts(['type', 'lineStyle.type'], LINE_TYPES),
+                color(['color', 'lineStyle.color'], { el: { size: 'small' } }),
+              ] },
+            ]),
           ] },
         ] },
         { is: 'ElCollapseItem', title: 'YAxis', children: [
-          { is: 'p', class: 'flex aic mb8', children: ['axis-label', { prop: 'yAxis.axisLabel.show', type: 'switch', displayValue: true, class: 'mla mb0' }] },
-          { is: 'div', class: 'text-12', style: 'display: grid; grid-template-columns: 130px 1fr', children: [
-            { prop: 'yAxis.axisLabel.rotate', type: 'slider', defaultValue: 0, el: { min: -90, max: 90, formatTooltip: v => `rotate: ${v}°` } },
-            { prop: 'yAxis.axisLabel.color', type: 'color-picker' },
-            { prop: 'yAxis.axisLabel.margin', type: 'input-number', defaultValue: 8 }, 'gap',
-            { prop: 'yAxis.axisLabel.fontSize', type: 'input-number', displayValue: 12 }, 'size',
+          { is: 'ElFormRender', model: option.yAxis.axisLabel, size: 'small', children: [
+            enable(option.yAxis.axisLabel, 'label', 'show', true, [
+              { is: 'div', class: '[&>*]:mb8', style: 'display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 8px', children: [
+                number(['size', 'fontSize'], { displayValue: 12 }),
+                number(['offset', 'margin'], { defaultValue: 8 }),
+                color(['color', 'color'], { el: { size: 'small' } }),
+                number(['w', 'width']),
+                number(['h', 'height']),
+                number(['rotate', 'rotate'], { el: { min: -90, max: 90 } }),
+                opts(['style', 'fontStyle'], FONT_STYLES),
+                opts(['weight', 'fontWeight'], FONT_WEIGHTS),
+                opts(['family', 'fontFamily'], FONT_FAMILYS),
+                opts(['overflow', 'overflow'], FONT_OVERFLOWS),
+                { lp: ['format', 'formatter'], displayValue: '{value}' },
+              ] },
+            ]),
           ] },
-          { is: 'p', class: 'flex aic mb8', children: ['axis-line', { prop: 'yAxis.axisLine.show', type: 'switch', class: 'mla mb0' }] },
-          { is: 'div', class: 'flex aic', children: [
-            { prop: 'yAxis.axisLine.lineStyle.width', type: 'input-number', displayValue: 1, el: { max: 5 } },
-            { prop: 'yAxis.axisLine.lineStyle.color', type: 'color-picker', class: 'ml8' },
-            { prop: 'yAxis.axisLine.lineStyle.type', options: ['solid', 'dash'], displayValue: 'solid', class: 'ml8' },
+          { is: 'div', class: 'mb4' },
+          { is: 'ElFormRender', model: option.yAxis.axisLine, size: 'small', children: [
+            enable(option.yAxis.axisLine, 'line', 'show', false, [
+              { is: 'div', class: '[&>*]:mb8', style: 'display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 8px', children: [
+                number(['size', 'lineStyle.width'], { displayValue: 1, el: { max: 5, min: 0 } }),
+                opts(['type', 'lineStyle.type'], LINE_TYPES),
+                color(['color', 'lineStyle.color'], { el: { size: 'small' } }),
+              ] },
+            ]),
           ] },
-          { is: 'p', class: 'flex aic mb8', children: ['split-line', { prop: 'yAxis.splitLine.show', type: 'switch', defaultValue: true, class: 'mla mb0' }] },
-          { is: 'div', class: 'flex aic', children: [
-            { prop: 'yAxis.splitLine.lineStyle.width', type: 'input-number', displayValue: 1, el: { max: 5 } },
-            { prop: 'yAxis.splitLine.lineStyle.color', type: 'color-picker', class: 'ml8' },
-            { prop: 'yAxis.splitLine.lineStyle.type', options: ['solid', 'dash'], displayValue: 'solid' },
+          { is: 'div', class: 'mb4' },
+          { is: 'ElFormRender', model: option.yAxis.splitLine, size: 'small', children: [
+            enable(option.yAxis.splitLine, 'split-line', 'show', true, [
+              { is: 'div', class: '[&>*]:mb8', style: 'display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 8px', children: [
+                number(['size', 'lineStyle.width'], { displayValue: 1, el: { max: 5, min: 0 } }),
+                opts(['type', 'lineStyle.type'], LINE_TYPES),
+                color(['color', 'lineStyle.color'], { el: { size: 'small' } }),
+              ] },
+            ]),
           ] },
-        ] },
-        { is: 'ElCollapseItem', title: 'Tooltip', children: [
-          { is: 'ElFormRender', model: option.tooltip, size: 'small', children: [
-            { is: 'div', class: 'flex aic', children: [
-              { prop: 'textStyle.fontSize', type: 'input-number', displayValue: 14 },
-              { prop: 'textStyle.color', type: 'color-picker', class: 'ml8' },
-            ] },
-            { prop: 'axisPointer.type', type: 'radio-group', options: ['line', 'shadow', 'cross'], displayValue: 'line' },
-            { is: 'div', class: 'flex aic', $: { condition: !option.tooltip.axisPointer?.type }, children: [
-              { prop: 'axisPointer.lineStyle.width', type: 'input-number', displayValue: 1 },
-              { prop: 'axisPointer.lineStyle.color', type: 'color-picker', class: 'ml8' },
-              { prop: 'axisPointer.lineStyle.type', options: ['solid', 'dashed', 'dotted'], displayValue: 'solid', class: 'ml8' },
-            ] },
-            { is: 'div', class: 'flex aic', $: { condition: option.tooltip.axisPointer?.type == 'shadow' }, children: [
-              { prop: 'axisPointer.shadowStyle.color', type: 'color-picker' },
-            ] },
-            { is: 'div', class: 'flex aic', $: { condition: option.tooltip.axisPointer?.type == 'cross' }, children: [
-              { prop: 'axisPointer.crossStyle.width', type: 'input-number', displayValue: 1 },
-              { prop: 'axisPointer.crossStyle.color', type: 'color-picker', class: 'ml8' },
-              { prop: 'axisPointer.crossStyle.type', options: ['solid', 'dashed', 'dotted'], displayValue: 'solid', class: 'ml8' },
-            ] },
-          ] }
+          { is: 'div', class: 'mb4' },
+          { is: 'ElFormRender', model: option.yAxis.axisTick, size: 'small', children: [
+            enable(option.yAxis.axisTick, 'tick', 'show', false, [
+              { is: 'div', class: '[&>*]:mb8', style: 'display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px', children: [
+                number(['len', 'length'], { displayValue: 5, el: { max: 30, min: 0 } }),
+                number(['size', 'lineStyle.width'], { displayValue: 1, el: { max: 5, min: 0 } }),
+                opts(['type', 'lineStyle.type'], LINE_TYPES),
+                color(['color', 'lineStyle.color'], { el: { size: 'small' } }),
+              ] },
+            ]),
+          ] },
         ] },
         { is: 'ElCollapseItem', title: 'Legend', children: [
           { is: 'ElFormRender', model: option.legend, size: 'small', children: [
@@ -179,6 +237,8 @@ export default {
     style: { height: '300px', width: '400px' },
     option: {
       legend: {},
+      xAxis: { axisLabel: {  }, axisLine: {  }, splitLine: {  }, axisTick: {  } },
+      yAxis: { axisLabel: {  }, axisLine: {  }, splitLine: {  }, axisTick: {  } },
       tooltip:{ trigger: 'axis' },
       toolbox: {},
       series: [{ label: { show: true } }]

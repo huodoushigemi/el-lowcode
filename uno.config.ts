@@ -21,7 +21,8 @@ export default defineConfig({
     'flex!',
     'grid', 'grid-cols-3', 'grid-cols-4',
     'text-12',
-    '-ml4', 'ml4', 'ml8', 'mla', 'mb0', 'mb4', 'mb8'
+    '-ml4', 'ml4', 'ml8', 'mla', 'mb0', 'mb4', 'mb8',
+    '[&>*]:mb8',
   ],
   shortcuts: {
     'bg-hover': 'hover:bg-[--el-fill-color-light] active:bg-[--el-fill-color-dark]! rd-6 [&.is-active]:bg-[--el-fill-color-light]',
