@@ -123,9 +123,11 @@ import { vue2esm } from './vue2esm'
 import { PageCtx } from '../plugins/web/page'
 import { plugins, builtins } from './config'
 import OptionsInput from '../components/options-input'
+import InputNumber from '../components/InputNumber.vue'
 
-const app = getCurrentInstance()?.appContext.app
-app?.use(OptionsInput)
+const app = getCurrentInstance()!.appContext.app
+app.use(OptionsInput)
+app.component('InputNumber', InputNumber)
 
 // 根节点
 const root = useLocalStorage(

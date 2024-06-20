@@ -42,6 +42,7 @@ import Scriptable from './components/scriptable.vue'
 import Input from './components/input.vue'
 import MonacoEditorDialog from './components/MonacoEditorDialog.vue'
 import LcSlider from './components/LcSlider.vue'
+import BoxModel from './components/style/BoxModel.vue'
 
 import MSLBold from '~icons/material-symbols-light/format-bold'
 import MSLItalic from '~icons/material-symbols-light/format-italic'
@@ -97,17 +98,18 @@ const config = computed(() => {
 const _items = computed(() => unFn(config.value?.props, model.value)?.filter(e => e).map(_normalizeItem))
 
 const styles = [
-  { lp: 'xxx', el: { is: LcSlider, label: '大小' } },
+  { is: 'div', class: 'grid grid-cols-3', children: [
+    { lp: ['W', 'style.width'], el: { is: 'InputNumber' } },
+    { lp: ['H', 'style.height'], el: { is: 'InputNumber' } },
+    // { is: MSLClose, class: 'bg-hover w28 h28 ml4', onClick: () => Object.assign(model.value.style || {}, { width: undefined, height: undefined }) }
+  ] },
+  { is: 'div', class: 'p20 pb1 bg-#fff/10 mb12', children: [
+    { prop: 'style', script: false, el: { is: BoxModel } }
+  ] },
   { lp: ['position', 'style.position'], type: 'select', options: ['static', 'relative', 'absolute', 'fixed', 'sticky'], displayValue: 'static', el: { placeholder: 'static' } },
   { lp: ['layout', 'style.display'], type: 'radio-group', options: ['inline', 'block', 'inline-block', 'flex'] },
   // { lp: ['width', 'style.width'], type: 'input-number', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined },
   // { lp: ['height', 'style.height'], type: 'input-number', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined },
-  { is: 'h4', class: 'flex aic mb8', children: 'Size' },
-  { is: 'div', class: 'flex aic mb18', children: [
-    { prop: 'style.width', type: 'input-number', script: false, class: 'mb0', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined, el: { class: 'w90' } },
-    { prop: 'style.height', type: 'input-number', script: false, class: 'ml8 mb0', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined, el: { class: 'w90' } },
-    { is: MSLClose, class: 'bg-hover w28 h28 ml4', onClick: () => Object.assign(model.value.style || {}, { width: undefined, height: undefined }) }
-  ] },
   { is: 'h4', class: 'mb8', children: 'Background' },
   { prop: 'style.backgroundColor', type: 'color-picker', script: false },
   { lp: ['opacity', 'style.opacity'], type: 'slider', displayValue: 1, el: { min: 0, max: 1, step: .01, formatTooltip: val => (val * 100).toFixed(2) } },
