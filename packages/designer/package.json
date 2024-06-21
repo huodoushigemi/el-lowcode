@@ -40,7 +40,7 @@
   },
   "peerDependencies": {
     "@vue/compiler-sfc": "^3.2.0",
-    "element-plus": "^2.3.8",
+    "element-plus": "^2.7.0",
     "vue": "^3.2.0"
   }
 }

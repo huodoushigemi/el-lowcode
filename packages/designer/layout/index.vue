@@ -124,10 +124,12 @@ import { PageCtx } from '../plugins/web/page'
 import { plugins, builtins } from './config'
 import OptionsInput from '../components/options-input'
 import InputNumber from '../components/InputNumber.vue'
+import InputNumbers from '../components/InputNumbers.vue'
 
 const app = getCurrentInstance()!.appContext.app
 app.use(OptionsInput)
 app.component('InputNumber', InputNumber)
+app.component('InputNumbers', InputNumbers)
 
 // 根节点
 const root = useLocalStorage(
@@ -401,6 +403,7 @@ function scanFiles(entry: FileSystemEntry | null, list: FileSystemFileEntry[] = 
     display: flex;
     flex-direction: column;
     height: 100%;
+    overflow: auto;
   }
   .el-tabs__nav-wrap {
     margin-right: 0;

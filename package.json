@@ -29,7 +29,7 @@
     "designer": "^1.0.2",
     "el-form-render": "workspace:*",
     "el-lowcode": "workspace:*",
-    "element-plus": "^2.3.14",
+    "element-plus": "^2.7.0",
     "infinite-viewer": "^0.29.1",
     "qs": "^6.11.2",
     "uuid": "^9.0.1",

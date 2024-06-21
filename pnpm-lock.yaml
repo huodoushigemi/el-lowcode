@@ -54,7 +54,7 @@ importers:
         specifier: workspace:*
         version: link:packages/el-lowcode
       element-plus:
-        specifier: ^2.3.14
+        specifier: ^2.7.0
         version: 2.7.3(vue@3.4.27(typescript@5.4.5))
       infinite-viewer:
         specifier: ^0.29.1
@@ -292,7 +292,7 @@ importers:
         specifier: ^0.0.17
         version: 0.0.17(element-plus@2.7.3(vue@3.4.27(typescript@5.4.5)))(vue@3.4.27(typescript@5.4.5))
       element-plus:
-        specifier: ^2.3.8
+        specifier: ^2.7.0
         version: 2.7.3(vue@3.4.27(typescript@5.4.5))
       github-markdown-css:
         specifier: ^5.5.1

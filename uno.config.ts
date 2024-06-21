@@ -19,9 +19,10 @@ export default defineConfig({
   safelist: [
     'inline-block',
     'flex!',
-    'grid', 'grid-cols-3', 'grid-cols-4',
+    'grid', 'grid-cols-2', 'grid-cols-3', 'grid-cols-4',
     'text-12',
-    '-ml4', 'ml4', 'ml8', 'mla', 'mb0', 'mb4', 'mb8',
+    '-ml4', 'ml4', 'ml8', 'mla', 'mb0', 'mb4', 'mb8', 'my8',
+    'gap-4', 'gap-8', 'gap-x-4', 'gap-x-8', 'gap-y-4', 'gap-y-8',
     '[&>*]:mb8',
   ],
   shortcuts: {

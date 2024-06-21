@@ -16,6 +16,9 @@ export default defineConfig(async () => ({
   optimizeDeps: {
     exclude: ['vue'],
   },
+  server: {
+    port: 5174
+  },
   build: {
     outDir: 'docs/dest/designer',
     emptyOutDir: false,

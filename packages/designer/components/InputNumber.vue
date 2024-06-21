@@ -82,6 +82,11 @@ watchEffect(() => {
   if (count.value) document.body.classList.add('cursor-w-resize')
   else document.body.classList.remove('cursor-w-resize')
 })
+
+// defineExpose({
+//   focus: () => inputRef.focus(),
+//   blur: () => inputRef.blur(),
+// })
 </script>
 
 <style lang="scss">
