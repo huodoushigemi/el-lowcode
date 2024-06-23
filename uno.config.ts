@@ -24,6 +24,7 @@ export default defineConfig({
     '-ml4', 'ml4', 'ml8', 'mla', 'mb0', 'mb4', 'mb8', 'my8',
     'gap-4', 'gap-8', 'gap-x-4', 'gap-x-8', 'gap-y-4', 'gap-y-8',
     '[&>*]:mb8',
+    'cursor-cell'
   ],
   shortcuts: {
     'bg-hover': 'hover:bg-[--el-fill-color-light] active:bg-[--el-fill-color-dark]! rd-6 [&.is-active]:bg-[--el-fill-color-light]',

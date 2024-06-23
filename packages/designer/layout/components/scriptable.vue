@@ -1,5 +1,5 @@
 <template>
-  <el-form-item-render v-bind="{ ...$props, ...$attrs }">
+  <el-form-item-render class="[&>.el-form-item\_\_label]:truncate" v-bind="{ ...$props, ...$attrs }">
 
     <template v-if="_scriptable" #label="{ label }">
       {{ label }}
@@ -83,5 +83,9 @@ function onSave() {
 .el-form-item {
   &:hover .exp-flag { display: unset; }
   .exp-flag { display: none; }
+}
+
+.no-scriptable {
+  .exp-flag { display: none !important; }
 }
 </style>

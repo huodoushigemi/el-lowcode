@@ -65,26 +65,26 @@ const editModel = computed({
   set: v => Object.assign(model.value, mapValues(model.value, () => void 0), pick(model.value, internalProps), JSON.parse(v))
 })
 
-const _normalizeItem = (item) => {
-  if (isObject(item) && !item.is) {
-    item = normalizeItem(item)
-    item.el ??= {}
-    if (item.type == 'radio-group') item.el.type ??= 'button'
-    if (item.type == 'color-picker') {
-      item.el.size ??= 'default'
-      item.el.showAlpha ??= true
-      item.displayValue ??= '#000000ff'
-      item.set ??= v => v ?? undefined
+const Render = createRender({
+  defaultIs: Scriptable,
+  processProps(props) {
+    if (!props.is) {
+      props = normalizeItem(props)
+      props.el ??= {}
+      if (props.type == 'radio-group') props.el.type ??= 'button'
+      if (props.type == 'color-picker') {
+        props.el.size ??= 'default'
+        props.el.showAlpha ??= true
+        props.displayValue ??= '#000000ff'
+        props.set ??= v => v ?? undefined
+      }
+      props.el.clearable ??= true
+      props.el.placeholder ??= ''
+      if (isOn(props.prop)) props.script ??= true
     }
-    item.el.clearable ??= true
-    item.el.placeholder ??= ''
-    if (isOn(item.prop)) item.script ??= true
+    return props
   }
-  if (isArray(item.children)) item.children = item.children.filter(e => e).map(_normalizeItem)
-  return item
-}
-
-const Render = createRender({ defaultIs: Scriptable })
+})
 
 const designerCtx = inject(designerCtxKey)
 
@@ -95,7 +95,7 @@ const config = computed(() => {
   return sloveConfig(model.value)
 })
 
-const _items = computed(() => unFn(config.value?.props, model.value)?.filter(e => e).map(_normalizeItem))
+const _items = computed(() => unFn(config.value?.props, model.value)?.filter(e => e))
 
 const styles = [
   { is: 'div', class: 'grid grid-cols-3', children: [
@@ -132,7 +132,7 @@ const styles = [
   { lp: ['border', 'style.border'], el: { placeholder: '0px solid #00' } },
   { lp: ['rounded', 'style.borderRadius'], type: 'slider', get: v => parseInt(v), set: v => v + 'px' },
   { lp: 'style', get: val => stringifyStyle(val).replace(/;/g, ';\n'), set: val => parseStringStyle(val), el: { is: Input, type: 'textarea', placeholder: 'font-size: inherit;\ncolor: inherit;', autosize: { minRows: 4, maxRows: 12 } } },
-].map(_normalizeItem)
+]
 
 const commons = [
   { lp: 'id' },
@@ -148,7 +148,7 @@ const commons = [
     { lp: 'onVnodeMounted' },
     { lp: 'onVnodeBeforeMount' },
   ] }
-].map(_normalizeItem)
+]
 
 function add2absolute(node) {
   const { root } = designerCtx
@@ -178,11 +178,18 @@ function add2absolute(node) {
 :deep(.el-slider) {
   margin: 0 10px;
 }
-:deep(.el-tabs__content) {
-  padding: 8px;
+
+.tabs {
+  :deep(> .el-tabs__content) {
+    padding: 8px;
+  }
 }
 :deep(.el-collapse) {
   --el-transition-duration: 100ms;
+
+  > .enable > .el-collapse-item__header {
+    > .el-collapse-item__arrow { display: none; }
+  }
 }
 
 .tabs {
