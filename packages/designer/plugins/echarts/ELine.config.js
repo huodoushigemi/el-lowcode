@@ -49,7 +49,7 @@ export default {
       legend: {},
       xAxis: {},
       yAxis: {},
-      tooltip:{ trigger: 'axis' },
+      tooltip:{ show: true, trigger: 'axis' },
       toolbox: {},
       series: [{ label: { show: true } }]
     },

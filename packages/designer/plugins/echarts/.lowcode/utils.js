@@ -19,6 +19,8 @@ export const genDisplayValue = (model, prop, displayValue) => [
   v => set(model, prop, v == displayValue ? void 0 : v)
 ]
 
+export const displayValue = (v1) => (v) => v == null ? v1 : v
+
 const CollapseItem = ({ title, oper, open }, { slots }) => (
   h('details', { class: 'enable', open, style: 'padding: 1px 12px; background: var(--el-fill-color-light);' }, [
     h('summary', { class: 'flex aic cursor-cell' }, [

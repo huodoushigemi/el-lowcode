@@ -1,9 +1,9 @@
-import { enable3, num, color, opts, genDisplayValue, FONT_STYLES, FONT_WEIGHTS, FONT_FAMILYS, LINE_TYPES, FONT_OVERFLOWS, lineStyleItems } from './utils'
+import { enable3, num, color, opts, genDisplayValue, FONT_STYLES, FONT_WEIGHTS, FONT_FAMILYS, LINE_TYPES, FONT_OVERFLOWS, lineStyleItems, displayValue } from './utils'
 
 export const axisLabel = model => enable3(model, 'label', genDisplayValue(model, 'axisLabel.show', true), () => [
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
     num(['size', 'axisLabel.fontSize'], { displayValue: 12 }),
-    num(['offset', 'axisLabel.margin'], { defaultValue: 8 }),
+    num(['offset', 'axisLabel.margin'], { get: displayValue(8) }),
     color(['color', 'axisLabel.color'], { el: { size: 'small' } }),
     opts(['style', 'axisLabel.fontStyle'], FONT_STYLES),
     opts(['weight', 'axisLabel.fontWeight'], FONT_WEIGHTS),
