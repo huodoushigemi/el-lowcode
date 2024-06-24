@@ -46,11 +46,11 @@ export default {
     fields: `{{{ x: 'x', y: 'y' }}}`,
     style: { height: '300px', width: '400px' },
     option: {
-      legend: { textStyle: {} },
-      xAxis: { axisLabel: {}, axisLine: {}, splitLine: {}, axisTick: {} },
-      yAxis: { axisLabel: {}, axisLine: {}, splitLine: {}, axisTick: {} },
+      legend: {},
+      xAxis: {},
+      yAxis: {},
       tooltip:{ trigger: 'axis' },
-      toolbox: { textStyle: {} },
+      toolbox: {},
       series: [{ label: { show: true } }]
     },
   })
