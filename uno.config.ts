@@ -1,6 +1,8 @@
 import { defineConfig, presetAttributify, presetUno, presetIcons, transformerVariantGroup } from 'unocss'
 import presetRemToPx from '@unocss/preset-rem-to-px'
 
+const gaps = [-4, 0, 4, 8, 'a']
+
 export default defineConfig({
   content: {
     pipeline: {
@@ -21,8 +23,15 @@ export default defineConfig({
     'flex!',
     'grid', 'grid-cols-2', 'grid-cols-3', 'grid-cols-4',
     'text-12',
-    '-ml4', 'ml4', 'ml8', 'mla', 'mb0', 'mb4', 'mb8', 'my8',
-    'gap-4', 'gap-8', 'gap-x-4', 'gap-x-8', 'gap-y-4', 'gap-y-8',
+    ...gaps.map(e => `mt${e}`),
+    ...gaps.map(e => `mr${e}`),
+    ...gaps.map(e => `mb${e}`),
+    ...gaps.map(e => `ml${e}`),
+    ...gaps.map(e => `mx${e}`),
+    ...gaps.map(e => `my${e}`),
+    ...gaps.map(e => `gap-${e}`),
+    ...gaps.map(e => `gap-x-${e}`),
+    ...gaps.map(e => `gap-y-${e}`),
     '[&>*]:mb8',
     'cursor-cell'
   ],

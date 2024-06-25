@@ -35,7 +35,7 @@ const wresize = computed(() => (control.value && isMouseenter.value) || controlM
 
 const unit = ref('')
 watch(() => props.modelValue, v => {
-  unit.value = v == null ? props.unit : isString(v) ? v.match(/\d*([a-z%]*)$/)[1] : ''
+  unit.value = v == null ? props.unit : isString(v) ? v.match(unitReg)[1] : ''
 }, { immediate: true })
 
 const _value = computed({
@@ -76,6 +76,7 @@ watch(controlMousedown, v => {
 </script>
 
 <script>
+const unitReg = /\d*([a-z%]*)$/
 const count = ref(0)
 
 watchEffect(() => {

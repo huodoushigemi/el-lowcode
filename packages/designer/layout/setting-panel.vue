@@ -66,6 +66,7 @@ const editModel = computed({
 })
 
 const Render = createRender({
+  defaultIs: 'ElFormItemRender',
   defaultIs: Scriptable,
   processProps(props) {
     if (!props.is) {
@@ -95,7 +96,7 @@ const config = computed(() => {
   return sloveConfig(model.value)
 })
 
-const _items = computed(() => unFn(config.value?.props, model.value)?.filter(e => e))
+const _items = computed(() => unFn(config.value?.props, model.value))
 
 const styles = [
   { is: 'div', class: 'grid grid-cols-3', children: [
@@ -180,14 +181,22 @@ function add2absolute(node) {
 }
 
 .tabs {
+  --el-collapse-border-color: var(--el-border-color-lighter);
+  --el-collapse-header-height: 36px;
+  --el-collapse-header-bg-color: var(--el-fill-color-blank);
+  --el-collapse-header-text-color: var(--el-text-color-primary);
+  --el-collapse-header-font-size: 13px;
+  --el-collapse-content-bg-color: var(--el-fill-color-blank);
+  --el-collapse-content-font-size: 13px;
+  --el-collapse-content-text-color: var(--el-text-color-primary);
+
   :deep(> .el-tabs__content) {
     padding: 8px;
   }
 }
-:deep(.el-collapse) {
-  --el-transition-duration: 100ms;
 
-  > .enable > .el-collapse-item__header {
+:deep(.enable) {
+  > .el-collapse-item__header {
     > .el-collapse-item__arrow { display: none; }
   }
 }

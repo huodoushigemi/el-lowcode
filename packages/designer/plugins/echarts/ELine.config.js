@@ -1,5 +1,6 @@
 import { serieLine } from './.lowcode/series'
 import { grid, legend, toolbox, tooltip, xAxis, yAxis } from './.lowcode/option'
+import { enable2 } from './.lowcode/utils'
 
 export default {
   is: 'ELine',
@@ -9,21 +10,19 @@ export default {
     { lp: 'fields', script: true },
 
     { is: 'ElFormRender', model: option, size: 'small', class: 'no-scriptable', children: [
-      { is: 'ElCollapse', children: [
-        grid(option),
-        xAxis(option),
-        yAxis(option),
-        legend(option),
-        toolbox(option),
-        tooltip(option),
-        { is: 'ElCollapseItem', title: 'Series', children: [
-          { is: 'ElTabs', children: [
-            { is: 'ElTabPane', label: '1', lazy: true, children: [
-              serieLine(option.series[0])
-            ] },
+      grid(option),
+      xAxis(option),
+      yAxis(option),
+      legend(option),
+      toolbox(option),
+      tooltip(option),
+      enable2(option, 'Series', void 0, () => [
+        { is: 'ElTabs', children: [
+          { is: 'ElTabPane', label: '1', lazy: true, children: [
+            serieLine(option.series[0])
           ] },
         ] },
-      ] },
+      ])
     ] },
 
     { is: 'ElDivider' },

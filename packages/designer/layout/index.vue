@@ -125,11 +125,13 @@ import { plugins, builtins } from './config'
 import OptionsInput from '../components/options-input'
 import InputNumber from '../components/InputNumber.vue'
 import InputNumbers from '../components/InputNumbers.vue'
+import Collapse from '../components/Collapse.vue'
 
 const app = getCurrentInstance()!.appContext.app
 app.use(OptionsInput)
 app.component('InputNumber', InputNumber)
 app.component('InputNumbers', InputNumbers)
+app.component('Collapse', Collapse)
 
 // 根节点
 const root = useLocalStorage(

@@ -22,19 +22,21 @@ type CreateRender = {
 export function createRender({ defaultIs = 'div', processProps = (props: Props) => props }: CreateRender) {
   return function Render(props: Props) {
     const { is, $, children, ...attrs } = processProps(props)
-    const childs = unFn(children)
     return (
       props.$?.condition == null || !!$?.condition
         ? h(
             // @ts-ignore
             resolveDynamicComponent(is || defaultIs),
             attrs,
-            // render children
             {
-              default: () =>
-                isArray(childs) ? childs.map(e => isPlainObject(e) ? Render(e) : e) :
-                isPlainObject(childs) ? Render(childs) :
-                childs
+              default: () => {
+                const childs = unFn(children)
+                return (
+                  isArray(childs) ? childs.map(e => isPlainObject(e) ? Render(e) : e) :
+                  isPlainObject(childs) ? Render(childs) :
+                  childs
+                )
+              }
             }
           )
         : null

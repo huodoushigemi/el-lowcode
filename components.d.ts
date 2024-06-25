@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     'IBytesize:github': typeof import('~icons/bytesize/github')['default']
+    'IEp:arrowUp': typeof import('~icons/ep/arrow-up')['default']
     'IEp:eleme': typeof import('~icons/ep/eleme')['default']
     'IEp:plus': typeof import('~icons/ep/plus')['default']
     'IMaterialSymbolsLight:code': typeof import('~icons/material-symbols-light/code')['default']

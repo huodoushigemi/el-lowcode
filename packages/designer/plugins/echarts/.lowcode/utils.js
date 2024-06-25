@@ -14,6 +14,27 @@ const CollapseItem1 = ({ title, oper }, { slots }) => (
   })
 )
 
+const CollapseItem2 = ({ title, oper }, { slots }) => (
+  h(resolveComponent('ElCollapseItem'), { class: 'enable' }, {
+    title: () => [title, oper && h(resolveComponent('ElSwitch'), { modelValue: oper[0](), 'onUpdate:modelValue': oper[1], class: 'mla', onClick: e => e.stopPropagation() })],
+    default: slots.default
+  })
+)
+
+export const Collapse1 = ({ title, oper }, { slots }) => (
+  h(resolveComponent('Collapse'), { title, class: oper && 'enable' }, {
+    extra: () => oper && h(resolveComponent('ElSwitch'), { modelValue: oper[0](), 'onUpdate:modelValue': oper[1], class: 'mx8', onClick: e => e.stopPropagation() }),
+    default: slots.default
+  })
+)
+
+export const Collapse2 = ({ title, oper }, { slots }) => (
+  h(resolveComponent('Collapse'), { title, class: oper && 'enable', style: 'padding: 0 8px; background: var(--el-fill-color-light); --el-collapse-header-height: 28px' }, {
+    extra: () => oper && h(resolveComponent('ElSwitch'), { modelValue: oper[0](), 'onUpdate:modelValue': oper[1], onClick: e => e.stopPropagation() }),
+    default: slots.default
+  })
+)
+
 export const genDisplayValue = (model, prop, displayValue) => [
   () => get(model, prop) == null ? displayValue : get(model, prop),
   v => set(model, prop, v == displayValue ? void 0 : v)
@@ -48,11 +69,11 @@ export const enable = (model, label, prop, defaultValue, children, ) => ({ is: '
   ...(get(model, prop.prop ?? prop) ? children : [])
 ] })
 
-export const enable2 = (model, title, oper, children) => ({ is: CollapseItem1, title, oper, children: () => [
+export const enable2 = (model, title, oper, children) => ({ is: Collapse1, title, oper, children: () => [
   { is: 'ElFormRender', model, size: 'small', children }
 ] })
 
-export const enable3 = (model, title, oper, children) => ({ is: CollapseItem, title, oper, children: () => [
+export const enable3 = (model, title, oper, children) => ({ is: Collapse2, title, oper, children: () => [
   { is: 'ElFormRender', model, size: 'small', children }
 ] })
 
