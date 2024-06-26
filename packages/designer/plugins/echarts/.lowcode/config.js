@@ -1,3 +1,4 @@
 export default [
-  (await import('../ELine.config.js')).default
+  (await import('../ELine.config.js')).default,
+  (await import('../EBar.config.js')).default,
 ]

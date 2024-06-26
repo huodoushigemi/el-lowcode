@@ -1,4 +1,4 @@
-import { enable3, num, color, opts, genDisplayValue, FONT_STYLES, FONT_WEIGHTS, FONT_FAMILYS, LINE_TYPES, FONT_OVERFLOWS, lineStyleItems, displayValue } from './utils'
+import { enable3, num, color, opts, genDisplayValue, FONT_STYLES, FONT_WEIGHTS, FONT_FAMILYS, LINE_TYPES, FONT_OVERFLOWS, lineStyleItems, displayValue } from '../utils'
 
 export const axisLabel = model => enable3(model, 'label', genDisplayValue(model, 'axisLabel.show', true), () => [
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [

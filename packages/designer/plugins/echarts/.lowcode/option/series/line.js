@@ -1,13 +1,15 @@
-import { bool, color, details, enable, enable2, enable3, genDisplayValue, lineStyleItems, num, segm, textStyleItems } from '../utils'
+import { bool, color, details, enable, enable2, enable3, genDisplayValue, lineStyleItems, num, segm, textStyleItems } from '../../utils'
 
 const _options = (arr) => (arr.map(e => ({ label: e[0], value: e[1] })))
 
 export const serieLine = (model) => ({ is: 'ElFormRender', model, size: 'small', children: [
-  // bool('stack')
   { lp: 'name', style: 'margin-bottom: 8px' },
+  
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', size: 'small', children: [
     ...lineStyleItems(['type', 'width', 'color', 'shadowBlur', 'shadowOffset', 'shadowColor'], 'lineStyle'),
   ] },
+
+  { is: 'div', class: 'mb4' },
 
   enable3(model, 'label', genDisplayValue(model, 'label.show', false), () => [
     { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', size: 'small', children: [
@@ -16,7 +18,7 @@ export const serieLine = (model) => ({ is: 'ElFormRender', model, size: 'small',
     ] },
   ]),
 
-  { is: 'div', class: 'mb8' },
+  { is: 'div', class: 'mb4' },
 
   enable3(model, 'symbol', [() => model.symbol != 'none', v => model.symbol = v ? 'emptyCircle' : 'none'], () => [
     segm(['', 'symbol'], _options([['⭕', 'emptyCircle'], ['🔴', 'circle'], ['🟥', 'rect'], ['🔺', 'triangle'], ['📍',  'pin']]), { displayValue: 'emptyCircle', style: 'margin-bottom: 8px' }),
@@ -26,7 +28,7 @@ export const serieLine = (model) => ({ is: 'ElFormRender', model, size: 'small',
     ] },
   ]),
 
-  { is: 'div', class: 'mb8' },
+  { is: 'div', class: 'mb4' },
 
   enable3(model, 'area', [() => !!model.areaStyle, v => model.areaStyle = v ? {} : void 0], () => [
     { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', size: 'small', children: [

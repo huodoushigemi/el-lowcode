@@ -1,4 +1,4 @@
-import { checks, color, enable2, enable3, genDisplayValue, lineStyleItems, num, opts, radios, segm, textStyleItems } from './utils'
+import { checks, color, enable2, enable3, genDisplayValue, lineStyleItems, num, opts, radios, segm, textStyleItems } from '../utils'
 import { axisLabel, axisLine, axisSplitLine, axisTick } from './axis'
 
 export * from './series'

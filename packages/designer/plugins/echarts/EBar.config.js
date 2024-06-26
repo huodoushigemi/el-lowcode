@@ -1,10 +1,10 @@
-import { serieLine } from './.lowcode/option/series'
+import { serieBar, serieLine } from './.lowcode/option/series'
 import { grid, legend, toolbox, tooltip, xAxis, yAxis } from './.lowcode/option'
 import { enable2 } from './.lowcode/utils'
 
 export default {
-  is: 'ELine',
-  label: '线型图',
+  is: 'EBar',
+  label: '柱状图',
   props: ({ option }) => [
     { lp: 'data', script: true },
     { lp: 'fields', script: true },
@@ -19,7 +19,7 @@ export default {
       enable2(option, 'Series', void 0, () => [
         { is: 'ElTabs', children: [
           { is: 'ElTabPane', label: '1', lazy: true, children: [
-            serieLine(option.series[0])
+            serieBar(option.series[0])
           ] },
         ] },
       ], true)
@@ -50,7 +50,7 @@ export default {
       yAxis: {},
       tooltip:{ show: true, trigger: 'axis' },
       toolbox: {},
-      series: [{ label: { show: true } }]
+      series: [{ type: 'bar', label: { show: true } }]
     },
   })
 }

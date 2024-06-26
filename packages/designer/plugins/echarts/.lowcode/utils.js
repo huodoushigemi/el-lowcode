@@ -7,22 +7,8 @@ export const FONT_FAMILYS = ['sans-serif', 'serif', 'monospace', 'Arial', 'Couri
 export const FONT_OVERFLOWS = ['none', 'truncate', 'break', 'breakAll']
 export const LINE_TYPES = ['solid', 'dashed', 'dotted']
 
-const CollapseItem1 = ({ title, oper }, { slots }) => (
-  h(resolveComponent('ElCollapseItem'), { class: 'enable' }, {
-    title: () => [title, oper && h(resolveComponent('ElSwitch'), { modelValue: oper[0](), 'onUpdate:modelValue': oper[1], class: 'mla', onClick: e => e.stopPropagation() })],
-    default: slots.default
-  })
-)
-
-const CollapseItem2 = ({ title, oper }, { slots }) => (
-  h(resolveComponent('ElCollapseItem'), { class: 'enable' }, {
-    title: () => [title, oper && h(resolveComponent('ElSwitch'), { modelValue: oper[0](), 'onUpdate:modelValue': oper[1], class: 'mla', onClick: e => e.stopPropagation() })],
-    default: slots.default
-  })
-)
-
-export const Collapse1 = ({ title, oper }, { slots }) => (
-  h(resolveComponent('Collapse'), { title, class: oper && 'enable' }, {
+export const Collapse1 = ({ title, oper, open }, { slots }) => (
+  h(resolveComponent('Collapse'), { title, class: oper && 'enable', defaultOpen: open }, {
     extra: () => oper && h(resolveComponent('ElSwitch'), { modelValue: oper[0](), 'onUpdate:modelValue': oper[1], class: 'mx8', onClick: e => e.stopPropagation() }),
     default: slots.default
   })
@@ -69,7 +55,7 @@ export const enable = (model, label, prop, defaultValue, children, ) => ({ is: '
   ...(get(model, prop.prop ?? prop) ? children : [])
 ] })
 
-export const enable2 = (model, title, oper, children) => ({ is: Collapse1, title, oper, children: () => [
+export const enable2 = (model, title, oper, children, open) => ({ is: Collapse1, title, oper, open, children: () => [
   { is: 'ElFormRender', model, size: 'small', children }
 ] })
 
@@ -78,9 +64,10 @@ export const enable3 = (model, title, oper, children) => ({ is: Collapse2, title
 ] })
 
 export const num = (lp, opt) => ({ lp, ...opt, el: { is: 'InputNumber', unit: null, min: 0, hideUnit: true, ...opt?.el } })
+export const nums = (lp, opt) => ({ lp, ...opt, el: { is: 'InputNumbers', unit: null, min: 0, hideUnit: true, ...opt?.el } })
 export const num1 = (prop, opt) => ({ prop, ...opt, el: { is: 'InputNumber', unit: null, hideUnit: true } })
 
-export const color = (lp, opt) => ({ lp, type: 'color-picker', ...opt })
+export const color = (lp, opt) => ({ lp, type: 'color-picker', ...opt, el: { size: 'small', ...opt?.el } })
 export const opts = (lp, options, opt) => ({ lp, type: 'select', options, ...opt })
 export const radios = (lp, options, opt) => ({ lp, type: 'radio-group', options, ...opt })
 export const segm = (lp, options, opt) => ({ lp, type: 'segmented', ...opt, el: { options, block: true, wfull: '', ...opt?.el } })

@@ -32,6 +32,7 @@ export default defineConfig({
     ...gaps.map(e => `gap-${e}`),
     ...gaps.map(e => `gap-x-${e}`),
     ...gaps.map(e => `gap-y-${e}`),
+    ...Array(4).fill(0).map((e, i) => `col-span-${i}`),
     '[&>*]:mb8',
     'cursor-cell'
   ],

@@ -104,7 +104,7 @@ const styles = [
     { lp: ['H', 'style.height'], el: { is: 'InputNumber' } },
     // { is: MSLClose, class: 'bg-hover w28 h28 ml4', onClick: () => Object.assign(model.value.style || {}, { width: undefined, height: undefined }) }
   ] },
-  { is: 'div', class: 'p20 pb1 bg-#fff/10 mb12', children: [
+  { is: 'div', class: 'p20 pb1 bg-gray/5 mb12', children: [
     { prop: 'style', script: false, el: { is: BoxModel } }
   ] },
   { lp: ['position', 'style.position'], type: 'select', options: ['static', 'relative', 'absolute', 'fixed', 'sticky'], displayValue: 'static', el: { placeholder: 'static' } },
@@ -198,6 +198,10 @@ function add2absolute(node) {
 :deep(.enable) {
   > .el-collapse-item__header {
     > .el-collapse-item__arrow { display: none; }
+  }
+
+  > .el-collapse-item__wrap > .el-collapse-item__content {
+    padding-bottom: 0;
   }
 }
 

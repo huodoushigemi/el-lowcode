@@ -1,5 +1,5 @@
 <template>
-  <div class="input-numbers wfull flex">
+  <div class="input-numbers wfull flex [&>.input-number]:mr--1">
     <InputNumber
       v-for="i in len"
       :modelValue="modelValue?.[i - 1]"
@@ -13,7 +13,6 @@
 <script setup>
 import { computed } from 'vue'
 import InputNumber from './InputNumber.vue'
-import { watchEffect } from 'vue';
 
 const props = defineProps({
   modelValue: Array,

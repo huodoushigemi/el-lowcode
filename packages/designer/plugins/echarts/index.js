@@ -1,7 +1,9 @@
-import Eline from './ELine.vue'
+import ELine from './ELine.vue'
+import EBar from './EBar.vue'
 
 export default {
   install(app) {
-    app.component(Eline.__name, Eline)
+    app.component(ELine.__name, ELine)
+    app.component(EBar.__name, EBar)
   }
 }
