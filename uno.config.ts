@@ -21,7 +21,7 @@ export default defineConfig({
   safelist: [
     'inline-block',
     'flex!',
-    'grid', 'grid-cols-2', 'grid-cols-3', 'grid-cols-4',
+    'grid',
     'text-12',
     ...gaps.map(e => `mt${e}`),
     ...gaps.map(e => `mr${e}`),
@@ -32,7 +32,8 @@ export default defineConfig({
     ...gaps.map(e => `gap-${e}`),
     ...gaps.map(e => `gap-x-${e}`),
     ...gaps.map(e => `gap-y-${e}`),
-    ...Array(4).fill(0).map((e, i) => `col-span-${i}`),
+    ...Array(4).fill(0).map((e, i) => `col-span-${i + 1}`),
+    ...Array(4).fill(0).map((e, i) => `grid-cols-${i + 1}`),
     '[&>*]:mb8',
     'cursor-cell'
   ],

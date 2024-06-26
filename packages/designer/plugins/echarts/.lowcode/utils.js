@@ -126,3 +126,13 @@ export const textStyleItems = (ks, prefix) => {
   }
   return Object.values(pick(props, ks))
 }
+
+export const borderStyleItems = (ks, prefix) => {
+  const n = p => [prefix, p].filter(e => e).join('.')
+  const props = {
+    borderType: opts(['border-type', n('borderType')], LINE_TYPES),
+    borderWidth: num(['border-width', n('borderWidth')], { el: { max: 10 } }),
+    borderColor: color(['border-color', n('borderColor')], { el: { size: 'small' } }),
+  }
+  return Object.values(pick(props, ks))
+}
