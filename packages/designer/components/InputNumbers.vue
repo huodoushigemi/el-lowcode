@@ -1,5 +1,5 @@
 <template>
-  <div class="input-numbers wfull flex [&>.input-number]:mr--1">
+  <div class="input-numbers wfull flex [&>.input-number+.input-number]:ml--1">
     <InputNumber
       v-for="i in len"
       :modelValue="modelValue?.[i - 1]"

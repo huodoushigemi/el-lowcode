@@ -227,6 +227,9 @@ provide(designerCtxKey, designerCtx)
 provide('designerCtx', designerCtx)
 defineExpose(designerCtx)
 
+console.log(window.designerCtx = designerCtx);
+
+
 let cloned: BoxProps
 function clone(e) {
   return cloned = parseAttrs(e)

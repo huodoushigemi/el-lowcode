@@ -1,12 +1,12 @@
 import { bool, color, details, enable, enable2, enable3, genDisplayValue, lineStyleItems, num, nums, opts, segm, textStyleItems, LINE_TYPES, shadowStyleItems, borderStyleItems } from '../../utils'
 
 export const seriePie  = (model) => ({ is: 'ElFormRender', model, size: 'small', children: [
-  { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
+  { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
     nums('radius', { get: () => [model.radius?.[0] || '0%', model.radius?.[1] || '75%'], set: v => [v[0] || '0%', v[1] || '75%'], el: { units: ['%'], hideUnit: false } }),
     nums(['angle °', ''], { get: () => [model.startAngle, model.endAngle], out: v => ({ startAngle: v[0], endAngle: v[1] }) }),
     num(['gap', 'padAngle']),
-    bool('rose-type'),
     num(['round', 'itemStyle.borderRadius']),
+    bool('rose-type'),
   ] },
 
   { is: 'div', class: 'mb4' },

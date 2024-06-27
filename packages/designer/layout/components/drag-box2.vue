@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, mergeProps, reactive, ref, watch } from 'vue'
+import { computed, inject, mergeProps, reactive, ref, watch, withCtx } from 'vue'
 import { isArray, isObject, normalizeClass } from '@vue/shared'
 import { unrefElement, useEventListener } from '@vueuse/core'
 import { useDraggable } from 'vue-draggable-plus'
@@ -64,9 +64,11 @@ const Render = createRender({
       }
     }
       
+    props = mergeProps(props, pick(ctx, ['ref']), ctx.attrs)
     props.children = _execExp(children)
+    props.key = props._id
 
-    return mergeProps(props, pick(ctx, ['ref']), ctx.attrs)
+    return props
   }
 })
 

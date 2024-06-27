@@ -33,7 +33,7 @@ export function createRender({ defaultIs = 'div', processProps = (props: Props) 
                 const childs = unFn(children)
                 return (
                   isArray(childs) ? childs.map(e => isPlainObject(e) ? Render(e) : e) :
-                  isPlainObject(childs) ? Render(childs) :
+                  // isPlainObject(childs) ? Render(childs) :
                   childs
                 )
               }
