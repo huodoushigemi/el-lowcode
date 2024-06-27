@@ -108,7 +108,7 @@ const styles = [
     { prop: 'style', script: false, el: { is: BoxModel } }
   ] },
   { lp: ['position', 'style.position'], type: 'select', options: ['static', 'relative', 'absolute', 'fixed', 'sticky'], displayValue: 'static', el: { placeholder: 'static' } },
-  { lp: ['layout', 'style.display'], type: 'radio-group', options: ['inline', 'block', 'inline-block', 'flex'] },
+  { lp: ['layout', 'style.display'], type: 'radio-group', options: ['inline', 'block', 'flex'] },
   // { lp: ['width', 'style.width'], type: 'input-number', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined },
   // { lp: ['height', 'style.height'], type: 'input-number', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined },
   { is: 'h4', class: 'mb8', children: 'Background' },

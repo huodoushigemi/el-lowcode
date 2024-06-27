@@ -50,7 +50,7 @@
     "@types/node": "^20.4.8",
     "@unocss/postcss": "0.54.1",
     "@unocss/preset-rem-to-px": "0.54.1",
-    "@vitejs/plugin-vue": "^4.3.4",
+    "@vitejs/plugin-vue": "^5.0.5",
     "@vitejs/plugin-vue-jsx": "^3.1.0",
     "@vue-macros/volar": "^0.14.3",
     "acorn": "^8.10.0",

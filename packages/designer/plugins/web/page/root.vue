@@ -54,7 +54,9 @@ watchEffect(() => {
 })
 
 // load plugin
-watch(() => props.plugins, async (urls) => {
+watch(() => props.plugins, async (urls, old) => {
+  // console.log('xxxxxx', urls, old);
+  
   try {
     loading.value = true
     await loadPlugins(urls)
