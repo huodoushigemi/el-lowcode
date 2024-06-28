@@ -9,7 +9,7 @@ defineRender(() => {
 </script>
 
 <script lang="ts">
-import { Ref, computed, inject, mergeProps, onMounted, onUpdated, reactive, ref, toRef, watch, withCtx } from 'vue'
+import { computed, inject, mergeProps, onMounted, onUpdated, reactive, ref, toRef, watch } from 'vue'
 import { isArray, isObject, normalizeClass } from '@vue/shared'
 import { unrefElement, useEventListener } from '@vueuse/core'
 import { useDraggable } from 'vue-draggable-plus'
@@ -68,7 +68,7 @@ const Render = createRender({
           // todo
         }
       }
-        
+
       props = mergeProps(props, pick(ctx, ['ref']), ctx.attrs)
       props.children = _execExp(children)
   
@@ -95,7 +95,7 @@ function setup(props: BoxProps, designer: DesignerCtx) {
     return unrefElement(boxRef.value || elRef.value)
   })
 
-  const sortable = useDraggable(box, toRef(props, 'children'), {
+  const sortable = useDraggable(box, props.children, {
     group: 'shared',
     animation: 150,
     draggable: '.drag',

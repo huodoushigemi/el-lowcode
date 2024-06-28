@@ -1,7 +1,7 @@
 import { defineConfig, presetAttributify, presetUno, presetIcons, transformerVariantGroup } from 'unocss'
 import presetRemToPx from '@unocss/preset-rem-to-px'
 
-const gaps = [-4, 0, 4, 8, 'a']
+const gaps = [-4, 0, 4, 8, 10, 12, 'a']
 
 export default defineConfig({
   content: {

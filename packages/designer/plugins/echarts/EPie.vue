@@ -1,5 +1,5 @@
 <template>
-  <VueEcharts ref="echarts" v-bind="$attrs" :option="_option" :update-options="{ notMerge: false }" />
+  <VueEcharts ref="echarts" v-bind="$attrs" :option="_option" />
 </template>
 
 <script setup>
@@ -31,8 +31,7 @@ const _option = computed(() => {
   return merge({}, props.option, {
     series: [
       {
-        // data: props.data?.map(item => ({ name: item[props.fields.x], value: item[props.fields.y] })) || []
-        data: [{ name: 111, value: 111 }]
+        data: props.data?.map(item => ({ name: item[props.fields.x], value: item[props.fields.y] })) || []
       }
     ]
   })

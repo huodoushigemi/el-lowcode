@@ -55,7 +55,7 @@ watchEffect(() => {
 
 // load plugin
 watch(() => props.plugins, async (urls, old) => {
-  // console.log('xxxxxx', urls, old);
+  if (JSON.stringify(urls) == JSON.stringify(old)) return
   
   try {
     loading.value = true

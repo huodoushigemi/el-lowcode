@@ -10,7 +10,6 @@ export default {
     { lp: 'fields', script: true },
 
     { is: 'ElFormRender', model: option, size: 'small', class: 'no-scriptable', children: [
-      grid(option),
       legend(option),
       toolbox(option),
       tooltip(option),
@@ -39,9 +38,7 @@ export default {
     fields: `{{{ x: 'x', y: 'y' }}}`,
     style: { height: '300px', width: '400px' },
     option: {
-      legend: {},
       tooltip:{ show: true, trigger: 'item' },
-      toolbox: {},
       series: [{ type: 'pie', label: { show: true } }]
     },
   })

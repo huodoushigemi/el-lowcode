@@ -15,7 +15,7 @@ export const Collapse1 = ({ title, oper, open }, { slots }) => (
 )
 
 export const Collapse2 = ({ title, oper }, { slots }) => (
-  h(resolveComponent('Collapse'), { title, class: oper && 'enable', style: 'padding: 0 8px; background: var(--el-fill-color-light); --el-collapse-header-height: 28px' }, {
+  h(resolveComponent('Collapse'), { title, class: oper && 'enable', style: 'padding: 0 8px; background: var(--el-fill-color-extra-light); --el-collapse-header-height: 28px' }, {
     extra: () => oper && h(resolveComponent('ElSwitch'), { modelValue: oper[0](), 'onUpdate:modelValue': oper[1], onClick: e => e.stopPropagation() }),
     default: slots.default
   })
@@ -27,16 +27,6 @@ export const genDisplayValue = (model, prop, displayValue) => [
 ]
 
 export const displayValue = (v1) => (v) => v == null ? v1 : v
-
-const CollapseItem = ({ title, oper, open }, { slots }) => (
-  h('details', { class: 'enable', open, style: 'padding: 1px 12px; background: var(--el-fill-color-light);' }, [
-    h('summary', { class: 'flex aic cursor-cell' }, [
-      h('div', { style: 'margin: 6px 0; font-weight: bold; text-transform: capitalize;' }, title),
-      oper && h(resolveComponent('ElSwitch'), { modelValue: oper[0](), 'onUpdate:modelValue': oper[1], class: 'mla' })
-    ]),
-    slots.default?.()
-  ])
-)
 
 export function normalized(arr) {
   arr.forEach(e => {
@@ -87,7 +77,8 @@ export const _shadowStyleItems = (ks, prefix) => {
     shadowColor: color(['shadow-color', n('shadowColor')], { el: { size: 'small' } }),
     shadowOffsetX: num(['shadow-x', n('shadowOffsetX')]),
     shadowOffsetY: num(['shadow-y', n('shadowOffsetY')]),
-    shadowOffset: { lp: ['shadow-offset', ''], children: [num(['', n('shadowOffsetX')]), num(['', n('shadowOffsetY')])] },
+    // shadowOffset: { lp: ['shadow-offset', ''], children: [num(['', n('shadowOffsetX')]), num(['', n('shadowOffsetY')])] },
+    shadowOffset: nums(['shadow-xy', ''], { get: (v, model) => [get(model, n('shadowOffsetX')), get(model, n('shadowOffsetY'))], set: (v, model) => (set(model, n('shadowOffsetX'), v[0] || 0), set(model, n('shadowOffsetY'), v[1] || 0), void 0), el: { min: -50 } }) 
   }
   return pick(props, ks)
 }
