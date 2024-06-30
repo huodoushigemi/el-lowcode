@@ -28,3 +28,4 @@ export const formItemRenderPropsBase = {
 }
 
 export type Item = ExtractPropTypes<typeof formItemRenderPropsBase> & Obj
+export type Item0 = ExtractPropTypes<typeof formItemRenderPropsBase>

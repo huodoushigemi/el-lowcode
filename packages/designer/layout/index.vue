@@ -118,20 +118,22 @@ import CurrentState from './components/current-state.vue'
 import PluginsMarket from './components/PluginsMarket.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import Schema from './components/schema.vue'
-import MD from './components/MD.vue'
 import { vue2esm } from './vue2esm'
 import { PageCtx } from '../plugins/web/page'
 import { plugins, builtins } from './config'
+
 import OptionsInput from '../components/options-input'
 import InputNumber from '../components/InputNumber.vue'
 import InputNumbers from '../components/InputNumbers.vue'
 import Collapse from '../components/Collapse.vue'
+import EditTable from '../components/EditTable.vue'
 
 const app = getCurrentInstance()!.appContext.app
 app.use(OptionsInput)
 app.component('InputNumber', InputNumber)
 app.component('InputNumbers', InputNumbers)
 app.component('Collapse', Collapse)
+app.component('EditTable', EditTable)
 
 // 根节点
 const root = useLocalStorage(

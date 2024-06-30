@@ -1,6 +1,6 @@
 <template>
   <div class="input-number" :class="[isFocus && 'is-focus']" @click="inputRef.focus()">
-    <input ref="inputRef" :value="_value" @input="_value = $event.target.value" type="number" :class="[wresize && 'cursor-w-resize']" :placeholder="placeholder" @focus="isFocus = true" @blur="isFocus = false" />
+    <input ref="inputRef" :value="_value" @input="_value = $event.target.value" type="number" :min :max :step :class="[wresize && 'cursor-w-resize']" :placeholder="placeholder" @focus="isFocus = true" @blur="isFocus = false" />
     <select v-if="!hideUnit" ref="selectRef" :value="unit" px8 bg-hover rd-0 appearance-none outline-0 tabindex="-1" @click.stop @change="unit = $event.target.value; _value = _value">
       <option v-for="opt in units" :value="opt">{{ opt }}</option>
     </select>

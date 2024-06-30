@@ -32,14 +32,14 @@ export const yAxis = (option) => enable2(option.yAxis, 'YAxis', genDisplayValue(
   axisTick(option.yAxis, false),
 ])
 
-export const legend = (option) => enable2(option, 'Legend', genDisplayValue(option, 'legend.show', false), () => [
+export const legend = (option) => enable2(option, 'Legend', genDisplayValue(option, 'legend.show', true), () => [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
     num(['w', 'legend.itemWidth'], { displayValue: 25, el: { max: 50 } }),
     num(['h', 'legend.itemHeight'], { displayValue: 14, el: { max: 28 } }),
     radios(['', 'legend.left'], [['L', 'left'], ['C', 'center'], ['R', 'right']]),
     radios(['', 'legend.orient'], [['↔', 'horizontal'], ['↕', 'vertical']]),
     radios(['', 'legend.top'], [['T', 'top'], ['C', 'middle'], ['B', 'bottom']]),
-    num(['', 'legend.itemHeight'], { displayValue: 14, el: { max: 28 } }),
+    num(['', 'legend.itemGap'], { displayValue: 10 }),
   ] },
   enable3(option, 'text', void 0, () => [
     { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
@@ -60,7 +60,7 @@ export const toolbox = (option) => enable2(option, 'Toolbox', genDisplayValue(op
   ] }
 ])
 
-export const tooltip = (option) => enable2(option, 'Tooltip', genDisplayValue(option, 'tooltip.show', false), () => [
+export const tooltip = (option) => enable2(option, 'Tooltip', genDisplayValue(option, 'tooltip.show', true), () => [
   segm(['', 'tooltip.axisPointer.type'], ['line', 'shadow', 'cross'], { displayValue: 'line' }),
   // lineStyle
   option.tooltip?.axisPointer?.type in { line: 1, undefined: 1 } && { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [

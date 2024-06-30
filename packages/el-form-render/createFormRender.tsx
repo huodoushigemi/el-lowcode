@@ -3,6 +3,7 @@ import { objectPick, toReactive } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
 import { Obj, get, set, ks, unFn, withInstall } from '@el-lowcode/utils'
 import { Item, formItemRenderPropsBase } from './props'
+import { useTransformer } from './utils'
 
 type CreateFormRenderOptions<F, FI> = {
   Form: any
@@ -58,21 +59,7 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formName
       const form = inject(formRenderContextKey)
       const model = new Proxy({}, { get: (t, k: string) => form?.model?.[k], set: (t, k: string, v) => (form?.model && (form.model[k] = v), true) })
 
-      const calcVal = () => {
-        let v = get(model, _prop(props))
-        if (props.get) v = props.get(v, model)
-        if (props.defaultValue !== undefined && (v === undefined || v === '')) set(model, _prop(props), v = unFn(props.defaultValue))
-        if (props.displayValue !== undefined && (v === undefined || v === '')) v = unFn(props.displayValue)
-        return v
-      }
-
-      const onInput = (val) => {
-        if (props.set) set(model, _prop(props), props.set(val, model))
-        else set(model, _prop(props), val)
-        if (props.out) Object.assign(model, props.out!(val, model))
-        val = get(model, _prop(props))
-        if (props.displayValue !== undefined && val === unFn(props.displayValue)) set(model, _prop(props), undefined)
-      }
+      const transformer = useTransformer(model, () => _prop(props), props)
 
       return () => {
         const itemProps = {
@@ -83,8 +70,8 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formName
         }
         const elProps = mergeProps(
           {
-            [unFn(_fields.modelValue, props)]: calcVal(),
-            [`onUpdate:${unFn(_fields.modelValue, props)}`]: onInput
+            [unFn(_fields.modelValue, props)]: transformer.get(),
+            [`onUpdate:${unFn(_fields.modelValue, props)}`]: transformer.set
           },
           {
             ...(props.el || {}),

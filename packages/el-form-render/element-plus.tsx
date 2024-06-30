@@ -47,7 +47,7 @@ const { FormRender, FormItemRender, formRenderProps, formItemRenderProps } = cre
         </el-radio-group>
       )
     }
-    else if (el?.is) {
+    else {
       return createVNode(resolveDynamicComponent(is), { options, ...el })
     }
   },

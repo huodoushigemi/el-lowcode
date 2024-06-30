@@ -76,7 +76,7 @@ const Render = createRender({
       if (props.type == 'color-picker') {
         props.el.size ??= 'default'
         props.el.showAlpha ??= true
-        props.displayValue ??= '#000000ff'
+        // props.displayValue ??= '#000000ff'
         props.set ??= v => v ?? undefined
       }
       props.el.clearable ??= true

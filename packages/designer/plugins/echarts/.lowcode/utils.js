@@ -60,7 +60,7 @@ export const num1 = (prop, opt) => ({ prop, ...opt, el: { is: 'InputNumber', uni
 export const color = (lp, opt) => ({ lp, type: 'color-picker', ...opt, el: { size: 'small', ...opt?.el } })
 export const opts = (lp, options, opt) => ({ lp, type: 'select', options, ...opt })
 export const radios = (lp, options, opt) => ({ lp, type: 'radio-group', options, ...opt })
-export const segm = (lp, options, opt) => ({ lp, type: 'segmented', ...opt, el: { options, block: true, wfull: '', ...opt?.el } })
+export const segm = (lp, options, opt) => ({ lp, type: 'segmented', options, ...opt, el: { block: true, wfull: '', ...opt?.el } })
 export const checks = (lp, options, opt) => ({ lp, type: 'checkbox-group', options, ...opt, el: { type: 'button' } })
 
 export const bool = (lp, displayValue = false) => ({ lp, type: 'switch', displayValue })
@@ -127,3 +127,21 @@ export const borderStyleItems = (ks, prefix) => {
   }
   return Object.values(pick(props, ks))
 }
+
+export const areaStyleItems = (ks, prefix) => {
+  const n = p => [prefix, p].filter(e => e).join('.')
+  const props = {
+    color: color(['color', n('color')]),
+    opacity: num(['opacity', n('opacity')], { displayValue: .7, el: { step: .01, max: 1 } }),
+  }
+  return Object.values(pick(props, ks))
+}
+
+export const enable3Symbol = model => enable3(model, 'symbol', [() => model.symbol != 'none', v => model.symbol = v ? 'emptyCircle' : 'none'], () => [
+  segm(['', 'symbol'], [['⭕', 'emptyCircle'], ['🔴', 'circle'], ['🟥', 'rect'], ['🔺', 'triangle'], ['📍',  'pin']], { displayValue: 'emptyCircle', style: 'margin-bottom: 8px' }),
+  { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', size: 'small', children: [
+    num(['size', 'symbolSize'], { displayValue: 4 }),
+    nums(['offset', 'symbolOffset'], { el: { len: 2, min: -50, placeholder: ['x', 'y'] } }),
+    num(['r °', 'symbolRotate'], { el: { min: -360, max: 360 } }),
+  ] },
+])
