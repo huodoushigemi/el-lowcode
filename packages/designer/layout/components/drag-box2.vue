@@ -12,7 +12,8 @@ defineRender(() => {
 import { computed, inject, mergeProps, onMounted, onUpdated, reactive, ref, toRef, watch } from 'vue'
 import { isArray, isObject, normalizeClass } from '@vue/shared'
 import { unrefElement, useEventListener } from '@vueuse/core'
-import { useDraggable } from 'vue-draggable-plus'
+import { useSortable } from '@vueuse/integrations/useSortable'
+// import { useDraggable } from 'vue-draggable-plus'
 import { createRender } from '@el-lowcode/render'
 import { deepClone, execExp, pick } from '@el-lowcode/utils'
 import { sloveConfig } from '../../components/_utils'
@@ -91,40 +92,85 @@ function setup(props: BoxProps, designer: DesignerCtx) {
   const box = computed(() => {
     if (!config.value || config.value.sortablePut == false) return
     if (!isArray(props.children)) return
-    if (props._id == 'moveable-layer' || props.class?.includes('moveable-layer')) return
     return unrefElement(boxRef.value || elRef.value)
   })
 
-  const sortable = useDraggable(box, props.children, {
-    group: 'shared',
-    animation: 150,
-    draggable: '.drag',
-    // filter: '.moveable',
-    ghostClass: 'ghostClass',
-    invertSwap: true,
-    onStart(e) {
-      designer.draggedId = (props.children as BoxProps[])[e.oldIndex!]._id
-      cloned = e.item.cloneNode(true) as HTMLElement
-      cloned.classList.remove('ghostClass', 'drag')
-      cloned.classList.add('outline-1', 'outline-solid', 'outline-[--el-color-primary]', 'outline-offset--1')
-      cloned.removeAttribute('draggable')
-      e.item.parentElement!.insertBefore(cloned, e.item)
-    },
-    onEnd() {
-      cloned.remove()
-      designer.draggedId = undefined
-    },
+  // const sortable = useDraggable(box, props.children, {
+  //   group: 'shared',
+  //   animation: 150,
+  //   draggable: '.drag',
+  //   filter: '.moveable',
+  //   ghostClass: 'ghostClass',
+  //   invertSwap: true,
+  //   onStart(e) {
+  //     designer.draggedId = (props.children as BoxProps[])[e.oldIndex!]._id
+  //     cloned = e.item.cloneNode(true) as HTMLElement
+  //     cloned.classList.remove('ghostClass', 'drag')
+  //     cloned.classList.add('outline-1', 'outline-solid', 'outline-[--el-color-primary]', 'outline-offset--1')
+  //     cloned.removeAttribute('draggable')
+  //     e.item.parentElement!.insertBefore(cloned, e.item)
+  //   },
+  //   onEnd() {
+  //     cloned.remove()
+  //     designer.draggedId = undefined
+  //   },
+  // })
+
+  // watch(box, el => {
+  //   sortable.destroy()
+  //   if (el) sortable.start()
+  //   else cache[props._id!] = undefined
+  // }, { immediate: true, flush: 'post' })
+
+  
+  let sortable
+  watch(box, el => {
+    sortable?.stop()
+    if (!el) return
+    el.$sortableClone = (i) => props.children.splice(i, 1)[0]
+    sortable = useSortable(el, toRef(props, 'children'), {
+      group: 'shared',
+      animation: 150,
+      draggable: '.drag',
+      // filter: '.moveable',
+      ghostClass: 'ghostClass',
+      invertSwap: true,
+      dataIdAttr: '_id',
+      onAdd(e) {
+        console.log(e)
+        const cloned = e.from.$sortableClone(e.oldIndex)
+        e.item.remove()
+        props.children.splice(e.newIndex, 0, cloned)
+      },
+      onStart(e) {
+        designer.draggedId = (props.children as BoxProps[])[e.oldIndex!]._id
+        cloned = e.item.cloneNode(true) as HTMLElement
+        cloned.classList.remove('ghostClass', 'drag')
+        cloned.classList.add('outline-1', 'outline-solid', 'outline-[--el-color-primary]', 'outline-offset--1')
+        cloned.removeAttribute('draggable')
+        e.item.parentElement!.insertBefore(cloned, e.item)
+      },
+      onEnd(e) {
+        cloned.remove()
+        designer.draggedId = undefined
+        // 处理 sortablejs 与 moveable 拖动冲突问题
+        for (const el of [...e.from.children, ...e.to.children]) {
+          const x = el.style.getPropertyValue('--x'), y = el.style.getPropertyValue('--y')
+          if (x && y) el.style.setProperty('transform', `translate(${x}, ${y})`)
+        }
+      },
+    })
   })
 
-  watch(box, el => {
-    sortable.destroy()
-    if (el) sortable.start()
-    else cache[props._id!] = undefined
-  }, { immediate: true, flush: 'post' })
 
+  watch(box, el => {
+    if (!el) cache[props._id!] = undefined
+  }, { immediate: true, flush: 'post' })
+  
   useEventListener(elRef, 'mousedown', e => {
     if (e.button != 0) return
     e.stopPropagation()
+    
     if (designer.draggedId) return
     designer.activeId = props._id
   }, { passive: false })
@@ -173,5 +219,12 @@ function setup(props: BoxProps, designer: DesignerCtx) {
   font-size: 0 !important;
   outline: 2px solid var(--el-color-primary) !important;
   border: 0 !important;
+}
+
+
+.moveable {
+  --x: 0;
+  --y: 0;
+  transform: translate(var(--x), var(--y)) !important;
 }
 </style>

@@ -88,7 +88,8 @@ const calcStyle = (el?: HTMLElement | null) => {
   const zoom = designerCtx.canvas.zoom
   const rect1 = vp.getBoundingClientRect()
   const rect2 = el.getBoundingClientRect()
-  return { top: (rect2.top - rect1.top) / zoom - offset[1] + 'px', left: (rect2.left - rect1.left) / zoom - offset[0] + 'px', width: el.offsetWidth + 'px', height: el.offsetHeight + 'px', transform }
+  // return { top: (rect2.top - rect1.top) / zoom - offset[1] + 'px', left: (rect2.left - rect1.left) / zoom - offset[0] + 'px', width: el.offsetWidth + 'px', height: el.offsetHeight + 'px', transform }
+  return { top: (rect2.top - rect1.top) / zoom + 'px', left: (rect2.left - rect1.left) / zoom + 'px', width: el.offsetWidth + 'px', height: el.offsetHeight + 'px' }
 }
 
 const hoverConfig = computed(() => designerCtx.hover ? sloveConfig(designerCtx.hover) : undefined)

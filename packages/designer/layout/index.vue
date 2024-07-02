@@ -6,11 +6,17 @@
         <i-ep:eleme w44 h44 c="[--el-color-primary]" />
         <b ml8 text-22>El lowcode</b>
       </div>
-      <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32 [&>.is-active]:c-[--el-color-primary]" flex-1 flex justify-center space-x-4>
-        <i-mdi:desktop-mac :class="canvasWidth == '1280px' && 'is-active'" bg-hover @click="canvasWidth = '1280px'" />
-        <i-raphael:ipad :class="canvasWidth == '768px' && 'is-active'" bg-hover @click="canvasWidth = '768px'" />
-        <i-mdi:cellphone-android :class="canvasWidth == '480px' && 'is-active'" bg-hover @click="canvasWidth = '480px'" />
-      </div>
+
+      <!-- 尺寸 -->
+      <ElFormRender class="flex aic mxa [&>*]:mb0!" :model="root" :items="[
+        { lp: ['尺寸: ', 'designer.canvas.style.wh'], type: 'select', options: [['iPhone SE', '375x667'], ['iPhone12 Pro', '390x844'], ['iPad Mini', '768x1024']], class: 'w180 mr8', get: () => ['width', 'height'].map(k => parseFloat(get(root, `designer.canvas.style.${k}`)) || ' - ').join('x'), set: v => (['width', 'height'].forEach((k, i) => set(root, `designer.canvas.style.${k}`, v && v.split('x')[i] + 'px')), void 0), el: { clearable: true } },
+        { prop: 'designer.canvas.style.width', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
+        { is: 'div', class: 'mx8', children: 'x' },
+        { prop: 'designer.canvas.style.height', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
+        { prop: 'designer.canvas.zoom', type: 'slider', class: 'w100 ml16 mr4', get: v => parseInt(v * 100) || 100, set: v => v / 100,  el: { min: 40, max: 250, showTooltip: false } },
+        { is: 'div', class: 'w30', children: () => parseInt(get(root, 'designer.canvas.zoom') * 100) || 100 + '%' }
+      ]" />
+      
       <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32" flex space-x-20 px20 shrink-0>
         <el-tooltip content="clear"><i-mdi:close bg-hover @click="root = parseAttrs(el_lowcode_widgets.Page!)" /></el-tooltip>
         <i-mdi:undo-variant :op="!canUndo && '20'" bg-hover @click="undo()" />
@@ -47,9 +53,12 @@
         </div>
         <div v-for="(list, category) in groupBy(asyncConfig(url) || [], 'category')" p8>
           <div mt4 mb10 text-16 font-bold>{{ category == 'undefined' ? '其他' : category }}</div>
-          <vue-draggable :model-value="list.filter(e => e.drag != false)" grid="~ cols-2" gap-8 :group="{ name: 'shared', pull: 'clone', put: false }" :sort="false" :clone="clone" @end="onEnd">
+          <!-- <vue-draggable :model-value="list.filter(e => e.drag != false)" grid="~ cols-2" gap-8 :group="{ name: 'shared', pull: 'clone', put: false }" :sort="false" :clone="clone" @end="onEnd">
             <div v-for="wgtConfig in list.filter(e => e.drag != false)" class="cell" text-14 truncate>{{ wgtConfig.label }}</div>
-          </vue-draggable>
+          </vue-draggable> -->
+          <Sortable :model-value="list.filter(e => e.drag != false)" grid="~ cols-2" gap-8 :option="{ group: { name: 'shared', pull: 'clone', put: false }, sort: false, onEnd }" :clone>
+            <div v-for="wgtConfig in list.filter(e => e.drag != false)" class="cell" text-14 truncate>{{ wgtConfig.label }}</div>
+          </Sortable>
         </div>
       </el-tab-pane>
 
@@ -81,7 +90,7 @@
     <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" @pinch="designerCtx.canvas.zoom = $event.zoom">
       <div ref="viewport" class="viewport relative" :style="`width: ${canvasWidth}; background: var(--el-fill-color-extra-light)`" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
         <!-- <drag-box id="root" :el="root" h1080 overflow-auto /> -->
-        <DragBox2 id="root" :el="root" h1080 overflow-auto />
+        <DragBox2 id="root" :el="root" min-h1080 />
         <selected-layer />
         <Moveable :target="activeEl()" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
         <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
@@ -100,8 +109,9 @@
 import { computed, provide, reactive, ref, onUpdated, watch, watchEffect, getCurrentInstance } from 'vue'
 import { isArray, isPlainObject, remove } from '@vue/shared'
 import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
+import { useSortable } from '@vueuse/integrations/useSortable'
 import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
-import { VueDraggable } from 'vue-draggable-plus'
+// import { VueDraggable } from 'vue-draggable-plus'
 import Moveable from 'vue3-moveable'
 
 import { Arrable, get, keyBy, groupBy, pick, set, toArr, treeUtils } from '@el-lowcode/utils'
@@ -111,6 +121,7 @@ import { BoxProps, ElLowcodeConfig } from '../components/type'
 import { DesignerCtx, designerCtxKey } from './interface'
 import DragBox from './components/drag-box.vue'
 import DragBox2 from './components/drag-box2.vue'
+import Sortable from './components/Sortable.vue'
 import SelectedLayer from './components/selected-layer.vue'
 import SettingPanel from './setting-panel.vue'
 import StateDrawer from './components/state-drawer.vue'
@@ -253,21 +264,30 @@ function onDragStart(e) {
   designerCtx.draggedId = e.target.getAttribute('_id')
 }
 function onDrag(e) {
-  e.target.style.transform = e.transform
+  // e.target.style.transform = e.transform
+  e.target.style.transform = `translate(${e.translate[0]}px, ${e.translate[1]}px)`
+  e.target.style.setProperty('--x', e.translate[0] + 'px')
+  e.target.style.setProperty('--y', e.translate[1] + 'px')
 }
 function onDragEnd(e) {
-  (designerCtx.dragged!.style ??= {}).transform = e.target.style.transform
+  const style = designerCtx.dragged!.style ??= {}
+  ;['transform', '--x', '--y'].forEach(k => style[k] = e.target.style.getPropertyValue(k))
   designerCtx.draggedId = undefined
 }
-function onResize({ target, width, height, transform, ...e }) {
+function onResize({ target, width, height, transform, drag }) {
   const setw = width != target.offsetWidth
   const seth = height != target.offsetHeight
   setw && (target.style.width = `${width}px`)
   seth && (target.style.height = `${height}px`)
-  target.style.transform = transform
+  if (drag.translate[0] != 0 && drag.translate[1] != 0) {
+    target.style.transform = transform
+    target.style.setProperty('--x', drag.translate[0] + 'px')
+    target.style.setProperty('--y', drag.translate[1] + 'px')
+  }
 }
 function onResizeEnd(e) {
-  Object.assign(designerCtx.dragged!.style ??= {}, pick(e.target.style, ['width', 'height', 'transform']))
+  const style = designerCtx.dragged!.style ??= {}
+  ;['width', 'height', 'transform', '--x', '--y'].forEach(k => style[k] = e.target.style.getPropertyValue(k) || undefined)
   designerCtx.draggedId = undefined
 }
 function resizeDir(node?: BoxProps) {
@@ -383,7 +403,9 @@ function scanFiles(entry: FileSystemEntry | null, list: FileSystemFileEntry[] = 
 
 <style scoped lang="scss">
 .layout {
-  
+  :deep(.el-card) {
+    transition: none;
+  }
 }
 
 .cell {
@@ -462,14 +484,6 @@ function scanFiles(entry: FileSystemEntry | null, list: FileSystemFileEntry[] = 
   }
   &:hover::-webkit-scrollbar-thumb {
     display: block;
-  }
-}
-
-#moveable-layer {
-  pointer-events: none;
-  > * {
-    transition: unset;
-    pointer-events: auto;
   }
 }
 </style>

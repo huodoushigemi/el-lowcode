@@ -143,26 +143,23 @@ const commons = [
   { is: 'h1', children: 'Event' },
   { lp: 'onClick' },
   { lp: 'onChange' },
-  // { is: 'el-divider' },
-  { is: 'details', children: [
-    { is: 'summary', class: 'mb.8em', children: 'Advanced' },
-    { lp: 'onVnodeMounted' },
-    { lp: 'onVnodeBeforeMount' },
-  ] }
+  { is: 'el-divider' },
+  // { is: 'details', children: [
+    // { is: 'summary', class: 'mb.8em', children: 'Advanced' },
+    { lp: ['onMounted','onVnodeMounted'] },
+    { lp: ['onBeforeMount', 'onVnodeBeforeMount'] },
+  // ] }
 ]
 
 function add2absolute(node) {
-  const { root } = designerCtx
-  const flated = treeUtils.flat([root])
+  const { flated } = designerCtx
   const parent = flated.find(e => isArray(e.children) ? e.children.includes(node) : false)
-  if (parent._id == 'moveable-layer') return
-  
+
   remove(parent.children, node)
-  
-  if (root.children[root.children.length - 1]._id != 'moveable-layer') designerCtx.root.children.push({ is: 'div', _id: 'moveable-layer', id: 'moveable-layer', style: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }, children: [] })
-  const moveableLayer = root.children[root.children.length - 1]
-  moveableLayer.children.push(node)
+  parent.children.unshift(node)
+  // parent.children.push(node)
   set(node, 'style.position', 'absolute')
+  set(node, 'style.zIndex', '1')
 }
 </script>
 

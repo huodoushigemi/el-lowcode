@@ -309,6 +309,9 @@ importers:
       moveable:
         specifier: ^0.53.0
         version: 0.53.0
+      sortablejs:
+        specifier: ^1.15.2
+        version: 1.15.2
       tree-tool:
         specifier: ^1.1.8
         version: 1.1.8
@@ -8524,8 +8527,7 @@ snapshots:
 
   slash@4.0.0: {}
 
-  sortablejs@1.15.2:
-    optional: true
+  sortablejs@1.15.2: {}
 
   source-map-js@1.2.0: {}
 

@@ -1,6 +1,6 @@
 import { radarAxis, serieRadar } from './.lowcode/option/series'
-import { grid, legend, toolbox, tooltip, xAxis, yAxis } from './.lowcode/option'
-import { enable2 } from './.lowcode/utils'
+import { grid, legend, toolbox, tooltip } from './.lowcode/option'
+import { enable2, num } from './.lowcode/utils'
 
 export default {
   is: 'ERadar',
@@ -9,7 +9,7 @@ export default {
     { lp: 'data' },
 
     // { lp: ['indicator', 'option.radar.indicator'], el: { is: 'OptionsInput', props: { L: 'name', V: 'max' }, placholder: ['name', 'max'] } },
-    { lp: ['indicator', 'option.radar.indicator'], el: { is: 'EditTable', columns: [{ prop: 'name' }, { prop: 'key' }, { prop: 'max' }] } },
+    { lp: ['indicator', 'option.radar.indicator'], el: { is: 'EditTable', columns: [{ prop: 'name' }, { prop: 'key' }, { prop: 'max', formItem: num() }] } },
 
     { is: 'ElFormRender', model: option, size: 'small', class: 'no-scriptable', children: [
       legend(option),
@@ -44,8 +44,8 @@ export default {
       { sales: 4200, manage: 3000, info: 20000, custom: 35000, develop: 50000, market: 18000 },
       { sales: 5000, manage: 14000, info: 28000, custom: 26000, develop: 42000, market: 21000 },
     ],
-    style: { height: '300px', width: '400px' },
     autoresize: true,
+    style: { height: '300px', width: '400px' },
     option: {
       legend: {},
       tooltip: {},
