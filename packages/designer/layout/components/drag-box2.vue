@@ -26,10 +26,11 @@ const Render = createRender({
   defaultIs: 'div',
   processProps: (_props: any) => {
     if (_props.class?.includes('drag-wrapper')) return _props
-    const { state } = inject('pageCtx', _props)
     const designer = inject('designerCtx') as DesignerCtx
+    // const { state } = inject('pageCtx', _props)
     return wm.get(_props)?.value || wm.set(_props, computed(() => {
       // console.log(_props)
+      const { state } = designer.root
       let { children, ...props } =  _props
   
       const _execExp = (exp) => {

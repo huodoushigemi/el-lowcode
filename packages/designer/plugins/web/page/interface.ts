@@ -9,5 +9,12 @@ export interface PageCtx extends BoxProps {
   plugins?: string[]
   customComponents?: Record<string, string | undefined>
   extraElLowcodeWidgets?: Record<string, string>
+  css?: string
+  designer?: Partial<{
+    canvas: Partial<{
+      zoom: number
+      style: Record<string, any>
+    }>
+  }>
 }
 

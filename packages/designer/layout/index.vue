@@ -8,13 +8,15 @@
       </div>
 
       <!-- 尺寸 -->
-      <ElFormRender class="flex aic mxa [&>*]:mb0!" :model="root" :items="[
-        { lp: ['尺寸: ', 'designer.canvas.style.wh'], type: 'select', options: [['iPhone SE', '375x667'], ['iPhone12 Pro', '390x844'], ['iPad Mini', '768x1024']], class: 'w180 mr8', get: () => ['width', 'height'].map(k => parseFloat(get(root, `designer.canvas.style.${k}`)) || ' - ').join('x'), set: v => (['width', 'height'].forEach((k, i) => set(root, `designer.canvas.style.${k}`, v && v.split('x')[i] + 'px')), void 0), el: { clearable: true } },
+       <!-- style="--el-border-color: 0"  -->
+      <ElFormRender class="flex aic mxa text-12 [&>*]:mb0!" :model="root" size="small" :items="[
+        { lp: ['尺寸: ', 'designer.canvas.style.wh'], type: 'select', options: [['iPhone SE', '375 × 667'], ['iPhone12 Pro', '390 × 844'], ['iPad Mini', '768 × 1024']], class: 'w160 mr8', get: () => ['width', 'height'].map(k => parseFloat(get(root, `designer.canvas.style.${k}`)) || ' - ').join(' × '), set: v => (['width', 'height'].forEach((k, i) => set(root, `designer.canvas.style.${k}`, v && v.split(' × ')[i] + 'px')), void 0), el: { clearable: true } },
         { prop: 'designer.canvas.style.width', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
-        { is: 'div', class: 'mx8', children: 'x' },
+        { is: 'div', class: 'mx4', children: '×' },
         { prop: 'designer.canvas.style.height', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
-        { prop: 'designer.canvas.zoom', type: 'slider', class: 'w100 ml16 mr4', get: v => parseInt(v * 100) || 100, set: v => v / 100,  el: { min: 40, max: 250, showTooltip: false } },
-        { is: 'div', class: 'w30', children: () => parseInt(get(root, 'designer.canvas.zoom') * 100) || 100 + '%' }
+        // { prop: 'designer.canvas.zoom', type: 'slider', class: 'w100 ml16 mr4', get: v => parseInt(v * 100) || 100, set: v => v / 100,  el: { min: 40, max: 250, showTooltip: false } },
+        // { is: 'div', class: 'w50', children: () => `${parseInt(get(root, 'designer.canvas.zoom') * 100) || 100}%` },
+        { prop: 'designer.canvas.zoom', class: 'ml8 w55', displayValue: '100%', get: v => parseInt(v * 100) + '%', set: v => parseInt(v) / 100, el: { is: 'InputNumber', units: ['%'], min: 40, max: 250 } }
       ]" />
       
       <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32" flex space-x-20 px20 shrink-0>
@@ -88,9 +90,11 @@
     
     <!-- Canvas Viewport -->
     <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" @pinch="designerCtx.canvas.zoom = $event.zoom">
-      <div ref="viewport" class="viewport relative" :style="`width: ${canvasWidth}; background: var(--el-fill-color-extra-light)`" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
+      <div ref="viewport" class="viewport relative" :style="designerCtx.canvas.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
         <!-- <drag-box id="root" :el="root" h1080 overflow-auto /> -->
-        <DragBox2 id="root" :el="root" min-h1080 />
+         <div hfull overflow-auto>
+           <DragBox2 id="root" :el="root" min-hfull />
+         </div>
         <selected-layer />
         <Moveable :target="activeEl()" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
         <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
@@ -106,9 +110,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, reactive, ref, onUpdated, watch, watchEffect, getCurrentInstance } from 'vue'
+import { computed, provide, reactive, ref, onUpdated, watch, watchEffect, getCurrentInstance, toRefs, toRef } from 'vue'
 import { isArray, isPlainObject, remove } from '@vue/shared'
-import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
+import { computedAsync, toReactive, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
 import { useSortable } from '@vueuse/integrations/useSortable'
 import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
 // import { VueDraggable } from 'vue-draggable-plus'
@@ -217,15 +221,13 @@ async function addRemotePlugin(url?) {
 
 
 const viewport = ref<HTMLElement>()
-const canvasWidth = computed({
-  get: () => designerCtx.canvas.style.width,
-  set: val => designerCtx.canvas.style.width = val
-})
 
 const designerCtx = reactive({
   currentState: {},
   viewport,
-  canvas: { zoom: 1, style: { width: '100%' } },
+  // canvas: { zoom: 1, style: { width: '100%' } },
+  // root
+  ...toRefs(toReactive(toRef(() => root.value.designer || { canvas: undefined }))),
   widgets: el_lowcode_widgets,
   root,
   flated: computed(() => treeUtils.flat([root.value])),
@@ -292,6 +294,7 @@ function onResizeEnd(e) {
 }
 function resizeDir(node?: BoxProps) {
   if (!node) return undefined
+  if (node.is == 'Page') return []
   return node.style?.position == 'absolute' ? undefined : ['e', 'se', 's']
 }
 
@@ -317,7 +320,6 @@ useEventListener('keydown', (e) => {
 useEventListener('keydown', e => {
   if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return
   if (!['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(e.key)) return
-  console.log('xx');
   
   const node = designerCtx.active
   if (!node) return
@@ -406,6 +408,12 @@ function scanFiles(entry: FileSystemEntry | null, list: FileSystemFileEntry[] = 
   :deep(.el-card) {
     transition: none;
   }
+}
+
+.viewport {
+  height: 100%;
+  // overflow: auto;
+  background: var(--el-fill-color-extra-light);
 }
 
 .cell {
