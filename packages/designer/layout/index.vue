@@ -72,8 +72,7 @@
 
       <el-tab-pane name="tree" lazy w200>
         <template #label><el-tooltip content="组件树" placement="right" :hide-after="0"><i-mdi:file-tree /></el-tooltip></template>
-        <div px8 py12 text-22 b-b="1 solid [--el-border-color]">组件树</div>
-        <el-tree hfull overflow-overlay :data="tree" :props="{ label: (e) => e.el?.is ?? e.is }" :current-node-key="designerCtx.activeId" @current-change="designerCtx.activeId = $event._id" node-key="_id" default-expand-all highlight-current :indent="10" :expand-on-click-node="false" />
+        <LayerTree />
       </el-tab-pane>
       <el-tab-pane name="state" lazy w256>
         <template #label><el-tooltip content="当前状态" placement="right" :hide-after="0"><i-mdi:code-json /></el-tooltip></template>
@@ -124,6 +123,7 @@ import DragBox from './components/drag-box.vue'
 import DragBox2 from './components/drag-box2.vue'
 import Sortable from './components/Sortable.vue'
 import SelectedLayer from './components/selected-layer.vue'
+import LayerTree from './components/LayerTree.vue'
 import SettingPanel from './setting-panel.vue'
 import StateDrawer from './components/state-drawer.vue'
 import CurrentState from './components/current-state.vue'
