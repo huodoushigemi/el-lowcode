@@ -89,15 +89,12 @@
     </el-tabs>
     
     <!-- Canvas Viewport -->
-    <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" @pinch="designerCtx.canvas.zoom = $event.zoom">
-      <div ref="viewport" class="viewport relative" :style="designerCtx.canvas.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
-        <!-- <drag-box id="root" :el="root" h1080 overflow-auto /> -->
-         <div hfull overflow-auto>
-           <DragBox2 id="root" :el="root" min-hfull />
-         </div>
+    <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" @pinch="set(root, 'designer.canvas.zoom', $event.zoom)">
+      <div ref="viewport" class="viewport flex flex-col" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
+        <DragBox2 id="root" :el="root" flex-1 />
         <selected-layer />
         <Moveable :target="activeEl()" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
-        <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
+        <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
       </div>
     </infinite-viewer>
     
@@ -225,9 +222,7 @@ const viewport = ref<HTMLElement>()
 const designerCtx = reactive({
   currentState: {},
   viewport,
-  // canvas: { zoom: 1, style: { width: '100%' } },
-  // root
-  ...toRefs(toReactive(toRef(() => root.value.designer || { canvas: undefined }))),
+  canvas: computed(() => root.value.designer?.canvas || { zoom: 1 }),
   widgets: el_lowcode_widgets,
   root,
   flated: computed(() => treeUtils.flat([root.value])),
@@ -248,13 +243,9 @@ console.log(window.designerCtx = designerCtx);
 let cloned: BoxProps
 function clone(e) {
   return cloned = parseAttrs(e)
-  // return { is: 'div', _id: +new Date + '', children: 'xxx' }
-  // console.log(e);
 }
 function onEnd(e) {
-  // if (!(e.to as HTMLElement).classList.contains('container-box')) return
   setTimeout(() => designerCtx.activeId = cloned._id, 100);
-  // designerCtx.activeId
 }
 
 const activeEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.activeId}']`)
@@ -263,9 +254,12 @@ const rootEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${d
 
 // moveable
 function onDragStart(e) {
+  console.log('xxxx');
   designerCtx.draggedId = e.target.getAttribute('_id')
 }
 function onDrag(e) {
+  console.log('xxxx');
+  
   // e.target.style.transform = e.transform
   e.target.style.transform = `translate(${e.translate[0]}px, ${e.translate[1]}px)`
   e.target.style.setProperty('--x', e.translate[0] + 'px')
@@ -334,6 +328,8 @@ useEventListener('keydown', e => {
       const xy = matched[1].split(',').map(e => parseInt(e))
       xy[i] += v
       node.style.transform = node.style.transform.replace(matched[0], `translate(${xy[0]}px, ${xy[1]}px)`)
+      node.style['--x'] = `${xy[0]}px`
+      node.style['--y'] = `${xy[1]}px`
     }
     if (e.key == 'ArrowUp') plus(1, -offset)
     if (e.key == 'ArrowLeft') plus(0, -offset)
@@ -405,14 +401,15 @@ function scanFiles(entry: FileSystemEntry | null, list: FileSystemFileEntry[] = 
 
 <style scoped lang="scss">
 .layout {
-  :deep(.el-card) {
+  :deep(.el-card), :deep(.el-button) {
     transition: none;
   }
 }
 
 .viewport {
+  position: relative;
   height: 100%;
-  // overflow: auto;
+  overflow: hidden auto;
   background: var(--el-fill-color-extra-light);
 }
 

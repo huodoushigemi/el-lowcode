@@ -19,7 +19,7 @@ export interface DesignerCtx {
   readonly viewport: HTMLElement
   canvas: {
     zoom: number
-    style: Record<string, any>
+    style?: Record<string, any>
   }
   widgets: Record<string, ElLowcodeConfig | undefined>
 }

@@ -1,15 +1,20 @@
 <template>
-  <div class="Page">
+  <div ref="el" class="Page">
     <slot v-if="!loading"></slot>
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineAsyncComponent, getCurrentInstance, inject, provide, reactive, watch, watchEffect, Plugin, ref, PropType, nextTick } from 'vue'
+import { useWindowSize, useParentElement, useElementSize } from '@vueuse/core'
 import { pageCtxKey } from './interface'
 import { refWithWatch } from '../../../components/hooks'
 import { importJs } from '../../../components/_utils'
 import { designerCtxKey } from '../../../layout/interface'
+import { useFit } from './hooks'
+import { computed } from 'vue'
+import { toRef } from 'vue'
+import { useAttrs } from 'vue'
 
 defineOptions({
   name: 'Page'
@@ -20,7 +25,7 @@ const props = defineProps({
   esm: Object,
   plugins: Array as PropType<string[]>,
   customComponents: Object,
-  preset: [Object, String],
+  fit: String
 })
 
 const ins = getCurrentInstance()!
@@ -37,12 +42,8 @@ watchEffect(() => {
   designerCtx.currentState = state.value
 })
 
-provide('pageCtx', reactive({
-  state
-}))
-provide(pageCtxKey, reactive({
-  state
-}))
+provide('pageCtx', reactive({ state }))
+provide(pageCtxKey, reactive({ state }))
 
 const loading = ref(false)
 
@@ -72,6 +73,15 @@ async function loadPlugins(urls) {
     ins.appContext.app.use(plugin)
   }
 }
+
+const winSize = useWindowSize()
+const parentSize = useElementSize(useParentElement())
+
+const { el } = useFit({
+  fit: toRef(props, 'fit'),
+  // target: useWindowSize()
+  target: parentSize
+})
 
 defineExpose({ state })
 </script>

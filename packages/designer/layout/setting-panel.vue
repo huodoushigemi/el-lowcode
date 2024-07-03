@@ -144,11 +144,8 @@ const commons = [
   { lp: 'onClick' },
   { lp: 'onChange' },
   { is: 'el-divider' },
-  // { is: 'details', children: [
-    // { is: 'summary', class: 'mb.8em', children: 'Advanced' },
-    { lp: ['onMounted','onVnodeMounted'] },
-    { lp: ['onBeforeMount', 'onVnodeBeforeMount'] },
-  // ] }
+  { lp: ['onMounted','onVnodeMounted'] },
+  { lp: ['onBeforeMount', 'onVnodeBeforeMount'] },
 ]
 
 function add2absolute(node) {
@@ -156,7 +153,11 @@ function add2absolute(node) {
   const parent = flated.find(e => isArray(e.children) ? e.children.includes(node) : false)
 
   remove(parent.children, node)
-  parent.children.unshift(node)
+  // const i = parent.children.findIndex(e => e.style?.position != 'absolute')
+  let i = -1
+  while (++i < parent.children.length) if (parent.children[i].style?.position != 'absolute') break
+  parent.children.splice(i, 0, node)
+  // parent.children.unshift(node)
   // parent.children.push(node)
   set(node, 'style.position', 'absolute')
   set(node, 'style.zIndex', '1')

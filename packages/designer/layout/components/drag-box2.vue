@@ -136,20 +136,20 @@ function setup(props: BoxProps, designer: DesignerCtx) {
       // filter: '.moveable',
       ghostClass: 'ghostClass',
       invertSwap: true,
-      dataIdAttr: '_id',
+      // dataIdAttr: '_id',
       onAdd(e) {
         console.log(e)
-        const cloned = e.from.$sortableClone(e.oldIndex)
+        const cloned = e.from.$sortableClone(e.oldDraggableIndex)
         e.item.remove()
-        props.children.splice(e.newIndex, 0, cloned)
+        props.children.splice(e.newDraggableIndex, 0, cloned)
       },
-      onStart(e) {
-        designer.draggedId = (props.children as BoxProps[])[e.oldIndex!]._id
-        cloned = e.item.cloneNode(true) as HTMLElement
+      onStart({ item, oldDraggableIndex }) {
+        designer.draggedId = (props.children as BoxProps[])[oldDraggableIndex!]._id
+        cloned = item.cloneNode(true) as HTMLElement
         cloned.classList.remove('ghostClass', 'drag')
         cloned.classList.add('outline-1', 'outline-solid', 'outline-[--el-color-primary]', 'outline-offset--1')
         cloned.removeAttribute('draggable')
-        e.item.parentElement!.insertBefore(cloned, e.item)
+        item.parentElement!.insertBefore(cloned, item)
       },
       onEnd(e) {
         cloned.remove()
@@ -160,6 +160,10 @@ function setup(props: BoxProps, designer: DesignerCtx) {
           if (x && y) el.style.setProperty('transform', `translate(${x}, ${y})`)
         }
       },
+      onUpdate({ oldDraggableIndex, newDraggableIndex }) {
+        const node = props.children.splice(oldDraggableIndex, 1)[0]
+        props.children.splice(newDraggableIndex, 0, node)
+      }
     })
   })
 
