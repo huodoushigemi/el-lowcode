@@ -88,12 +88,12 @@
     </el-tabs>
     
     <!-- Canvas Viewport -->
-    <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" @pinch="set(root, 'designer.canvas.zoom', $event.zoom)">
+    <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" tabindex="1" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" @pinch="set(root, 'designer.canvas.zoom', $event.zoom)">
       <div ref="viewport" class="viewport flex flex-col" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
         <DragBox2 id="root" :el="root" flex-1 />
         <selected-layer />
         <Moveable :target="activeEl()" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
-        <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
+        <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :dragTarget="`#moveable-handle-${designerCtx.activeId}`" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
       </div>
     </infinite-viewer>
     
@@ -252,14 +252,14 @@ const activeEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='$
 const hoverEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.hoverId}']`)
 const rootEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.root._id}']`)
 
+watchEffect(() => console.log(hoverEl()))
+
 // moveable
 function onDragStart(e) {
   console.log('xxxx');
   designerCtx.draggedId = e.target.getAttribute('_id')
 }
 function onDrag(e) {
-  console.log('xxxx');
-  
   // e.target.style.transform = e.transform
   e.target.style.transform = `translate(${e.translate[0]}px, ${e.translate[1]}px)`
   e.target.style.setProperty('--x', e.translate[0] + 'px')
@@ -318,6 +318,7 @@ useEventListener('keydown', e => {
   const node = designerCtx.active
   if (!node) return
   e.preventDefault()
+  e.stopPropagation()
   if (node == designerCtx.root) return
   const offset = e.shiftKey ? 10 : 1
   const absolute = node.style?.position == 'absolute'

@@ -1,6 +1,7 @@
 <template>
   <div px8 py12 text-22 b-b="1 solid [--el-border-color]">图层</div>
   <el-tree
+    ref="treeRef"
     class="hfull overflow-overlay [&>.el-tree\_\_drop-indicator]:h4"
     style="--el-color-primary-light-9: var(--el-color-primary-light-8)"
     :data="tree"
@@ -14,11 +15,20 @@
     draggable
     :allow-drop="allowDrop"
     @node-drop="nodeDrop"
+    @node-click="focusViewport"
   >
     <template #default="{ node, data }">
-      <div class="el-tree-node__label" flex-1 w0 truncate lh-26 @dblclick="edit = data">
-        <template v-if="edit != data">{{  getLabel(data) }}</template>
-        <input v-else ref="inputRef" :value="getLabel(data)" @change="designerCtx.active['data-layer'] = $event.target.value.trim() || void 0" focus:outline="1 solid" p0 lh-22 block />
+      <div class="el-tree-node__label group" flex="~ 1" lh-26 >
+        <div flex-1 w0 truncate @dblclick="edit = data">
+          <template v-if="edit != data">{{ getLabel(data) }}</template>
+          <input v-else ref="inputRef" :value="getLabel(data)" @change="designerCtx.active['data-layer'] = $event.target.value.trim() || void 0" focus:outline="1 solid" mt2 p0 lh-22 block />
+        </div>
+        <div :class="data['data-lock'] ? 'block' : 'group-hover:block hidden'" w26 h26 p6 bg-hover @click="getData(node)['data-lock'] = data['data-lock'] ? void 0 : true">
+          <div :class="data['data-lock'] ? 'i-ep-lock' : 'i-ep-unlock'" />
+        </div>
+        <div w26 h26 p6 bg-hover @click="getData(node)['data-hide'] = data['data-hide'] ? void 0 : true">
+          <div :class="data['data-hide'] ? 'i-ep-hide' : 'i-ep-view'" />
+        </div>
       </div>
     </template>
   </el-tree>
@@ -26,11 +36,13 @@
 
 <script setup>
 import { computed, inject, ref, watchEffect } from 'vue'
-import { isArray, isString } from '@vue/shared'
+import { isArray, isString, remove } from '@vue/shared'
 import { onClickOutside, useEventListener } from '@vueuse/core'
 import { get, keyBy, groupBy, pick, set, toArr, treeUtils } from '@el-lowcode/utils'
 import { designerCtxKey } from '../interface'
 import { refWithWatch } from '../../components/hooks'
+import { nextTick } from 'vue'
+import { watch } from 'vue'
 
 // import type {
 //   AllowDropType,
@@ -39,7 +51,10 @@ import { refWithWatch } from '../../components/hooks'
 
 const designerCtx = inject(designerCtxKey)
 
-const tree = computed(() => treeUtils.changeProp([designerCtx.root], [['children', 'children', v => isArray(v) ? v : undefined]]))
+const treeRef = ref()
+const tree = computed(() => treeUtils.changeProp(designerCtx.root.children, [['children', 'children', v => isArray(v) ? v : undefined]]))
+
+watch([tree, () => designerCtx.activeId], () => treeRef.value?.setCurrentKey(designerCtx.activeId, false), { immediate: true, flush: 'post' })
 
 const label = refWithWatch(() => getLabel(designerCtx.active))
 
@@ -51,6 +66,10 @@ function getLabel(data) {
       ? data.children
       : data.el?.is ?? data.is
   )
+}
+
+function getData(node) {
+  return designerCtx.keyed[node.key]
 }
 
 const inputRef = ref()
@@ -74,8 +93,35 @@ function allowDrop(drag, drop, type) {
 }
 
 function nodeDrop(drag, drop, type) {
-  // todo
   drag = designerCtx.keyed[drag.data._id]
   drop = designerCtx.keyed[drop.data._id]
+  const dragParent = treeUtils.findParent([designerCtx.root], drag._id, { key: '_id' })
+  const dropParent = treeUtils.findParent([designerCtx.root], drop._id, { key: '_id' })
+  // dragParent.children.splice()
+  remove(dragParent.children, drag)
+  if (type == 'before') {
+    dropParent.children.splice(dropParent.children.indexOf(drop), 0, drag)
+  }
+  else if (type == 'after') {
+    dropParent.children.splice(dropParent.children.indexOf(drop) + 1, 0, drag)
+  }
+  else if (type == 'inner') {
+    if (drag.style?.position == 'absolute') {
+      ['position', 'transform', '--x', '--y'].forEach(k => {
+        drag.style[k] = void 0
+      })
+    }
+    drop.children.push(drag)
+    // let i = -1
+    // while (++i < dropParent.children.length) if (dropParent.children[i].style?.position != 'absolute') break
+    // dropParent.children.splice(i, 0, drag)
+  }
+  nextTick().then(() => {
+    designerCtx.activeId = drag._id
+  })
+}
+
+function focusViewport() {
+  document.querySelector('.viewport')?.focus()
 }
 </script>

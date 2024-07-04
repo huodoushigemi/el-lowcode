@@ -89,7 +89,7 @@ const Render = createRender({
 
 const designerCtx = inject(designerCtxKey)
 
-const model = computed(() => designerCtx.active)
+const model = computed(() => designerCtx.active ?? designerCtx.root)
 
 const config = computed(() => {
   if (!model.value) return
