@@ -92,8 +92,12 @@
       <div ref="viewport" class="viewport flex flex-col" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
         <DragBox2 id="root" :el="root" flex-1 />
         <selected-layer />
+        <!-- resize -->
         <Moveable :target="activeEl()" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
-        <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :dragTarget="`#moveable-handle-${designerCtx.activeId}`" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
+        <!-- move-handle -->
+        <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" dragTarget="#moveable-handle" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="true" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
+        <!-- move-ctrl -->
+        <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="control" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
       </div>
     </infinite-viewer>
     
@@ -108,7 +112,7 @@
 <script setup lang="ts">
 import { computed, provide, reactive, ref, onUpdated, watch, watchEffect, getCurrentInstance, toRefs, toRef } from 'vue'
 import { isArray, isPlainObject, remove } from '@vue/shared'
-import { computedAsync, toReactive, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage } from '@vueuse/core'
+import { computedAsync, toReactive, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage, useMagicKeys } from '@vueuse/core'
 import { useSortable } from '@vueuse/integrations/useSortable'
 import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
 // import { VueDraggable } from 'vue-draggable-plus'
@@ -146,6 +150,8 @@ app.component('InputNumber', InputNumber)
 app.component('InputNumbers', InputNumbers)
 app.component('Collapse', Collapse)
 app.component('EditTable', EditTable)
+
+const { control } = useMagicKeys()
 
 // 根节点
 const root = useLocalStorage(
@@ -256,7 +262,6 @@ watchEffect(() => console.log(hoverEl()))
 
 // moveable
 function onDragStart(e) {
-  console.log('xxxx');
   designerCtx.draggedId = e.target.getAttribute('_id')
 }
 function onDrag(e) {
