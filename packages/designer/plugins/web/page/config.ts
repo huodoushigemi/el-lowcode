@@ -4,7 +4,7 @@ export default {
   layout: true,
   drag: false,
   props: [
-    { lp: 'fit', options: ['contain', 'cover', 'fill', 'scrollY', 'sctollX'] }
+    { lp: 'fit', options: ['contain', 'cover', 'fill', 'scrollY', 'scrollX'] }
     // {
     //   is: () => {
     //     const designerCtx = inject(designerCtxKey)!

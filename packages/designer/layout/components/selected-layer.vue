@@ -27,7 +27,7 @@
           <el-color-picker show-alpha size="small" self-center />
         </template> -->
       </div>
-      <div v-if="active.style?.position == 'absolute'" class="actions absolute bottom-[100%] flex text-15 text-nowrap pointer-events-auto c-white bg-[--el-color-primary]" @mouseenter="designerCtx.hoverId = active._id" @mousedown="designerCtx.hoverId = active._id">
+      <div v-if="active.style?.position == 'absolute'" class="actions absolute bottom-[100%] flex text-15 text-nowrap pointer-events-auto c-white bg-[--el-color-primary]" @mouseenter="designerCtx.hoverId = active._id" @mouseover="designerCtx.hoverId = active._id">
         <div flex aic px12 bg="#17d57e">{{ active['data-layer'] || activeConfig?.label }}</div>
         <i-solar:arrow-to-top-right-bold v-if="activeCtx?.active2parent" class="icon" @click="activeCtx?.active2parent" />
         <i-bi:arrows-move id="moveable-handle" class="icon" text-16="!" cursor-move />
@@ -43,7 +43,6 @@ import { isString, remove } from '@vue/shared'
 import { useMutationObserver, useResizeObserver } from '@vueuse/core'
 import { deepClone, treeUtils } from '@el-lowcode/utils'
 import { v4 as uuidv4 } from 'uuid'
-import SelectedRect from './selected-rect.vue'
 import { designerCtxKey } from '../interface'
 import { sloveConfig } from '../../components/_utils'
 import { BoxProps } from '../../components/type'
@@ -95,7 +94,7 @@ const calcStyle = (el?: HTMLElement | null) => {
   const rect1 = vp.getBoundingClientRect()
   const rect2 = el.getBoundingClientRect()
   // return { top: (rect2.top - rect1.top) / zoom - offset[1] + 'px', left: (rect2.left - rect1.left) / zoom - offset[0] + 'px', width: el.offsetWidth + 'px', height: el.offsetHeight + 'px', transform }
-  return { top: (rect2.top - rect1.top) / zoom + vp.scrollTop + 'px', left: (rect2.left - rect1.left) / zoom + vp.scrollLeft + 'px', width: el.offsetWidth + 'px', height: el.offsetHeight + 'px' }
+  return { top: (rect2.top - rect1.top) / zoom + vp.scrollTop + 'px', left: (rect2.left - rect1.left) / zoom + vp.scrollLeft + 'px', width: rect2.width / zoom + 'px', height: rect2.height / zoom + 'px' }
 }
 
 const hoverConfig = computed(() => designerCtx.hover ? sloveConfig(designerCtx.hover) : undefined)

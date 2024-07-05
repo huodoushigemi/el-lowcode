@@ -18,7 +18,7 @@ const { FormRender, FormItemRender, formRenderProps, formItemRenderProps } = cre
       return createVNode(resolveDynamicComponent(is), el)
     }
     const options = solveOptions(item.options)!
-    if (type == 'select' || is == 'ElSelect' || (!is && !type)) {
+    if (type == 'select' || is == 'ElSelect' || (!el.is && !type)) {
       return (
         <el-select {...el}>
           {options.map(opt => <el-option {...opt} />)}

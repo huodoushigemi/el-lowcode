@@ -17,17 +17,15 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeMount } from 'vue'
+import { onMounted, onBeforeMount, watchEffect } from 'vue'
 import { useCurrentElement, useResizeObserver } from '@vueuse/core'
 import Guides from '@scena/guides'
-import InfiniteViewer, { EVENTS } from 'infinite-viewer'
+import InfiniteViewer, { EVENTS, OPTIONS, METHODS } from 'infinite-viewer'
+import { pick } from '@el-lowcode/utils'
 
-const props = defineProps({
-  bodyStyle: [String, Object],
-  bodyClass: String
-})
+const props = defineProps([...OPTIONS, 'x', 'y'])
 
-const emit = defineEmits(EVENTS)
+const emit = defineEmits([...EVENTS, 'update:zoom', 'update:x', 'update:y'])
 
 const el = useCurrentElement()
 
@@ -71,17 +69,12 @@ onMounted(() => {
       guidesX.scrollGuides(e.scrollTop, zoom)
       guidesY.scroll(e.scrollTop, zoom)
       guidesY.scrollGuides(e.scrollLeft, zoom)
-  }).on("pinch", e => {
-      const zoom = Math.max(0.1, e.zoom)
-      guidesY.zoom = zoom
-      guidesX.zoom = zoom
+      emit('update:x', e.scrollLeft)
+      emit('update:y', e.scrollTop)
+      emit('update:zoom', zoom)
   })
 
   EVENTS.forEach(name => viewer.on(name, e => emit(name, e)))
-
-  requestAnimationFrame(() => {
-    viewer.scrollCenter()
-  })
 
   useResizeObserver(el, () => {
     guidesX.resize()
@@ -93,5 +86,13 @@ onMounted(() => {
     guidesX.destroy()
     guidesY.destroy()
   })
+  
+  if (['x', 'y'].every(k => props[k] == null)) {
+    requestAnimationFrame(() => {
+      viewer.scrollCenter()
+    })
+  }
+
+  watchEffect(() => viewer.setTo(pick(props, ['x', 'y', 'zoom'])))
 })
 </script>

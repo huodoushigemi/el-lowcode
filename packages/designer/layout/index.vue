@@ -88,7 +88,7 @@
     </el-tabs>
     
     <!-- Canvas Viewport -->
-    <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" tabindex="1" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" @pinch="set(root, 'designer.canvas.zoom', $event.zoom)">
+    <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" tabindex="1" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" v-model:x="viewer.x.v" v-model:y="viewer.y.v" v-model:zoom="viewer.zoom.v">
       <div ref="viewport" class="viewport flex flex-col" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
         <DragBox2 id="root" :el="root" flex-1 />
         <selected-layer />
@@ -119,6 +119,7 @@ import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
 import Moveable from 'vue3-moveable'
 
 import { Arrable, get, keyBy, groupBy, pick, set, toArr, treeUtils } from '@el-lowcode/utils'
+import { useTransformer } from 'el-form-render'
 import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
 import { parseAttrs, importJs } from '../components/_utils'
 import { BoxProps, ElLowcodeConfig } from '../components/type'
@@ -176,6 +177,12 @@ const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, {
 
 // 组件树
 const tree = computed<BoxProps[]>(() => treeUtils.changeProp([root.value], [['children', 'children', v => isArray(v) ? v : undefined]]))
+
+const viewer = {
+  x: useTransformer(root, 'designer.canvas.x'),
+  y: useTransformer(root, 'designer.canvas.y'),
+  zoom: useTransformer(root, 'designer.canvas.zoom')
+}
 
 // const groups = reactive([
 //   {
@@ -257,8 +264,6 @@ function onEnd(e) {
 const activeEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.activeId}']`)
 const hoverEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.hoverId}']`)
 const rootEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.root._id}']`)
-
-watchEffect(() => console.log(hoverEl()))
 
 // moveable
 function onDragStart(e) {

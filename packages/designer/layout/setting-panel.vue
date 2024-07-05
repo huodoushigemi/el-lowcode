@@ -1,8 +1,8 @@
 <template>
   <div flex aic p8 text-26 font-medium capitalize>
     {{ config?.label }}
-    <i-mdi:cursor-move v-if="model" bg-hover w28 h28 mla p4 mr8 :bg="model.style?.position == 'absolute' ? '#404040' : ''" @click="add2absolute(model)" />
-    <i-material-symbols-light:code bg-hover w28 h28 p4 @click="visible = true" />
+    <div v-if="model" bg-hover w28 h28 ml8 :bg="model.style?.position == 'absolute' ? '#404040' : ''" @click="add2absolute(model)"></div>
+    <i-material-symbols-light:code bg-hover mla w28 h28 p4 @click="visible = true" />
   </div>
   <el-tabs v-if="config" class="tabs">
     <el-tab-pane label="attrs">
@@ -160,7 +160,7 @@ function add2absolute(node) {
   // parent.children.unshift(node)
   // parent.children.push(node)
   set(node, 'style.position', 'absolute')
-  set(node, 'style.zIndex', '1')
+  // set(node, 'style.zIndex', '1')
 }
 </script>
 
