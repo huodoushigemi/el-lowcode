@@ -1,8 +1,8 @@
 <template>
   <div flex aic p8 text-26 font-medium capitalize>
-    {{ config?.label }}
-    <div v-if="model" bg-hover w28 h28 ml8 :bg="model.style?.position == 'absolute' ? '#404040' : ''" @click="add2absolute(model)"></div>
-    <i-material-symbols-light:code bg-hover mla w28 h28 p4 @click="visible = true" />
+    <div mra>{{ config?.label }}</div>
+    <i-mdi:cursor-move v-if="model && designerCtx.root != model" bg-hover w28 h28 p4 mr8 :bg="model.style?.position == 'absolute' ? '#404040' : ''" @click="add2absolute(model)" />
+    <i-material-symbols-light:code bg-hover w28 h28 p4 @click="visible = true" />
   </div>
   <el-tabs v-if="config" class="tabs">
     <el-tab-pane label="attrs">
@@ -50,6 +50,7 @@ import MSLLeft from '~icons/material-symbols-light/align-horizontal-left'
 import MSLCenter from '~icons/material-symbols-light/align-horizontal-center'
 import MSLRight from '~icons/material-symbols-light/align-horizontal-right'
 import MSLClose from '~icons/material-symbols-light/close-small-outline-rounded'
+import MSLUnderlined from '~icons/material-symbols-light/format-underlined'
 
 import OptionsInput from '../components/options-input'
 import PairInput from '../components/pair-input'
@@ -128,6 +129,7 @@ const styles = [
     { is: 'div', class: 'mla!' },
     { prop: 'style.fontWeight', script: false, el: { is: ({ modelValue: v }, { emit }) => h(MSLBold, { class: 'bg-hover w28 h28', style: `background: ${v ? '#404040' : ''}`, onClick: () => emit('update:modelValue', v ? undefined : 'bold') }) } },
     { prop: 'style.fontStyle', script: false, el: { is: ({ modelValue: v }, { emit }) => h(MSLItalic, { class: 'bg-hover w28 h28', style: `background: ${v ? '#404040' : ''}`, onClick: () => emit('update:modelValue', v ? undefined : 'italic') }) } },
+    { prop: 'style.textDecoration', script: false, el: { is: ({ modelValue: v }, { emit }) => h(MSLUnderlined, { class: 'bg-hover w28 h28', style: `background: ${v ? '#404040' : ''}`, onClick: () => emit('update:modelValue', v ? undefined : 'underline') }) } },
   ] },
   { is: 'h4', class: 'mb8', children: 'Border' },
   { lp: ['border', 'style.border'], el: { placeholder: '0px solid #00' } },

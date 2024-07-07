@@ -47,7 +47,7 @@
       </el-tab-pane> -->
 
       <!-- Installed plugins -->
-      <el-tab-pane v-for="[url, pkg] in installedPlugins?.map(e => [e, loadPkg(e)])" lazy w200>
+      <el-tab-pane v-for="[url, pkg] in installedPlugins?.map(e => [e, loadPkg(e)])" :key="pkg?.name" lazy w200>
         <template #label><el-tooltip v-if="pkg" :content="pkg.name" placement="right" :hide-after="0"><img :src="pkg.icon" :alt="pkg.name" /></el-tooltip></template>
         <div v-if="pkg" flex aic px8 py12 text-22 b-b="1 solid [--el-border-color]">
           <img :src="pkg.icon" :alt="pkg.name" mr8 w32 h32 />
@@ -253,12 +253,14 @@ defineExpose(designerCtx)
 console.log(window.designerCtx = designerCtx);
 
 
-let cloned: BoxProps
+let cloned: BoxProps | undefined
 function clone(e) {
   return cloned = parseAttrs(e)
 }
 function onEnd(e) {
-  setTimeout(() => designerCtx.activeId = cloned._id, 100);
+  if (!cloned) return
+  designerCtx.activeId = cloned._id
+  cloned = void 0
 }
 
 const activeEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.activeId}']`)
