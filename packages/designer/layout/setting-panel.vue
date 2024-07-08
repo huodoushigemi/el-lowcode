@@ -11,7 +11,7 @@
       </el-form-render>
     </el-tab-pane>
 
-    <el-tab-pane label="style" lazy>  
+    <el-tab-pane label="style" lazy>
       <el-form-render :model="model" label-width="auto" size="small" label-position="top">
         <Render v-for="item in styles" v-bind="item" />
       </el-form-render>
@@ -41,7 +41,6 @@ import { sloveConfig } from '../components/_utils'
 import Scriptable from './components/scriptable.vue'
 import Input from './components/input.vue'
 import MonacoEditorDialog from './components/MonacoEditorDialog.vue'
-import LcSlider from './components/LcSlider.vue'
 import BoxModel from './components/style/BoxModel.vue'
 
 import MSLBold from '~icons/material-symbols-light/format-bold'

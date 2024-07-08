@@ -128,7 +128,9 @@ function setup(props: BoxProps, designer: DesignerCtx) {
   watch(box, el => {
     sortable?.stop()
     if (!el) return
-    el.$sortableClone = (i) => props.children.splice(i, 1)[0]
+    const children = props.children as BoxProps[]
+    // el.$sortableClone = (i) => props.children.splice(i, 1)[0]
+    el.$sortableRemove = (key) => children.splice(children.findIndex(item => item._id == key), 1)[0]
     sortable = useSortable(el, toRef(props, 'children'), {
       group: 'shared',
       animation: 150,
@@ -139,12 +141,20 @@ function setup(props: BoxProps, designer: DesignerCtx) {
       // dataIdAttr: '_id',
       onAdd(e) {
         console.log(e)
-        const cloned = e.from.$sortableClone(e.oldDraggableIndex)
-        e.item.remove()
-        props.children.splice(e.newDraggableIndex, 0, cloned)
+        const si = children.length ? [...e.to.children].findIndex(e => e.getAttribute('_id') == children[0]._id) : e.to.children.length
+        if (e.pullMode == 'clone') {
+          e.item.remove()
+          const cloned = e.from.$sortableClone(e.oldIndex)
+          children.splice(e.newIndex - si, 0, cloned)
+        } else {
+          const key = e.item.getAttribute('_id')
+          const cloned = e.from.$sortableRemove(key)
+          e.item.remove()
+          children.splice(e.newIndex - si, 0, cloned)
+        }
       },
       onStart({ item, oldDraggableIndex }) {
-        designer.draggedId = (props.children as BoxProps[])[oldDraggableIndex!]._id
+        designer.draggedId = (children as BoxProps[])[oldDraggableIndex!]._id
         cloned = item.cloneNode(true) as HTMLElement
         cloned.classList.remove('ghostClass', 'drag')
         cloned.classList.add('outline-1', 'outline-solid', 'outline-[--el-color-primary]', 'outline-offset--1')
@@ -160,9 +170,13 @@ function setup(props: BoxProps, designer: DesignerCtx) {
           if (x && y) el.style.setProperty('transform', `translate(${x}, ${y})`)
         }
       },
-      onUpdate({ oldDraggableIndex, newDraggableIndex }) {
-        const node = props.children.splice(oldDraggableIndex, 1)[0]
-        props.children.splice(newDraggableIndex, 0, node)
+      onUpdate({ newDraggableIndex, oldDraggableIndex, ...e }) {
+        // const si = [...e.from.children].findIndex(el => el.getAttribute('_id') == e.item.getAttribute('_id'))
+        const si = e.oldIndex - children.findIndex(item => item._id == e.item.getAttribute('_id'))
+        const newIndex = e.newIndex - si, oldIndex = e.oldIndex - si
+        // console.log(e, newDraggableIndex, oldDraggableIndex)
+        const node = children.splice(oldIndex, 1)[0]
+        children.splice(newIndex, 0, node)
       }
     })
   })

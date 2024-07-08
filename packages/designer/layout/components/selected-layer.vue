@@ -3,7 +3,7 @@
     <!-- <selected-rect v-if="!designerCtx.draggedId" :el="designerCtx.hover" absolute outline="1 dashed [--el-color-primary]" outline-offset--1 :style="calcStyle(hoverEl())" /> -->
     <div v-if="!designerCtx.draggedId" absolute outline="1 dashed [--el-color-primary]" outline-offset--1 :style="calcStyle(hoverEl())">
       <div class="absolute bottom-[100%] px8 text-12 c-white bg-[--el-color-primary]">
-        {{ hoverConfig?.label }}
+        {{ designerCtx.hover?.['data-layer'] || hoverConfig?.label }}
       </div>
     </div>
     <!-- <selected-rect :el="designerCtx.active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(activeEl())" /> -->

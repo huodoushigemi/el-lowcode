@@ -18,7 +18,7 @@
     @node-click="focusViewport"
   >
     <template #default="{ node, data }">
-      <div class="el-tree-node__label group" flex="~ 1" lh-26 >
+      <div class="el-tree-node__label group" flex="~ 1" lh-26 @mouseenter="designerCtx.hoverId = data._id">
         <div flex-1 w0 truncate @dblclick="edit = data">
           <template v-if="edit != data">{{ getLabel(data) }}</template>
           <input v-else ref="inputRef" :value="getLabel(data)" @change="designerCtx.active['data-layer'] = $event.target.value.trim() || void 0" focus:outline="1 solid" mt2 p0 lh-22 block />
