@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { computedAsync } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
 import Designer from '@el-lowcode/designer'
-import { download } from '@el-lowcode/utils'
+import { download, unFn } from '@el-lowcode/utils'
 
 const router = useRouter()
 const route = useRoute()
@@ -35,7 +35,7 @@ watch([schema, designer], ([val, designer]) => {
 }, { immediate: true, flush: 'post' })
 
 function onEdit(item) {
-  designer.value.root = item.schema()
+  designer.value.root = unFn(item.schema)
 }
 function demoUrl(schema) {
   return router.resolve({ path: '/demo', query: { schema: encodeSchema(schema) } })

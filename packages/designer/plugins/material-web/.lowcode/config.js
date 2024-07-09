@@ -36,7 +36,6 @@ const button = (is, sortablePull = false) => ({
 const iconButton = (is, sortablePull = false) => ({
   is,
   label: 'icon-button',
-  layout: true,
   sortablePut: false,
   // sortablePull,
   props: props => [

@@ -16,7 +16,6 @@ export default [
   {
     is: 'div',
     label: 'div',
-    layout: true,
     category: '容器',
     defaultProps: () => ({
       children: []
@@ -33,7 +32,6 @@ export default [
   {
     is: 'a',
     label: 'a',
-    layout: true,
     category: '基础组件',
     props: [
       { lp: ['text', 'children'] },
@@ -99,7 +97,6 @@ export default [
   {
     is: 'details',
     label: 'details',
-    layout: true,
     props: [
       { lp: ['summary', 'children.0.children'] }
     ],
@@ -114,7 +111,6 @@ export default [
   {
     is: 'summary',
     label: 'summary',
-    layout: true,
     drag: false,
     props: [
       { lp: ['title', 'children'] }
@@ -141,7 +137,6 @@ export default [
   {
     is: 'li',
     label: 'li',
-    layout: true,
     props: [
 
     ]

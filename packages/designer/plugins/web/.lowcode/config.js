@@ -10,7 +10,6 @@ export default [
   {
     is: 'wc-waterfall',
     label: 'waterfall',
-    layout: true,
     category: '容器',
     props: [
       { lp: 'cols', type: 'input-number' },

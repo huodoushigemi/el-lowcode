@@ -263,7 +263,6 @@ export default [
   {
     is: 'mdui-collapse-item',
     label: 'collapse-item',
-    layout: true,
     drag: false,
     props: [
       value,
@@ -297,7 +296,6 @@ export default [
   {
     is: 'mdui-tab-panel',
     label: 'tab-panel',
-    layout: true,
     drag: false,
     props: [
       value,
@@ -309,7 +307,6 @@ export default [
   {
     is: 'mdui-tab-panel',
     label: 'tab-panel',
-    layout: true,
     drag: false,
     props: [
       value,
@@ -321,6 +318,7 @@ export default [
   {
     is: 'mdui-select',
     label: 'select',
+    sortablePut: false,
     props: [
       variant(['filled', 'outlined']),
       kv,

@@ -9,7 +9,6 @@ import Input from '../.lowcode/config/input'
 export default {
   is: 'ElForm$$',
   label: 'form',
-  layout: true,
   category: '数据输入',
   props: [
     // todo

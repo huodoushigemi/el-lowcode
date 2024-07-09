@@ -1,7 +1,6 @@
 export default {
   is: 'ElTabPane',
   label: 'tab-pane',
-  layout: true,
   drag: false,
   props: [
     { lp: 'label' },

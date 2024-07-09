@@ -1,7 +1,6 @@
 export default  {
   is: 'Grid',
   label: 'grid',
-  layout: true,
   category: '容器',
   props: [
     { lp: 'cols' },

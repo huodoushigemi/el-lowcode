@@ -5,6 +5,7 @@ export default {
   is: 'ElTabs',
   label: 'tabs',
   category: '容器',
+  sortablePut: false,
   props: props => [
     { lp: 'tab-position', type: 'radio-group', options: ['top', 'right', 'bottom', 'left'] },
     { lp: 'stretch', type: 'switch' },

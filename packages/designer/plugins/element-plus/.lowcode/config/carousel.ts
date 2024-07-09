@@ -6,6 +6,7 @@ export default {
   is: 'ElCarousel',
   label: 'carousel',
   category: '容器',
+  sortablePut: false,
   props: [
     { lp: 'height' },
     { lp: 'initial-index', type: 'input-number' },

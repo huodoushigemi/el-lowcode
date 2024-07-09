@@ -76,8 +76,7 @@ const activeCtx = computed(() => {
     moveDown: i != children.length - 1 ? () => swap(children, i, i + 1) : undefined,
     active2parent: () => designerCtx.activeId = parent._id,
     remove: () => designerCtx.activeId = (remove(children, designerCtx.active), void 0),
-    // todo
-    copy: () => children.splice(i + 1, 0, { ...deepClone(active), _id: uuidv4() })
+    copy: () => children.splice(i + 1, 0, deepClone(active, (v, k) => k == '_id' ? uuidv4() : v))
   }
 })
 

@@ -34,7 +34,6 @@
     "sortablejs": "^1.15.2",
     "tree-tool": "^1.1.8",
     "uuid": "^9.0.1",
-    "vue-draggable-plus": "^0.2.6",
     "vue3-moveable": "^0.28.0",
     "wc-appbar": "^0.0.8",
     "wc-fill-remain": "^0.0.7",

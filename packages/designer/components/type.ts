@@ -4,7 +4,6 @@ import { Item } from "el-form-render"
 export interface ElLowcodeConfig {
   is: string
   label?: string
-  layout?: boolean
   drag?: boolean
   sortablePut?: boolean
   cover?: string

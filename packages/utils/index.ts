@@ -37,9 +37,9 @@ export function set<T>(obj: any, path: string, val: T) {
   return path.split('.').reduce((o, k, i, ks) => o[k] = i == ks.length - 1 ? val : (o[k] ?? {}), obj)
 }
 
-export function deepClone(obj?: Record<string | number, any>, iteratee = val => val) {
+export function deepClone(obj?: Record<string | number, any>, iteratee = (val, key) => val) {
   const temp = isArray(obj) ? [] : {}
-  for (const key in obj) temp[key] = isObject(obj[key]) ? deepClone(obj[key], iteratee) : iteratee(obj[key])
+  for (const key in obj) temp[key] = isObject(obj[key]) ? deepClone(obj[key], iteratee) : iteratee(obj[key], key)
   return temp
 }
 

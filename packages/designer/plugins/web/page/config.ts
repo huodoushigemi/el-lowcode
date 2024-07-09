@@ -1,7 +1,6 @@
 export default {
   is: 'Page',
   label: 'page',
-  layout: true,
   drag: false,
   props: [
     { lp: 'fit', options: ['contain', 'cover', 'fill', 'scrollY', 'scrollX'] }

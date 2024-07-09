@@ -52,18 +52,8 @@ const Render = createRender({
           // do nothing
         }
         else if (isArray(children)) {
-          if (wgtConfig.layout) {
-            if (!children.length) {
-              children = [{ ref: ctx.boxRef, is: 'div', class: 'drag-wrapper empty-placeholder', children }]
-            }
-          }
-          else {
-            if (children.length) {
-              children = [{ ref: ctx.boxRef, is: 'div', class: `drag-wrapper`, style: 'display: contents', children }]
-            }
-            else {
-              children = [{ ref: ctx.boxRef, is: 'div', class: 'drag-wrapper empty-placeholder', children }]
-            }
+          if (!children.length) {
+            children = [{ ref: ctx.boxRef, is: 'div', class: 'drag-wrapper empty-placeholder', children }]
           }
         }
         else if (isObject(children)) {
@@ -95,41 +85,12 @@ function setup(props: BoxProps, designer: DesignerCtx) {
     if (!isArray(props.children)) return
     return unrefElement(boxRef.value || elRef.value)
   })
-
-  // const sortable = useDraggable(box, props.children, {
-  //   group: 'shared',
-  //   animation: 150,
-  //   draggable: '.drag',
-  //   filter: '.moveable',
-  //   ghostClass: 'ghostClass',
-  //   invertSwap: true,
-  //   onStart(e) {
-  //     designer.draggedId = (props.children as BoxProps[])[e.oldIndex!]._id
-  //     cloned = e.item.cloneNode(true) as HTMLElement
-  //     cloned.classList.remove('ghostClass', 'drag')
-  //     cloned.classList.add('outline-1', 'outline-solid', 'outline-[--el-color-primary]', 'outline-offset--1')
-  //     cloned.removeAttribute('draggable')
-  //     e.item.parentElement!.insertBefore(cloned, e.item)
-  //   },
-  //   onEnd() {
-  //     cloned.remove()
-  //     designer.draggedId = undefined
-  //   },
-  // })
-
-  // watch(box, el => {
-  //   sortable.destroy()
-  //   if (el) sortable.start()
-  //   else cache[props._id!] = undefined
-  // }, { immediate: true, flush: 'post' })
-
   
   let sortable
   watch(box, el => {
     sortable?.stop()
     if (!el) return
     const children = props.children as BoxProps[]
-    // el.$sortableClone = (i) => props.children.splice(i, 1)[0]
     el.$sortableRemove = (key) => children.splice(children.findIndex(item => item._id == key), 1)[0]
     sortable = useSortable(el, toRef(props, 'children'), {
       group: 'shared',
@@ -140,7 +101,6 @@ function setup(props: BoxProps, designer: DesignerCtx) {
       invertSwap: true,
       // dataIdAttr: '_id',
       onAdd(e) {
-        console.log(e)
         const si = children.length ? [...e.to.children].findIndex(e => e.getAttribute('_id') == children[0]._id) : e.to.children.length
         if (e.pullMode == 'clone') {
           e.item.remove()
@@ -153,13 +113,14 @@ function setup(props: BoxProps, designer: DesignerCtx) {
           children.splice(e.newIndex - si, 0, cloned)
         }
       },
-      onStart({ item, oldDraggableIndex }) {
-        designer.draggedId = (children as BoxProps[])[oldDraggableIndex!]._id
-        cloned = item.cloneNode(true) as HTMLElement
+      onStart(e) {
+        const i = children.findIndex(item => item._id == e.item.getAttribute('_id'))
+        designer.draggedId = children[i]._id
+        cloned = e.item.cloneNode(true) as HTMLElement
         cloned.classList.remove('ghostClass', 'drag')
         cloned.classList.add('outline-1', 'outline-solid', 'outline-[--el-color-primary]', 'outline-offset--1')
         cloned.removeAttribute('draggable')
-        item.parentElement!.insertBefore(cloned, item)
+        e.item.parentElement!.insertBefore(cloned, e.item)
       },
       onEnd(e) {
         cloned.remove()
@@ -170,13 +131,11 @@ function setup(props: BoxProps, designer: DesignerCtx) {
           if (x && y) el.style.setProperty('transform', `translate(${x}, ${y})`)
         }
       },
-      onUpdate({ newDraggableIndex, oldDraggableIndex, ...e }) {
-        // const si = [...e.from.children].findIndex(el => el.getAttribute('_id') == e.item.getAttribute('_id'))
+      onUpdate(e) {
         const si = e.oldIndex - children.findIndex(item => item._id == e.item.getAttribute('_id'))
         const newIndex = e.newIndex - si, oldIndex = e.oldIndex - si
-        // console.log(e, newDraggableIndex, oldDraggableIndex)
         const node = children.splice(oldIndex, 1)[0]
-        children.splice(newIndex, 0, node)
+        children.splice(newIndex > oldIndex ? newIndex - 1 : newIndex, 0, node)
       }
     })
   })
