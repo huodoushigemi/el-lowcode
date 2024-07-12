@@ -115,7 +115,6 @@ import { isArray, isPlainObject, remove } from '@vue/shared'
 import { computedAsync, toReactive, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage, useMagicKeys } from '@vueuse/core'
 import { useSortable } from '@vueuse/integrations/useSortable'
 import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
-// import { VueDraggable } from 'vue-draggable-plus'
 import Moveable from 'vue3-moveable'
 
 import { Arrable, get, keyBy, groupBy, pick, set, toArr, treeUtils } from '@el-lowcode/utils'
@@ -173,7 +172,7 @@ const root = useLocalStorage(
 
 
 // 时间旅行
-const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500 })
+const { history, undo, redo, canRedo, canUndo, commit,  } = useDebouncedRefHistory(root, { deep: true, debounce: 500, capacity: 20 })
 
 // 组件树
 const tree = computed<BoxProps[]>(() => treeUtils.changeProp([root.value], [['children', 'children', v => isArray(v) ? v : undefined]]))
@@ -355,6 +354,20 @@ useEventListener('keydown', e => {
     if (e.key == 'ArrowLeft') plus('marginLeft', -offset)
     if (e.key == 'ArrowDown') plus('marginTop', offset)
     if (e.key == 'ArrowRight') plus('marginLeft', offset)
+  }
+})
+
+// ctrl z / y
+useEventListener('keydown', e => {
+  if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return
+  if (!e.ctrlKey) return
+  const key = e.key.toLocaleLowerCase()
+  if (!['z', 'y'].includes(key)) return
+  e.preventDefault()
+  e.stopPropagation()
+  switch (key) {
+    case 'z': return undo()
+    case 'y': return redo()
   }
 })
 
