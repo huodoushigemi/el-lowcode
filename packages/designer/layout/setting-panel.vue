@@ -150,18 +150,7 @@ const commons = [
 ]
 
 function add2absolute(node) {
-  const { flated } = designerCtx
-  const parent = flated.find(e => isArray(e.children) ? e.children.includes(node) : false)
-
-  remove(parent.children, node)
-  // const i = parent.children.findIndex(e => e.style?.position != 'absolute')
-  let i = -1
-  while (++i < parent.children.length) if (parent.children[i].style?.position != 'absolute') break
-  parent.children.splice(i, 0, node)
-  // parent.children.unshift(node)
-  // parent.children.push(node)
   set(node, 'style.position', 'absolute')
-  // set(node, 'style.zIndex', '1')
 }
 </script>
 

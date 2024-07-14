@@ -56,8 +56,6 @@ const tree = computed(() => treeUtils.changeProp(designerCtx.root.children, [['c
 
 watch([tree, () => designerCtx.activeId], () => treeRef.value?.setCurrentKey(designerCtx.activeId, false), { immediate: true, flush: 'post' })
 
-const label = refWithWatch(() => getLabel(designerCtx.active))
-
 function getLabel(data) {
   if (!data) return
   data = designerCtx.keyed[data._id]
@@ -112,13 +110,7 @@ function nodeDrop(drag, drop, type) {
       })
     }
     drop.children.push(drag)
-    // let i = -1
-    // while (++i < dropParent.children.length) if (dropParent.children[i].style?.position != 'absolute') break
-    // dropParent.children.splice(i, 0, drag)
   }
-  nextTick().then(() => {
-    designerCtx.activeId = drag._id
-  })
 }
 
 function focusViewport() {

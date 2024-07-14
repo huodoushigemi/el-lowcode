@@ -40,7 +40,6 @@ const Render = createRender({
           console.error('exec expression error: ', e)
         }
       }
-  
       
       props = deepClone(props, _execExp)
       
@@ -54,6 +53,9 @@ const Render = createRender({
         else if (isArray(children)) {
           if (!children.length) {
             children = [{ ref: ctx.boxRef, is: 'div', class: 'drag-wrapper empty-placeholder', children }]
+          }
+          else {
+            sortAbsolute(children)
           }
         }
         else if (isObject(children)) {
@@ -166,6 +168,22 @@ function setup(props: BoxProps, designer: DesignerCtx) {
       key: props._id,
       class: computed(() => absolute.value ? 'moveable' : config.value?.drag == false ? '' : 'drag'),
     }),
+  }
+}
+
+// 将 absolute 的元素移动到前面
+function sortAbsolute(arr: BoxProps[]) {
+  let ii = -1, bool = false
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i].style?.position != 'absolute') continue
+    if (i - ii > 1) { bool = true; break }
+    ii = i
+  }
+  if (bool) {
+    const c1 = arr.filter(e => e.style?.position == 'absolute')
+    const c2 = arr.filter(e => e.style?.position != 'absolute')
+    arr.length = 0
+    arr.push(...c1, ...c2)
   }
 }
 </script>
