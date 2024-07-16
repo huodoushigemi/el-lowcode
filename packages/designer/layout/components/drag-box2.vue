@@ -13,7 +13,6 @@ import { computed, inject, mergeProps, onMounted, onUpdated, reactive, ref, toRe
 import { isArray, isObject, normalizeClass } from '@vue/shared'
 import { unrefElement, useEventListener } from '@vueuse/core'
 import { useSortable } from '@vueuse/integrations/useSortable'
-// import { useDraggable } from 'vue-draggable-plus'
 import { createRender } from '@el-lowcode/render'
 import { deepClone, execExp, pick } from '@el-lowcode/utils'
 import { sloveConfig } from '../../components/_utils'

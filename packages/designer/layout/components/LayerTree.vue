@@ -38,16 +38,9 @@
 import { computed, inject, ref, watchEffect } from 'vue'
 import { isArray, isString, remove } from '@vue/shared'
 import { onClickOutside, useEventListener } from '@vueuse/core'
-import { get, keyBy, groupBy, pick, set, toArr, treeUtils } from '@el-lowcode/utils'
+import { treeUtils } from '@el-lowcode/utils'
 import { designerCtxKey } from '../interface'
-import { refWithWatch } from '../../components/hooks'
-import { nextTick } from 'vue'
 import { watch } from 'vue'
-
-// import type {
-//   AllowDropType,
-//   NodeDropType,
-// } from 'element-plus/es/components/tree/src/tree.type'
 
 const designerCtx = inject(designerCtxKey)
 
@@ -85,7 +78,7 @@ function dblclick() {
 
 }
 
-function allowDrop(drag, drop, type) {  
+function allowDrop(drag, drop, type) {
   drop = designerCtx.keyed[drop.data._id]
   return type != 'inner' || isArray(drop.children)
 }

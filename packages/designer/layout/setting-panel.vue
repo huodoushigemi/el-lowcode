@@ -6,19 +6,19 @@
   </div>
   <el-tabs v-if="config" class="tabs">
     <el-tab-pane label="attrs">
-      <el-form-render :model="model" label-width="auto" size="small" label-position="top">
+      <el-form-render :model="model" label-width="auto" size="small" label-position="top" @submit.prevent>
         <Render v-for="item in _items" v-bind="item" />
       </el-form-render>
     </el-tab-pane>
 
     <el-tab-pane label="style" lazy>
-      <el-form-render :model="model" label-width="auto" size="small" label-position="top">
+      <el-form-render :model="model" label-width="auto" size="small" label-position="top" @submit.prevent>
         <Render v-for="item in styles" v-bind="item" />
       </el-form-render>
     </el-tab-pane>
 
     <el-tab-pane label="common" lazy>
-      <el-form-render :model="model" label-width="auto" size="small" label-position="top">
+      <el-form-render :model="model" label-width="auto" size="small" label-position="top" @submit.prevent>
         <Render v-for="item in commons" v-bind="item" />
       </el-form-render>
     </el-tab-pane>
