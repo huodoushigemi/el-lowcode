@@ -143,6 +143,7 @@ import InputNumber from '../components/InputNumber.vue'
 import InputNumbers from '../components/InputNumbers.vue'
 import Collapse from '../components/Collapse.vue'
 import EditTable from '../components/EditTable.vue'
+import Tabs from '../components/Tabs.vue'
 
 const app = getCurrentInstance()!.appContext.app
 app.use(OptionsInput)
@@ -150,6 +151,7 @@ app.component('InputNumber', InputNumber)
 app.component('InputNumbers', InputNumbers)
 app.component('Collapse', Collapse)
 app.component('EditTable', EditTable)
+app.component('Tabs', Tabs)
 
 const { control } = useMagicKeys()
 

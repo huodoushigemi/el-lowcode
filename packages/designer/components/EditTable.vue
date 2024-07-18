@@ -24,7 +24,7 @@
       </el-table-column>
     </el-table>
 
-    <el-button mt4="!" mr24 text bg rd="0!" @click="modelValue.push({})">Add</el-button>
+    <el-button mt4="!" mr24 text bg rd="0!" @click="onPlus">Add</el-button>
   </ElFormRender>
 </template>
 
@@ -35,6 +35,14 @@ import { ElFormRender, ElFormItemRender } from 'el-form-render'
 const props = defineProps({
   ...ElTable.props,
   columns: Array,
-  modelValue: Array
+  modelValue: Array,
+  new: Function
 })
+
+function onPlus() {
+  const modelValue = props.modelValue || []
+  if (props.new) modelValue.push(props.new(props.modelValue.length))
+  else modelValue.push({})
+  emit('update:modelValue', modelValue)
+}
 </script>

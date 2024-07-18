@@ -23,7 +23,7 @@ const props = defineProps({
   unit: String,
   units: Array,
   hideUnit: Boolean,
-  placeholder: Array,
+  placeholder: [Array, String],
   label: String
 })
 

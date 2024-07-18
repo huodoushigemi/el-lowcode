@@ -1,4 +1,4 @@
-import { defineConfig, presetAttributify, presetUno, presetIcons, transformerVariantGroup } from 'unocss'
+import { defineConfig, presetAttributify, presetUno, presetIcons, transformerVariantGroup, transformerDirectives } from 'unocss'
 import presetRemToPx from '@unocss/preset-rem-to-px'
 
 const gaps = [-4, 0, 4, 8, 10, 12, 'a']
@@ -15,20 +15,29 @@ export default defineConfig({
     presetRemToPx({ baseFontSize: 4 }),
     presetIcons()
   ],
-  // transformers: [
-  //   transformerVariantGroup()
-  // ],
+  transformers: [
+    // transformerVariantGroup()
+    transformerDirectives()
+  ],
   safelist: [
     'inline-block',
     'flex!',
     'grid',
     'text-12',
+    ...gaps.map(e => `m${e}`),
     ...gaps.map(e => `mt${e}`),
     ...gaps.map(e => `mr${e}`),
     ...gaps.map(e => `mb${e}`),
     ...gaps.map(e => `ml${e}`),
     ...gaps.map(e => `mx${e}`),
     ...gaps.map(e => `my${e}`),
+    ...gaps.map(e => `-m${e}`),
+    ...gaps.map(e => `-mt${e}`),
+    ...gaps.map(e => `-mr${e}`),
+    ...gaps.map(e => `-mb${e}`),
+    ...gaps.map(e => `-ml${e}`),
+    ...gaps.map(e => `-mx${e}`),
+    ...gaps.map(e => `-my${e}`),
     ...gaps.map(e => `gap-${e}`),
     ...gaps.map(e => `gap-x-${e}`),
     ...gaps.map(e => `gap-y-${e}`),

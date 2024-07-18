@@ -3,8 +3,6 @@ import { bool, color, details, enable, enable2, enable3, genDisplayValue, lineSt
 const _options = (arr) => (arr.map(e => ({ label: e[0], value: e[1] })))
 
 export const serieLine = (model) => ({ is: 'ElFormRender', model, size: 'small', children: [
-  { lp: 'name', style: 'margin-bottom: 8px' },
-  
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', size: 'small', children: [
     ...lineStyleItems(['type', 'width', 'color', 'shadowBlur', 'shadowOffset', 'shadowColor'], 'lineStyle'),
   ] },

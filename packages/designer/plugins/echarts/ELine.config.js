@@ -5,9 +5,10 @@ import { enable2 } from './.lowcode/utils'
 export default {
   is: 'ELine',
   label: '线型图',
-  props: ({ option }) => [
-    { lp: 'data', script: true },
-    { lp: 'fields', script: true },
+  props: ({ _id, option }) => [
+    { lp: ['data', 'option.dataset.source'], script: true },
+
+    // { lp: ['series', 'option.series'], class: '-mr8', el: { is: 'EditTable', columns: [{ prop: 'name' }, { prop: 'encode.y' }], new: () => ({ type: 'line' }) } },
 
     { is: 'ElFormRender', model: option, size: 'small', class: 'no-scriptable', children: [
       grid(option),
@@ -16,13 +17,9 @@ export default {
       legend(option),
       toolbox(option),
       tooltip(option),
-      enable2(option, 'Series', void 0, () => [
-        { is: 'ElTabs', children: [
-          { is: 'ElTabPane', label: '1', lazy: true, children: [
-            serieLine(option.series[0])
-          ] },
-        ] },
-      ], true)
+      { is: 'Tabs', key: _id, class: '-mx8 mt12', tabs: option.series, editable: true, new: (i) => ({ type: 'line', name: `series-${i + 1}` }), children: option.series.map(e => (
+        { is: 'div', label: e.name, class: 'px8', children: () => [serieLine(e)] }
+      )) },
     ] },
 
     { is: 'ElDivider' },
@@ -41,8 +38,6 @@ export default {
     { lp: 'onLegendselected', script: true },
   ],
   defaultProps: () => ({
-    data: `{{${JSON.stringify([{ x: 'Mon', y: 150 }, { x: 'Tue', y: 230 }, { x: 'Wed', y: 224 }, { x: 'Thu', y: 218 }, { x: 'Fri', y: 135 }, { x: 'Sat', y: 147 }, { x: 'Sun', y: 260 }], undefined, ' ')}}}`,
-    fields: `{{{ x: 'x', y: 'y' }}}`,
     autoresize: true,
     style: { height: '300px', width: '400px' },
     option: {
@@ -51,7 +46,14 @@ export default {
       yAxis: {},
       tooltip:{ show: true, trigger: 'axis' },
       toolbox: {},
+      dataset: {
+        source: `{{${JSON.stringify([{ x: 'Mon', y: 150 }, { x: 'Tue', y: 230 }, { x: 'Wed', y: 224 }, { x: 'Thu', y: 218 }, { x: 'Fri', y: 135 }, { x: 'Sat', y: 147 }, { x: 'Sun', y: 260 }], undefined, ' ')}}}`
+      },
       series: [{ label: { show: true } }]
     },
   })
+}
+
+function onEdit(active, action) {
+  
 }

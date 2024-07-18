@@ -30,7 +30,7 @@ const echarts = ref()
 const _option = computed(() => {
   const indicator = props.option.radar.indicator
   const originData = props.option.series.data
-  const option = merge(JSON.parse(JSON.stringify(props.option)), {
+  const option = merge({ ...props.option }, {
     radar: {},
     series: { type: 'radar' }
   })

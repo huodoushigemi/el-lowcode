@@ -40,7 +40,10 @@ const Render = createRender({
         }
       }
       
-      props = deepClone(props, _execExp)
+      // 移除值为 undefuned 的属性 
+      props = JSON.parse(JSON.stringify(props))
+      // 执行表达式
+      props = deepClone(props, _execExp) 
       
       const ctx = cache[_props._id!] ??= setup(_props, designer)
       const wgtConfig = sloveConfig(_props)
