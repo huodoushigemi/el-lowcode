@@ -1,7 +1,8 @@
 <script setup lang='jsx'>
 import { ref, useSlots, watchEffect } from 'vue'
-import { refWithControl } from '@vueuse/core'
+import { onClickOutside, refWithControl, useEventListener } from '@vueuse/core'
 import { useSortable } from '@vueuse/integrations/useSortable.mjs'
+import { useEdit } from './hooks';
 
 const props = defineProps({
   tabs: Array,
@@ -11,10 +12,13 @@ const props = defineProps({
   showClose: Boolean
 })
 
+const slots = useSlots()
 
 const active = refWithControl()
-const slots = useSlots()
 let children = []
+
+const edit = ref(false)
+const { inputRef } = useEdit(ref(), () => edit.value = false)
 
 const navRef = ref()
 const sortable = useSortable(navRef, () => props.tabs, { draggable: '.tab', animation: 100 })
@@ -28,8 +32,10 @@ function onPlus() {
 }
 
 function onDown(e) {
-  e.stopPropagation()
-  e.preventDefault()
+  if (e.button == 1) {
+    e.stopPropagation()
+    e.preventDefault()
+  }
 }
 
 function onTab(e, k, i) {
@@ -71,8 +77,9 @@ defineRender(() => {
     <div class={['Tabs', editable && 'is-editable']}>
       <div class='tab_nav flex' ref={navRef}>
         {children.map((c, i) => (
-          <div key={c.props.key} class={['tab', active.value == c.props.key && 'is-active']} onPointerdown={onDown} onPointerup={e => onTab(e, c.props.key, i)}>
+          <div key={c.props.key} class={['tab', active.value == c.props.key && 'is-active']} onPointerdown={onDown} onPointerup={e => onTab(e, c.props.key, i)} onDblclick={() => edit.value = true}>
             {c.props.label}
+            {active.value == c.props.key && edit.value && <input class='absolute left-0 p4 wfull lh-22 outline-0' ref={inputRef} value={c.props.label} onChange={() => {}} />}
             {showClose && <div class='i-ep-close hover:i-ep:circle-close-filled flex aic jcc ml4 -mr4 text-10' onClick={(e) => (e.stopPropagation(), del(i))} />}
           </div>
         ))}
@@ -106,7 +113,7 @@ defineRender(() => {
     }
 
     > .tab {
-      @apply flex flex-shrink-0 aic mr4 px8 text-14 lh-26 cursor-default;
+      @apply relative flex flex-shrink-0 aic mr4 px8 text-14 lh-26 cursor-default;
       color: var(--el-text-color-secondary);
       
       &:hover {
