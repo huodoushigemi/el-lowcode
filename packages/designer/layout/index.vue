@@ -138,7 +138,8 @@ import { vue2esm } from './vue2esm'
 import { PageCtx } from '../plugins/web/page'
 import { plugins, builtins } from './config'
 
-import OptionsInput from '../components/options-input'
+import OptionsInput from '../components/OptionsInput.vue'
+import PairInput from '../components/PairInput.vue'
 import InputNumber from '../components/InputNumber.vue'
 import InputNumbers from '../components/InputNumbers.vue'
 import Collapse from '../components/Collapse.vue'
@@ -146,7 +147,8 @@ import EditTable from '../components/EditTable.vue'
 import Tabs from '../components/Tabs.vue'
 
 const app = getCurrentInstance()!.appContext.app
-app.use(OptionsInput)
+app.component('OptionsInput', OptionsInput)
+app.component('PairInput', PairInput)
 app.component('InputNumber', InputNumber)
 app.component('InputNumbers', InputNumbers)
 app.component('Collapse', Collapse)

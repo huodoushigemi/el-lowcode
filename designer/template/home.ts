@@ -355,5 +355,8 @@ export default {
       count: 0,
     },
     style: {},
+    plugins: [
+      "/el-lowcode/designer/packages/designer/plugins/web"
+    ],
   }),
 }

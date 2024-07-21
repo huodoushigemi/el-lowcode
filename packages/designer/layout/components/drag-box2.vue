@@ -3,18 +3,22 @@ const props = defineProps({
   el: Object
 })
 
+onBeforeUnmount(() => {
+  for (const k in cache) cache[k] = void 0
+})
+
 defineRender(() => {
   return Render(props.el!)
 })
 </script>
 
 <script lang="ts">
-import { computed, inject, mergeProps, onMounted, onUpdated, reactive, ref, toRef, watch } from 'vue'
-import { isArray, isObject, normalizeClass } from '@vue/shared'
-import { unrefElement, useEventListener } from '@vueuse/core'
+import { computed, inject, mergeProps, onBeforeUnmount, reactive, ref, toRef, watch, watchEffect } from 'vue'
+import { isArray } from '@vue/shared'
+import { computedEager, unrefElement, useEventListener } from '@vueuse/core'
 import { useSortable } from '@vueuse/integrations/useSortable'
 import { createRender } from '@el-lowcode/render'
-import { deepClone, execExp, pick } from '@el-lowcode/utils'
+import { deepClone, execExp, mapValues, pick } from '@el-lowcode/utils'
 import { sloveConfig } from '../../components/_utils'
 import type { DesignerCtx } from '../interface'
 import type { BoxProps } from '../../components/type'
@@ -30,7 +34,7 @@ const Render = createRender({
     return wm.get(_props)?.value || wm.set(_props, computed(() => {
       // console.log(_props)
       const { state } = designer.root
-      let { children, ...props } =  _props
+      let { children, ...props } = _props
   
       const _execExp = (exp) => {
         try {
@@ -40,32 +44,23 @@ const Render = createRender({
         }
       }
       
-      // 移除值为 undefuned 的属性 
+      // 移除值为 undefuned 的属性
       props = JSON.parse(JSON.stringify(props))
       // 执行表达式
-      props = deepClone(props, _execExp) 
-      
-      const ctx = cache[_props._id!] ??= setup(_props, designer)
-      const wgtConfig = sloveConfig(_props)
-  
-      if (wgtConfig) {
-        if (wgtConfig.sortablePut == false) {
-          // do nothing
+      props = deepClone(props, _execExp)
+
+      const ctx = setup(_props, designer)
+
+      if (isArray(children)) {
+        if (!children.length) {
+          children = [{ ref: ctx.boxRef, is: 'div', class: 'drag-wrapper empty-placeholder', children }]
         }
-        else if (isArray(children)) {
-          if (!children.length) {
-            children = [{ ref: ctx.boxRef, is: 'div', class: 'drag-wrapper empty-placeholder', children }]
-          }
-          else {
-            sortAbsolute(children)
-          }
-        }
-        else if (isObject(children)) {
-          // todo
+        else {
+          sortAbsolute(children)
         }
       }
 
-      props = mergeProps(props, pick(ctx, ['ref']), ctx.attrs)
+      props = mergeProps(props, { ref: ctx.ref }, ctx.attrs)
       props.children = _execExp(children)
   
       return props
@@ -75,9 +70,11 @@ const Render = createRender({
 })
 
 
-const cache = {} as Record<string, ReturnType<typeof setup> | undefined>
+const cache = new WeakMap()
 
 function setup(props: BoxProps, designer: DesignerCtx) {
+  if (cache.has(props)) cache.get(props)
+  
   const elRef = ref(), boxRef = ref()
   const config = computed(() => sloveConfig(props))
   const absolute = computed(() => props.style?.position == 'absolute')
@@ -143,34 +140,34 @@ function setup(props: BoxProps, designer: DesignerCtx) {
       }
     })
   })
-
-
-  watch(box, el => {
-    if (!el) cache[props._id!] = undefined
-  }, { immediate: true, flush: 'post' })
   
   useEventListener(elRef, 'mousedown', e => {
     if (e.button != 0) return
     e.stopPropagation()
-    
     if (designer.draggedId) return
     designer.activeId = props._id
   }, { passive: false })
+
   useEventListener(elRef, 'mouseover', e => {
     e.stopPropagation()
     if (designer.draggedId) return
     designer.hoverId = props._id
   })
 
-  return {
+  const ret = {
     ref: elRef,
     boxRef,
     absolute,
     attrs: reactive({
       key: props._id,
-      class: computed(() => absolute.value ? 'moveable' : config.value?.drag == false ? '' : 'drag'),
+      class: computedEager(() => absolute.value ? 'moveable' : config.value?.drag == false ? '' : 'drag'),
+      onVnodeBeforeUnmount: () => cache.delete(props)
     }),
   }
+  
+  cache.set(props, ret)
+  
+  return ret
 }
 
 // 将 absolute 的元素移动到前面

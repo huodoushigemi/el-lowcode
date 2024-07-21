@@ -51,13 +51,6 @@ import MSLRight from '~icons/material-symbols-light/align-horizontal-right'
 import MSLClose from '~icons/material-symbols-light/close-small-outline-rounded'
 import MSLUnderlined from '~icons/material-symbols-light/format-underlined'
 
-import OptionsInput from '../components/options-input'
-import PairInput from '../components/pair-input'
-
-const ins = getCurrentInstance()
-ins.appContext.app.use(OptionsInput)
-ins.appContext.app.use(PairInput)
-
 const visible = ref(false)
 const internalProps = ['_id', 'is', 'children']
 const editModel = computed({
@@ -159,7 +152,7 @@ function add2absolute(node) {
   position: sticky;
   top: 0;
   z-index: 9;
-  background: var(--vp-c-bg);
+  background: var(--el-bg-color);
 }
 :deep(.el-tabs__nav) {
   padding: 0 8px;

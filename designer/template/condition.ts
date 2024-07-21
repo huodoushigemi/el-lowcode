@@ -109,5 +109,9 @@ export default {
     style: {
       'padding-top': '100px',
     },
+    plugins: [
+      "/el-lowcode/designer/packages/designer/plugins/web",
+      "/el-lowcode/designer/packages/designer/plugins/element-plus"
+    ],
   }),
 }

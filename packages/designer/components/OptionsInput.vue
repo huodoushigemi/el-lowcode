@@ -10,11 +10,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import PairInput from '../pair-input'
-
-defineOptions({
-  name: 'OptionsInput'
-})
+import PairInput from './PairInput.vue'
 
 const props = defineProps({
   modelValue: Array,

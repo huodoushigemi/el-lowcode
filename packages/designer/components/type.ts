@@ -14,7 +14,7 @@ export interface ElLowcodeConfig {
 
 export interface BoxProps {
   is?: any
-  _id?: string
+  _id: string
   el?: Obj
   children?: string | number | BoxProps[]
   $?: {

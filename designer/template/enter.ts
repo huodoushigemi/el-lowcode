@@ -9,7 +9,7 @@ export default {
     _id: '710ca988-63f7-47bd-837f-4e45f6c0b59e',
     children: [
       {
-        is: 'Form',
+        is: 'ElForm$$',
         _id: 'cf70094f-5da9-4770-b6a0-c8787fac72ba',
         labelWidth: 80,
         style: {
@@ -135,5 +135,9 @@ export default {
       count: 0,
       formData: {},
     },
+    plugins: [
+      "/el-lowcode/designer/packages/designer/plugins/web",
+      "/el-lowcode/designer/packages/designer/plugins/element-plus"
+    ],
   }),
 }

@@ -39,8 +39,9 @@ export default [
       { lp: 'target', type: 'radio-group', options: ['_self', '_blank'] }
     ],
     defaultProps: () => ({
-      children: [],
-      href: 'https://element-plus.gitee.io'
+      children: 'element-plus',
+      href: 'https://element-plus.org/zh-CN/',
+      target: '_blank'
     })
   },
 

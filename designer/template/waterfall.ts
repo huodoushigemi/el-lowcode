@@ -168,5 +168,8 @@ export default {
       'max-width': '512px',
       margin: 'auto',
     },
+    plugins: [
+      "/el-lowcode/designer/packages/designer/plugins/web"
+    ],
   }),
 }

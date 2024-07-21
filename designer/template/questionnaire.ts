@@ -249,7 +249,7 @@ export default {
             _id: 'b1e7e737-493f-4edc-9af7-6c1d9d22120a',
           },
         ],
-        is: 'Form',
+        is: 'ElForm$$',
         _id: '1e8c282f-a74f-48f8-bf0a-7e2f2c8a6dc9',
         labelPosition: 'top',
         model: '{{state.formData}}',
@@ -264,5 +264,9 @@ export default {
     style: {
       padding: '12px',
     },
+    plugins: [
+      "/el-lowcode/designer/packages/designer/plugins/web",
+      "/el-lowcode/designer/packages/designer/plugins/element-plus"
+    ],
   }),
 }
