@@ -3,7 +3,7 @@ export default  {
   label: 'grid',
   category: '容器',
   props: [
-    { lp: 'cols' },
+    { lp: 'cols', el: { is: 'InputNumber' } },
     // { lp: 'gap', type: 'slider' },
     { lp: 'gap', el: { is: 'InputNumber', unit: null } },
   ],

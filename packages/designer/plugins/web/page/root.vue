@@ -5,16 +5,13 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, getCurrentInstance, inject, provide, reactive, watch, watchEffect, Plugin, ref, PropType, nextTick } from 'vue'
+import { defineAsyncComponent, getCurrentInstance, inject, provide, toRef, reactive, watch, watchEffect, Plugin, ref, PropType, nextTick } from 'vue'
 import { useWindowSize, useParentElement, useElementSize } from '@vueuse/core'
 import { pageCtxKey } from './interface'
 import { refWithWatch } from '../../../components/hooks'
 import { importJs } from '../../../components/_utils'
 import { designerCtxKey } from '../../../layout/interface'
 import { useFit } from './hooks'
-import { computed } from 'vue'
-import { toRef } from 'vue'
-import { useAttrs } from 'vue'
 
 defineOptions({
   name: 'Page'
@@ -57,6 +54,7 @@ watchEffect(() => {
 // load plugin
 watch(() => props.plugins, async (urls, old) => {
   if (JSON.stringify(urls) == JSON.stringify(old)) return
+  if (!urls?.length) return
   
   try {
     loading.value = true

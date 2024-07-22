@@ -29,7 +29,7 @@ export default {
         header: '',
         children: [
           {
-            is: 'Form',
+            is: 'ElForm$$',
             _id: '23e1cb33-98b8-4e6b-a6f5-13b144e26fa7',
             labelWidth: 80,
             style: {
@@ -95,5 +95,9 @@ export default {
     style: {
       padding: '20px',
     },
+    plugins: [
+      "/el-lowcode/designer/packages/designer/plugins/web",
+      "/el-lowcode/designer/packages/designer/plugins/element-plus"
+    ],
   }),
 }

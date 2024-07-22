@@ -103,5 +103,9 @@ export default {
     style: {
       'text-align': 'center',
     },
+    plugins: [
+      "/el-lowcode/designer/packages/designer/plugins/web",
+      "/el-lowcode/designer/packages/designer/plugins/ant-design-vue"
+    ],
   }),
 }

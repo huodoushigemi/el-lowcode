@@ -7,7 +7,7 @@ export default {
   schema: () => ({
     children: [
       {
-        is: 'Form',
+        is: 'ElForm$$',
         _id: '15870304-528c-4f18-b4c2-7529dcb30837',
         labelWidth: '20',
         style: {
@@ -189,5 +189,9 @@ export default {
     style: {
       padding: '12px',
     },
+    plugins: [
+      "/el-lowcode/designer/packages/designer/plugins/web",
+      "/el-lowcode/designer/packages/designer/plugins/element-plus"
+    ],
   }),
 }
