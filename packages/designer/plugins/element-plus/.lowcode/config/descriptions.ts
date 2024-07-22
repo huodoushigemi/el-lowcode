@@ -1,4 +1,3 @@
-import OptionsInput from '../../../../components/options-input'
 import { ENUM_SIZE } from '../../utils'
 
 const item = (label, children) => ({ is: 'ElDescriptionsItem', label, children })
@@ -14,7 +13,7 @@ export default {
     { lp: 'column', type: 'input-number' },
     { lp: 'direction', type: 'radio-group', options: ['vertical', 'horizontal'] },
     { lp: 'size', type: 'radio-group', options: ENUM_SIZE, displayValue: 'default' },
-    { lp: ['cols', 'children'], el: { is: OptionsInput, props: { V: 'children' }, new: i => item(`title${i + 1}`, `content${i + 1}`) } },
+    { lp: ['cols', 'children'], el: { is: 'OptionsInput', props: { V: 'children' }, new: i => item(`title${i + 1}`, `content${i + 1}`) } },
   ],
   defaultProps: () => ({
     column: 3,

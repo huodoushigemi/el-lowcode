@@ -1,5 +1,4 @@
 import { formItemPropsConfig } from '../../utils'
-import OptionsInput from '../../../../components/options-input'
 
 let count = 0
 
@@ -12,7 +11,7 @@ export default {
     { lp: ['button', 'el.type'], type: 'switch', el: { activeValue: 'button', inactiveValue: undefined } },
     { lp: ['min', 'el.min'], type: 'input-number', el: { class: 'wfull', placeholder: 'min number of checkbox' } },
     { lp: ['max', 'el.max'], type: 'input-number', el: { class: 'wfull', placeholder: 'max number of checkbox' } },
-    { lp: 'options', el: { is: OptionsInput } },
+    { lp: 'options', el: { is: 'OptionsInput' } },
     { lp: ['fill', 'el.fill'], type: 'color-picker' },
   ],
   defaultProps: () => ({

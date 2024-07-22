@@ -5,7 +5,7 @@
       :modelValue="modelValue?.[i - 1]"
       @update:modelValue="emit('update:modelValue', Array(len).fill(undefined).map((e, ei) => ei == i - 1 ? $event : modelValue?.[ei]))"
       :placeholder="placeholder?.[i - 1]"
-      :min :max :step :unit :units :hideUnit
+      :min :max :step :unit :units :hideUnit :noUnit
     />
   </div>
 </template>
@@ -23,6 +23,7 @@ const props = defineProps({
   unit: String,
   units: Array,
   hideUnit: Boolean,
+  noUnit: Boolean,
   placeholder: [Array, String],
   label: String
 })

@@ -1,7 +1,7 @@
 <template>
   <div class="input-number" :class="[isFocus && 'is-focus']" @click="inputRef.focus()">
     <input ref="inputRef" :value="_value" @input="_value = $event.target.value" type="number" :min :max :step :class="[wresize && 'cursor-w-resize']" :placeholder="placeholder" @focus="isFocus = true" @blur="isFocus = false" />
-    <select v-if="!hideUnit" ref="selectRef" :value="unit" px4 bg-hover rd-0 appearance-none outline-0 tabindex="-1" @click.stop @change="unit = $event.target.value; _value = _value">
+    <select v-if="!hideUnit && !noUnit" ref="selectRef" :value="unit" px4 bg-hover rd-0 appearance-none outline-0 tabindex="-1" @click.stop @change="unit = $event.target.value; _value = _value">
       <option v-for="opt in units" :value="opt">{{ opt }}</option>
     </select>
   </div>
@@ -21,6 +21,7 @@ const props = defineProps({
   unit: { type: String, default: 'px' },
   units: { type: Array, default: () => ['px', '%', 'vw', 'vh'] },
   hideUnit: Boolean,
+  noUnit: Boolean,
   placeholder: String,
   label: String
 })
@@ -35,6 +36,7 @@ const wresize = computed(() => (control.value && isMouseenter.value) || controlM
 
 const unit = ref('')
 watch(() => props.modelValue, v => {
+  if (props.noUnit) return
   unit.value = v == null ? props.unit : isString(v) ? v.match(unitReg)[1] : ''
 }, { immediate: true })
 

@@ -1,5 +1,4 @@
 import { formItemPropsConfig } from '../../utils'
-import OptionsInput from '../../../../components/options-input'
 
 let count = 0
 
@@ -11,7 +10,7 @@ export default {
     ...formItemPropsConfig({ exclude: ['readonly', 'clearable', 'placeholder'] }),
     { lp: ['button', 'el.type'], type: 'switch', el: { activeValue: 'button', inactiveValue: undefined } },
     { lp: ['fill', 'el.fill'], type: 'color-picker' },
-    { lp: 'options', el: { is: OptionsInput } }
+    { lp: 'options', el: { is: 'OptionsInput' } }
   ],
   defaultProps: () => ({
     is: 'ElFormItemRender',

@@ -5,11 +5,6 @@ export default {
     "is": "Page",
     "children": [
       {
-        "is": "h1",
-        "children": "线性图",
-        "_id": "f62f2295-6db2-405f-98ad-64bf103b4c97"
-      },
-      {
         "is": "Grid",
         "cols": 3,
         "children": [
@@ -18,8 +13,8 @@ export default {
             "children": [
               {
                 "is": "p",
-                "children": "基础线性图",
-                "_id": "5ca2603c-c38e-48f5-9fd3-540ab7b2c27f"
+                "children": "阶梯折线图",
+                "_id": "7fae98fb-a5cc-4a10-ae9f-6411d512b8fd"
               },
               {
                 "is": "ELine",
@@ -30,10 +25,12 @@ export default {
                 },
                 "option": {
                   "dataset": {
-                    "source": "{{[\n {\n  \"x\": \"Mon\",\n  \"y\": 150\n },\n {\n  \"x\": \"Tue\",\n  \"y\": 230\n },\n {\n  \"x\": \"Wed\",\n  \"y\": 224\n },\n {\n  \"x\": \"Thu\",\n  \"y\": 218\n },\n {\n  \"x\": \"Fri\",\n  \"y\": 135\n },\n {\n  \"x\": \"Sat\",\n  \"y\": 147\n },\n {\n  \"x\": \"Sun\",\n  \"y\": 260\n }\n]}}"
+                    "source": "{{[\n  { product: 'Latte', 2015: 23.3, 2016: 45.8, 2017: 93.7 },\n  { product: 'Milk', 2015: 33.1, 2016: 63.4, 2017: 85.1 },\n  { product: 'Cheese', 2015: 26.4, 2016: 55.2, 2017: 92.5 },\n  { product: 'Walnut Brownie', 2015: 42.4, 2016: 63.9, 2017: 109.1 }\n]}}"
                   },
                   "legend": {},
-                  "xAxis": {},
+                  "xAxis": {
+                    "axisLabel": {}
+                  },
                   "yAxis": {},
                   "tooltip": {
                     "show": true,
@@ -43,116 +40,47 @@ export default {
                   "series": [
                     {
                       "type": "line",
-                      "label": {
-                        "show": true
-                      }
-                    }
-                  ],
-                  "grid": {},
-                  "backgroundColor": "#000"
-                },
-                "_id": "9b1f8926-b590-446a-aef0-84d617d0f53f",
-                "theme": "dark"
-              }
-            ],
-            "_id": "0cb41d08-1975-479f-a1c4-1b06c577ebb0"
-          },
-          {
-            "is": "div",
-            "children": [
-              {
-                "is": "p",
-                "children": "面积图 / 平滑线",
-                "_id": "1da43644-e046-4c6c-80db-e177f7994ab0"
-              },
-              {
-                "is": "ELine",
-                "autoresize": true,
-                "style": {
-                  "height": "300px",
-                  "width": "100%"
-                },
-                "option": {
-                  "dataset": {
-                    "source": "{{state.data}}"
-                  },
-                  "legend": {},
-                  "xAxis": {},
-                  "yAxis": {},
-                  "tooltip": {
-                    "show": true,
-                    "trigger": "axis"
-                  },
-                  "toolbox": {},
-                  "series": [
-                    {
-                      "type": "line",
-                      "label": {
-                        "show": true
-                      },
-                      "areaStyle": {},
+                      "name": "Step Start",
                       "encode": {
-                        "x": "month",
-                        "y": "2024"
-                      }
-                    }
-                  ],
-                  "grid": {},
-                  "backgroundColor": "#000"
-                },
-                "_id": "459b38de-9d6a-4d40-80b2-26afe16e875b",
-                "theme": "dark"
-              }
-            ],
-            "_id": "6898a053-8778-4d42-a6c0-be1d87b24b71"
-          },
-          {
-            "is": "div",
-            "children": [
-              {
-                "is": "p",
-                "children": "基础线性图",
-                "_id": "fbb74d41-6bdc-4bed-b211-7fca296d8ddd"
-              },
-              {
-                "is": "ELine",
-                "autoresize": true,
-                "style": {
-                  "height": "300px",
-                  "width": "100%"
-                },
-                "option": {
-                  "dataset": {
-                    "source": "{{[\n {\n  \"x\": \"Mon\",\n  \"y\": 150\n },\n {\n  \"x\": \"Tue\",\n  \"y\": 230\n },\n {\n  \"x\": \"Wed\",\n  \"y\": 224\n },\n {\n  \"x\": \"Thu\",\n  \"y\": 218\n },\n {\n  \"x\": \"Fri\",\n  \"y\": 135\n },\n {\n  \"x\": \"Sat\",\n  \"y\": 147\n },\n {\n  \"x\": \"Sun\",\n  \"y\": 260\n }\n]}}"
-                  },
-                  "legend": {},
-                  "xAxis": {},
-                  "yAxis": {},
-                  "tooltip": {
-                    "show": true,
-                    "trigger": "axis"
-                  },
-                  "toolbox": {},
-                  "series": [
+                        "x": "product",
+                        "y": "2015"
+                      },
+                      "step": "start"
+                    },
                     {
                       "type": "line",
-                      "label": {
-                        "show": true
+                      "name": "Step Mid",
+                      "step": "middle",
+                      "encode": {
+                        "x": "product",
+                        "y": "2016"
                       }
+                    },
+                    {
+                      "type": "line",
+                      "name": "Step End",
+                      "encode": {
+                        "x": "product",
+                        "y": "2017"
+                      },
+                      "step": "end"
                     }
                   ],
                   "grid": {},
                   "backgroundColor": "#000"
                 },
-                "_id": "f68c8eab-897d-405c-bc0b-bbbe102370dc",
+                "_id": "b0c1c5b7-4604-4b67-87f2-5a868210ef6d",
                 "theme": "dark"
               }
             ],
-            "_id": "0bf53689-e3b4-4da7-be6a-bdf463aa2fd8"
+            "_id": "d10de957-df9f-45f9-a221-a53240610a14"
           }
         ],
         "_id": "8554ec2a-2d9f-450b-acce-5dea7a63b6cd",
-        "gap": 32
+        "gap": [
+          0,
+          32
+        ]
       }
     ],
     "state": {
@@ -227,9 +155,10 @@ export default {
     ],
     "designer": {
       "canvas": {
-        "x": 4.454111822033724,
-        "y": -96.06575578319587,
-        "zoom": 1.033895109109568
+        "x": -140.80697848891145,
+        "y": -69.71168446962633,
+        "zoom": 0.9078604966322299,
+        "style": {}
       }
     },
     "style": {

@@ -1,5 +1,3 @@
-import OptionsInput from '../../../../components/options-input'
-
 const item = (label, prop) => ({ is: 'ElTableColumn', label, prop })
 
 export default {
@@ -9,7 +7,7 @@ export default {
   sortablePut: false,
   props: [
     { lp: 'data' },
-    { lp: ['cols', 'children'], el: { is: OptionsInput, props: { V: 'prop' }, new: i => item(`title${i + 1}`, `key${i + 1}`) } },
+    { lp: ['cols', 'children'], el: { is: 'OptionsInput', props: { V: 'prop' }, new: i => item(`title${i + 1}`, `key${i + 1}`) } },
     { lp: 'stripe', type: 'switch' },
     { lp: 'border', type: 'switch' },
   ],

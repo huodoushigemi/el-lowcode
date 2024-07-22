@@ -1,5 +1,3 @@
-import OptionsInput from '../../../../components/options-input'
-
 const item = i => ({ is: 'ElCarouselItem', children: [{ is: 'h1', children: `item${i + 1}` }] })
 
 export default {
@@ -17,7 +15,7 @@ export default {
     { lp: 'direction', type: 'radio-group', defaultValue: 'horizontal', options: ['horizontal', 'vertical'] },
     { lp: 'autoplay', type: 'switch', defaultValue: true },
     { lp: 'motion-blur', type: 'switch' },
-    { lp: ['items', 'children'], el: { is: OptionsInput, props: { V: 'name' }, new: item } }
+    { lp: ['items', 'children'], el: { is: 'OptionsInput', props: { V: 'name' }, new: item } }
   ],
   defaultProps: () => ({
     autoplay: true,
