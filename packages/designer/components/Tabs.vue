@@ -1,8 +1,9 @@
 <script setup lang='jsx'>
 import { ref, useSlots, watchEffect } from 'vue'
-import { onClickOutside, refWithControl, useEventListener } from '@vueuse/core'
+import { refWithControl } from '@vueuse/core'
 import { useSortable } from '@vueuse/integrations/useSortable.mjs'
-import { useEdit } from './hooks';
+import { set } from '@el-lowcode/utils'
+import { useEdit } from './hooks'
 
 const props = defineProps({
   tabs: Array,
@@ -51,6 +52,12 @@ function onTab(e, k, i) {
   }
 }
 
+function onEditLabel(i, v) {
+  set(props.tabs[i], props.props.label, v)
+  active.value = children[i].props.$key ?? v
+  edit.value = false
+}
+
 function del(i) {
   const { tabs }  = props
   if (i == children.length - 1) {
@@ -66,6 +73,7 @@ defineRender(() => {
   const { tabs, editable, showClose } = props
   children = slots.default?.()
   children.forEach((e, i) => {
+    e.props.$key = e.props.key
     e.props.key ??= e.props.label ?? `tab-${i}`
   })
 
@@ -79,7 +87,7 @@ defineRender(() => {
         {children.map((c, i) => (
           <div key={c.props.key} class={['tab', active.value == c.props.key && 'is-active']} onPointerdown={onDown} onPointerup={e => onTab(e, c.props.key, i)} onDblclick={() => edit.value = true}>
             {c.props.label}
-            {active.value == c.props.key && edit.value && <input class='absolute left-0 p4 wfull lh-22 outline-0' ref={inputRef} value={c.props.label} onChange={() => {}} />}
+            {active.value == c.props.key && edit.value && <input class='absolute left-0 p4 wfull lh-22 outline-0' ref={inputRef} value={c.props.label} onChange={(e) => onEditLabel(i, e.target.value)} />}
             {showClose && <div class='i-ep-close hover:i-ep:circle-close-filled flex aic jcc ml4 -mr4 text-10' onClick={(e) => (e.stopPropagation(), del(i))} />}
           </div>
         ))}
@@ -113,7 +121,7 @@ defineRender(() => {
     }
 
     > .tab {
-      @apply relative flex flex-shrink-0 aic mr4 px8 text-14 lh-26 cursor-default;
+      @apply relative mr4 px8 max-w6em truncate text-14 lh-26 cursor-default;
       color: var(--el-text-color-secondary);
       
       &:hover {

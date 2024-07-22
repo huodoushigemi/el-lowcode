@@ -17,7 +17,7 @@ export default {
       legend(option),
       toolbox(option),
       tooltip(option),
-      { is: 'Tabs', key: _id, class: '-mx8 mt12', tabs: option.series, editable: true, new: (i) => ({ type: 'line', name: `series-${i + 1}` }), children: option.series.map(e => (
+      { is: 'Tabs', key: _id, class: '-mx8 mt12', tabs: option.series, editable: true, props: { label: 'name' }, new: (i) => ({ type: 'line', name: `series-${i + 1}` }), children: option.series.map(e => (
         { is: 'div', label: e.name, class: 'px8', children: () => [serieLine(e)] }
       )) },
     ] },
