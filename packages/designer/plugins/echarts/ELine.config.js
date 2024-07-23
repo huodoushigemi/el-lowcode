@@ -1,5 +1,5 @@
 import { serieLine } from './.lowcode/option/series'
-import { grid, legend, toolbox, tooltip, xAxis, yAxis } from './.lowcode/option'
+import { axis, grid, legend, toolbox, tooltip, xAxis, yAxis } from './.lowcode/option'
 import { enable2 } from './.lowcode/utils'
 
 export default {
@@ -12,8 +12,9 @@ export default {
 
     { is: 'ElFormRender', model: option, size: 'small', class: 'no-scriptable', children: [
       grid(option),
-      xAxis(option),
-      yAxis(option),
+      // xAxis(option),
+      // yAxis(option),
+      axis(option),
       legend(option),
       toolbox(option),
       tooltip(option),

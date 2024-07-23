@@ -50,7 +50,7 @@ export const enable2 = (model, title, oper, children, open) => ({ is: Collapse1,
 ] })
 
 export const enable3 = (model, title, oper, children) => ({ is: Collapse2, title, oper, children: () => [
-  { is: 'ElFormRender', model, size: 'small', children }
+  { is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children }
 ] })
 
 export const num = (lp, opt) => ({ lp, ...opt, el: { is: 'InputNumber', unit: null, min: 0, hideUnit: true, ...opt?.el } })

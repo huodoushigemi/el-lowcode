@@ -1,4 +1,4 @@
-import { checks, color, enable2, enable3, genDisplayValue, lineStyleItems, num, opts, radios, segm, textStyleItems } from '../utils'
+import { checks, Collapse1, color, enable2, enable3, genDisplayValue, lineStyleItems, num, opts, radios, segm, textStyleItems } from '../utils'
 import { axisLabel, axisLine, axisName, axisSplitLine, axisTick } from './axis'
 
 export * from './series'
@@ -37,6 +37,41 @@ export const yAxis = (option) => enable2(option.yAxis, 'YAxis', genDisplayValue(
   { is: 'div', class: 'mb4' },
   axisTick(option.yAxis, false),
 ])
+
+export const axis = (option) => ({ is: 'Collapse', title: 'Axis', children: () => [
+  { is: 'Tabs', stretch: true, children: [
+    // X Axis
+    { is: 'ElFormRender', model: option.xAxis, label: 'X Axis', class: 'mt8', size: 'small', labelPosition: 'top', children: [
+      { is: 'div', class: 'grid grid-cols-2 px8', children: [
+        { lp: ['bound-gap', 'boundaryGap'], type: 'switch', displayValue: true },
+        { lp: 'inverse', type: 'switch' },
+      ] },
+      axisName(option.xAxis),
+      { is: 'div', class: 'mb4' },
+      axisLabel(option.xAxis),
+      { is: 'div', class: 'mb4' },
+      axisLine(option.xAxis, true),
+      { is: 'div', class: 'mb4' },
+      axisSplitLine(option.xAxis, false),
+      { is: 'div', class: 'mb4' },
+      axisTick(option.xAxis, true),
+    ] },
+    // Y Axis
+    { is: 'ElFormRender', model: option.yAxis, label: 'Y Axis', class: 'mt8', size: 'small', labelPosition: 'top', children: [
+      { is: 'div', class: 'grid grid-cols-2 px8', children: [
+        { lp: ['bound-gap', 'boundaryGap'], type: 'switch', displayValue: true },
+        { lp: 'inverse', type: 'switch' },
+      ] },
+      axisLabel(option.yAxis),
+      { is: 'div', class: 'mb4' },
+      axisLine(option.yAxis, false),
+      { is: 'div', class: 'mb4' },
+      axisSplitLine(option.yAxis, true),
+      { is: 'div', class: 'mb4' },
+      axisTick(option.yAxis, false),
+    ] }
+  ] }
+] })
 
 export const legend = (option) => enable2(option, 'Legend', genDisplayValue(option, 'legend.show', true), () => [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [

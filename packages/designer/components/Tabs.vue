@@ -6,6 +6,7 @@ import { set } from '@el-lowcode/utils'
 import { useEdit } from './hooks'
 
 const props = defineProps({
+  stretch: Boolean,
   tabs: Array,
   editable: Boolean,
   new: Function,
@@ -22,7 +23,7 @@ const edit = ref(false)
 const { inputRef } = useEdit(ref(), () => edit.value = false)
 
 const navRef = ref()
-const sortable = useSortable(navRef, () => props.tabs, { draggable: '.tab', animation: 100 })
+const sortable = useSortable(navRef, () => props.tabs, { draggable: '.tab', animation: 100, disabled: !props.editable })
 
 watchEffect(() => sortable.option('disabled', !props.editable))
 
@@ -34,6 +35,7 @@ function onPlus() {
 
 function onDown(e) {
   if (e.button == 1) {
+    if (!props.editable) return
     e.stopPropagation()
     e.preventDefault()
   }
@@ -45,6 +47,7 @@ function onTab(e, k, i) {
       active.value = k
       break;
     case 1:
+      if (!props.editable) return
       e.stopPropagation()
       e.preventDefault()
       del(i)
@@ -52,7 +55,12 @@ function onTab(e, k, i) {
   }
 }
 
-function onEditLabel(i, v) {
+function onEditLabel() {
+  if (!props.editable) return
+  edit.value = true
+}
+
+function onChangeLabel(i, v) {
   set(props.tabs[i], props.props.label, v)
   active.value = children[i].props.$key ?? v
   edit.value = false
@@ -62,40 +70,43 @@ function del(i) {
   const { tabs }  = props
   if (i == children.length - 1) {
     tabs.splice(i, 1)
-    active.value = children[children.length - 2].props.key
+    active.value = children[children.length - 2].key
   } else {
     tabs.splice(i, 1)
-    active.value = children[i + 1].props.key
+    active.value = children[i + 1].key
   }
 }
 
 defineRender(() => {
-  const { tabs, editable, showClose } = props
+  const { stretch, tabs, editable, showClose } = props
   children = slots.default?.()
   children.forEach((e, i) => {
-    e.props.$key = e.props.key
-    e.props.key ??= e.props.label ?? `tab-${i}`
+    e.$key = e.key
+    e.key ??= e.props.label ?? `tab-${i}`
   })
 
   if (active.value == null) {
-    active.lay(children[0].props.key)
+    active.lay(children[0].key)
   }
 
   return (
-    <div class={['Tabs', editable && 'is-editable']}>
+    <div class={['Tabs', editable && 'is-editable', stretch && 'is-stretch']}>
       <div class='tab_nav flex' ref={navRef}>
         {children.map((c, i) => (
-          <div key={c.props.key} class={['tab', active.value == c.props.key && 'is-active']} onPointerdown={onDown} onPointerup={e => onTab(e, c.props.key, i)} onDblclick={() => edit.value = true}>
+          <div key={c.key} class={['tab', active.value == c.key && 'is-active']} onPointerdown={onDown} onPointerup={e => onTab(e, c.key, i)} onDblclick={onEditLabel}>
             {c.props.label}
-            {active.value == c.props.key && edit.value && <input class='absolute left-0 p4 wfull lh-22 outline-0' ref={inputRef} value={c.props.label} onChange={(e) => onEditLabel(i, e.target.value)} />}
-            {showClose && <div class='i-ep-close hover:i-ep:circle-close-filled flex aic jcc ml4 -mr4 text-10' onClick={(e) => (e.stopPropagation(), del(i))} />}
+            {active.value == c.key && edit.value && <input class='absolute left-0 p4 wfull lh-22 outline-0' ref={inputRef} value={c.props.label} onChange={(e) => onChangeLabel(i, e.target.value)} />}
+            {props.editable && showClose && <div class='i-ep-close hover:i-ep:circle-close-filled flex aic jcc ml4 -mr4 text-10' onClick={(e) => (e.stopPropagation(), del(i))} />}
           </div>
         ))}
-        <div class='sticky right-0 flex aic mla px4 bg-inherit! shadow-md shadow-#000/40'>
-          <div class='tab-plus' onClick={onPlus}>+</div>
-        </div>
+        {
+          props.editable &&
+          <div class='sticky right-0 flex aic mla px4 bg-inherit! shadow-md shadow-#000/40'>
+            <div class='tab-plus' onClick={onPlus}>+</div>
+          </div>
+        }
       </div>
-      {children.find(e => e.props.key == active.value)}
+      {children.find(e => e.key == active.value)}
     </div>
   )
 })
@@ -103,7 +114,7 @@ defineRender(() => {
 
 <style lang="scss">
 .Tabs {
-  background: var(--el-fill-color-lighter);
+  background: var(--bg, var(--el-fill-color-lighter));
 
   > .tab_nav {
     background: var(--el-fill-color-darker);
@@ -121,21 +132,29 @@ defineRender(() => {
     }
 
     > .tab {
-      @apply flex-shrink-0 relative mr4 px8 max-w6em min-w2em text-12 lh-26 cursor-default truncate;
+      @apply flex-shrink-0 relative px8 max-w6em min-w2em text-12 lh-26 cursor-default truncate text-center;
       color: var(--el-text-color-secondary);
-      
+
+      & + .tab {
+        @apply ml4;
+      }
+
       &:hover {
         background: var(--el-fill-color);
       }
 
       &.is-active {
-        background: var(--el-fill-color-lighter);
+        background: var(--bg, var(--el-fill-color-lighter));
       }
     }
 
     .tab-plus {
       @apply flex aic jcc mla w20 h20 text-16 bg-hover cursor-pointer b-1;
     }
+  }
+
+  &.is-stretch > .tab_nav > .tab {
+    @apply max-wunset flex-1;
   }
 }
 </style>
