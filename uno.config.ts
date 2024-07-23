@@ -44,6 +44,7 @@ export default defineConfig({
     ...Array(4).fill(0).map((e, i) => `col-span-${i + 1}`),
     ...Array(4).fill(0).map((e, i) => `grid-cols-${i + 1}`),
     '[&>*]:mb8',
+    '[&>*]:flex-1',
     'cursor-cell'
   ],
   shortcuts: {

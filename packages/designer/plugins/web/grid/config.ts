@@ -4,7 +4,7 @@ export default  {
   category: '容器',
   props: [
     { lp: 'cols', el: { is: 'InputNumber' } },
-    { lp: 'gap', set: v => v?.map(e => e || 0), el: { is: 'InputNumbers', len: 2, noUnit: true, min: 0, placeholder: ['y', 'x'] } }
+    { lp: 'gap', el: { is: 'InputNumbers', style: 'width: 100px', len: 2, noUnit: true, min: 0, placeholder: ['↕', '↔'] } }
   ],
   defaultProps: () => ({
     cols: 2,

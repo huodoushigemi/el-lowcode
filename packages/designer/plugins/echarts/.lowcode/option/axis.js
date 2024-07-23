@@ -1,4 +1,13 @@
-import { enable3, num, color, opts, genDisplayValue, FONT_STYLES, FONT_WEIGHTS, FONT_FAMILYS, LINE_TYPES, FONT_OVERFLOWS, lineStyleItems, displayValue } from '../utils'
+import { enable3, num, color, opts, genDisplayValue, FONT_STYLES, FONT_WEIGHTS, FONT_FAMILYS, LINE_TYPES, FONT_OVERFLOWS, lineStyleItems, displayValue, enable2, textStyleItems } from '../utils'
+
+export const axisName = model => enable3(model, 'name', void 0, () => [
+  { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
+    { lp: 'name' },
+    { lp: ['offset', 'nameGap'], displayValue: 15 },
+    num(['r °', 'nameRotate'], { el: { min: -180, max: 180 } }),
+    ...textStyleItems(['fontSize', 'lineHeight', 'color', 'fontStyle', 'fontWeight', 'fontFamily', 'width', 'height', 'overflow'], 'nameTextStyle')
+  ] }
+])
 
 export const axisLabel = model => enable3(model, 'label', genDisplayValue(model, 'axisLabel.show', true), () => [
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [

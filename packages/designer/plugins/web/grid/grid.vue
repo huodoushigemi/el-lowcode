@@ -4,7 +4,7 @@
     :style="{
       display: 'grid',
       gridTemplateColumns: _cols,
-      gap: isArray(gap) ? `${gap[0]}px ${gap[1]}px` : (gap || 0) + 'px'
+      gap: isArray(gap) ? `${gap[0] || 0}px ${gap[1] || 0}px` : (gap || 0) + 'px'
     }"
   >
     <slot></slot>

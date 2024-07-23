@@ -46,7 +46,7 @@ export const enable = (model, label, prop, defaultValue, children, ) => ({ is: '
 ] })
 
 export const enable2 = (model, title, oper, children, open) => ({ is: Collapse1, title, oper, open, children: () => [
-  { is: 'ElFormRender', model, size: 'small', children }
+  { is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children }
 ] })
 
 export const enable3 = (model, title, oper, children) => ({ is: Collapse2, title, oper, children: () => [
@@ -91,7 +91,7 @@ export const lineStyleItems = (ks, prefix) => {
   const n = p => [prefix, p].filter(e => e).join('.')
   const props = {
     ..._shadowStyleItems(ks, prefix),
-    type: opts(['type', n('type')], LINE_TYPES),
+    type: opts(['border', n('type')], LINE_TYPES),
     width: num(['width', n('width')], { el: { max: 10 } }),
     color: color(['color', n('color')], { el: { size: 'small' } }),
   }

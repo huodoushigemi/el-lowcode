@@ -6,8 +6,11 @@ export const serieLine = (model) => ({ is: 'ElFormRender', model, size: 'small',
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', size: 'small', children: [
     ...lineStyleItems(['type', 'width', 'color', 'shadowBlur', 'shadowOffset', 'shadowColor'], 'lineStyle'),
     { lp: 'step', options: ['start', ['mid', 'middle'], 'end'] },
+    { lp: 'smooth', type: 'switch' },
+    { is: 'div' },
     { lp: 'encode.x' },
     { lp: 'encode.y' },
+    { lp: 'stack' },
   ] },
 
   { is: 'div', class: 'mb4' },

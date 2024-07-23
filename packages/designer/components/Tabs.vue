@@ -121,7 +121,7 @@ defineRender(() => {
     }
 
     > .tab {
-      @apply flex-shrink-0 relative mr4 px8 max-w6em text-12 lh-26 cursor-default truncate;
+      @apply flex-shrink-0 relative mr4 px8 max-w6em min-w2em text-12 lh-26 cursor-default truncate;
       color: var(--el-text-color-secondary);
       
       &:hover {

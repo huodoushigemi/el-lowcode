@@ -1,5 +1,5 @@
 import { checks, color, enable2, enable3, genDisplayValue, lineStyleItems, num, opts, radios, segm, textStyleItems } from '../utils'
-import { axisLabel, axisLine, axisSplitLine, axisTick } from './axis'
+import { axisLabel, axisLine, axisName, axisSplitLine, axisTick } from './axis'
 
 export * from './series'
 
@@ -13,6 +13,12 @@ export const grid = (option) => enable2(option, 'Gird', void 0, () => [
 ])
 
 export const xAxis = (option) => enable2(option.xAxis, 'XAxis', genDisplayValue(option, 'xAxis.show', true), () => [
+  { is: 'div', class: 'grid grid-cols-3', children: [
+    { lp: ['bound-gap', 'boundaryGap'], type: 'switch', displayValue: true },
+    { lp: 'inverse', type: 'switch' },
+  ] },
+  axisName(option.xAxis),
+  { is: 'div', class: 'mb4' },
   axisLabel(option.xAxis),
   { is: 'div', class: 'mb4' },
   axisLine(option.xAxis, true),
@@ -34,8 +40,14 @@ export const yAxis = (option) => enable2(option.yAxis, 'YAxis', genDisplayValue(
 
 export const legend = (option) => enable2(option, 'Legend', genDisplayValue(option, 'legend.show', true), () => [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
-    num(['w', 'legend.itemWidth'], { displayValue: 25, el: { max: 50 } }),
-    num(['h', 'legend.itemHeight'], { displayValue: 14, el: { max: 28 } }),
+    { is: 'div', class: 'flex [&>*]:flex-1', children: [
+      num(['w', 'legend.width']),
+      num(['h', 'legend.height']),
+    ] },
+    { is: 'div', class: 'flex [&>*]:flex-1', children: [
+      num(['item-w', 'legend.itemWidth'], { displayValue: 25, el: { max: 50 } }),
+      num(['item-h', 'legend.itemHeight'], { displayValue: 14, el: { max: 28 } }),
+    ] },
     radios(['', 'legend.left'], [['L', 'left'], ['C', 'center'], ['R', 'right']]),
     radios(['', 'legend.orient'], [['↔', 'horizontal'], ['↕', 'vertical']]),
     radios(['', 'legend.top'], [['T', 'top'], ['C', 'middle'], ['B', 'bottom']]),
@@ -54,8 +66,8 @@ export const toolbox = (option) => enable2(option, 'Toolbox', genDisplayValue(op
     { lp: ['data-view', 'toolbox.feature.dataView'], type: 'switch', get: v => !!v, set: v => v ? {} : void 0 },
     { lp: ['restore', 'toolbox.feature.restore'], type: 'switch', get: v => !!v, set: v => v ? {} : void 0 },
     { lp: ['save-image', 'toolbox.feature.saveAsImage'], type: 'switch', get: v => !!v, set: v => v ? {} : void 0 },
-    { lp: ['size', 'toolbox.itemSize'], type: 'slider', el: { max: 30 } },
-    { lp: ['gap', 'toolbox.itemGap'], type: 'slider', el: { max: 16 } },
+    { lp: ['size', 'toolbox.itemSize'], type: 'slider', displayValue: 15, el: { max: 30 } },
+    { lp: ['gap', 'toolbox.itemGap'], type: 'slider', displayValue: 8, el: { max: 16 } },
     radios(['', 'toolbox.orient'], [['↔', 'horizontal'], ['↕', 'vertical']]),
   ] }
 ])
