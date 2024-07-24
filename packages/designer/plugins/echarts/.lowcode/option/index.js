@@ -1,4 +1,4 @@
-import { checks, Collapse1, color, enable2, enable3, genDisplayValue, lineStyleItems, num, opts, radios, segm, textStyleItems } from '../utils'
+import { bool, checks, Collapse1, color, enable2, enable3, genDisplayValue, lineStyleItems, num, opts, radios, segm, textStyleItems } from '../utils'
 import { axisLabel, axisLine, axisName, axisSplitLine, axisTick } from './axis'
 
 export * from './series'
@@ -38,37 +38,37 @@ export const yAxis = (option) => enable2(option.yAxis, 'YAxis', genDisplayValue(
   axisTick(option.yAxis, false),
 ])
 
-export const axis = (option) => ({ is: 'Collapse', title: 'Axis', children: () => [
+export const axis = (option, props) => ({ is: 'Collapse', title: 'Axis', children: () => [
   { is: 'Tabs', stretch: true, children: [
     // X Axis
     { is: 'ElFormRender', model: option.xAxis, label: 'X Axis', class: 'mt8', size: 'small', labelPosition: 'top', children: [
       { is: 'div', class: 'grid grid-cols-2 px8', children: [
-        { lp: ['bound-gap', 'boundaryGap'], type: 'switch', displayValue: true },
-        { lp: 'inverse', type: 'switch' },
+        bool(['bound-gap', 'boundaryGap'], true),
+        bool('inverse'),
       ] },
       axisName(option.xAxis),
       { is: 'div', class: 'mb4' },
       axisLabel(option.xAxis),
       { is: 'div', class: 'mb4' },
-      axisLine(option.xAxis, true),
+      axisLine(option.xAxis, !props.vertical),
       { is: 'div', class: 'mb4' },
-      axisSplitLine(option.xAxis, false),
+      axisSplitLine(option.xAxis, props.vertical),
       { is: 'div', class: 'mb4' },
-      axisTick(option.xAxis, true),
+      axisTick(option.xAxis, !props.vertical),
     ] },
     // Y Axis
     { is: 'ElFormRender', model: option.yAxis, label: 'Y Axis', class: 'mt8', size: 'small', labelPosition: 'top', children: [
       { is: 'div', class: 'grid grid-cols-2 px8', children: [
-        { lp: ['bound-gap', 'boundaryGap'], type: 'switch', displayValue: true },
-        { lp: 'inverse', type: 'switch' },
+        bool(['bound-gap', 'boundaryGap'], true),
+        bool('inverse'),
       ] },
       axisLabel(option.yAxis),
       { is: 'div', class: 'mb4' },
-      axisLine(option.yAxis, false),
+      axisLine(option.yAxis, props.vertical),
       { is: 'div', class: 'mb4' },
-      axisSplitLine(option.yAxis, true),
+      axisSplitLine(option.yAxis, !props.vertical),
       { is: 'div', class: 'mb4' },
-      axisTick(option.yAxis, false),
+      axisTick(option.yAxis, props.vertical),
     ] }
   ] }
 ] })

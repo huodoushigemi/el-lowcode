@@ -5,7 +5,7 @@ const createH = (is) => ({
   label: is,
   props: [
     { lp: ['text', 'children'] },
-    { lp: ['level', 'is'], scriptable: false, type: 'radio-group', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }
+    { lp: ['level', 'is'], script: false, type: 'radio-group', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }
   ],
   defaultProps: () => ({
     children: 'Heading'

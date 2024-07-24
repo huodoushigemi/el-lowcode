@@ -1,4 +1,4 @@
-import { enable3, num, color, opts, genDisplayValue, FONT_STYLES, FONT_WEIGHTS, FONT_FAMILYS, LINE_TYPES, FONT_OVERFLOWS, lineStyleItems, displayValue, enable2, textStyleItems } from '../utils'
+import { enable3, num, color, opts, genDisplayValue, FONT_STYLES, FONT_WEIGHTS, FONT_FAMILYS, LINE_TYPES, FONT_OVERFLOWS, lineStyleItems, displayValue, enable2, textStyleItems, bool } from '../utils'
 
 export const axisName = model => enable3(model, 'name', void 0, () => [
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
@@ -27,7 +27,8 @@ export const axisLabel = model => enable3(model, 'label', genDisplayValue(model,
 
 export const axisLine = (model, displayValue) => enable3(model, 'line', genDisplayValue(model, 'axisLine.show', displayValue), () => [
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
-    ...lineStyleItems(['type', 'width', 'color'], 'axisLine.lineStyle')
+    ...lineStyleItems(['type', 'width', 'color'], 'axisLine.lineStyle'),
+    bool(['on-zero', 'axisLine.onZero'], true, { script: false })
   ] },
 ])
 

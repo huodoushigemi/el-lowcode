@@ -59,5 +59,9 @@ export const useTransformer = (_model, _prop, opt: Pick<Item0, 'defaultValue' | 
     },
     get v() { return this.get() },
     set v(v) { this.set(v) },
+
+    get value() { return this.get() },
+    set value(v) { this.set(v) },
+    __v_isRef: true,
   }
 }

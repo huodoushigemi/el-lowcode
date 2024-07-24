@@ -13,7 +13,7 @@ export default {
   props: [
     // todo
     // { is: JsonSchemaDialog },
-    { lp: 'model', required: true, scriptable: true },
+    { lp: 'model', required: true, script: true },
     { lp: 'size', type: 'radio-group', options: ENUM_SIZE },
     { lp: 'label-width', type: 'slider', el: { max: 200 } },
     { lp: 'label-position', type: 'radio-group', options: ['left', 'right', 'top'] },
@@ -24,7 +24,7 @@ export default {
     { lp: 'scroll-to-error', type: 'switch' },
     { is: 'ElDivider' },
     { is: 'h1', children: 'Event' },
-    { lp: 'onSubmit', scriptable: true }
+    { lp: 'onSubmit', script: true }
   ],
   defaultProps: () => ({
     labelWidth: 80,

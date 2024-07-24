@@ -1,20 +1,21 @@
 import { serieLine } from './.lowcode/option/series'
-import { axis, grid, legend, toolbox, tooltip, xAxis, yAxis } from './.lowcode/option'
-import { enable2 } from './.lowcode/utils'
+import { axis, grid, legend, toolbox, tooltip } from './.lowcode/option'
+import { bool, segm, segm2 } from './.lowcode/utils'
 
 export default {
   is: 'ELine',
   label: '线型图',
-  props: ({ _id, option }) => [
+  props: ({ _id, option, ...props }) => [
     { lp: ['data', 'option.dataset.source'], script: true },
+
+    segm2('series-layout-by', ['column', 'row'], { displayValue: 'column' }),
+    bool('vertical'),
 
     // { lp: ['series', 'option.series'], class: '-mr8', el: { is: 'EditTable', columns: [{ prop: 'name' }, { prop: 'encode.y' }], new: () => ({ type: 'line' }) } },
 
     { is: 'ElFormRender', model: option, size: 'small', class: 'no-scriptable', children: [
       grid(option),
-      // xAxis(option),
-      // yAxis(option),
-      axis(option),
+      axis(option, props),
       legend(option),
       toolbox(option),
       tooltip(option),
@@ -45,7 +46,7 @@ export default {
       legend: {},
       xAxis: {},
       yAxis: {},
-      tooltip:{ show: true, trigger: 'axis' },
+      tooltip: { show: true, trigger: 'axis' },
       toolbox: {},
       dataset: {
         source: `{{${JSON.stringify([{ x: 'Mon', y: 150 }, { x: 'Tue', y: 230 }, { x: 'Wed', y: 224 }, { x: 'Thu', y: 218 }, { x: 'Fri', y: 135 }, { x: 'Sat', y: 147 }, { x: 'Sun', y: 260 }], undefined, ' ')}}}`

@@ -9,6 +9,7 @@
 </template>
 
 <script setup>
+import { watchEffect } from 'vue'
 import MonacoEditor from './monaco-editor.vue'
 import { refWithWatch } from '../../components/hooks'
 
@@ -25,6 +26,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'update:visible'])
 
 const value = refWithWatch(() => props.modelValue)
+watchEffect(() => props.visible && (value.value = props.modelValue))
 
 function ok() {
   emit('update:modelValue', value.value)

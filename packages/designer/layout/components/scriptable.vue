@@ -1,7 +1,7 @@
 <template>
-  <el-form-item-render class="[&>.el-form-item\_\_label]:truncate" v-bind="{ ...$props, ...$attrs }">
+  <el-form-item-render class="el-form-item--label-truncate" v-bind="{ ...$props, ...$attrs }">
 
-    <template v-if="_scriptable" #label="{ label }">
+    <template v-if="_script" #label="{ label }">
       {{ label }}
       <el-tag v-if="script !== true" class="exp-flag" :effect="isScript ? 'dark' : 'plain'" :type="isScript ? 'primary' : 'info'" size="small" ml8 cursor-pointer @click.prevent="visible = !isScript; value = isScript ? '' : value">JS</el-tag>
     </template>
@@ -28,9 +28,7 @@
 import { computed, inject, ref } from 'vue'
 import { isOn, isString } from '@vue/shared'
 import { ElDialog, ElTag, formContextKey, formItemProps } from 'element-plus'
-import { ElFormItemRender, formItemRenderPropsBase } from 'el-form-render'
-import { get, set } from '@el-lowcode/utils'
-import { sloveConfig } from '../../components/_utils'
+import { ElFormItemRender, formItemRenderPropsBase, useTransformer } from 'el-form-render'
 import { designerCtxKey } from '../interface'
 import MonacoEditor from './monaco-editor.vue'
 import { refWithWatch } from '../../components/hooks'
@@ -39,24 +37,16 @@ const props = defineProps({
   ...formItemProps,
   ...formItemRenderPropsBase,
   labelLeft: Boolean,
-  scriptable: { type: Boolean, default: undefined },
   script: { type: Boolean, default: undefined },
 })
 
-const script = computed(() => props.script ?? props.scriptable)
+const _script = computed(() => props.script === undefined ? true : props.script)
 
 const formCtx = inject(formContextKey)
 const model = computed(() => formCtx.model)
-const value = computed({
-  get: () => get(model.value, props.prop) || props.displayValue,
-  set: val => set(model.value, props.prop, val ?? defaultValue.value)
-})
+const value = useTransformer(model, () => props.prop, props)
 
 const designerCtx = inject(designerCtxKey)
-const config = computed(() => sloveConfig(designerCtx.active))
-const defaultValue = computed(() => get(config.value?.defaultProps?.() || {}, props.prop) ?? props.defaultValue)
-
-const _scriptable = computed(() => script.value === undefined ? true : script.value)
 
 const expReg = /^\{\{([\d\D]*)\}\}$/
 
@@ -87,5 +77,11 @@ function onSave() {
 
 .no-scriptable {
   .exp-flag { display: none !important; }
+}
+
+.el-form-item--label-truncate {
+  > .el-form-item__label {
+    @apply pr0 truncate;
+  }
 }
 </style>

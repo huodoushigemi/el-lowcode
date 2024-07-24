@@ -74,6 +74,7 @@ const Render = createRender({
       }
       props.el.clearable ??= true
       props.el.placeholder ??= ''
+      if (isOn(props.prop)) console.log({...props})
       if (isOn(props.prop)) props.script ??= true
     }
     return props

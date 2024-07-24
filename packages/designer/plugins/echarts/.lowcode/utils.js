@@ -61,9 +61,10 @@ export const color = (lp, opt) => ({ lp, type: 'color-picker', ...opt, el: { siz
 export const opts = (lp, options, opt) => ({ lp, type: 'select', options, ...opt })
 export const radios = (lp, options, opt) => ({ lp, type: 'radio-group', options, ...opt })
 export const segm = (lp, options, opt) => ({ lp, type: 'segmented', options, ...opt, el: { block: true, wfull: '', ...opt?.el } })
+export const segm2 = (lp, options, opt) => ({ lp, type: 'segmented', options, ...opt, el: { ...opt?.el } })
 export const checks = (lp, options, opt) => ({ lp, type: 'checkbox-group', options, ...opt, el: { type: 'button' } })
 
-export const bool = (lp, displayValue = false) => ({ lp, type: 'switch', displayValue })
+export const bool = (lp, displayValue = false, opt) => ({ lp, type: 'switch', displayValue, ...opt })
 
 export const details = (label, children) => ({ is: "details", children: [
   { is: 'summary', class: 'my8', style: 'text-transform: capitalize;', children: label },

@@ -26,14 +26,17 @@ use([ LegendComponent, TooltipComponent, GridComponent, DatasetComponent, Transf
 use([ LineChart ])
 
 const props = defineProps({
-  option: Object
+  option: Object,
+  seriesLayoutBy: String,
+  vertical: Boolean,
 })
 
 const _option = computed(() => {
+  const { option, vertical, seriesLayoutBy } = props
   return merge({
-    xAxis: { type: 'category' },
-    yAxis: { type: 'value' },
-    series: []
-  }, props.option)
+    xAxis: { type: vertical ? 'value' : 'category' },
+    yAxis: { type: vertical ? 'category' : 'value' },
+    series: props.option.series?.map(() => ({ seriesLayoutBy }))
+  }, option)
 })
 </script>
