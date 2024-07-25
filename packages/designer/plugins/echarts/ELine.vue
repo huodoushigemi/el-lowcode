@@ -29,14 +29,21 @@ const props = defineProps({
   option: Object,
   seriesLayoutBy: String,
   vertical: Boolean,
+  category: String
 })
 
 const _option = computed(() => {
-  const { option, vertical, seriesLayoutBy } = props
+  const { option, vertical, seriesLayoutBy, category } = props
   return merge({
     xAxis: { type: vertical ? 'value' : 'category' },
     yAxis: { type: vertical ? 'category' : 'value' },
-    series: props.option.series?.map(() => ({ seriesLayoutBy }))
+    series: props.option.series?.map(e => ({
+      seriesLayoutBy,
+      encode: {
+        x: vertical ? e.$key : category,
+        y: vertical ? category : e.$key
+      }
+    }))
   }, option)
 })
 </script>

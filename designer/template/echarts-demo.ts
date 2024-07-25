@@ -48,7 +48,8 @@ export default {
                       "label": {
                         "show": true
                       },
-                      "name": "data"
+                      "name": "data",
+                      "$key": "y"
                     }
                   ],
                   "grid": {},
@@ -58,7 +59,8 @@ export default {
                 "theme": "dark",
                 "initOptions": {
                   "renderer": "svg"
-                }
+                },
+                "category": "x"
               }
             ],
             "_id": "0cb41d08-1975-479f-a1c4-1b06c577ebb0"
@@ -88,7 +90,11 @@ export default {
                     "show": false
                   },
                   "xAxis": {},
-                  "yAxis": {},
+                  "yAxis": {
+                    "axisLine": {
+                      "show": false
+                    }
+                  },
                   "tooltip": {
                     "show": true,
                     "trigger": "axis"
@@ -120,7 +126,8 @@ export default {
                 "theme": "dark",
                 "initOptions": {
                   "renderer": "svg"
-                }
+                },
+                "category": "x"
               }
             ],
             "_id": "6898a053-8778-4d42-a6c0-be1d87b24b71"
@@ -148,7 +155,6 @@ export default {
                   "xAxis": {
                     "boundaryGap": false,
                     "name": "xxxx",
-                    "inverse": false,
                     "axisTick": {},
                     "splitLine": {},
                     "axisLabel": {},
@@ -186,10 +192,7 @@ export default {
                         "width": 0
                       },
                       "stack": "total",
-                      "encode": {
-                        "x": "day",
-                        "y": "data1"
-                      }
+                      "$key": "data1"
                     },
                     {
                       "type": "line",
@@ -203,18 +206,11 @@ export default {
                       "lineStyle": {
                         "width": 0
                       },
-                      "encode": {
-                        "x": "day",
-                        "y": "data2"
-                      }
+                      "$key": "data2"
                     },
                     {
                       "type": "line",
                       "name": "Line 3",
-                      "encode": {
-                        "y": "data3",
-                        "x": "day"
-                      },
                       "areaStyle": {
                         "color": "rgba(116, 21, 219, 1)"
                       },
@@ -223,15 +219,12 @@ export default {
                       },
                       "symbol": "none",
                       "stack": "total",
-                      "smooth": true
+                      "smooth": true,
+                      "$key": "data3"
                     },
                     {
                       "type": "line",
                       "name": "Line 4",
-                      "encode": {
-                        "y": "data4",
-                        "x": "day"
-                      },
                       "areaStyle": {
                         "color": "rgba(135, 0, 157, 1)"
                       },
@@ -240,15 +233,12 @@ export default {
                       },
                       "symbol": "none",
                       "stack": "total",
-                      "smooth": true
+                      "smooth": true,
+                      "$key": "data4"
                     },
                     {
                       "type": "line",
                       "name": "Line 5",
-                      "encode": {
-                        "y": "data5",
-                        "x": "day"
-                      },
                       "areaStyle": {
                         "color": "rgba(224, 62, 76, 1)"
                       },
@@ -257,7 +247,8 @@ export default {
                       },
                       "symbol": "none",
                       "stack": "total",
-                      "smooth": true
+                      "smooth": true,
+                      "$key": "data5"
                     }
                   ],
                   "grid": {},
@@ -268,7 +259,8 @@ export default {
                 "id": "",
                 "initOptions": {
                   "renderer": "svg"
-                }
+                },
+                "category": "day"
               }
             ],
             "_id": "0bf53689-e3b4-4da7-be6a-bdf463aa2fd8"
@@ -305,32 +297,23 @@ export default {
                     {
                       "type": "line",
                       "name": "Step Start",
-                      "encode": {
-                        "x": "product",
-                        "y": "2015"
-                      },
                       "step": "start",
                       "smooth": false,
-                      "lineStyle": {}
+                      "lineStyle": {},
+                      "$key": "2015"
                     },
                     {
                       "type": "line",
                       "name": "Step Mid",
                       "step": "middle",
-                      "encode": {
-                        "x": "product",
-                        "y": "2016"
-                      }
+                      "$key": "2016"
                     },
                     {
                       "type": "line",
                       "name": "Step End",
-                      "encode": {
-                        "x": "product",
-                        "y": "2017"
-                      },
                       "step": "end",
-                      "smooth": false
+                      "smooth": false,
+                      "$key": "2017"
                     }
                   ],
                   "grid": {},
@@ -343,7 +326,8 @@ export default {
                 "theme": "dark",
                 "initOptions": {
                   "renderer": "svg"
-                }
+                },
+                "category": "product"
               }
             ],
             "_id": "d10de957-df9f-45f9-a221-a53240610a14"
@@ -398,7 +382,8 @@ export default {
                       "label": {},
                       "name": "Altitude (km) vs. temperature (°C)",
                       "smooth": true,
-                      "lineStyle": {}
+                      "lineStyle": {},
+                      "$key": "temperature"
                     }
                   ],
                   "grid": {
@@ -414,7 +399,8 @@ export default {
                 "initOptions": {
                   "renderer": ""
                 },
-                "vertical": true
+                "vertical": true,
+                "category": "altitude"
               }
             ],
             "_id": "fb8e308b-5f62-4c97-8b78-caaf7b446408"
@@ -559,7 +545,10 @@ export default {
         "style": {
           "height": "1920px",
           "width": "1360px"
-        }
+        },
+        "x": 193.62696280759832,
+        "y": 52.98971875977878,
+        "zoom": 1.0483144860821818
       }
     },
     "style": {

@@ -37,7 +37,7 @@ export function normalized(arr) {
   return arr
 }
 
-export const enable = (model, label, prop, defaultValue, children, ) => ({ is: 'ElFormRender', model, size: 'small', style: 'padding: 1px 12px; background: var(--el-fill-color-light);', children: [
+export const enable = (model, label, prop, defaultValue, children, ) => ({ is: 'ElFormRender', model, size: 'small', labelPosition: 'top', style: 'padding: 1px 12px; background: var(--el-fill-color-light);', children: [
   { is: 'div', class: 'flex aic', children: [
     { is: 'div', style: 'margin: 6px 0; font-weight: bold; text-transform: capitalize;', children: label },
     prop.prop ? prop : { prop, type: 'switch', class: 'mla mb0', defaultValue }
