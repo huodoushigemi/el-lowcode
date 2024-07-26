@@ -344,11 +344,10 @@ export default {
             },
           },
         ],
-        gap: 20,
+        gap: [20, 20],
         style: {
           'margin-top': '20px',
         },
-        maxh: 256,
       },
     ],
     state: {

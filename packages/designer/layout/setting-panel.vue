@@ -42,14 +42,8 @@ import Scriptable from './components/scriptable.vue'
 import Input from './components/input.vue'
 import MonacoEditorDialog from './components/MonacoEditorDialog.vue'
 import BoxModel from './components/style/BoxModel.vue'
-
-import MSLBold from '~icons/material-symbols-light/format-bold'
-import MSLItalic from '~icons/material-symbols-light/format-italic'
-import MSLLeft from '~icons/material-symbols-light/align-horizontal-left'
-import MSLCenter from '~icons/material-symbols-light/align-horizontal-center'
-import MSLRight from '~icons/material-symbols-light/align-horizontal-right'
-import MSLClose from '~icons/material-symbols-light/close-small-outline-rounded'
-import MSLUnderlined from '~icons/material-symbols-light/format-underlined'
+import StyleFlexLayout from './components/style/StyleFlexLayout.vue'
+import StyleText from './components/style/StyleText.vue'
 
 const visible = ref(false)
 const internalProps = ['_id', 'is', 'children']
@@ -91,7 +85,7 @@ const config = computed(() => {
 
 const _items = computed(() => unFn(config.value?.props, model.value))
 
-const styles = [
+const styles = computed(() => [
   { is: 'div', class: 'grid grid-cols-3', children: [
     { lp: ['W', 'style.width'], el: { is: 'InputNumber' } },
     { lp: ['H', 'style.height'], el: { is: 'InputNumber' } },
@@ -102,6 +96,7 @@ const styles = [
   ] },
   { lp: ['position', 'style.position'], type: 'select', options: ['static', 'relative', 'absolute', 'fixed', 'sticky'], displayValue: 'static', el: { placeholder: 'static' } },
   { lp: ['layout', 'style.display'], type: 'radio-group', options: ['inline', 'block', 'flex'] },
+  { prop: 'style', script: false, el: { is: StyleFlexLayout }  },
   // { lp: ['width', 'style.width'], type: 'input-number', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined },
   // { lp: ['height', 'style.height'], type: 'input-number', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined },
   { is: 'h4', class: 'mb8', children: 'Background' },
@@ -109,25 +104,12 @@ const styles = [
   { lp: ['opacity', 'style.opacity'], type: 'slider', displayValue: 1, el: { min: 0, max: 1, step: .01, formatTooltip: val => (val * 100).toFixed(2) } },
   { lp: ['overflow', 'style.overflow'], type: 'radio-group', options: ['visible', 'auto', 'hidden'], displayValue: 'visible' },
   { is: 'h4', class: 'mb8', children: 'Text' },
-  { prop: 'style.fontSize', type: 'slider', class: 'mb8', script: false, displayValue: '16px', get: v => parseInt(v), set: v => v + 'px', el: { min: 12, max: 64 } },
-  { is: 'div', class: 'flex space-x-4', children: [
-    { prop: 'style.color', type: 'color-picker', script: false, el: { size: 'default' } },
-    { is: 'div', class: 'mla!' },
-    { prop: 'style.textAlign', script: false, el: { is: ({ modelValue: v }, { emit }) => [
-      h(MSLLeft, { class: 'bg-hover w28 h28 p2', style: `background: ${v == 'left' ? '#404040' : ''}`, onClick: () => emit('update:modelValue', v == 'left' ? undefined : 'left') }),
-      h(MSLCenter, { class: 'bg-hover w28 h28 p2', style: `background: ${v == 'center' ? '#404040' : ''}`, onClick: () => emit('update:modelValue', v == 'center' ? undefined : 'center') }),
-      h(MSLRight, { class: 'bg-hover w28 h28 p2', style: `background: ${v == 'right' ? '#404040' : ''}`, onClick: () => emit('update:modelValue', v == 'right' ? undefined : 'right') }),
-    ] } },
-    { is: 'div', class: 'mla!' },
-    { prop: 'style.fontWeight', script: false, el: { is: ({ modelValue: v }, { emit }) => h(MSLBold, { class: 'bg-hover w28 h28', style: `background: ${v ? '#404040' : ''}`, onClick: () => emit('update:modelValue', v ? undefined : 'bold') }) } },
-    { prop: 'style.fontStyle', script: false, el: { is: ({ modelValue: v }, { emit }) => h(MSLItalic, { class: 'bg-hover w28 h28', style: `background: ${v ? '#404040' : ''}`, onClick: () => emit('update:modelValue', v ? undefined : 'italic') }) } },
-    { prop: 'style.textDecoration', script: false, el: { is: ({ modelValue: v }, { emit }) => h(MSLUnderlined, { class: 'bg-hover w28 h28', style: `background: ${v ? '#404040' : ''}`, onClick: () => emit('update:modelValue', v ? undefined : 'underline') }) } },
-  ] },
+  { prop: 'style', script: false, el: { is: StyleText } },
   { is: 'h4', class: 'mb8', children: 'Border' },
   { lp: ['border', 'style.border'], el: { placeholder: '0px solid #00' } },
   { lp: ['rounded', 'style.borderRadius'], type: 'slider', get: v => parseInt(v), set: v => v + 'px' },
   { lp: 'style', get: val => stringifyStyle(val).replace(/;/g, ';\n'), set: val => parseStringStyle(val), el: { is: Input, type: 'textarea', placeholder: 'font-size: inherit;\ncolor: inherit;', autosize: { minRows: 4, maxRows: 12 } } },
-]
+])
 
 const commons = [
   { lp: 'id' },
@@ -158,7 +140,7 @@ function add2absolute(node) {
   padding: 0 8px;
 }
 :deep(.el-slider) {
-  margin: 0 10px;
+  @apply mx10;
 }
 
 .tabs {

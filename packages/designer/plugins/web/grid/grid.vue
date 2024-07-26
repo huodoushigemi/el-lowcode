@@ -20,7 +20,7 @@ defineOptions({
 })
 
 const props = defineProps({
-  cols: Number,
+  cols: [Number, String],
   gap: [Number, Array]
 })
 
