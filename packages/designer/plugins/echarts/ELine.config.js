@@ -10,14 +10,13 @@ export default {
 
     return [
       { lp: ['data', 'option.dataset.source'], script: true },
+
+      segm2('series-layout-by', ['column', 'row'], { displayValue: 'column' }),
   
-      // segm2('series-layout-by', ['column', 'row'], { displayValue: 'column' }),
       { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
         { lp: 'category', el: { placeholder: 'auto' } },
         bool('vertical'),
       ] },
-  
-      // { lp: ['series', 'option.series'], class: '-mr8', el: { is: 'EditTable', columns: [{ prop: 'name' }, { prop: 'encode.y' }], new: () => ({ type: 'line' }) } },
   
       { is: 'ElFormRender', model: option, size: 'small', class: 'no-scriptable', children: [
         grid(option),
@@ -26,7 +25,9 @@ export default {
         toolbox(option),
         tooltip(option),
         { is: 'Tabs', key: _id, class: '-mx8 mt12', tabs: option.series, editable: true, props: { label: 'name' }, new: (i) => ({ type: 'line', name: `series-${i + 1}` }), children: option.series.map(e => (
-          { is: 'div', label: e.name, class: 'px8', children: () => [serieLine(e)] }
+          { is: 'div', label: e.name, class: 'px8', children: () => [
+            e.type == 'bar' ? serieBar(e) : serieLine(e)
+          ] }
         )) },
       ] },
   
@@ -42,8 +43,6 @@ export default {
       { is: 'h1', children: 'Event' },
       { lp: 'onFinished', script: true },
       { lp: 'onSelectchanged', script: true },
-      { lp: 'onLegendselectchanged', script: true },
-      { lp: 'onLegendselected', script: true },
     ]
   },
   defaultProps: () => ({
@@ -58,7 +57,7 @@ export default {
       dataset: {
         source: `{{${JSON.stringify([{ x: 'Mon', y: 150 }, { x: 'Tue', y: 230 }, { x: 'Wed', y: 224 }, { x: 'Thu', y: 218 }, { x: 'Fri', y: 135 }, { x: 'Sat', y: 147 }, { x: 'Sun', y: 260 }], undefined, ' ')}}}`
       },
-      series: [{ label: { show: true } }]
+      series: [{ name: 'data', label: { show: true } }]
     },
   })
 }

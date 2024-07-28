@@ -20,7 +20,6 @@ import { CanvasRenderer, SVGRenderer } from 'echarts/renderers'
 import VueEcharts from 'vue-echarts'
 
 import { LineChart } from 'echarts/charts'
-// import 'echarts/lib/chart/line.js'
 
 use([ LegendComponent, TooltipComponent, GridComponent, DatasetComponent, TransformComponent, ToolboxComponent, LabelLayout, UniversalTransition, CanvasRenderer, SVGRenderer ])
 use([ LineChart ])
@@ -34,14 +33,20 @@ const props = defineProps({
 
 const _option = computed(() => {
   const { option, vertical, seriesLayoutBy, category } = props
+
+  const data = option.dataset.source
+  const twoArr = Array.isArray(data) && Array.isArray(data[0])
+  const tKey = e => twoArr ? +e : e
+  
   return merge({
     xAxis: { type: vertical ? 'value' : 'category' },
     yAxis: { type: vertical ? 'category' : 'value' },
     series: props.option.series?.map(e => ({
+      type: 'line',
       seriesLayoutBy,
-      encode: {
-        x: vertical ? e.$key : category,
-        y: vertical ? category : e.$key
+      encode: !e.$key && !category ? void 0 :{
+        x: vertical ? tKey(e.$key) : category,
+        y: vertical ? category : tKey(e.$key)
       }
     }))
   }, option)

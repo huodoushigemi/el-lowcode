@@ -1,10 +1,13 @@
 import { bool, color, details, enable, enable2, enable3, genDisplayValue, lineStyleItems, num, nums, opts, segm, textStyleItems, LINE_TYPES, shadowStyleItems } from '../../utils'
 
-export const serieBar = (model) => ({ is: 'ElFormRender', model, size: 'small', children: [
-  { lp: 'name', class: 'mb8' },
-
+export const serieBar = (model) => ({ is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children: [
+  { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
+    { lp: 'type', options: ['line', 'bar'], displayValue: 'bar' },
+    // segm('type', ['line', 'bar'], { displayValue: 'bar' }),
+    { lp: ['key', '$key'] },
+  ] },
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
-    nums(['radius', 'itemStyle.borderRadius'], { class: 'col-span-2', set: v => v.map(e => e || 0), el: { len: 4, placeholder: ['┍', '┓', '┛', '┕'] } }),
+    nums(['rounded', 'itemStyle.borderRadius'], { class: 'col-span-2', set: v => v.map(e => e || 0), el: { len: 4, placeholder: ['┍', '┓', '┛', '┕'] } }),
     color(['color', 'itemStyle.color']),
     num(['size', 'barWidth']),
     num(['gap', 'barGap']),
@@ -23,7 +26,7 @@ export const serieBar = (model) => ({ is: 'ElFormRender', model, size: 'small', 
   enable3(model, 'select', genDisplayValue(model, 'select.disabled', false), () => [
     { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
       num(['color', 'select.itemStyle.color']),
-      num(['radius', 'select.itemStyle.borderRadius']),
+      num(['rounded', 'select.itemStyle.borderRadius']),
       { is: 'div' },
       ...lineStyleItems(['type', 'width', 'color'], 'select.itemStyle'),
       ...shadowStyleItems(['shadowBlur', 'shadowOffset', 'shadowColor'], 'select.itemStyle'),
