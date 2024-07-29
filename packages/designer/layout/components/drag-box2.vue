@@ -14,12 +14,13 @@ defineRender(() => {
 
 <script lang="ts">
 import { computed, inject, mergeProps, onBeforeUnmount, reactive, ref, toRef, watch, watchEffect } from 'vue'
+import type { Ref } from 'vue'
 import { isArray } from '@vue/shared'
-import { computedEager, unrefElement, useEventListener } from '@vueuse/core'
+import { computedEager, unrefElement, useActiveElement, useEventListener } from '@vueuse/core'
 import { useSortable } from '@vueuse/integrations/useSortable'
 import { createRender } from '@el-lowcode/render'
 import { deepClone, execExp, mapValues, pick } from '@el-lowcode/utils'
-import { sloveConfig } from '../../components/_utils'
+import { parseAttrs, sloveConfig } from '../../components/_utils'
 import type { DesignerCtx } from '../interface'
 import type { BoxProps } from '../../components/type'
 
@@ -78,6 +79,7 @@ function setup(props: BoxProps, designer: DesignerCtx) {
   const elRef = ref(), boxRef = ref()
   const config = computed(() => sloveConfig(props))
   const absolute = computed(() => props.style?.position == 'absolute')
+  const absoluteLayout = () => props['data-absolute-layout']
 
   let cloned: HTMLElement
 
@@ -88,7 +90,7 @@ function setup(props: BoxProps, designer: DesignerCtx) {
   })
   
   let sortable
-  watch(box, el => {
+  watch(() => absoluteLayout() ? void 0 : box.value, el => {
     sortable?.stop()
     if (!el) return
     const children = props.children as BoxProps[]
@@ -140,6 +142,8 @@ function setup(props: BoxProps, designer: DesignerCtx) {
       }
     })
   })
+
+  useAbsoluteLayout(props, box, designer)
   
   useEventListener(elRef, 'mousedown', e => {
     if (e.button != 0) return
@@ -185,6 +189,41 @@ function sortAbsolute(arr: BoxProps[]) {
     arr.push(...c1, ...c2)
   }
 }
+
+function useAbsoluteLayout(props: BoxProps, elRef: Ref<HTMLElement>, designer: DesignerCtx) {
+  let stopDrop
+  watch(() => props['data-absolute-layout'], v => {
+    stopDrop?.()
+    if (!v) return
+    if (!isArray(props.children)) return
+    useEventListener(elRef, 'dragover', e => {
+      e.preventDefault()
+      e.stopPropagation()
+    })
+    stopDrop = useEventListener(elRef, 'drop', (e) => {
+      const is = e.dataTransfer?.getData('data-is')
+      console.log(11, is);
+      if (!is) return
+      e.preventDefault()
+      const dropProps = parseAttrs(designer.widgets[is]!)
+      const rect = elRef.value.getBoundingClientRect()
+      const x = e.x - rect.x, y  = e.y - rect.y
+      const style = { position: 'absolute', transform: `translate(${x}px, ${y}px)`, '--x': `${x}px`, '--y': `${y}px`, margin: 0 }
+      props.children.push(mergeProps(dropProps, { style }))
+      designer.activeId = dropProps._id
+    })
+  }, { immediate: true })
+}
+
+// todo
+document.addEventListener('dragstart', e => {
+  if (e.target instanceof HTMLElement) {
+    const is = e.target.getAttribute('data-is')
+    if (!is) return
+    if (!e.dataTransfer) return
+    e.dataTransfer.setData('data-is', is)
+  }
+}, { passive: true })
 </script>
 
 

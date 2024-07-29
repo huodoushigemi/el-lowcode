@@ -59,7 +59,7 @@
             <div v-for="wgtConfig in list.filter(e => e.drag != false)" class="cell" text-14 truncate>{{ wgtConfig.label }}</div>
           </vue-draggable> -->
           <Sortable :model-value="list.filter(e => e.drag != false)" grid="~ cols-2" gap-8 :option="{ group: { name: 'shared', pull: 'clone', put: false }, sort: false, onEnd }" :clone>
-            <div v-for="wgtConfig in list.filter(e => e.drag != false)" class="cell" text-14 truncate>{{ wgtConfig.label }}</div>
+            <div v-for="wgtConfig in list.filter(e => e.drag != false)" class="cell" :data-is="wgtConfig.is" text-14 truncate>{{ wgtConfig.label }}</div>
           </Sortable>
         </div>
       </el-tab-pane>
