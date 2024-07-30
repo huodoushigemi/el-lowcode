@@ -1,3 +1,4 @@
+import { h } from 'vue'
 import Page from './page'
 import Grid from './grid'
 import Code from './code'
@@ -10,5 +11,7 @@ export default {
     app.use(Page)
     app.use(Grid)
     app.use(Code)
+    
+    app.component('AbsoluteLayout', (props, { slots }) => h('div', props, slots))
   }
 }

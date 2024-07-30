@@ -31,10 +31,10 @@
 </template>
 
 <script setup>
-import { computed, inject, h, ref, getCurrentInstance } from 'vue'
-import { isArray, isObject, parseStringStyle, stringifyStyle, isOn, remove } from '@vue/shared'
+import { computed, inject, ref } from 'vue'
+import { isArray, parseStringStyle, stringifyStyle, isOn } from '@vue/shared'
 import { createRender } from '@el-lowcode/render'
-import { mapValues, pick, set, toArr, treeUtils, unFn } from '@el-lowcode/utils'
+import { mapValues, pick, set, unFn } from '@el-lowcode/utils'
 import { ElFormRender, normalizeItem } from 'el-form-render'
 import { designerCtxKey } from './interface'
 import { sloveConfig } from '../components/_utils'

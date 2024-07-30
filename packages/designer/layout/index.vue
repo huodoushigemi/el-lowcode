@@ -29,23 +29,6 @@
 
     <!-- Activity bar -->
     <el-tabs tab-position="left" type="border-card" hfull b-r="1px solid [--el-border-color]" box-border>
-      <!-- <el-tab-pane w200 ref="dropZone">
-        <div v-if="isOverDropZone" absolute inset-0 bg="gray/40" pointer-events-none />
-        <template #label><el-tooltip content="组件库" placement="right" :hide-after="0"><i-mdi:widgets-outline /></el-tooltip></template>
-        <div px8 py12 text-22 b-b="1 solid [--el-border-color]">组件</div>
-        <el-collapse v-model="collapse" pl12 pr8 hfull overflow-overlay>
-          <template v-for="group in groups">
-            <el-collapse-item v-if="group.list.length" :title="group.title" :name="group.title">
-              <vue-draggable :model-value="group.list" grid="~ cols-2" gap-8 hfull overflow-overlay :group="{ name: 'shared', pull: 'clone', put: false }" :sort="false" :clone="clone" @end="onEnd">
-                <template v-for="wgt in group.list">
-                  <div class="cell" truncate>{{ wgt!.label }}</div>
-                </template>
-              </vue-draggable>
-            </el-collapse-item>
-          </template>
-        </el-collapse>
-      </el-tab-pane> -->
-
       <!-- Installed plugins -->
       <el-tab-pane v-for="[url, pkg] in installedPlugins?.map(e => [e, loadPkg(e)])" :key="pkg?.name" lazy w200>
         <template #label><el-tooltip v-if="pkg" :content="pkg.name" placement="right" :hide-after="0"><img :src="pkg.icon" :alt="pkg.name" /></el-tooltip></template>
@@ -55,12 +38,9 @@
         </div>
         <div v-for="(list, category) in groupBy(asyncConfig(url) || [], 'category')" p8>
           <div mt4 mb10 text-16 font-bold>{{ category == 'undefined' ? '其他' : category }}</div>
-          <!-- <vue-draggable :model-value="list.filter(e => e.drag != false)" grid="~ cols-2" gap-8 :group="{ name: 'shared', pull: 'clone', put: false }" :sort="false" :clone="clone" @end="onEnd">
-            <div v-for="wgtConfig in list.filter(e => e.drag != false)" class="cell" text-14 truncate>{{ wgtConfig.label }}</div>
-          </vue-draggable> -->
-          <Sortable :model-value="list.filter(e => e.drag != false)" grid="~ cols-2" gap-8 :option="{ group: { name: 'shared', pull: 'clone', put: false }, sort: false, onEnd }" :clone>
-            <div v-for="wgtConfig in list.filter(e => e.drag != false)" class="cell" :data-is="wgtConfig.is" text-14 truncate>{{ wgtConfig.label }}</div>
-          </Sortable>
+          <div grid="~ cols-2" gap-8>
+            <div v-for="wgtConfig in list.filter(e => e.drag != false)" class="cell" :data-is="wgtConfig.is" draggable="true" text-14 truncate>{{ wgtConfig.label }}</div>
+          </div>
         </div>
       </el-tab-pane>
 
@@ -253,18 +233,7 @@ provide(designerCtxKey, designerCtx)
 provide('designerCtx', designerCtx)
 defineExpose(designerCtx)
 
-console.log(window.designerCtx = designerCtx);
-
-
-let cloned: BoxProps | undefined
-function clone(e) {
-  return cloned = parseAttrs(e)
-}
-function onEnd(e) {
-  if (!cloned) return
-  designerCtx.activeId = cloned._id
-  cloned = void 0
-}
+console.log(window.designerCtx = designerCtx)
 
 const activeEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.activeId}']`)
 const hoverEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.hoverId}']`)

@@ -4,7 +4,7 @@ const props = defineProps({
 })
 
 onBeforeUnmount(() => {
-  for (const k in cache) cache[k] = void 0
+  for (const k in propsCtx) propsCtx[k] = void 0
 })
 
 defineRender(() => {
@@ -15,16 +15,17 @@ defineRender(() => {
 <script lang="ts">
 import { computed, inject, mergeProps, onBeforeUnmount, reactive, ref, toRef, watch, watchEffect } from 'vue'
 import type { Ref } from 'vue'
-import { isArray } from '@vue/shared'
-import { computedEager, unrefElement, useActiveElement, useEventListener } from '@vueuse/core'
+import { isArray, remove } from '@vue/shared'
+import { computedEager, unrefElement, useEventListener } from '@vueuse/core'
 import { useSortable } from '@vueuse/integrations/useSortable'
 import { createRender } from '@el-lowcode/render'
-import { deepClone, execExp, mapValues, pick } from '@el-lowcode/utils'
+import { deepClone, execExp, treeUtils } from '@el-lowcode/utils'
 import { parseAttrs, sloveConfig } from '../../components/_utils'
 import type { DesignerCtx } from '../interface'
 import type { BoxProps } from '../../components/type'
 
 const wm = new WeakMap()
+const REMOVE = Symbol()
 
 const Render = createRender({
   defaultIs: 'div',
@@ -44,11 +45,6 @@ const Render = createRender({
           console.error('exec expression error: ', e)
         }
       }
-      
-      // 移除值为 undefuned 的属性
-      props = JSON.parse(JSON.stringify(props))
-      // 执行表达式
-      props = deepClone(props, _execExp)
 
       const ctx = setup(_props, designer)
 
@@ -61,6 +57,11 @@ const Render = createRender({
         }
       }
 
+      // 移除值为 undefuned 的属性
+      props = JSON.parse(JSON.stringify(props))
+      // 执行表达式
+      props = deepClone(props, _execExp)
+      // 合并属性
       props = mergeProps(props, { ref: ctx.ref }, ctx.attrs)
       props.children = _execExp(children)
   
@@ -71,10 +72,10 @@ const Render = createRender({
 })
 
 
-const cache = new WeakMap()
+const propsCtx = new WeakMap()
 
 function setup(props: BoxProps, designer: DesignerCtx) {
-  if (cache.has(props)) cache.get(props)
+  if (propsCtx.has(props)) propsCtx.get(props)
   
   const elRef = ref(), boxRef = ref()
   const config = computed(() => sloveConfig(props))
@@ -88,69 +89,82 @@ function setup(props: BoxProps, designer: DesignerCtx) {
     if (!isArray(props.children)) return
     return unrefElement(boxRef.value || elRef.value)
   })
+
+  watch(elRef, el => {
+    if (!el) return
+    el[REMOVE] = () => (remove(treeUtils.findParent([designer.root], props._id, { key: '_id' })!.children as BoxProps[], props), props)
+  })
   
   let sortable
-  watch(() => absoluteLayout() ? void 0 : box.value, el => {
-    sortable?.stop()
-    if (!el) return
-    const children = props.children as BoxProps[]
-    el.$sortableRemove = (key) => children.splice(children.findIndex(item => item._id == key), 1)[0]
-    sortable = useSortable(el, toRef(props, 'children'), {
-      group: 'shared',
-      animation: 150,
-      draggable: '.drag',
-      // filter: '.moveable',
-      ghostClass: 'ghostClass',
-      invertSwap: true,
-      // dataIdAttr: '_id',
-      onAdd(e) {
-        const si = children.length ? [...e.to.children].findIndex(e => e.getAttribute('_id') == children[0]._id) : e.to.children.length
-        if (e.pullMode == 'clone') {
-          e.item.remove()
-          const cloned = e.from.$sortableClone(e.oldIndex)
-          children.splice(e.newIndex - si, 0, cloned)
-        } else {
-          const key = e.item.getAttribute('_id')
-          const cloned = e.from.$sortableRemove(key)
-          e.item.remove()
-          children.splice(e.newIndex - si, 0, cloned)
-        }
-      },
-      onStart(e) {
-        const i = children.findIndex(item => item._id == e.item.getAttribute('_id'))
-        designer.draggedId = children[i]._id
-        cloned = e.item.cloneNode(true) as HTMLElement
-        cloned.classList.remove('ghostClass', 'drag')
-        cloned.classList.add('outline-1', 'outline-solid', 'outline-[--el-color-primary]', 'outline-offset--1')
-        cloned.removeAttribute('draggable')
-        e.item.parentElement!.insertBefore(cloned, e.item)
-      },
-      onEnd(e) {
-        cloned.remove()
-        designer.draggedId = undefined
-        // 处理 sortablejs 与 moveable 拖动冲突问题
-        for (const el of [...e.from.children, ...e.to.children]) {
-          const x = el.style.getPropertyValue('--x'), y = el.style.getPropertyValue('--y')
-          if (x && y) el.style.setProperty('transform', `translate(${x}, ${y})`)
-        }
-      },
-      onUpdate(e) {
-        const si = e.oldIndex - children.findIndex(item => item._id == e.item.getAttribute('_id'))
-        const newIndex = e.newIndex - si, oldIndex = e.oldIndex - si
-        const node = children.splice(oldIndex, 1)[0]
-        children.splice(newIndex > oldIndex ? newIndex - 1 : newIndex, 0, node)
-      }
-    })
-  })
+  // watch(() => absoluteLayout() ? void 0 : box.value, el => {
+  // watch(box, el => {
+  //   sortable?.stop()
+  //   if (!el) return
+  //   if (props['data-absolute-layout']) return
+  //   const children = () => props.children as BoxProps[]
+  //   sortable = useSortable(el, children, {
+  //     group: 'shared',
+  //     animation: 150,
+  //     draggable: '.drag',
+  //     // filter: '.moveable',
+  //     ghostClass: 'ghostClass',
+  //     invertSwap: true,
+  //     // dataIdAttr: '_id',
+  //     onAdd(e) {
+  //       console.log({...e}, props);
+  //       if (props['data-absolute-layout']) {
+  //         return e.item.remove()
+  //       }
+  //       const si = children().length ? [...e.to.children].findIndex(e => e.getAttribute('_id') == children()[0]._id) : e.to.children.length
+  //       if (e.pullMode == 'clone') {
+  //         e.item.remove()
+  //         const is = e.item.getAttribute('data-is')!
+  //         if (!is) return
+  //         const cloned = parseAttrs(designer.widgets[is]!)
+  //         children().splice(e.newIndex! - si, 0, cloned)
+  //         designer.activeId = cloned._id
+  //       } else {
+  //         e.item.remove()
+  //         const cloned = e.item[REMOVE]()
+  //         children().splice(e.newIndex! - si, 0, cloned)
+  //       }
+  //     },
+  //     onStart(e) {
+  //       const i = children().findIndex(item => item._id == e.item.getAttribute('_id'))
+  //       designer.draggedId = children()[i]._id
+  //       cloned = e.item.cloneNode(true) as HTMLElement
+  //       cloned.classList.remove('ghostClass', 'drag')
+  //       cloned.classList.add('outline-1', 'outline-solid', 'outline-[--el-color-primary]', 'outline-offset--1')
+  //       cloned.removeAttribute('draggable')
+  //       cloned.removeAttribute('_id')
+  //       e.item.parentElement!.insertBefore(cloned, e.item)
+  //     },
+  //     onEnd(e) {
+  //       cloned.remove()
+  //       designer.draggedId = undefined
+  //       // 处理 sortablejs 与 moveable 拖动冲突问题
+  //       for (const el of [...e.from.children, ...e.to.children]) {
+  //         const x = el.style.getPropertyValue('--x'), y = el.style.getPropertyValue('--y')
+  //         if (x && y) el.style.setProperty('transform', `translate(${x}, ${y})`)
+  //       }
+  //     },
+  //     onUpdate(e) {
+  //       const si = e.oldIndex! - children().findIndex(item => item._id == e.item.getAttribute('_id'))
+  //       const newIndex = e.newIndex! - si, oldIndex = e.oldIndex! - si
+  //       const node = children().splice(oldIndex, 1)[0]
+  //       children().splice(newIndex > oldIndex ? newIndex - 1 : newIndex, 0, node)
+  //     }
+  //   })
+  // })
 
-  useAbsoluteLayout(props, box, designer)
+  useAbsoluteLayout(props, elRef, designer)
   
   useEventListener(elRef, 'mousedown', e => {
     if (e.button != 0) return
     e.stopPropagation()
     if (designer.draggedId) return
     designer.activeId = props._id
-  }, { passive: false })
+  })
 
   useEventListener(elRef, 'mouseover', e => {
     e.stopPropagation()
@@ -165,11 +179,11 @@ function setup(props: BoxProps, designer: DesignerCtx) {
     attrs: reactive({
       key: props._id,
       class: computedEager(() => absolute.value ? 'moveable' : config.value?.drag == false ? '' : 'drag'),
-      onVnodeBeforeUnmount: () => cache.delete(props)
+      onVnodeBeforeUnmount: () => propsCtx.delete(props)
     }),
   }
   
-  cache.set(props, ret)
+  propsCtx.set(props, ret)
   
   return ret
 }
@@ -202,26 +216,26 @@ function useAbsoluteLayout(props: BoxProps, elRef: Ref<HTMLElement>, designer: D
     })
     stopDrop = useEventListener(elRef, 'drop', (e) => {
       const is = e.dataTransfer?.getData('data-is')
-      console.log(11, is);
-      if (!is) return
+      const _id = e.dataTransfer?.getData('_id')
+      if (!is && !_id) return
+      const doc = elRef.value.getRootNode() as Document
       e.preventDefault()
-      const dropProps = parseAttrs(designer.widgets[is]!)
+      e.stopPropagation()
+      const cloned =  _id ? doc.querySelector(`[_id='${_id}']`)![REMOVE]() : parseAttrs(designer.widgets[is!]!)
       const rect = elRef.value.getBoundingClientRect()
-      const x = e.x - rect.x, y  = e.y - rect.y
+      const x = Math.round(e.x - rect.x), y  = Math.round(e.y - rect.y)
       const style = { position: 'absolute', transform: `translate(${x}px, ${y}px)`, '--x': `${x}px`, '--y': `${y}px`, margin: 0 }
-      props.children.push(mergeProps(dropProps, { style }))
-      designer.activeId = dropProps._id
+      props.children.push(mergeProps(cloned, { style }))
+      designer.activeId = cloned._id
     })
   }, { immediate: true })
 }
 
-// todo
 document.addEventListener('dragstart', e => {
   if (e.target instanceof HTMLElement) {
-    const is = e.target.getAttribute('data-is')
-    if (!is) return
     if (!e.dataTransfer) return
-    e.dataTransfer.setData('data-is', is)
+    e.dataTransfer.setData('data-is', e.target.getAttribute('data-is') || '')
+    e.dataTransfer.setData('_id', e.target.getAttribute('_id') || '')
   }
 }, { passive: true })
 </script>
@@ -243,7 +257,7 @@ document.addEventListener('dragstart', e => {
   }
 }
 
-.drag.ghostClass {
+[draggable=true].ghostClass {
   display: block !important;
   margin: 0 !important;
   padding: 0 !important;
@@ -254,7 +268,6 @@ document.addEventListener('dragstart', e => {
   outline: 2px solid var(--el-color-primary) !important;
   border: 0 !important;
 }
-
 
 .moveable {
   --x: 0;

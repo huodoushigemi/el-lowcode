@@ -39,5 +39,17 @@ export default [
         { is: 'p', children: 'Yuumi', style: { margin: 0, padding: '1em', height: 'calc(var(--wc-appbar-minh) * 1px)', lineHeight: 'calc(var(--wc-appbar-minh) * 1px)', fontSize: '1.5em', background: 'var(--el-bg-color)', opacity: 'calc(var(--wc-appbar-shrink-offset) / (var(--wc-appbar-maxh) - var(--wc-appbar-minh)))' } }
       ]
     })
+  },
+
+  {
+    is: 'AbsoluteLayout',
+    label: '自由布局',
+    category: '容器',
+    props: [],
+    defaultProps: () => ({
+      'data-absolute-layout': true,
+      style: { height: '300px' },
+      children: [],
+    })
   }
 ]
