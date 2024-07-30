@@ -13,7 +13,7 @@ defineRender(() => {
 </script>
 
 <script lang="ts">
-import { computed, inject, mergeProps, onBeforeUnmount, reactive, ref, toRef, watch, watchEffect } from 'vue'
+import { computed, inject, mergeProps, nextTick, onBeforeUnmount, reactive, ref, toRef, watch, watchEffect } from 'vue'
 import type { Ref } from 'vue'
 import { isArray, remove } from '@vue/shared'
 import { computedEager, unrefElement, useEventListener } from '@vueuse/core'
@@ -214,19 +214,27 @@ function useAbsoluteLayout(props: BoxProps, elRef: Ref<HTMLElement>, designer: D
       e.preventDefault()
       e.stopPropagation()
     })
-    stopDrop = useEventListener(elRef, 'drop', (e) => {
+    stopDrop = useEventListener(elRef, 'drop', async (e) => {
       const is = e.dataTransfer?.getData('data-is')
       const _id = e.dataTransfer?.getData('_id')
       if (!is && !_id) return
+      const children = props.children as BoxProps[]
       const doc = elRef.value.getRootNode() as Document
       e.preventDefault()
       e.stopPropagation()
-      const cloned =  _id ? doc.querySelector(`[_id='${_id}']`)![REMOVE]() : parseAttrs(designer.widgets[is!]!)
-      const rect = elRef.value.getBoundingClientRect()
-      const x = Math.round(e.x - rect.x), y  = Math.round(e.y - rect.y)
-      const style = { position: 'absolute', transform: `translate(${x}px, ${y}px)`, '--x': `${x}px`, '--y': `${y}px`, margin: 0 }
-      props.children.push(mergeProps(cloned, { style }))
+
+
+      let cloned: BoxProps = _id ? doc.querySelector(`[_id='${_id}']`)![REMOVE]() : parseAttrs(designer.widgets[is!]!)
+      cloned = mergeProps(cloned, { style: { position: 'absolute', margin: 0 } }) as any
+      children.push(cloned)
       designer.activeId = cloned._id
+      // 计算坐标
+      await nextTick()
+      const clonedEl = doc.querySelector(`[_id='${cloned._id}']`)!
+      const rect = clonedEl.parentElement!.getBoundingClientRect()
+      const x = Math.round(e.x - rect.x), y  = Math.round(e.y - rect.y)
+      cloned = children.find(e => e._id == cloned._id)!
+      Object.assign(cloned.style, { transform: `translate(${x}px, ${y}px)`, '--x': `${x}px`, '--y': `${y}px` })
     })
   }, { immediate: true })
 }
