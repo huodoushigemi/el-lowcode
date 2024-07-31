@@ -1,4 +1,8 @@
 <script setup lang="ts">
+defineOptions({
+  inheritAttrs: false
+})
+
 const props = defineProps({
   el: Object
 })
@@ -22,7 +26,7 @@ import { isArray, remove } from '@vue/shared'
 import { computedEager, unrefElement, useEventListener } from '@vueuse/core'
 // import { useSortable } from '@vueuse/integrations/useSortable'
 import { createRender } from '@el-lowcode/render'
-import { deepClone, execExp, pick, treeUtils } from '@el-lowcode/utils'
+import { deepClone, execExp, mapValues, pick, treeUtils } from '@el-lowcode/utils'
 import { parseAttrs, sloveConfig } from '../../components/_utils'
 import type { DesignerCtx } from '../interface'
 import type { BoxProps } from '../../components/type'
@@ -34,6 +38,7 @@ const Render = createRender({
   defaultIs: 'div',
   processProps: (_props: any) => {
     if (_props.class?.includes('drag-wrapper')) return _props
+    if (_props.key == 'nill') return _props
     const designer = inject('designerCtx') as DesignerCtx
     // const { state } = inject('pageCtx', _props)
     return wm.get(_props)?.value || wm.set(_props, computed(() => {
@@ -58,7 +63,7 @@ const Render = createRender({
         else {
           sortAbsolute(children)
         }
-        children = [...children, { ref: ctx.nillRef, is: 'div', class: 'absolute! hidden!' }]
+        children = [...children, { ref: ctx.nillRef, is: 'div', key: 'nill', class: 'absolute! hidden!' }]
       }
 
       // 移除值为 undefuned 的属性
@@ -162,22 +167,22 @@ function setup(props: BoxProps, designer: DesignerCtx) {
   // })
 
   
-  onMounted(() => {
+  // onMounted(() => {
     useDrop(props, elRef, nillRef, designer)
     useDrag(props, elRef, designer)
-  })
+  // })
   
   useEventListener(elRef, 'mousedown', e => {
     if (e.button != 0) return
-    e.stopPropagation()
-    if (designer.draggedId) return
-    designer.activeId = props._id
+    // e.stopPropagation()
+    // if (designer.draggedId) return
+    // designer.activeId = props._id
   })
 
   useEventListener(elRef, 'mouseover', e => {
-    e.stopPropagation()
-    if (designer.draggedId) return
-    designer.hoverId = props._id
+    // e.stopPropagation()
+    // if (designer.draggedId) return
+    // designer.hoverId = props._id
   })
 
   const ret = {
@@ -214,7 +219,7 @@ function sortAbsolute(arr: BoxProps[]) {
 }
 
 function useDrop(props: BoxProps, elRef: Ref<HTMLElement>, nillRef: Ref<HTMLElement>, designer: DesignerCtx) {
-  const target = () => isArray(props.children) ? nillRef.value.parentElement : void 0
+  const target = () => isArray(props.children) ? nillRef.value?.parentElement : void 0
   useEventListener(target, 'dragover', e => {
     const is = e.dataTransfer?.getData('data-is')
     const _id = e.dataTransfer?.getData('_id')
@@ -244,10 +249,6 @@ function useDrop(props: BoxProps, elRef: Ref<HTMLElement>, nillRef: Ref<HTMLElem
       for (; i < filteredChildren.length; i++) {
         if (!inRange(e.x, e.y, filteredChildren[i].getBoundingClientRect())) break
       }
-      // Object.assign(nill.style, { display: getComputedStyle(dragEl).display })
-      // !el.children.length || i > el.children.length
-      //   ? el.append(nill)
-      //   : el.children[i].before(nill)
       let rect: DOMRect
       if (!el.children.length) {
         const nill = doc.createElement('div')
@@ -256,27 +257,29 @@ function useDrop(props: BoxProps, elRef: Ref<HTMLElement>, nillRef: Ref<HTMLElem
         nill.remove()
       } else {
         if (i < el.children.length) {
-          const anchor = filteredChildren[i]
+          const anchor = filteredChildren[i] as HTMLElement
           const clone = anchor.cloneNode() as HTMLElement
-          Object.assign(clone.style, { ...pick(win.getComputedStyle(anchor), ['boxSizing', 'display']), width: `${anchor.offsetWidth}px`, height: `${lastEl.offsetHeight}px` })
-          anchor.after(clone)
+          Object.assign(clone.style, { ...pick(win.getComputedStyle(anchor), ['display']), boxSizing: 'border-box', width: `${anchor.offsetWidth}px`, height: `${anchor.offsetHeight}px` })
+          anchor.before(clone)
           rect = clone.getBoundingClientRect()
           clone.remove()
         } else {
           const anchor = filteredChildren[filteredChildren.length - 1] as HTMLElement
           const clone = anchor.cloneNode() as HTMLElement
-          Object.assign(clone.style, { ...pick(win.getComputedStyle(anchor), ['boxSizing', 'display']), width: `${anchor.offsetWidth}px`, height: `${anchor.offsetHeight}px` })
+          Object.assign(clone.style, { ...pick(win.getComputedStyle(anchor), ['display']), boxSizing: 'border-box', width: `${anchor.offsetWidth}px`, height: `${anchor.offsetHeight}px` })
           anchor.after(clone)
           rect = clone.getBoundingClientRect()
           clone.remove()
         }
       }
-      // const nillRect = nill.getBoundingClientRect()
-      // const horizontal = 
-      // const firstClone = el.children[0].cloneNode() as HTMLElement
-      // el.children[0].after(firstClone)
-      // const rect1 = el.children[0].getBoundingClientRect(), rect2 = firstClone.getBoundingClientRect()
-      
+
+      const rect2 = designer.viewport.getBoundingClientRect()
+      Object.assign(dragLineStyle, {
+        left: `${rect.left - rect2.left}px`,
+        top: `${rect.top - rect2.top}px`,
+        width: `${rect.width}px`,
+        height: `${rect.height}px`,
+      })
     }
   })
   useEventListener(target, 'drop', async (e) => {
@@ -315,6 +318,7 @@ function useDrag(props: BoxProps, elRef: Ref, designer: DesignerCtx) {
   useEventListener(elRef, 'dragstart', e => {
     e.stopPropagation()
     e.dataTransfer?.setDragImage(new Image(), 0, 0)
+    e.dataTransfer?.setData('_id', (e.target as any).getAttribute('_id') || '')
   })
   watch(() => props == designer.root ? void 0 : unrefElement(elRef), el => {
     el && el.setAttribute('draggable', 'true')
@@ -326,7 +330,7 @@ document.addEventListener('dragstart', e => {
     e.dataTransfer?.setData('data-is', e.target.getAttribute('data-is') || '')
     e.dataTransfer?.setData('_id', e.target.getAttribute('_id') || '')
   }
-}, { passive: true })
+})
 
 
 // 

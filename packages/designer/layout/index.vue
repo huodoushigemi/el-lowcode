@@ -9,14 +9,14 @@
 
       <!-- 尺寸 -->
        <!-- style="--el-border-color: 0"  -->
-      <ElFormRender class="flex aic mxa text-12 [&>*]:mb0!" :model="root" size="small" :items="[
-        { lp: ['尺寸: ', 'designer.canvas.style.wh'], type: 'select', options: [['iPhone SE', '375 × 667'], ['iPhone12 Pro', '390 × 844'], ['iPad Mini', '768 × 1024']], class: 'w160 mr8', get: () => ['width', 'height'].map(k => parseFloat(get(root, `designer.canvas.style.${k}`)) || ' - ').join(' × '), set: v => (['width', 'height'].forEach((k, i) => set(root, `designer.canvas.style.${k}`, v && v.split(' × ')[i] + 'px')), void 0), el: { clearable: true } },
-        { prop: 'designer.canvas.style.width', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
+      <ElFormRender class="flex aic mxa text-12 [&>*]:mb0!" :model="designerCtx.canvas" size="small" :items="[
+        { lp: ['尺寸: ', 'style.wh'], type: 'select', options: [['iPhone SE', '375 × 667'], ['iPhone12 Pro', '390 × 844'], ['iPad Mini', '768 × 1024']], class: 'w160 mr8', get: () => ['width', 'height'].map(k => parseFloat(get(root, `designer.canvas.style.${k}`)) || ' - ').join(' × '), set: v => (['width', 'height'].forEach((k, i) => set(root, `designer.canvas.style.${k}`, v && v.split(' × ')[i] + 'px')), void 0), el: { clearable: true } },
+        { prop: 'style.width', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
         { is: 'div', class: 'mx4', children: '×' },
-        { prop: 'designer.canvas.style.height', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
+        { prop: 'style.height', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
         // { prop: 'designer.canvas.zoom', type: 'slider', class: 'w100 ml16 mr4', get: v => parseInt(v * 100) || 100, set: v => v / 100,  el: { min: 40, max: 250, showTooltip: false } },
         // { is: 'div', class: 'w50', children: () => `${parseInt(get(root, 'designer.canvas.zoom') * 100) || 100}%` },
-        { prop: 'designer.canvas.zoom', class: 'ml8 w55', displayValue: '100%', get: v => parseInt(v * 100) + '%', set: v => parseInt(v) / 100, el: { is: 'InputNumber', units: ['%'], min: 40, max: 250 } }
+        { prop: 'zoom', class: 'ml8 w55', displayValue: '100%', get: v => parseInt(v * 100) + '%', set: v => parseInt(v) / 100, el: { is: 'InputNumber', units: ['%'], min: 40, max: 250 } }
       ]" />
       
       <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32" flex space-x-20 px20 shrink-0>
@@ -68,7 +68,7 @@
     </el-tabs>
     
     <!-- Canvas Viewport -->
-    <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" v-model:x="viewer.x.v" v-model:y="viewer.y.v" v-model:zoom="viewer.zoom.v">
+    <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y" v-model:zoom="designerCtx.canvas.zoom">
       <div ref="viewport" class="viewport flex flex-col" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
         <DragBox2 id="root" :el="root" flex-1 />
         <selected-layer />
@@ -90,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, reactive, ref, onUpdated, watch, watchEffect, getCurrentInstance, toRefs, toRef } from 'vue'
+import { computed, provide, reactive, ref, onUpdated, watch, watchEffect, getCurrentInstance, toRefs, toRef, toRaw } from 'vue'
 import { isArray, isPlainObject, remove } from '@vue/shared'
 import { computedAsync, toReactive, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage, useMagicKeys } from '@vueuse/core'
 import { useSortable } from '@vueuse/integrations/useSortable'
@@ -161,10 +161,18 @@ const { history, undo, redo, canRedo, canUndo, commit,  } = useDebouncedRefHisto
 // 组件树
 const tree = computed<BoxProps[]>(() => treeUtils.changeProp([root.value], [['children', 'children', v => isArray(v) ? v : undefined]]))
 
+const initCanvas = () => get(root.value, 'designer.canvas') || set(root.value, 'designer.canvas', {})
+
 const viewer = {
-  x: useTransformer(root, 'designer.canvas.x'),
-  y: useTransformer(root, 'designer.canvas.y'),
-  zoom: useTransformer(root, 'designer.canvas.zoom')
+  // x: useTransformer(root, 'designer.canvas.x'),
+  // y: useTransformer(root, 'designer.canvas.y'),
+  // zoom: useTransformer(root, 'designer.canvas.zoom')
+  // get x() { return get(root.value, 'designer.canvas.x') },
+  // set x(v) { toRaw(initCanvas()).x = v },
+  // get y() { return get(root.value, 'designer.canvas.y') },
+  // set y(v) { toRaw(initCanvas()).y = v },
+  // get zoom() { return get(root.value, 'designer.canvas.zoom') },
+  // set zoom(v) { toRaw(initCanvas()).zoom = v },
 }
 
 // const groups = reactive([
@@ -218,7 +226,8 @@ const viewport = ref<HTMLElement>()
 const designerCtx = reactive({
   currentState: {},
   viewport,
-  canvas: computed(() => root.value.designer?.canvas || { zoom: 1 }),
+  // canvas: computed(() => root.value.designer?.canvas || { zoom: 1 }),
+  canvas: { x: 0, y: 0, zoom: 1, style: useTransformer(root, 'designer.canvas.style') },
   widgets: el_lowcode_widgets,
   root,
   flated: computed(() => treeUtils.flat([root.value])),

@@ -18,6 +18,8 @@ export interface DesignerCtx {
   currentState: Obj
   readonly viewport: HTMLElement
   canvas: {
+    x: number
+    y: number
     zoom: number
     style?: Record<string, any>
   }

@@ -35,19 +35,17 @@ let guidesX, guidesY
 onMounted(() => {
   guidesX = new Guides(el.value.querySelector(".guides-x"), {
     type: "horizontal",
-    snapThreshold: 5,
-    snaps: [0, 300, 600],
     displayDragPos: true,
     textOffset: [0, 8],
+    segment: 5,
     dragPosFormat: v => `${v}px`,
   })
 
   guidesY = new Guides(el.value.querySelector(".guides-y"), {
     type: "vertical",
-    snapThreshold: 5,
-    snaps: [0, 200, 400],
     displayDragPos: true,
     textOffset: [8, 0],
+    segment: 5,
     dragPosFormat: v => `${v}px`,
   })
 
