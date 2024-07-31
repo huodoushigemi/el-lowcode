@@ -16,13 +16,13 @@ defineRender(() => {
 </script>
 
 <script lang="ts">
-import { computed, defineComponent, h, inject, mergeProps, nextTick, onBeforeUnmount, reactive, ref, toRef, watch, watchEffect } from 'vue'
+import { computed, defineComponent, h, inject, mergeProps, nextTick, onBeforeUnmount, onMounted, reactive, ref, toRef, watch, watchEffect } from 'vue'
 import type { Ref } from 'vue'
 import { isArray, remove } from '@vue/shared'
 import { computedEager, unrefElement, useEventListener } from '@vueuse/core'
 // import { useSortable } from '@vueuse/integrations/useSortable'
 import { createRender } from '@el-lowcode/render'
-import { deepClone, execExp, treeUtils } from '@el-lowcode/utils'
+import { deepClone, execExp, pick, treeUtils } from '@el-lowcode/utils'
 import { parseAttrs, sloveConfig } from '../../components/_utils'
 import type { DesignerCtx } from '../interface'
 import type { BoxProps } from '../../components/type'
@@ -58,6 +58,7 @@ const Render = createRender({
         else {
           sortAbsolute(children)
         }
+        children = [...children, { ref: ctx.nillRef, is: 'div', class: 'absolute! hidden!' }]
       }
 
       // 移除值为 undefuned 的属性
@@ -80,7 +81,7 @@ const propsCtx = new WeakMap()
 function setup(props: BoxProps, designer: DesignerCtx) {
   if (propsCtx.has(props)) propsCtx.get(props)
   
-  const elRef = ref(), boxRef = ref()
+  const elRef = ref(), boxRef = ref(), nillRef = ref()
   const config = computed(() => sloveConfig(props))
   const absolute = computed(() => props.style?.position == 'absolute')
   const absoluteLayout = () => props['data-absolute-layout']
@@ -160,8 +161,11 @@ function setup(props: BoxProps, designer: DesignerCtx) {
   //   })
   // })
 
-  useDrop(props, box, designer)
-  useDrag(props, elRef, designer)
+  
+  onMounted(() => {
+    useDrop(props, elRef, nillRef, designer)
+    useDrag(props, elRef, designer)
+  })
   
   useEventListener(elRef, 'mousedown', e => {
     if (e.button != 0) return
@@ -179,6 +183,7 @@ function setup(props: BoxProps, designer: DesignerCtx) {
   const ret = {
     ref: elRef,
     boxRef,
+    nillRef,
     absolute,
     attrs: reactive({
       key: props._id,
@@ -208,8 +213,8 @@ function sortAbsolute(arr: BoxProps[]) {
   }
 }
 
-function useDrop(props: BoxProps, elRef: Ref<HTMLElement>, designer: DesignerCtx) {
-  const target = () => isArray(props.children) ? unrefElement(elRef) : void 0
+function useDrop(props: BoxProps, elRef: Ref<HTMLElement>, nillRef: Ref<HTMLElement>, designer: DesignerCtx) {
+  const target = () => isArray(props.children) ? nillRef.value.parentElement : void 0
   useEventListener(target, 'dragover', e => {
     const is = e.dataTransfer?.getData('data-is')
     const _id = e.dataTransfer?.getData('_id')
@@ -218,6 +223,7 @@ function useDrop(props: BoxProps, elRef: Ref<HTMLElement>, designer: DesignerCtx
     e.stopPropagation()
 
     const doc = target()!.getRootNode() as Document
+    const win = doc.defaultView!
     
     // 自由布局
     if (props['data-absolute-layout']) {
@@ -225,21 +231,52 @@ function useDrop(props: BoxProps, elRef: Ref<HTMLElement>, designer: DesignerCtx
     }
     // 排序布局
     else {
-      // const x = 
       const el = target()!
-      const rect = el.getBoundingClientRect()
+      // const dragEl = doc.querySelector(`[_id='${_id}']`)!, dragRect = dragEl.getBoundingClientRect()
+      // const rect = el.getBoundingClientRect()
       // const inRange = (x, y, rect) => (x >= rect.x && x <= rect.x + rect.width) && (y >= rect.y && y <= rect.y + rect.height)
       const inRange = (x, y, rect) => x <= rect.x + rect.width && y <= rect.y + rect.height
       let i = 0
-      for (; i < el.children.length; i++) {
-        if (!inRange(e.x, e.y, el.children[i].getBoundingClientRect())) break
+
+      const isEmpty = (el: Element) => win.getComputedStyle(el).position == 'absolute' || (!el?.offsetWidth && !el?.offsetHeight)
+      const filteredChildren = [...el.children].filter(e => !isEmpty(e))
+
+      for (; i < filteredChildren.length; i++) {
+        if (!inRange(e.x, e.y, filteredChildren[i].getBoundingClientRect())) break
       }
-      const nill = doc.createElement('div')
-      !el.children.length || i > el.children.length
-        ? el.append(nill)
-        : el.children[i].after(nill)
-      const nillRect = nill.getBoundingClientRect()
+      // Object.assign(nill.style, { display: getComputedStyle(dragEl).display })
+      // !el.children.length || i > el.children.length
+      //   ? el.append(nill)
+      //   : el.children[i].before(nill)
+      let rect: DOMRect
+      if (!el.children.length) {
+        const nill = doc.createElement('div')
+        el.append(nill)
+        rect = nill.getBoundingClientRect()
+        nill.remove()
+      } else {
+        if (i < el.children.length) {
+          const anchor = filteredChildren[i]
+          const clone = anchor.cloneNode() as HTMLElement
+          Object.assign(clone.style, { ...pick(win.getComputedStyle(anchor), ['boxSizing', 'display']), width: `${anchor.offsetWidth}px`, height: `${lastEl.offsetHeight}px` })
+          anchor.after(clone)
+          rect = clone.getBoundingClientRect()
+          clone.remove()
+        } else {
+          const anchor = filteredChildren[filteredChildren.length - 1] as HTMLElement
+          const clone = anchor.cloneNode() as HTMLElement
+          Object.assign(clone.style, { ...pick(win.getComputedStyle(anchor), ['boxSizing', 'display']), width: `${anchor.offsetWidth}px`, height: `${anchor.offsetHeight}px` })
+          anchor.after(clone)
+          rect = clone.getBoundingClientRect()
+          clone.remove()
+        }
+      }
+      // const nillRect = nill.getBoundingClientRect()
       // const horizontal = 
+      // const firstClone = el.children[0].cloneNode() as HTMLElement
+      // el.children[0].after(firstClone)
+      // const rect1 = el.children[0].getBoundingClientRect(), rect2 = firstClone.getBoundingClientRect()
+      
     }
   })
   useEventListener(target, 'drop', async (e) => {
@@ -274,7 +311,7 @@ function useDrop(props: BoxProps, elRef: Ref<HTMLElement>, designer: DesignerCtx
   })
 }
 
-function useDrag(props: BoxProps, elRef: Ref<HTMLElement>, designer: DesignerCtx) {
+function useDrag(props: BoxProps, elRef: Ref, designer: DesignerCtx) {
   useEventListener(elRef, 'dragstart', e => {
     e.stopPropagation()
     e.dataTransfer?.setDragImage(new Image(), 0, 0)
