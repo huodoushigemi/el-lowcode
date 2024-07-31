@@ -8,16 +8,19 @@ onBeforeUnmount(() => {
 })
 
 defineRender(() => {
-  return Render(props.el!)
+  return [
+    Render(props.el!),
+    h(DragLine)
+  ]
 })
 </script>
 
 <script lang="ts">
-import { computed, inject, mergeProps, nextTick, onBeforeUnmount, reactive, ref, toRef, watch, watchEffect } from 'vue'
+import { computed, defineComponent, h, inject, mergeProps, nextTick, onBeforeUnmount, reactive, ref, toRef, watch, watchEffect } from 'vue'
 import type { Ref } from 'vue'
 import { isArray, remove } from '@vue/shared'
 import { computedEager, unrefElement, useEventListener } from '@vueuse/core'
-import { useSortable } from '@vueuse/integrations/useSortable'
+// import { useSortable } from '@vueuse/integrations/useSortable'
 import { createRender } from '@el-lowcode/render'
 import { deepClone, execExp, treeUtils } from '@el-lowcode/utils'
 import { parseAttrs, sloveConfig } from '../../components/_utils'
@@ -157,7 +160,8 @@ function setup(props: BoxProps, designer: DesignerCtx) {
   //   })
   // })
 
-  useAbsoluteLayout(props, elRef, designer)
+  useDrop(props, box, designer)
+  useDrag(props, elRef, designer)
   
   useEventListener(elRef, 'mousedown', e => {
     if (e.button != 0) return
@@ -204,27 +208,53 @@ function sortAbsolute(arr: BoxProps[]) {
   }
 }
 
-function useAbsoluteLayout(props: BoxProps, elRef: Ref<HTMLElement>, designer: DesignerCtx) {
-  let stopDrop
-  watch(() => props['data-absolute-layout'], v => {
-    stopDrop?.()
-    if (!v) return
-    if (!isArray(props.children)) return
-    useEventListener(elRef, 'dragover', e => {
-      e.preventDefault()
-      e.stopPropagation()
-    })
-    stopDrop = useEventListener(elRef, 'drop', async (e) => {
-      const is = e.dataTransfer?.getData('data-is')
-      const _id = e.dataTransfer?.getData('_id')
-      if (!is && !_id) return
-      const children = props.children as BoxProps[]
-      const doc = elRef.value.getRootNode() as Document
-      e.preventDefault()
-      e.stopPropagation()
+function useDrop(props: BoxProps, elRef: Ref<HTMLElement>, designer: DesignerCtx) {
+  const target = () => isArray(props.children) ? unrefElement(elRef) : void 0
+  useEventListener(target, 'dragover', e => {
+    const is = e.dataTransfer?.getData('data-is')
+    const _id = e.dataTransfer?.getData('_id')
+    if (!is && !_id) return
+    e.preventDefault()
+    e.stopPropagation()
 
+    const doc = target()!.getRootNode() as Document
+    
+    // 自由布局
+    if (props['data-absolute-layout']) {
+      
+    }
+    // 排序布局
+    else {
+      // const x = 
+      const el = target()!
+      const rect = el.getBoundingClientRect()
+      // const inRange = (x, y, rect) => (x >= rect.x && x <= rect.x + rect.width) && (y >= rect.y && y <= rect.y + rect.height)
+      const inRange = (x, y, rect) => x <= rect.x + rect.width && y <= rect.y + rect.height
+      let i = 0
+      for (; i < el.children.length; i++) {
+        if (!inRange(e.x, e.y, el.children[i].getBoundingClientRect())) break
+      }
+      const nill = doc.createElement('div')
+      !el.children.length || i > el.children.length
+        ? el.append(nill)
+        : el.children[i].after(nill)
+      const nillRect = nill.getBoundingClientRect()
+      // const horizontal = 
+    }
+  })
+  useEventListener(target, 'drop', async (e) => {
+    const is = e.dataTransfer?.getData('data-is')
+    const _id = e.dataTransfer?.getData('_id')
+    if (!is && !_id) return
+    e.preventDefault()
+    e.stopPropagation()
 
-      let cloned: BoxProps = _id ? doc.querySelector(`[_id='${_id}']`)![REMOVE]() : parseAttrs(designer.widgets[is!]!)
+    const children = props.children as BoxProps[]
+    const doc = target()!.getRootNode() as Document
+    let cloned: BoxProps = _id ? doc.querySelector(`[_id='${_id}']`)![REMOVE]() : parseAttrs(designer.widgets[is!]!)
+
+    // 自由布局
+    if (props['data-absolute-layout']) {
       cloned = mergeProps(cloned, { style: { position: 'absolute', margin: 0 } }) as any
       children.push(cloned)
       designer.activeId = cloned._id
@@ -234,18 +264,41 @@ function useAbsoluteLayout(props: BoxProps, elRef: Ref<HTMLElement>, designer: D
       const rect = clonedEl.parentElement!.getBoundingClientRect()
       const x = Math.round(e.x - rect.x), y  = Math.round(e.y - rect.y)
       cloned = children.find(e => e._id == cloned._id)!
-      Object.assign(cloned.style, { transform: `translate(${x}px, ${y}px)`, '--x': `${x}px`, '--y': `${y}px` })
-    })
-  }, { immediate: true })
+      // Object.assign(cloned.style, { transform: `translate(${x}px, ${y}px)`, '--x': `${x}px`, '--y': `${y}px` })
+      Object.assign(cloned.style, { transform: `translate(${x}px, ${y}px)` })
+    }
+    // 排序布局
+    else {
+      // dragLineStyle.
+    }
+  })
+}
+
+function useDrag(props: BoxProps, elRef: Ref<HTMLElement>, designer: DesignerCtx) {
+  useEventListener(elRef, 'dragstart', e => {
+    e.stopPropagation()
+    e.dataTransfer?.setDragImage(new Image(), 0, 0)
+  })
+  watch(() => props == designer.root ? void 0 : unrefElement(elRef), el => {
+    el && el.setAttribute('draggable', 'true')
+  })
 }
 
 document.addEventListener('dragstart', e => {
   if (e.target instanceof HTMLElement) {
-    if (!e.dataTransfer) return
-    e.dataTransfer.setData('data-is', e.target.getAttribute('data-is') || '')
-    e.dataTransfer.setData('_id', e.target.getAttribute('_id') || '')
+    e.dataTransfer?.setData('data-is', e.target.getAttribute('data-is') || '')
+    e.dataTransfer?.setData('_id', e.target.getAttribute('_id') || '')
   }
 }, { passive: true })
+
+
+// 
+const dragLineStyle = reactive({ left: '0px', top: '0px', width: '', height: '' })
+const DragLine = defineComponent({
+  setup() {
+    return () => h('div', { style: { ...dragLineStyle, background: '#409eff', position: 'absolute' } })
+  }
+})
 </script>
 
 
@@ -278,8 +331,8 @@ document.addEventListener('dragstart', e => {
 }
 
 .moveable {
-  --x: 0;
-  --y: 0;
-  transform: translate(var(--x), var(--y)) !important;
+  // --x: 0;
+  // --y: 0;
+  // transform: translate(var(--x), var(--y)) !important;
 }
 </style>
