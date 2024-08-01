@@ -13,20 +13,19 @@ onBeforeUnmount(() => {
 
 defineRender(() => {
   return [
+    h(DragLine),
     Render(props.el!),
-    h(DragLine)
   ]
 })
 </script>
 
 <script lang="ts">
-import { computed, defineComponent, h, inject, mergeProps, nextTick, onBeforeUnmount, onMounted, reactive, ref, toRef, watch, watchEffect } from 'vue'
+import { computed, defineComponent, h, inject, mergeProps, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import { isArray, remove } from '@vue/shared'
-import { computedEager, unrefElement, useEventListener } from '@vueuse/core'
-// import { useSortable } from '@vueuse/integrations/useSortable'
+import { unrefElement, useEventListener } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
-import { deepClone, execExp, mapValues, pick, treeUtils } from '@el-lowcode/utils'
+import { deepClone, execExp, treeUtils } from '@el-lowcode/utils'
 import { parseAttrs, sloveConfig } from '../../components/_utils'
 import type { DesignerCtx } from '../interface'
 import type { BoxProps } from '../../components/type'
@@ -63,7 +62,7 @@ const Render = createRender({
         else {
           sortAbsolute(children)
         }
-        children = [...children, { ref: ctx.nillRef, is: 'div', key: 'nill', class: 'absolute! hidden!' }]
+        children = [{ ref: ctx.nillRef, is: 'div', key: 'nill', class: 'hidden!' }, ...children]
       }
 
       // 移除值为 undefuned 的属性
@@ -73,7 +72,7 @@ const Render = createRender({
       // 合并属性
       props = mergeProps(props, { ref: ctx.ref }, ctx.attrs)
       props.children = _execExp(children)
-  
+      
       return props
     })).get(_props).value
     
@@ -88,10 +87,6 @@ function setup(props: BoxProps, designer: DesignerCtx) {
   
   const elRef = ref(), boxRef = ref(), nillRef = ref()
   const config = computed(() => sloveConfig(props))
-  const absolute = computed(() => props.style?.position == 'absolute')
-  const absoluteLayout = () => props['data-absolute-layout']
-
-  let cloned: HTMLElement
 
   const box = computed(() => {
     if (!config.value || config.value.sortablePut == false) return
@@ -104,95 +99,28 @@ function setup(props: BoxProps, designer: DesignerCtx) {
     el[REMOVE] = () => (remove(treeUtils.findParent([designer.root], props._id, { key: '_id' })!.children as BoxProps[], props), props)
   })
   
-  let sortable
-  // watch(() => absoluteLayout() ? void 0 : box.value, el => {
-  // watch(box, el => {
-  //   sortable?.stop()
-  //   if (!el) return
-  //   if (props['data-absolute-layout']) return
-  //   const children = () => props.children as BoxProps[]
-  //   sortable = useSortable(el, children, {
-  //     group: 'shared',
-  //     animation: 150,
-  //     draggable: '.drag',
-  //     // filter: '.moveable',
-  //     ghostClass: 'ghostClass',
-  //     invertSwap: true,
-  //     // dataIdAttr: '_id',
-  //     onAdd(e) {
-  //       console.log({...e}, props);
-  //       if (props['data-absolute-layout']) {
-  //         return e.item.remove()
-  //       }
-  //       const si = children().length ? [...e.to.children].findIndex(e => e.getAttribute('_id') == children()[0]._id) : e.to.children.length
-  //       if (e.pullMode == 'clone') {
-  //         e.item.remove()
-  //         const is = e.item.getAttribute('data-is')!
-  //         if (!is) return
-  //         const cloned = parseAttrs(designer.widgets[is]!)
-  //         children().splice(e.newIndex! - si, 0, cloned)
-  //         designer.activeId = cloned._id
-  //       } else {
-  //         e.item.remove()
-  //         const cloned = e.item[REMOVE]()
-  //         children().splice(e.newIndex! - si, 0, cloned)
-  //       }
-  //     },
-  //     onStart(e) {
-  //       const i = children().findIndex(item => item._id == e.item.getAttribute('_id'))
-  //       designer.draggedId = children()[i]._id
-  //       cloned = e.item.cloneNode(true) as HTMLElement
-  //       cloned.classList.remove('ghostClass', 'drag')
-  //       cloned.classList.add('outline-1', 'outline-solid', 'outline-[--el-color-primary]', 'outline-offset--1')
-  //       cloned.removeAttribute('draggable')
-  //       cloned.removeAttribute('_id')
-  //       e.item.parentElement!.insertBefore(cloned, e.item)
-  //     },
-  //     onEnd(e) {
-  //       cloned.remove()
-  //       designer.draggedId = undefined
-  //       // 处理 sortablejs 与 moveable 拖动冲突问题
-  //       for (const el of [...e.from.children, ...e.to.children]) {
-  //         const x = el.style.getPropertyValue('--x'), y = el.style.getPropertyValue('--y')
-  //         if (x && y) el.style.setProperty('transform', `translate(${x}, ${y})`)
-  //       }
-  //     },
-  //     onUpdate(e) {
-  //       const si = e.oldIndex! - children().findIndex(item => item._id == e.item.getAttribute('_id'))
-  //       const newIndex = e.newIndex! - si, oldIndex = e.oldIndex! - si
-  //       const node = children().splice(oldIndex, 1)[0]
-  //       children().splice(newIndex > oldIndex ? newIndex - 1 : newIndex, 0, node)
-  //     }
-  //   })
-  // })
-
-  
-  // onMounted(() => {
-    useDrop(props, elRef, nillRef, designer)
-    useDrag(props, elRef, designer)
-  // })
+  useDrop(props, elRef, nillRef, designer)
+  useDrag(props, elRef, designer)
   
   useEventListener(elRef, 'mousedown', e => {
     if (e.button != 0) return
-    // e.stopPropagation()
-    // if (designer.draggedId) return
-    // designer.activeId = props._id
+    e.stopPropagation()
+    if (designer.draggedId) return
+    designer.activeId = props._id
   })
 
   useEventListener(elRef, 'mouseover', e => {
-    // e.stopPropagation()
-    // if (designer.draggedId) return
-    // designer.hoverId = props._id
+    e.stopPropagation()
+    if (designer.draggedId) return
+    designer.hoverId = props._id
   })
 
   const ret = {
     ref: elRef,
     boxRef,
     nillRef,
-    absolute,
     attrs: reactive({
       key: props._id,
-      class: computedEager(() => absolute.value ? 'moveable' : config.value?.drag == false ? '' : 'drag'),
       onVnodeBeforeUnmount: () => propsCtx.delete(props)
     }),
   }
@@ -220,14 +148,22 @@ function sortAbsolute(arr: BoxProps[]) {
 
 function useDrop(props: BoxProps, elRef: Ref<HTMLElement>, nillRef: Ref<HTMLElement>, designer: DesignerCtx) {
   const target = () => isArray(props.children) ? nillRef.value?.parentElement : void 0
+  let x = 0, y = 0
   useEventListener(target, 'dragover', e => {
-    const is = e.dataTransfer?.getData('data-is')
-    const _id = e.dataTransfer?.getData('_id')
+    if (!dragEl || dragEl.contains(e.currentTarget as Node)) return
+    const is = dragEl.getAttribute('data-is')
+    const _id = dragEl.getAttribute('_id')
     if (!is && !_id) return
+
     e.preventDefault()
     e.stopPropagation()
 
-    const doc = target()!.getRootNode() as Document
+    if (e.x == x && e.y == y) return
+    x = e.x
+    y = e.y
+
+    const el = e.currentTarget as HTMLElement
+    const doc = el.getRootNode() as Document
     const win = doc.defaultView!
     
     // 自由布局
@@ -236,108 +172,152 @@ function useDrop(props: BoxProps, elRef: Ref<HTMLElement>, nillRef: Ref<HTMLElem
     }
     // 排序布局
     else {
-      const el = target()!
-      // const dragEl = doc.querySelector(`[_id='${_id}']`)!, dragRect = dragEl.getBoundingClientRect()
-      // const rect = el.getBoundingClientRect()
-      // const inRange = (x, y, rect) => (x >= rect.x && x <= rect.x + rect.width) && (y >= rect.y && y <= rect.y + rect.height)
-      const inRange = (x, y, rect) => x <= rect.x + rect.width && y <= rect.y + rect.height
-      let i = 0
+      const draggables = [...el.children].filter(e => e.getAttribute('draggable') == 'true') as HTMLElement[]
 
-      const isEmpty = (el: Element) => win.getComputedStyle(el).position == 'absolute' || (!el?.offsetWidth && !el?.offsetHeight)
-      const filteredChildren = [...el.children].filter(e => !isEmpty(e))
-
-      for (; i < filteredChildren.length; i++) {
-        if (!inRange(e.x, e.y, filteredChildren[i].getBoundingClientRect())) break
-      }
-      let rect: DOMRect
-      if (!el.children.length) {
-        const nill = doc.createElement('div')
-        el.append(nill)
-        rect = nill.getBoundingClientRect()
-        nill.remove()
-      } else {
-        if (i < el.children.length) {
-          const anchor = filteredChildren[i] as HTMLElement
-          const clone = anchor.cloneNode() as HTMLElement
-          Object.assign(clone.style, { ...pick(win.getComputedStyle(anchor), ['display']), boxSizing: 'border-box', width: `${anchor.offsetWidth}px`, height: `${anchor.offsetHeight}px` })
-          anchor.before(clone)
-          rect = clone.getBoundingClientRect()
-          clone.remove()
-        } else {
-          const anchor = filteredChildren[filteredChildren.length - 1] as HTMLElement
-          const clone = anchor.cloneNode() as HTMLElement
-          Object.assign(clone.style, { ...pick(win.getComputedStyle(anchor), ['display']), boxSizing: 'border-box', width: `${anchor.offsetWidth}px`, height: `${anchor.offsetHeight}px` })
-          anchor.after(clone)
-          rect = clone.getBoundingClientRect()
-          clone.remove()
+      // 查找距离 xy 最近的元素
+      const rects = draggables.map(e => e.getBoundingClientRect())
+      let closestDistance = Infinity, style = {}
+      rects.forEach((rect, i) => {
+        let x = 0, y = 0, d = 0
+        // L
+        x = rect.x; y = rect.y + rect.height / 2
+        d = Math.sqrt(Math.pow(x - e.x, 2) + Math.pow(y - e.y, 2))
+        if (d < closestDistance) {
+          dragRelated = draggables[i]
+          dragRelatedDir = 'L'
+          closestDistance = d
+          style = { left: rect.x - 3, top: rect.y, width: 6, height: rect.height }
         }
+        // R
+        x = rect.x + rect.width; y = rect.y + rect.height / 2
+        d = Math.sqrt(Math.pow(x - e.x, 2) + Math.pow(y - e.y, 2))
+        if (d < closestDistance) {
+          dragRelated = draggables[i]
+          dragRelatedDir = 'R'
+          closestDistance = d
+          style = { left: x - 3, top: rect.y, width: 6, height: rect.height }
+        }
+        // T
+        x = rect.x + rect.width / 2; y = rect.y
+        d = Math.sqrt(Math.pow(x - e.x, 2) + Math.pow(y - e.y, 2))
+        if (d < closestDistance) {
+          dragRelated = draggables[i]
+          dragRelatedDir = 'T'
+          closestDistance = d
+          style = { left: rect.x, top: rect.top - 3, width: rect.width, height: 6 }
+        }
+        // B
+        x = rect.x + rect.width / 2; y = rect.y + rect.height
+        d = Math.sqrt(Math.pow(x - e.x, 2) + Math.pow(y - e.y, 2))
+        if (d < closestDistance) {
+          dragRelated = draggables[i]
+          dragRelatedDir = 'B'
+          closestDistance = d
+          style = { left: rect.x, top: y - 3, width: rect.width, height: 6 }
+        }
+      })
+
+      if (!rects.length) {
+        const empty = doc.createElement('div')
+        nillRef.value.before(empty)
+        const { x, y, width, height } = empty.getBoundingClientRect()
+        const elRect = el.getBoundingClientRect()
+        empty.remove()
+        style = { left: x, top: y, width: width == 0 && height == 0 ? elRect.width : Math.max(width, 6), height: Math.max(height, 6) }
       }
 
       const rect2 = designer.viewport.getBoundingClientRect()
       Object.assign(dragLineStyle, {
-        left: `${rect.left - rect2.left}px`,
-        top: `${rect.top - rect2.top}px`,
-        width: `${rect.width}px`,
-        height: `${rect.height}px`,
+        transform: `translate(${style.left - rect2.left}px, ${style.top - rect2.top}px)`,
+        width: `${style.width}px`,
+        height: `${style.height}px`,
       })
     }
   })
+
   useEventListener(target, 'drop', async (e) => {
-    const is = e.dataTransfer?.getData('data-is')
-    const _id = e.dataTransfer?.getData('_id')
+    if (!dragEl || dragEl.contains(e.currentTarget as Node)) return
+    const is = dragEl.getAttribute('data-is')
+    const _id = dragEl.getAttribute('_id')
     if (!is && !_id) return
-    e.preventDefault()
     e.stopPropagation()
 
+    const el = e.currentTarget as HTMLElement
+    const doc = el.getRootNode() as Document
     const children = props.children as BoxProps[]
-    const doc = target()!.getRootNode() as Document
-    let cloned: BoxProps = _id ? doc.querySelector(`[_id='${_id}']`)![REMOVE]() : parseAttrs(designer.widgets[is!]!)
-
+    
     // 自由布局
     if (props['data-absolute-layout']) {
-      cloned = mergeProps(cloned, { style: { position: 'absolute', margin: 0 } }) as any
+      // 获取初始坐标
+      const empty = doc.createElement('div')
+      nillRef.value.before(empty)
+      const { x, y } = empty.getBoundingClientRect()
+      empty.remove()
+      // 计算坐标
+      let cloned: BoxProps = _id ? doc.querySelector(`[_id='${_id}']`)![REMOVE]() : parseAttrs(designer.widgets[is!]!)
+      cloned = mergeProps(cloned, { style: { position: 'absolute', transform: `translate(${e.x - x}px, ${e.y - y}px)`, margin: 0 } }) as any
       children.push(cloned)
       designer.activeId = cloned._id
-      // 计算坐标
-      await nextTick()
-      const clonedEl = doc.querySelector(`[_id='${cloned._id}']`)!
-      const rect = clonedEl.parentElement!.getBoundingClientRect()
-      const x = Math.round(e.x - rect.x), y  = Math.round(e.y - rect.y)
-      cloned = children.find(e => e._id == cloned._id)!
-      // Object.assign(cloned.style, { transform: `translate(${x}px, ${y}px)`, '--x': `${x}px`, '--y': `${y}px` })
-      Object.assign(cloned.style, { transform: `translate(${x}px, ${y}px)` })
     }
     // 排序布局
     else {
-      // dragLineStyle.
+      const related_id = dragRelated.getAttribute('_id')
+      const newIndex = children.findIndex(e => e._id == related_id) + (dragRelatedDir == 'L' || dragRelatedDir == 'T' ? 0  : 1)
+      const isMove = e.currentTarget == dragEl.parentElement
+      if (isMove) {
+        const oldIndex = children.findIndex(e => e._id == _id)
+        if (oldIndex >= newIndex) {
+          children.splice(newIndex, 0, children.splice(oldIndex, 1)[0])
+        } else {
+          children.splice(newIndex - 1, 0, children.splice(oldIndex, 1)[0])
+        }
+      }
+      else {
+        const cloned: BoxProps = _id ? doc.querySelector(`[_id='${_id}']`)![REMOVE]() : parseAttrs(designer.widgets[is!]!)
+        children.splice(newIndex, 0, cloned)
+        designer.activeId = cloned._id
+      }
     }
+
+    dragEnd()
   })
 }
 
 function useDrag(props: BoxProps, elRef: Ref, designer: DesignerCtx) {
-  useEventListener(elRef, 'dragstart', e => {
+  const target = () => props == designer.root || props.style?.position == 'absolute' ? void 0 : unrefElement(elRef)
+  useEventListener(target, 'dragstart', e => {
     e.stopPropagation()
-    e.dataTransfer?.setDragImage(new Image(), 0, 0)
-    e.dataTransfer?.setData('_id', (e.target as any).getAttribute('_id') || '')
+    dragStart(e)
+    e.dataTransfer!.setDragImage(new Image(), 0, 0)
   })
-  watch(() => props == designer.root ? void 0 : unrefElement(elRef), el => {
+  watch(target, el => {
     el && el.setAttribute('draggable', 'true')
   })
 }
 
-document.addEventListener('dragstart', e => {
-  if (e.target instanceof HTMLElement) {
-    e.dataTransfer?.setData('data-is', e.target.getAttribute('data-is') || '')
-    e.dataTransfer?.setData('_id', e.target.getAttribute('_id') || '')
-  }
-})
-
-
 // 
-const dragLineStyle = reactive({ left: '0px', top: '0px', width: '', height: '' })
+document.addEventListener('dragstart', dragStart)
+document.addEventListener('dragend', dragEnd)
+
+let dragEl: HTMLElement | undefined
+let dragRelated: HTMLElement
+let dragRelatedDir: 'L' | 'R' | 'T' | 'B'
+
+function dragStart(e: DragEvent) {
+  dragEl = e.target instanceof HTMLElement ? e.target : void 0
+}
+
+function dragEnd() {
+  dragEl = void 0
+  dragRelated = void 0 as any
+  dragLineStyle.width = ''
+  dragLineStyle.height = ''
+}
+
+const dragLineStyle = reactive({ transform: '',  width: '', height: '' })
 const DragLine = defineComponent({
   setup() {
-    return () => h('div', { style: { ...dragLineStyle, background: '#409eff', position: 'absolute' } })
+    return () => h('div', { class: 'bg-#E6A23C/40 pointer-events-none z-10', style: { ...dragLineStyle, position: 'absolute' } })
   }
 })
 </script>
@@ -357,23 +337,5 @@ const DragLine = defineComponent({
     left: 50%;
     transform: translate(-50%, -50%);
   }
-}
-
-[draggable=true].ghostClass {
-  display: block !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  height: 0px !important;
-  box-sizing: border-box !important;
-  overflow: hidden !important;
-  font-size: 0 !important;
-  outline: 2px solid var(--el-color-primary) !important;
-  border: 0 !important;
-}
-
-.moveable {
-  // --x: 0;
-  // --y: 0;
-  // transform: translate(var(--x), var(--y)) !important;
 }
 </style>
