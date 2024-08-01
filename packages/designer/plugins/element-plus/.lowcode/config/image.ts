@@ -10,6 +10,7 @@ export default {
     // { lp: ['preview-src-list', 'previewSrcList'], type: 'switch' },
   ],
   defaultProps: () => ({
-    src: 'https://element-plus.gitee.io/images/element-plus-logo.svg'
+    src: 'https://element-plus.org/images/element-plus-logo-small.svg',
+    style: { height: '128px' }
   })
 }

@@ -68,7 +68,8 @@ export default [
       { lp: 'alt' },
     ],
     defaultProps: () => ({
-      src: 'https://element.eleme.cn/2.0/favicon.ico'
+      src: 'https://element-plus.org/images/element-plus-logo-small.svg',
+      style: { height: '128px' }
     })
   },
   
@@ -91,7 +92,8 @@ export default [
       { lp: 'src' },
     ],
     defaultProps: () => ({
-      src: 'https://element-plus.gitee.io'
+      src: 'https://element-plus.org/zh-CN/',
+      style: { width: '100%', height: '300px' }
     })
   },
 

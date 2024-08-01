@@ -1,4 +1,14 @@
 <script setup lang="ts">
+import { cloneVNode, computed, defineComponent, h, inject, mergeProps, nextTick, onBeforeUnmount, reactive, ref, watch, watchEffect } from 'vue'
+import type { Ref } from 'vue'
+import { isArray, remove } from '@vue/shared'
+import { unrefElement, useEventListener } from '@vueuse/core'
+import { createRender } from '@el-lowcode/render'
+import { deepClone, execExp, treeUtils } from '@el-lowcode/utils'
+import { parseAttrs, sloveConfig } from '../../components/_utils'
+import type { DesignerCtx } from '../interface'
+import type { BoxProps } from '../../components/type'
+
 defineOptions({
   inheritAttrs: false
 })
@@ -17,27 +27,15 @@ defineRender(() => {
     Render(props.el!),
   ]
 })
-</script>
-
-<script lang="ts">
-import { computed, defineComponent, h, inject, mergeProps, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue'
-import type { Ref } from 'vue'
-import { isArray, remove } from '@vue/shared'
-import { unrefElement, useEventListener } from '@vueuse/core'
-import { createRender } from '@el-lowcode/render'
-import { deepClone, execExp, treeUtils } from '@el-lowcode/utils'
-import { parseAttrs, sloveConfig } from '../../components/_utils'
-import type { DesignerCtx } from '../interface'
-import type { BoxProps } from '../../components/type'
 
 const wm = new WeakMap()
-const REMOVE = Symbol()
+const REMOVE = Symbol(), NILL = Symbol(), EMPTY = Symbol()
 
 const Render = createRender({
   defaultIs: 'div',
   processProps: (_props: any) => {
-    if (_props.class?.includes('drag-wrapper')) return _props
-    if (_props.key == 'nill') return _props
+    if (_props[EMPTY]) return _props
+    if (_props[NILL]) return _props
     const designer = inject('designerCtx') as DesignerCtx
     // const { state } = inject('pageCtx', _props)
     return wm.get(_props)?.value || wm.set(_props, computed(() => {
@@ -57,12 +55,12 @@ const Render = createRender({
 
       if (isArray(children)) {
         if (!children.length) {
-          children = [{ ref: ctx.boxRef, is: 'div', class: 'drag-wrapper empty-placeholder', children }]
+          children = [{ ref: ctx.boxRef, is: 'div', class: 'empty-placeholder', [EMPTY]: 1, children }]
         }
         else {
           sortAbsolute(children)
         }
-        children = [{ ref: ctx.nillRef, is: 'div', key: 'nill', class: 'hidden!' }, ...children]
+        children = [{ ref: ctx.nillRef, is: 'div', class: 'hidden!', [NILL]: 1, }, ...children]
       }
 
       // 移除值为 undefuned 的属性
@@ -93,13 +91,8 @@ function setup(props: BoxProps, designer: DesignerCtx) {
     if (!isArray(props.children)) return
     return unrefElement(boxRef.value || elRef.value)
   })
-
-  watch(elRef, el => {
-    if (!el) return
-    el[REMOVE] = () => (remove(treeUtils.findParent([designer.root], props._id, { key: '_id' })!.children as BoxProps[], props), props)
-  })
   
-  useDrop(props, elRef, nillRef, designer)
+  useDrop(props, elRef, boxRef, nillRef, designer)
   useDrag(props, elRef, designer)
   
   useEventListener(elRef, 'mousedown', e => {
@@ -146,7 +139,7 @@ function sortAbsolute(arr: BoxProps[]) {
   }
 }
 
-function useDrop(props: BoxProps, elRef: Ref<HTMLElement>, nillRef: Ref<HTMLElement>, designer: DesignerCtx) {
+function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRef: Ref<HTMLElement>, designer: DesignerCtx) {
   const target = () => isArray(props.children) ? nillRef.value?.parentElement : void 0
   let x = 0, y = 0
   useEventListener(target, 'dragover', e => {
@@ -218,12 +211,8 @@ function useDrop(props: BoxProps, elRef: Ref<HTMLElement>, nillRef: Ref<HTMLElem
       })
 
       if (!rects.length) {
-        const empty = doc.createElement('div')
-        nillRef.value.before(empty)
-        const { x, y, width, height } = empty.getBoundingClientRect()
-        const elRect = el.getBoundingClientRect()
-        empty.remove()
-        style = { left: x, top: y, width: width == 0 && height == 0 ? elRect.width : Math.max(width, 6), height: Math.max(height, 6) }
+        const { x, y, width, height } = emptyRef.value.getBoundingClientRect()
+        style = { left: x, top: y, width, height }
       }
 
       const rect2 = designer.viewport.getBoundingClientRect()
@@ -261,8 +250,9 @@ function useDrop(props: BoxProps, elRef: Ref<HTMLElement>, nillRef: Ref<HTMLElem
     }
     // 排序布局
     else {
-      const related_id = dragRelated.getAttribute('_id')
-      const newIndex = children.findIndex(e => e._id == related_id) + (dragRelatedDir == 'L' || dragRelatedDir == 'T' ? 0  : 1)
+      const newIndex = dragRelated
+        ? children.findIndex(e => e._id == dragRelated.getAttribute('_id')) + (dragRelatedDir == 'L' || dragRelatedDir == 'T' ? 0  : 1)
+        : 0
       const isMove = e.currentTarget == dragEl.parentElement
       if (isMove) {
         const oldIndex = children.findIndex(e => e._id == _id)
@@ -284,14 +274,18 @@ function useDrop(props: BoxProps, elRef: Ref<HTMLElement>, nillRef: Ref<HTMLElem
 }
 
 function useDrag(props: BoxProps, elRef: Ref, designer: DesignerCtx) {
-  const target = () => props == designer.root || props.style?.position == 'absolute' ? void 0 : unrefElement(elRef)
+  const target = () => props == designer.root || props.style?.position == 'absolute' ? void 0 : unrefElement<HTMLElement>(elRef)
   useEventListener(target, 'dragstart', e => {
     e.stopPropagation()
     dragStart(e)
     e.dataTransfer!.setDragImage(new Image(), 0, 0)
   })
-  watch(target, el => {
-    el && el.setAttribute('draggable', 'true')
+  watchEffect(() => {
+    const el = target()
+    if (!el) return
+    el.setAttribute('draggable', 'true')
+    el.setAttribute('_id', props._id)
+    el[REMOVE] = () => (remove(treeUtils.findParent([designer.root], props._id, { key: '_id' })!.children as BoxProps[], props), props)
   })
 }
 

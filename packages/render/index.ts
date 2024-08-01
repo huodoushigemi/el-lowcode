@@ -1,4 +1,4 @@
-import { h, resolveDynamicComponent, createVNode, createTextVNode, toDisplayString } from 'vue'
+import { h, resolveDynamicComponent, createVNode, createTextVNode, toDisplayString, VNode } from 'vue'
 import { isArray, isPlainObject } from '@vue/shared'
 import { unFn, Fnable, Arrable } from '@el-lowcode/utils'
 
@@ -20,7 +20,7 @@ type CreateRender = {
 }
 
 export function createRender({ defaultIs = 'div', processProps = (props: Props) => props }: CreateRender) {
-  return function Render(props: Props) {
+  return function Render(props: Props): VNode | null {
     const { is, $, children, ...attrs } = processProps(props)
     return (
       props.$?.condition == null || !!$?.condition
