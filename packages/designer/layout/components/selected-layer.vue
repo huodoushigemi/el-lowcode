@@ -88,7 +88,7 @@ const calcStyle = (el?: HTMLElement | null) => {
   const transform = el.style.transform
   const offset = (transform.match(/translate\(([^\)]+?)\)/)?.[1].split(',').map(e => parseInt(e)) ?? [0, 0])
   // 计算位置
-  const v   p = designerCtx.viewport
+  const vp = designerCtx.viewport
   const zoom = designerCtx.canvas.zoom
   const rect1 = vp.getBoundingClientRect()
   const rect2 = el.getBoundingClientRect()

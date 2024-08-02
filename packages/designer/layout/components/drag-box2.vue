@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cloneVNode, computed, defineComponent, h, inject, mergeProps, nextTick, onBeforeUnmount, reactive, ref, watch, watchEffect } from 'vue'
+import { cloneVNode, computed, defineComponent, getCurrentInstance, h, inject, mergeProps, nextTick, onBeforeUnmount, reactive, ref, watch, watchEffect } from 'vue'
 import type { Ref } from 'vue'
 import { isArray, remove } from '@vue/shared'
 import { unrefElement, useEventListener } from '@vueuse/core'
@@ -34,13 +34,12 @@ const REMOVE = Symbol(), NILL = Symbol(), EMPTY = Symbol()
 const Render = createRender({
   defaultIs: 'div',
   processProps: (_props: any) => {
+    console.log(_props.is, getCurrentInstance());
     if (_props[EMPTY]) return _props
     if (_props[NILL]) return _props
     const designer = inject('designerCtx') as DesignerCtx
-    // const { state } = inject('pageCtx', _props)
+    const { state } = inject('pageCtx', _props)
     return wm.get(_props)?.value || wm.set(_props, computed(() => {
-      // console.log(_props)
-      const { state } = designer.root
       let { children, ...props } = _props
   
       const _execExp = (exp) => {

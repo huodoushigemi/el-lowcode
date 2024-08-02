@@ -47,7 +47,7 @@
       <!-- plugins market -->
       <el-tab-pane name="plugins" lazy w250>
         <template #label><el-tooltip content="插件市场" placement="right" :hide-after="0"><i-mdi:power-plug-outline /></el-tooltip></template>
-        <PluginsMarket />
+        <!-- <PluginsMarket /> -->
       </el-tab-pane>
 
       <el-tab-pane name="tree" lazy w200>
@@ -68,11 +68,15 @@
     </el-tabs>
     
     <!-- Canvas Viewport -->
-    <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y" v-model:zoom="designerCtx.canvas.zoom">
+    <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
       <div ref="viewport" class="viewport flex flex-col" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
-        <TeleportIframe hfull>
+        <!-- <TeleportIframe hfull>
           <DragBox2 :el="root" />
-        </TeleportIframe>
+        </TeleportIframe> -->
+        <!-- <div hfull @wheel.stop.capture> -->
+          <TeleportIframe hfull />
+        <!-- </div> -->
+
         <selected-layer />
         <!-- resize -->
         <Moveable :target="activeEl()" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
@@ -113,7 +117,7 @@ import LayerTree from './components/LayerTree.vue'
 import SettingPanel from './setting-panel.vue'
 import StateDrawer from './components/state-drawer.vue'
 import CurrentState from './components/current-state.vue'
-import PluginsMarket from './components/PluginsMarket.vue'
+// import PluginsMarket from './components/PluginsMarket.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import Schema from './components/schema.vue'
 import { vue2esm } from './vue2esm'
@@ -137,6 +141,11 @@ app.component('InputNumbers', InputNumbers)
 app.component('Collapse', Collapse)
 app.component('EditTable', EditTable)
 app.component('Tabs', Tabs)
+
+// document.addEventListener('wheel', e => {
+//     e.preventDefault()
+//     e.stopPropagation()
+// }, { passive: false })
 
 const { control } = useMagicKeys()
 
