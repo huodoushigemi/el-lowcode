@@ -1,13 +1,13 @@
 <template>
-  <div ref="el" class="selected-layer" absolute inset-0 pointer-events-none select-none z-9>
+  <div class="selected-layer" absolute inset-0 pointer-events-none select-none z-9>
     <!-- <selected-rect v-if="!designerCtx.draggedId" :el="designerCtx.hover" absolute outline="1 dashed [--el-color-primary]" outline-offset--1 :style="calcStyle(hoverEl())" /> -->
-    <div v-if="!designerCtx.draggedId" absolute outline="1 dashed [--el-color-primary]" outline-offset--1 :style="calcStyle(hoverEl())">
+    <div v-if="!designerCtx.draggedId" absolute outline="1 dashed [--el-color-primary]" outline-offset--1 :style="calcStyle(designerCtx.hoverEl)">
       <div class="absolute bottom-[100%] px8 text-12 c-white bg-[--el-color-primary]">
         {{ designerCtx.hover?.['data-layer'] || hoverConfig?.label }}
       </div>
     </div>
     <!-- <selected-rect :el="designerCtx.active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(activeEl())" /> -->
-    <div v-if="active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(activeEl())">
+    <div v-if="active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(designerCtx.activeEl)">
       <div v-if="active.style?.position != 'absolute' && designerCtx.draggedId == null" class="actions absolute bottom-[100%] flex text-15 text-nowrap pointer-events-auto c-white bg-[--el-color-primary]">  
         <div flex aic px12 bg="#17d57e">{{ active['data-layer'] || activeConfig?.label }}</div>
         <i-solar:arrow-to-top-right-bold v-if="activeCtx?.active2parent" class="icon" @click="activeCtx?.active2parent" />
@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, inject, ref, computed } from 'vue'
+import { getCurrentInstance, inject, ref, computed, onMounted, nextTick } from 'vue'
 import { isString, remove } from '@vue/shared'
 import { useMutationObserver, useResizeObserver } from '@vueuse/core'
 import { deepClone, treeUtils } from '@el-lowcode/utils'
@@ -49,18 +49,7 @@ import { BoxProps } from '../../components/type'
 
 const designerCtx = inject(designerCtxKey)!
 
-const el = ref<HTMLDivElement>()
 const active = computed(() => designerCtx.active)
-
-const hoverEl = () => {
-  const id = designerCtx.hoverId
-  return designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${id}']`)
-}
-
-const activeEl = () => {
-  const id = designerCtx.activeId
-  return designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${id}']`)
-}
 
 const activeCtx = computed(() => {
   const { root, activeId, active } = designerCtx
@@ -80,30 +69,23 @@ const activeCtx = computed(() => {
   }
 })
 
-const rootEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.root._id}']`)
 
 const calcStyle = (el?: HTMLElement | null) => {
   if (!el) return { display: 'none' }
-  // 提取 transform 的 xy
-  const transform = el.style.transform
-  const offset = (transform.match(/translate\(([^\)]+?)\)/)?.[1].split(',').map(e => parseInt(e)) ?? [0, 0])
-  // 计算位置
-  const vp = designerCtx.viewport
-  const zoom = designerCtx.canvas.zoom
-  const rect1 = vp.getBoundingClientRect()
-  const rect2 = el.getBoundingClientRect()
-  // return { top: (rect2.top - rect1.top) / zoom - offset[1] + 'px', left: (rect2.left - rect1.left) / zoom - offset[0] + 'px', width: el.offsetWidth + 'px', height: el.offsetHeight + 'px', transform }
-  return { top: (rect2.top - rect1.top) / zoom + vp.scrollTop + 'px', left: (rect2.left - rect1.left) / zoom + vp.scrollLeft + 'px', width: rect2.width / zoom + 'px', height: rect2.height / zoom + 'px' }
+  const rect = el.getBoundingClientRect()
+  return { top: rect.top + 'px', left: rect.left + 'px', width: rect.width + 'px', height: rect.height + 'px' }
 }
 
 const hoverConfig = computed(() => designerCtx.hover ? sloveConfig(designerCtx.hover) : undefined)
 const activeConfig = computed(() => designerCtx.active ? sloveConfig(designerCtx.active) : undefined)
 
+// 监听 dom 变化
 const ins = getCurrentInstance()!
 const fu = () => ins.proxy!.$forceUpdate()
 
-useMutationObserver(rootEl, fu, { subtree: true, childList: true, attributes: true, characterData: true })
+const rootEl = () => designerCtx.canvas.doc?.querySelector<HTMLElement>(`[_id='${designerCtx.root._id}']`)
 
+useMutationObserver(rootEl, fu, { subtree: true, childList: true, attributes: true, characterData: true })
 useResizeObserver(rootEl, fu)
 </script>
 

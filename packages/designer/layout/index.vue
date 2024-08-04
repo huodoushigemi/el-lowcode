@@ -69,13 +69,14 @@
     
     <!-- Canvas Viewport -->
     <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
-      <div ref="viewport" class="viewport flex flex-col" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
-        <!-- <TeleportIframe hfull>
-          <DragBox2 :el="root" />
-        </TeleportIframe> -->
-        <!-- <div hfull @wheel.stop.capture> -->
-          <TeleportIframe hfull />
-        <!-- </div> -->
+      <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
+         <!-- @vue-ignore -->
+        <iframe
+          class="wfull hfull"
+          :src="CanvasIframe"
+          @load="designerCtx.canvas.doc = $event.target.contentDocument"
+          @vue:mounted="vnode => vnode.el.contentWindow.designerCtx = designerCtx"
+        />
 
         <selected-layer />
         <!-- resize -->
@@ -96,22 +97,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, reactive, ref, onUpdated, watch, watchEffect, getCurrentInstance, toRefs, toRef, toRaw } from 'vue'
+import { computed, provide, reactive, ref, watchEffect, getCurrentInstance } from 'vue'
 import { isArray, isPlainObject, remove } from '@vue/shared'
-import { computedAsync, toReactive, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage, useMagicKeys } from '@vueuse/core'
-import { useSortable } from '@vueuse/integrations/useSortable'
+import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage, useMagicKeys } from '@vueuse/core'
 import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
 import Moveable from 'vue3-moveable'
 
-import { Arrable, get, keyBy, groupBy, pick, set, toArr, treeUtils } from '@el-lowcode/utils'
+import { get, keyBy, groupBy, set, treeUtils } from '@el-lowcode/utils'
 import { useTransformer } from 'el-form-render'
 import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
 import { parseAttrs, importJs } from '../components/_utils'
 import { BoxProps, ElLowcodeConfig } from '../components/type'
 import { DesignerCtx, designerCtxKey } from './interface'
-import DragBox from './components/drag-box.vue'
-import DragBox2 from './components/drag-box2.vue'
-import Sortable from './components/Sortable.vue'
 import SelectedLayer from './components/selected-layer.vue'
 import LayerTree from './components/LayerTree.vue'
 import SettingPanel from './setting-panel.vue'
@@ -119,8 +116,9 @@ import StateDrawer from './components/state-drawer.vue'
 import CurrentState from './components/current-state.vue'
 // import PluginsMarket from './components/PluginsMarket.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
+import CanvasIframe from './components/iframe-temp.html?url'
 import Schema from './components/schema.vue'
-import { vue2esm } from './vue2esm'
+// import { vue2esm } from './vue2esm'
 import { PageCtx } from '../plugins/web/page'
 import { plugins, builtins } from './config'
 
@@ -131,7 +129,6 @@ import InputNumbers from '../components/InputNumbers.vue'
 import Collapse from '../components/Collapse.vue'
 import EditTable from '../components/EditTable.vue'
 import Tabs from '../components/Tabs.vue'
-import TeleportIframe from './components/TeleportIframe.vue'
 
 const app = getCurrentInstance()!.appContext.app
 app.component('OptionsInput', OptionsInput)
@@ -141,11 +138,6 @@ app.component('InputNumbers', InputNumbers)
 app.component('Collapse', Collapse)
 app.component('EditTable', EditTable)
 app.component('Tabs', Tabs)
-
-// document.addEventListener('wheel', e => {
-//     e.preventDefault()
-//     e.stopPropagation()
-// }, { passive: false })
 
 const { control } = useMagicKeys()
 
@@ -239,13 +231,15 @@ const designerCtx = reactive({
   currentState: {},
   viewport,
   // canvas: computed(() => root.value.designer?.canvas || { zoom: 1 }),
-  canvas: { x: 0, y: 0, zoom: 1, style: useTransformer(root, 'designer.canvas.style') },
+  canvas: { x: 0, y: 0, zoom: 1, style: useTransformer(root, 'designer.canvas.style') } as any,
   widgets: el_lowcode_widgets,
   root,
   flated: computed(() => treeUtils.flat([root.value])),
   keyed: computed(() => keyBy(designerCtx.flated, '_id')),
   active: computed(() => designerCtx.activeId && treeUtils.find([root.value], designerCtx.activeId, { key: '_id' })),
+  activeEl: computed(() => designerCtx.activeId ? designerCtx.canvas.doc.querySelector(`[_id='${designerCtx.activeId}']`) : void 0),
   hover: computed(() => designerCtx.hoverId && treeUtils.find([root.value], designerCtx.hoverId, { key: '_id' })),
+  hoverEl: computed(() => designerCtx.hoverId ? designerCtx.canvas.doc.querySelector(`[_id='${designerCtx.hoverId}']`) : void 0),
   dragged: computed(() => designerCtx.draggedId && treeUtils.find([root.value], designerCtx.draggedId, { key: '_id' })),
 // } as { [K in keyof DesignerCtx]: MaybeRef<DesignerCtx[K]> })
 }) as DesignerCtx
@@ -429,7 +423,6 @@ function scanFiles(entry: FileSystemEntry | null, list: FileSystemFileEntry[] = 
 .viewport {
   position: relative;
   height: 100%;
-  overflow: hidden auto;
   background: var(--el-fill-color-extra-light);
 }
 
@@ -460,10 +453,10 @@ function scanFiles(entry: FileSystemEntry | null, list: FileSystemFileEntry[] = 
     overflow: auto;
   }
   .el-tabs__nav-wrap {
-    margin-right: 0;
+    margin-right: 0 !important;
   }
   .el-tabs__header {
-    margin-right: 0;
+    margin-right: 0 !important;
   }
   .el-tabs__item {
     padding: 0;

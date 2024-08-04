@@ -73,6 +73,7 @@
     "rollup": "^3.27.2",
     "rollup-plugin-dts": "^5.3.1",
     "rollup-plugin-esbuild": "^5.0.0",
+    "rollup-plugin-external-globals": "^0.11.0",
     "rollup-plugin-import-meta-glob": "^1.0.1",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-scss": "^4.0.0",

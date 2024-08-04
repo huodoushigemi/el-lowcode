@@ -4,11 +4,43 @@
     <style>
       html, body, .Page { width: 100%; height: 100%; }
       body { margin: 0; }
+      .Page { overflow: auto; }
       * { box-sizing: border-box; }
     </style>
-    <script type="module" src="./iframe-main.js"></script>
+
+    <script>
+      if (window.parent) {
+        window.Vue = window.parent.Vue
+
+        document.addEventListener('wheel', e => {
+          e.preventDefault()
+          e.stopPropagation()
+          frameElement.dispatchEvent(new WheelEvent(e.type, e))
+        }, { passive: false })
+      }
+    </script>
+
+    <script type="module">
+      import { createApp, h } from 'vue'
+      import ElLowcode, { ConfigProvider } from 'el-lowcode'
+      import DragBox from './drag-box2.vue'
+
+      const app = createApp({
+        provide: {
+          designerCtx
+        },
+        render: () => [
+          h(ConfigProvider, designerCtx.root, () => [
+            h(DragBox, { el: designerCtx.root })
+          ])
+        ]
+      })
+
+      app.use(ElLowcode)
+      app.mount(document.body)
+    </script>
   </head>
   <body>
-    <div id="app"></div>
+    <!--  -->
   </body>
 </html>

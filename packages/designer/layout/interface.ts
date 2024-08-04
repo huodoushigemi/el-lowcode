@@ -5,8 +5,12 @@ import { Obj } from '@el-lowcode/utils'
 export interface DesignerCtx {
   activeId?: BoxProps['_id']
   readonly active?: BoxProps
+  readonly activeEl?: HTMLElement | null
+
   hoverId?: BoxProps['_id']
   readonly hover?: BoxProps
+  readonly hoverEl?: HTMLElement | null
+
   draggedId?: BoxProps['_id'],
   readonly dragged?: BoxProps,
 
@@ -22,6 +26,7 @@ export interface DesignerCtx {
     y: number
     zoom: number
     style?: Record<string, any>
+    doc: Document
   }
   widgets: Record<string, ElLowcodeConfig | undefined>
 }

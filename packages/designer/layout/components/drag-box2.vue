@@ -34,9 +34,9 @@ const REMOVE = Symbol(), NILL = Symbol(), EMPTY = Symbol()
 const Render = createRender({
   defaultIs: 'div',
   processProps: (_props: any) => {
-    console.log(_props.is, getCurrentInstance());
     if (_props[EMPTY]) return _props
     if (_props[NILL]) return _props
+    console.log(_props.is, getCurrentInstance());
     const designer = inject('designerCtx') as DesignerCtx
     const { state } = inject('pageCtx', _props)
     return wm.get(_props)?.value || wm.set(_props, computed(() => {
@@ -59,7 +59,7 @@ const Render = createRender({
         else {
           sortAbsolute(children)
         }
-        children = [{ ref: ctx.nillRef, is: 'div', class: 'hidden!', [NILL]: 1, }, ...children]
+        children = [{ ref: ctx.nillRef, is: 'div', hidden: 1, [NILL]: 1, }, ...children]
       }
 
       // 移除值为 undefuned 的属性
@@ -150,13 +150,12 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRe
     e.preventDefault()
     e.stopPropagation()
 
+
     if (e.x == x && e.y == y) return
     x = e.x
     y = e.y
 
     const el = e.currentTarget as HTMLElement
-    const doc = el.getRootNode() as Document
-    const win = doc.defaultView!
     
     // 自由布局
     if (props['data-absolute-layout']) {
@@ -214,9 +213,8 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRe
         style = { left: x, top: y, width, height }
       }
 
-      const rect2 = designer.viewport.getBoundingClientRect()
       Object.assign(dragLineStyle, {
-        transform: `translate(${style.left - rect2.left}px, ${style.top - rect2.top}px)`,
+        transform: `translate(${style.left}px, ${style.top}px)`,
         width: `${style.width}px`,
         height: `${style.height}px`,
       })
@@ -231,7 +229,7 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRe
     e.stopPropagation()
 
     const el = e.currentTarget as HTMLElement
-    const doc = el.getRootNode() as Document
+    const doc = el.ownerDocument
     const children = props.children as BoxProps[]
     
     // 自由布局
@@ -289,15 +287,20 @@ function useDrag(props: BoxProps, elRef: Ref, designer: DesignerCtx) {
 }
 
 // 
-document.addEventListener('dragstart', dragStart)
-document.addEventListener('dragend', dragEnd)
+useEventListener('dragstart', dragStart)
+useEventListener('dragend', dragEnd)
+if (frameElement) {
+  const doc = frameElement.ownerDocument
+  useEventListener(doc, 'dragstart', dragStart)
+  useEventListener(doc, 'dragend', dragEnd)
+}
 
 let dragEl: HTMLElement | undefined
 let dragRelated: HTMLElement
 let dragRelatedDir: 'L' | 'R' | 'T' | 'B'
 
 function dragStart(e: DragEvent) {
-  dragEl = e.target instanceof HTMLElement ? e.target : void 0
+  dragEl = e.target as any
 }
 
 function dragEnd() {
@@ -310,7 +313,7 @@ function dragEnd() {
 const dragLineStyle = reactive({ transform: '',  width: '', height: '' })
 const DragLine = defineComponent({
   setup() {
-    return () => h('div', { class: 'bg-#E6A23C/40 pointer-events-none z-10', style: { ...dragLineStyle, position: 'absolute' } })
+    return () => h('div', { style: { ...dragLineStyle, position: 'absolute', zIndex: 99, pointerEvents: 'none', background: '#e6a23c66' } })
   }
 })
 </script>

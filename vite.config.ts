@@ -46,7 +46,9 @@ export default defineConfig(async () => ({
     (await import('unplugin-vue-components/vite')).default({
       resolvers: [(await import('unplugin-icons/resolver')).default()]
     }),
-    (await import('unplugin-icons/vite')).default({ autoInstall: true }),
-    (await import('vite-plugin-pages')).default({ dirs: 'designer/pages' })
+    (await import('unplugin-icons/vite')).default({ autoInstall: true, compiler: 'vue3' }),
+    (await import('vite-plugin-pages')).default({ dirs: 'designer/pages' }),
+    
+    { ...(await import('rollup-plugin-external-globals')).default({ vue: 'Vue' }), enforce: 'post' } as any
   ]
 }))
