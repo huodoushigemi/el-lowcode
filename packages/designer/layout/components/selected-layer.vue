@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, inject, ref, computed, onMounted, nextTick } from 'vue'
+import { getCurrentInstance, inject, computed } from 'vue'
 import { isString, remove } from '@vue/shared'
 import { useMutationObserver, useResizeObserver } from '@vueuse/core'
 import { deepClone, treeUtils } from '@el-lowcode/utils'
@@ -81,9 +81,9 @@ const activeConfig = computed(() => designerCtx.active ? sloveConfig(designerCtx
 
 // 监听 dom 变化
 const ins = getCurrentInstance()!
-const fu = () => ins.proxy!.$forceUpdate()
+const fu = () => (console.log(1), ins.proxy!.$forceUpdate())
 
-const rootEl = () => designerCtx.canvas.doc?.querySelector<HTMLElement>(`[_id='${designerCtx.root._id}']`)
+const rootEl = () => designerCtx.canvas.doc?.body
 
 useMutationObserver(rootEl, fu, { subtree: true, childList: true, attributes: true, characterData: true })
 useResizeObserver(rootEl, fu)

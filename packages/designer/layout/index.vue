@@ -68,14 +68,16 @@
     </el-tabs>
     
     <!-- Canvas Viewport -->
-    <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
+     <!-- v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y"  -->
+    <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
       <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
-         <!-- @vue-ignore -->
+        <!-- @vue-ignore -->
         <iframe
           class="wfull hfull"
           :src="CanvasIframe"
-          @load="designerCtx.canvas.doc = $event.target.contentDocument"
-          @vue:mounted="vnode => vnode.el.contentWindow.designerCtx = designerCtx"
+          @load="e => designerCtx.canvas.doc = e.target.contentDocument"
+          @vue:mounted="({ el }) => el.contentWindow.designerCtx = designerCtx"
+          @wheel="log"
         />
 
         <selected-layer />
@@ -138,6 +140,8 @@ app.component('InputNumbers', InputNumbers)
 app.component('Collapse', Collapse)
 app.component('EditTable', EditTable)
 app.component('Tabs', Tabs)
+
+const log = (...arg) => console.log(...arg)
 
 const { control } = useMagicKeys()
 

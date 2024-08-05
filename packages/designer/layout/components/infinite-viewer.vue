@@ -3,15 +3,15 @@
     <div absolute w20 h20 z-1 @click="viewer.scrollCenter(); viewer.setZoom(1); viewer.emit('pinch', { zoom: 1 })" />
     <div class="guides-x" absolute left-20 right-0 h20 z-1 />
     <div class="guides-y" absolute top-20 bottom-0 w20 z-1 />
-    <div class="infinite-viewer-wrapper">
-        <div class="infinite-viewer-scroll-area"></div>
-        <slot />
+    <div class="infinite-viewer-wrapper left-20! top-20!" style="width: calc(100% - 20px); height: calc(100% - 20px)">
+      <div class="infinite-viewer-scroll-area"></div>
+      <slot />
     </div>
     <div class="infinite-viewer-scroll-bar infinite-viewer-vertical-scroll-bar">
-        <div class="infinite-viewer-scroll-thumb"></div>
+      <div class="infinite-viewer-scroll-thumb"></div>
     </div>
     <div class="infinite-viewer-scroll-bar infinite-viewer-horizontal-scroll-bar">
-        <div class="infinite-viewer-scroll-thumb"></div>
+      <div class="infinite-viewer-scroll-thumb"></div>
     </div>
   </div>
 </template>
