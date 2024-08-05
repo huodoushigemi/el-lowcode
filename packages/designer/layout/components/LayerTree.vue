@@ -98,7 +98,7 @@ function nodeDrop(drag, drop, type) {
   }
   else if (type == 'inner') {
     if (drag.style?.position == 'absolute') {
-      ['position', 'transform', '--x', '--y'].forEach(k => {
+      ['position', 'transform'].forEach(k => {
         drag.style[k] = void 0
       })
     }

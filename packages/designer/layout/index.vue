@@ -77,16 +77,16 @@
           :src="CanvasIframe"
           @load="e => designerCtx.canvas.doc = e.target.contentDocument"
           @vue:mounted="({ el }) => el.contentWindow.designerCtx = designerCtx"
-          @wheel="log"
+          @mousemove="log"
         />
 
         <selected-layer />
         <!-- resize -->
-        <Moveable :target="activeEl()" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
+        <Moveable :target="designerCtx.active == designerCtx.root ? undefined : designerCtx.activeEl" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
         <!-- move-handle -->
-        <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" dragTarget="#moveable-handle" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="true" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
+        <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" dragTarget="#moveable-handle" :target="designerCtx.active == designerCtx.root ? undefined : designerCtx.hoverEl" :draggable="true" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
         <!-- move-ctrl -->
-        <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :target="hoverEl() == rootEl() ? undefined : hoverEl()" :draggable="control" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
+        <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :target="designerCtx.active == designerCtx.root ? undefined : designerCtx.hoverEl" :draggable="control" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
       </div>
     </infinite-viewer>
     
@@ -99,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, reactive, ref, watchEffect, getCurrentInstance } from 'vue'
+import { computed, provide, reactive, ref, watchEffect, getCurrentInstance, watch } from 'vue'
 import { isArray, isPlainObject, remove } from '@vue/shared'
 import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage, useMagicKeys } from '@vueuse/core'
 import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
@@ -254,10 +254,6 @@ defineExpose(designerCtx)
 
 console.log(window.designerCtx = designerCtx)
 
-const activeEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.activeId}']`)
-const hoverEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.hoverId}']`)
-const rootEl = () => designerCtx.viewport?.querySelector<HTMLElement>(`[_id='${designerCtx.root._id}']`)
-
 // moveable
 function onDragStart(e) {
   designerCtx.draggedId = e.target.getAttribute('_id')
@@ -265,12 +261,10 @@ function onDragStart(e) {
 function onDrag(e) {
   // e.target.style.transform = e.transform
   e.target.style.transform = `translate(${e.translate[0]}px, ${e.translate[1]}px)`
-  e.target.style.setProperty('--x', e.translate[0] + 'px')
-  e.target.style.setProperty('--y', e.translate[1] + 'px')
 }
 function onDragEnd(e) {
   const style = designerCtx.dragged!.style ??= {}
-  ;['transform', '--x', '--y'].forEach(k => style[k] = e.target.style.getPropertyValue(k))
+  ;['transform'].forEach(k => style[k] = e.target.style.getPropertyValue(k))
   designerCtx.draggedId = undefined
 }
 function onResize({ target, width, height, transform, drag }) {
@@ -280,13 +274,11 @@ function onResize({ target, width, height, transform, drag }) {
   seth && (target.style.height = `${height}px`)
   if (drag.translate[0] != 0 && drag.translate[1] != 0) {
     target.style.transform = transform
-    target.style.setProperty('--x', drag.translate[0] + 'px')
-    target.style.setProperty('--y', drag.translate[1] + 'px')
   }
 }
 function onResizeEnd(e) {
   const style = designerCtx.dragged!.style ??= {}
-  ;['width', 'height', 'transform', '--x', '--y'].forEach(k => style[k] = e.target.style.getPropertyValue(k) || undefined)
+  ;['width', 'height', 'transform'].forEach(k => style[k] = e.target.style.getPropertyValue(k) || undefined)
   designerCtx.draggedId = undefined
 }
 function resizeDir(node?: BoxProps) {
@@ -332,8 +324,6 @@ useEventListener('keydown', e => {
       const xy = matched[1].split(',').map(e => parseInt(e))
       xy[i] += v
       node.style.transform = node.style.transform.replace(matched[0], `translate(${xy[0]}px, ${xy[1]}px)`)
-      node.style['--x'] = `${xy[0]}px`
-      node.style['--y'] = `${xy[1]}px`
     }
     if (e.key == 'ArrowUp') plus(1, -offset)
     if (e.key == 'ArrowLeft') plus(0, -offset)

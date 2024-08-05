@@ -243,7 +243,7 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRe
       let cloned: BoxProps = _id ? doc.querySelector(`[_id='${_id}']`)![REMOVE]() : parseAttrs(designer.widgets[is!]!)
       cloned = mergeProps(cloned, { style: { position: 'absolute', transform: `translate(${e.x - x}px, ${e.y - y}px)`, margin: 0 } }) as any
       children.push(cloned)
-      designer.activeId = cloned._id
+      nextTick(() => designer.activeId = cloned._id)
     }
     // 排序布局
     else {
@@ -262,7 +262,7 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRe
       else {
         const cloned: BoxProps = _id ? doc.querySelector(`[_id='${_id}']`)![REMOVE]() : parseAttrs(designer.widgets[is!]!)
         children.splice(newIndex, 0, cloned)
-        designer.activeId = cloned._id
+        nextTick(() => designer.activeId = cloned._id)
       }
     }
 
@@ -278,9 +278,9 @@ function useDrag(props: BoxProps, elRef: Ref, designer: DesignerCtx) {
     e.dataTransfer!.setDragImage(new Image(), 0, 0)
   })
   watchEffect(() => {
-    const el = target()
+    const el = unrefElement<HTMLElement>(elRef)
     if (!el) return
-    el.setAttribute('draggable', 'true')
+    el.setAttribute('draggable', (props.style?.position != 'absolute') + '')
     el.setAttribute('_id', props._id)
     el[REMOVE] = () => (remove(treeUtils.findParent([designer.root], props._id, { key: '_id' })!.children as BoxProps[], props), props)
   })

@@ -49,6 +49,11 @@ import { BoxProps } from '../../components/type'
 
 const designerCtx = inject(designerCtxKey)!
 
+// new MouseEvent()
+// document.addEventListener('pointerdown', e => {})
+document.addEventListener('mouseup', e => {})
+PointerEvent
+
 const active = computed(() => designerCtx.active)
 
 const activeCtx = computed(() => {
@@ -81,7 +86,7 @@ const activeConfig = computed(() => designerCtx.active ? sloveConfig(designerCtx
 
 // 监听 dom 变化
 const ins = getCurrentInstance()!
-const fu = () => (console.log(1), ins.proxy!.$forceUpdate())
+const fu = () => ins.proxy!.$forceUpdate()
 
 const rootEl = () => designerCtx.canvas.doc?.body
 

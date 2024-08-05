@@ -15,8 +15,9 @@
 
 
 
-    <!-- 解决 iframe 不支持鼠标事件的问题 -->
+    <!-- 解决 iframe 不触发事件 -->
     <script type="module">
+      import { useEventListener } from '@vueuse/core'
       import { pick } from '@el-lowcode/utils'
 
       if (window.parent) {
@@ -44,12 +45,26 @@
           frameElement.dispatchEvent(event)
         }, { passive: false, capture: true })
 
-        document.addEventListener('mousedown', e => {
-          if (e.button != 1) return
-          e.preventDefault()
-          e.stopPropagation()
-          frameElement.dispatchEvent(new parent.MouseEvent(e.type, e))
-        }, { passive: false })
+        useEventListener(['mousedown', 'mousemove', 'mouseup'], e => {
+          const rect = frameElement.getBoundingClientRect()
+          frameElement.dispatchEvent(new MouseEvent(e.type, {
+            ...pick(e, [
+              'button', 'buttons', 'clientX', 'clientY', 'movementX', 'movementY', 'screenX', 'screenY',
+              'altKey', 'ctrlKey', 'metaKey', 'shiftKey',
+              'detail', 'which',
+              'bubbles', 'cancelable', 'composed'
+            ]),
+            clientX: e.x + rect.x, clientY: e.y + rect.y,
+          }))
+        })
+
+        useEventListener(['keypress', 'keydown', 'keyup'], e => {
+          frameElement.dispatchEvent(new KeyboardEvent(e.type, pick(e, [
+            'code', 'isComposing', 'key', 'location', 'repeat',
+            'detail', 'which',
+            'bubbles', 'cancelable', 'composed'
+          ])))
+        })
       }
     </script>
 
