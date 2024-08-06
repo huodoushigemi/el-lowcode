@@ -1,6 +1,6 @@
 <template>
   <div wfull>
-    <el-segmented v-model="layout" :options="['flex', 'grid']" block />
+    <el-segmented v-model="layout" :options="[{ label: '弹性布局', value: 'flex' }, { label: '网格布局', value: 'grid' }, { label: '自由布局', value: 'data-absolute-layout' }]" block />
   </div>
 </template>
 
@@ -25,5 +25,8 @@ const style = computed(() => {
   })
 })
 
-const layout = useTransformer(style, 'display')
+const layout = useTransformer(style, 'display', {
+  get: v => style['data-absolute-layout'] ? 'data-absolute-layout' : v,
+  set: v => v == 'data-absolute-layout' ? (style['data-absolute-layout'] = true, void 0) : v
+})
 </script>
