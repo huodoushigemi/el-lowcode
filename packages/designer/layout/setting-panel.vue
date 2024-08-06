@@ -44,6 +44,7 @@ import MonacoEditorDialog from './components/MonacoEditorDialog.vue'
 import BoxModel from './components/style/BoxModel.vue'
 import StyleFlexLayout from './components/style/StyleFlexLayout.vue'
 import StyleText from './components/style/StyleText.vue'
+import StyleLayout from './components/style/StyleLayout.vue'
 
 const visible = ref(false)
 const internalProps = ['_id', 'is', 'children']
@@ -96,6 +97,7 @@ const styles = computed(() => [
   ] },
   { lp: ['position', 'style.position'], type: 'select', options: ['static', 'relative', 'absolute', 'fixed', 'sticky'], displayValue: 'static', el: { placeholder: 'static' } },
   { lp: ['layout', 'style.display'], type: 'radio-group', options: ['inline', 'block', 'flex'] },
+  { prop: 'style', script: false, el: { is: StyleLayout }  },
   { prop: 'style', script: false, el: { is: StyleFlexLayout }  },
   // { lp: ['width', 'style.width'], type: 'input-number', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined },
   // { lp: ['height', 'style.height'], type: 'input-number', get: v => v != null ? parseInt(v) : null, set: v => v != null ? v + 'px' : undefined },

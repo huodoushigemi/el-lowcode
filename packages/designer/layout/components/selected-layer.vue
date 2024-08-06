@@ -27,20 +27,24 @@
           <el-color-picker show-alpha size="small" self-center />
         </template> -->
       </div>
-      <div v-if="active.style?.position == 'absolute'" class="actions absolute bottom-[100%] flex text-15 text-nowrap pointer-events-auto c-white bg-[--el-color-primary]" @mouseenter="designerCtx.hoverId = active._id" @mouseover="designerCtx.hoverId = active._id">
+      <div v-if="active.style?.position == 'absolute'" class="actions absolute bottom-[100%] flex text-15 text-nowrap pointer-events-auto c-white bg-[--el-color-primary]" :op="designerCtx.draggedId ? 0 : 100" @mouseenter="designerCtx.hoverId = active._id" @mouseover="designerCtx.hoverId = active._id">
         <div flex aic px12 bg="#17d57e">{{ active['data-layer'] || activeConfig?.label }}</div>
         <i-solar:arrow-to-top-right-bold v-if="activeCtx?.active2parent" class="icon" @click="activeCtx?.active2parent" />
-        <i-bi:arrows-move id="moveable-handle" class="icon" text-16="!" cursor-move />
+        <i-bi:arrows-move ref="moveHandle" class="icon" text-16="!" cursor-move />
         <i-solar:copy-line-duotone v-if="activeCtx?.copy" class="icon" @click="activeCtx?.copy" />
+
+        <Moveable :target="active == designerCtx.root ? undefined : designerCtx.activeEl" :dragTarget="unrefElement(moveHandle)" :draggable="true" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
       </div>
     </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, inject, computed } from 'vue'
+import { getCurrentInstance, inject, computed, ref, watchEffect } from 'vue'
 import { isString, remove } from '@vue/shared'
-import { useMutationObserver, useResizeObserver } from '@vueuse/core'
+import { unrefElement, useMutationObserver, useResizeObserver } from '@vueuse/core'
+import Moveable from 'vue3-moveable'
 import { deepClone, treeUtils } from '@el-lowcode/utils'
 import { v4 as uuidv4 } from 'uuid'
 import { designerCtxKey } from '../interface'
@@ -83,6 +87,20 @@ const calcStyle = (el?: HTMLElement | null) => {
 
 const hoverConfig = computed(() => designerCtx.hover ? sloveConfig(designerCtx.hover) : undefined)
 const activeConfig = computed(() => designerCtx.active ? sloveConfig(designerCtx.active) : undefined)
+
+// moveable
+const moveHandle = ref()
+function onDragStart(e) {
+  designerCtx.draggedId = e.target.getAttribute('_id')
+}
+function onDrag(e) {
+  e.target.style.transform = e.transform
+}
+function onDragEnd(e) {
+  const style = designerCtx.active!.style ??= {}
+  style.transform = e.target.style.getPropertyValue('transform')
+  designerCtx.draggedId = undefined
+}
 
 // 监听 dom 变化
 const ins = getCurrentInstance()!

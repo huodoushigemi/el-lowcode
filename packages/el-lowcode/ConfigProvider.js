@@ -1,6 +1,7 @@
 import { defineComponent, getCurrentInstance, provide, ref, renderSlot, watch } from 'vue'
 
 export const ConfigProvider = defineComponent({
+  inheritAttrs: false,
   props: {
     plugins: Array,
     state: Object,

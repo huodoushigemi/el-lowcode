@@ -11,6 +11,7 @@ declare module 'vue' {
     'IBytesize:github': typeof import('~icons/bytesize/github')['default']
     'IEp:arrowUp': typeof import('~icons/ep/arrow-up')['default']
     'IEp:eleme': typeof import('~icons/ep/eleme')['default']
+    'IEp:plus': typeof import('~icons/ep/plus')['default']
     'IMaterialSymbolsLight:alignHorizontalCenter': typeof import('~icons/material-symbols-light/align-horizontal-center')['default']
     'IMaterialSymbolsLight:alignHorizontalLeft': typeof import('~icons/material-symbols-light/align-horizontal-left')['default']
     'IMaterialSymbolsLight:alignHorizontalRight': typeof import('~icons/material-symbols-light/align-horizontal-right')['default']

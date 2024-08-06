@@ -47,7 +47,7 @@
       <!-- plugins market -->
       <el-tab-pane name="plugins" lazy w250>
         <template #label><el-tooltip content="插件市场" placement="right" :hide-after="0"><i-mdi:power-plug-outline /></el-tooltip></template>
-        <!-- <PluginsMarket /> -->
+        <PluginsMarket />
       </el-tab-pane>
 
       <el-tab-pane name="tree" lazy w200>
@@ -77,16 +77,11 @@
           :src="CanvasIframe"
           @load="e => designerCtx.canvas.doc = e.target.contentDocument"
           @vue:mounted="({ el }) => el.contentWindow.designerCtx = designerCtx"
-          @mousemove="log"
         />
 
         <selected-layer />
         <!-- resize -->
         <Moveable :target="designerCtx.active == designerCtx.root ? undefined : designerCtx.activeEl" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
-        <!-- move-handle -->
-        <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" dragTarget="#moveable-handle" :target="designerCtx.active == designerCtx.root ? undefined : designerCtx.hoverEl" :draggable="true" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
-        <!-- move-ctrl -->
-        <Moveable v-if="designerCtx.hover?.style?.position == 'absolute'" :target="designerCtx.active == designerCtx.root ? undefined : designerCtx.hoverEl" :draggable="control" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
       </div>
     </infinite-viewer>
     
@@ -116,7 +111,7 @@ import LayerTree from './components/LayerTree.vue'
 import SettingPanel from './setting-panel.vue'
 import StateDrawer from './components/state-drawer.vue'
 import CurrentState from './components/current-state.vue'
-// import PluginsMarket from './components/PluginsMarket.vue'
+import PluginsMarket from './components/PluginsMarket.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import CanvasIframe from './components/iframe-temp.html?url'
 import Schema from './components/schema.vue'
@@ -259,8 +254,7 @@ function onDragStart(e) {
   designerCtx.draggedId = e.target.getAttribute('_id')
 }
 function onDrag(e) {
-  // e.target.style.transform = e.transform
-  e.target.style.transform = `translate(${e.translate[0]}px, ${e.translate[1]}px)`
+  e.target.style.transform = e.transform
 }
 function onDragEnd(e) {
   const style = designerCtx.dragged!.style ??= {}
@@ -408,12 +402,6 @@ function scanFiles(entry: FileSystemEntry | null, list: FileSystemFileEntry[] = 
 </script>
 
 <style scoped lang="scss">
-.layout {
-  :deep(.el-card), :deep(.el-button) {
-    transition: none;
-  }
-}
-
 .viewport {
   position: relative;
   height: 100%;

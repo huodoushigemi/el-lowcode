@@ -6,6 +6,9 @@
       body { margin: 0; }
       .Page { overflow: auto; }
       * { box-sizing: border-box; }
+
+      /* element-plus */
+      .el-card, .el-button { transition: none !important; }
     </style>
 
     <!-- 共享 Vue 内存，以便实现数据响应 -->
@@ -46,6 +49,10 @@
         }, { passive: false, capture: true })
 
         useEventListener(['mousedown', 'mousemove', 'mouseup'], e => {
+          if (e.button == 1) {
+            e.preventDefault()
+            e.stopPropagation()
+          }
           const rect = frameElement.getBoundingClientRect()
           frameElement.dispatchEvent(new MouseEvent(e.type, {
             ...pick(e, [
@@ -59,8 +66,11 @@
         })
 
         useEventListener(['keypress', 'keydown', 'keyup'], e => {
+          // e.preventDefault()
+          e.stopPropagation()
           frameElement.dispatchEvent(new KeyboardEvent(e.type, pick(e, [
             'code', 'isComposing', 'key', 'location', 'repeat',
+            'altKey', 'ctrlKey', 'metaKey', 'shiftKey',
             'detail', 'which',
             'bubbles', 'cancelable', 'composed'
           ])))
@@ -73,8 +83,12 @@
     <!-- 渲染 JSON -->
     <script type="module">
       import { createApp, h } from 'vue'
+      import { useMagicKeys } from '@vueuse/core'
       import ElLowcode, { ConfigProvider } from 'el-lowcode'
+      import Moveable from 'vue3-moveable'
       import DragBox from './drag-box2.vue'
+
+      const { control } = useMagicKeys()
 
       const app = createApp({
         provide: {
@@ -83,7 +97,24 @@
         render: () => [
           h(ConfigProvider, designerCtx.root, () => [
             h(DragBox, { el: designerCtx.root })
-          ])
+          ]),
+          h(Moveable, {
+            // key: control.value + '',
+            target: designerCtx.hover != designerCtx.root && designerCtx.hover?.style?.position == 'absolute' ? designerCtx.hoverEl : undefined,
+            // target: designerCtx.hoverEl,
+            // draggable: control.value,
+            draggable: true,
+            origin: false,
+            hideDefaultLines: true,
+            throttleDrag: 1,
+            onDragStart: e => designerCtx.draggedId = e.target.getAttribute('_id'),
+            onDrag: e => e.target.style.transform = e.transform,
+            onDragEnd: e => {
+              const style = designerCtx.active.style ??= {}
+              style.transform = e.target.style.getPropertyValue('transform')
+              designerCtx.draggedId = undefined
+            }
+          })
         ]
       })
 
