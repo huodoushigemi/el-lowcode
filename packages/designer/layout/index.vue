@@ -97,7 +97,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, reactive, ref, watchEffect, getCurrentInstance, watch } from 'vue'
+import { computed, provide, reactive, ref, watchEffect, getCurrentInstance, watch, Ref } from 'vue'
 import { isArray, isPlainObject, remove } from '@vue/shared'
 import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage, useMagicKeys } from '@vueuse/core'
 import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
@@ -107,7 +107,7 @@ import { get, keyBy, groupBy, set, treeUtils } from '@el-lowcode/utils'
 import { useTransformer } from 'el-form-render'
 import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
 import { parseAttrs, importJs } from '../components/_utils'
-import { BoxProps, ElLowcodeConfig } from '../components/type'
+import { BoxProps, ElLowcodeConfig } from '..'
 import { DesignerCtx, designerCtxKey } from './interface'
 import Activitybar from './components/Activitybar.vue'
 import SelectedLayer from './components/selected-layer.vue'
@@ -121,7 +121,7 @@ import CanvasIframe from './components/iframe-temp.html?url'
 import Schema from './components/schema.vue'
 // import { vue2esm } from './vue2esm'
 import { PageCtx } from '../plugins/web/page'
-import { plugins, builtins } from './config'
+import { builtins } from './config'
 
 import OptionsInput from '../components/OptionsInput.vue'
 import PairInput from '../components/PairInput.vue'
@@ -162,12 +162,22 @@ const root = useLocalStorage(
 })()
 
 const sss = ['/el-lowcode/designer/packages/designer/plugins/base']
-const xxx = {}
+const xxx = {} as Record<string, Ref<DesignerCtx['plugins'][0]>>
 const aaa = computed(() => sss.map(url => 
-  (xxx[url] ??= computedAsync(() => import(/* @vite-ignore */ `${url}/.lowcode/index.js`))).value
-))
+  (xxx[url] ??= computedAsync(async () => {
+    const plugin = await import(/* @vite-ignore */ `${url}/.lowcode/index.js`)
+    const packageJSON = await fetch(`${url}/.lowcode/package.json`).then(e => e.json())
+    return {
+      url,
+      contributes: plugin.contributes,
+      packageJSON,
+      activate: () => plugin.activate(designerCtx),
+      deactivate: () => plugin.deactivate(designerCtx),
+    } as DesignerCtx['plugins'][0]
+  })).value
+).filter(e => e))
 
-const activitybars = computed(() => aaa.value.map(e => e?.contributes?.activitybar).filter(e => e).flat())
+const activitybars = computed(() => designerCtx.plugins.flatMap(e => e.contributes.activitybar))
 const activeView = ref()
 
 // 时间旅行
@@ -253,6 +263,7 @@ const designerCtx = reactive({
   hoverEl: computed(() => designerCtx.hoverId ? designerCtx.canvas.doc.querySelector(`[_id='${designerCtx.hoverId}']`) : void 0),
   dragged: computed(() => designerCtx.draggedId && treeUtils.find([root.value], designerCtx.draggedId, { key: '_id' })),
 // } as { [K in keyof DesignerCtx]: MaybeRef<DesignerCtx[K]> })
+  plugins: aaa
 }) as DesignerCtx
 
 provide(designerCtxKey, designerCtx)

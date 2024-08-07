@@ -7,7 +7,7 @@ import { createRender } from '@el-lowcode/render'
 import { deepClone, execExp, treeUtils } from '@el-lowcode/utils'
 import { parseAttrs, sloveConfig } from '../../components/_utils'
 import type { DesignerCtx } from '../interface'
-import type { BoxProps } from '../../components/type'
+import type { BoxProps } from '../..'
 
 defineOptions({
   inheritAttrs: false

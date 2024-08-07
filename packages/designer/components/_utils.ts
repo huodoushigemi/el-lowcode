@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { Obj, unFn, treeUtils } from '@el-lowcode/utils'
-import { BoxProps, ElLowcodeConfig } from './type'
+import { BoxProps, ElLowcodeConfig } from '../'
 import { el_lowcode_widgets } from './el_lowcode_widgets'
 
 export const parseAttrs = (config: ElLowcodeConfig, extra?: Obj): BoxProps => {

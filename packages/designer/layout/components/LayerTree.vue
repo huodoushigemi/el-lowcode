@@ -35,12 +35,11 @@
 </template>
 
 <script setup>
-import { computed, inject, ref, watchEffect } from 'vue'
+import { computed, inject, ref, watchEffect, watch } from 'vue'
 import { isArray, isString, remove } from '@vue/shared'
 import { onClickOutside, useEventListener } from '@vueuse/core'
 import { treeUtils } from '@el-lowcode/utils'
 import { designerCtxKey } from '../interface'
-import { watch } from 'vue'
 
 const designerCtx = inject(designerCtxKey)
 

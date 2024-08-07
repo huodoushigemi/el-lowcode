@@ -1,5 +1,12 @@
 export function activate(designer) {
-  designer.registerProvider('plugin-market.views.all', )
+  designer.registerViewProvider('plugin-market.views.all', {
+    mount(container) {
+
+    },
+    unmount(container) {
+
+    }
+  })
 }
 
 export function deactivate(designer) {

@@ -30,7 +30,7 @@ import { UseDraggableReturn, useDraggable } from 'vue-draggable-plus'
 import { deepClone, execExp, get, pick, set } from '@el-lowcode/utils'
 import { sloveConfig } from '../../components/_utils'
 import { designerCtxKey } from '../../layout/interface'
-import { BoxProps } from '../../components/type'
+import { BoxProps } from '../..'
 
 defineOptions({
   name: 'DragBox'

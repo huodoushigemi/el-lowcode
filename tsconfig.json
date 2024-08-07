@@ -27,7 +27,7 @@
       "@el-lowcode/utils": ["./packages/utils/index.ts"],
       "@el-lowcode/designer": ["./packages/designer/index.ts"],
     },
-    "types": ["unplugin-vue-macros/macros-global", "element-plus/global.d.ts"]
+    // "types": ["unplugin-vue-macros/macros-global", "element-plus/global.d.ts"]
   },
   "vueCompilerOptions": {
     "plugins": [
@@ -40,7 +40,8 @@
       "@vue-macros/volar/export-props"
     ]
   },
-  "include": ["packages", "types/*", "designer", "packages/*"],
+  // "types/*", 
+  "include": ["packages", "designer", "packages/*"],
   "exclude": ["node_modules", "**/dist"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
