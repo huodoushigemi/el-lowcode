@@ -1,11 +1,11 @@
 <template>
-  <div class="layout" grid="~ cols-[auto_1fr_auto] rows-[auto_1fr]" data-designer>
+  <div class="layout" flex="~ col" data-designer>
     <!-- Header -->
-    <header col-span-full h56 flex aic b-b="1px solid [--el-border-color]">
-      <div flex aic>
+    <header col-span-full h56 flex aic bg="#3c3c3c">
+      <!-- <div flex aic>
         <i-ep:eleme w44 h44 c="[--el-color-primary]" />
         <b ml8 text-22>El lowcode</b>
-      </div>
+      </div> -->
 
       <!-- 尺寸 -->
        <!-- style="--el-border-color: 0"  -->
@@ -27,69 +27,72 @@
       </div>
     </header>
 
-    <!-- Activity bar -->
-    <el-tabs tab-position="left" type="border-card" hfull b-r="1px solid [--el-border-color]" box-border>
-      <!-- Installed plugins -->
-      <el-tab-pane v-for="[url, pkg] in installedPlugins?.map(e => [e, loadPkg(e)])" :key="pkg?.name" lazy w200>
-        <template #label><el-tooltip v-if="pkg" :content="pkg.name" placement="right" :hide-after="0"><img :src="pkg.icon" :alt="pkg.name" /></el-tooltip></template>
-        <div v-if="pkg" flex aic px8 py12 text-22 b-b="1 solid [--el-border-color]">
-          <img :src="pkg.icon" :alt="pkg.name" mr8 w32 h32 />
-          {{ pkg.name }}
-        </div>
-        <div v-for="(list, category) in groupBy(asyncConfig(url) || [], 'category')" p8>
-          <div mt4 mb10 text-16 font-bold>{{ category == 'undefined' ? '其他' : category }}</div>
-          <div grid="~ cols-2" gap-8>
-            <div v-for="wgtConfig in list.filter(e => e.drag != false)" class="cell" :data-is="wgtConfig.is" draggable="true" text-14 truncate>{{ wgtConfig.label }}</div>
+    <div flex hfull>
+      <Activitybar v-model="activeView" :list="activitybars" />
+
+      <div w300 bg="#252526"></div>
+
+      <!-- <el-tabs tab-position="left" type="border-card" hfull b-r="1px solid [--el-border-color]" box-border>
+        <el-tab-pane v-for="[url, pkg] in installedPlugins?.map(e => [e, loadPkg(e)])" :key="pkg?.name" lazy w200>
+          <template #label><el-tooltip v-if="pkg" :content="pkg.name" placement="right" :hide-after="0"><img :src="pkg.icon" :alt="pkg.name" /></el-tooltip></template>
+          <div v-if="pkg" flex aic px8 py12 text-22 b-b="1 solid [--el-border-color]">
+            <img :src="pkg.icon" :alt="pkg.name" mr8 w32 h32 />
+            {{ pkg.name }}
           </div>
+          <div v-for="(list, category) in groupBy(asyncConfig(url) || [], 'category')" p8>
+            <div mt4 mb10 text-16 font-bold>{{ category == 'undefined' ? '其他' : category }}</div>
+            <div grid="~ cols-2" gap-8>
+              <div v-for="wgtConfig in list.filter(e => e.drag != false)" class="cell" :data-is="wgtConfig.is" draggable="true" text-14 truncate>{{ wgtConfig.label }}</div>
+            </div>
+          </div>
+        </el-tab-pane>
+
+        <el-tab-pane name="plugins" lazy w250>
+          <template #label><el-tooltip content="插件市场" placement="right" :hide-after="0"><i-mdi:power-plug-outline /></el-tooltip></template>
+          <PluginsMarket />
+        </el-tab-pane>
+
+        <el-tab-pane name="tree" lazy w200>
+          <template #label><el-tooltip content="组件树" placement="right" :hide-after="0"><i-mdi:file-tree /></el-tooltip></template>
+          <LayerTree />
+        </el-tab-pane>
+        <el-tab-pane name="state" lazy w256>
+          <template #label><el-tooltip content="当前状态" placement="right" :hide-after="0"><i-mdi:code-json /></el-tooltip></template>
+          <div px8 py12 text-22 b-b="1 solid [--el-border-color]">当前状态</div>
+          <current-state hfull />
+        </el-tab-pane>
+        <el-tab-pane name="schema" lazy w512>
+          <template #label><el-tooltip content="Schema" placement="right" :hide-after="0"><i-mdi:code-tags /></el-tooltip></template>
+          <div px8 py12 text-22 b-b="1 solid [--el-border-color]">Schema 源码</div>
+          <schema />
+        </el-tab-pane>
+        <slot name="activity-bar"></slot>
+      </el-tabs> -->
+
+      <!-- Canvas Viewport -->
+       <!-- v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y"  -->
+      <infinite-viewer flex-1 w0 hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
+        <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
+          <!-- @vue-ignore -->
+          <iframe
+            class="wfull hfull"
+            :src="CanvasIframe"
+            @load="e => designerCtx.canvas.doc = e.target.contentDocument"
+            @vue:mounted="({ el }) => el.contentWindow.designerCtx = designerCtx"
+          />
+  
+          <selected-layer />
+          <!-- resize -->
+          <Moveable :target="designerCtx.active == designerCtx.root ? undefined : designerCtx.activeEl" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
         </div>
-      </el-tab-pane>
-
-      <!-- plugins market -->
-      <el-tab-pane name="plugins" lazy w250>
-        <template #label><el-tooltip content="插件市场" placement="right" :hide-after="0"><i-mdi:power-plug-outline /></el-tooltip></template>
-        <PluginsMarket />
-      </el-tab-pane>
-
-      <el-tab-pane name="tree" lazy w200>
-        <template #label><el-tooltip content="组件树" placement="right" :hide-after="0"><i-mdi:file-tree /></el-tooltip></template>
-        <LayerTree />
-      </el-tab-pane>
-      <el-tab-pane name="state" lazy w256>
-        <template #label><el-tooltip content="当前状态" placement="right" :hide-after="0"><i-mdi:code-json /></el-tooltip></template>
-        <div px8 py12 text-22 b-b="1 solid [--el-border-color]">当前状态</div>
-        <current-state hfull />
-      </el-tab-pane>
-      <el-tab-pane name="schema" lazy w512>
-        <template #label><el-tooltip content="Schema" placement="right" :hide-after="0"><i-mdi:code-tags /></el-tooltip></template>
-        <div px8 py12 text-22 b-b="1 solid [--el-border-color]">Schema 源码</div>
-        <schema />
-      </el-tab-pane>
-      <slot name="activity-bar"></slot>
-    </el-tabs>
-    
-    <!-- Canvas Viewport -->
-     <!-- v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y"  -->
-    <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
-      <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
-        <!-- @vue-ignore -->
-        <iframe
-          class="wfull hfull"
-          :src="CanvasIframe"
-          @load="e => designerCtx.canvas.doc = e.target.contentDocument"
-          @vue:mounted="({ el }) => el.contentWindow.designerCtx = designerCtx"
-        />
-
-        <selected-layer />
-        <!-- resize -->
-        <Moveable :target="designerCtx.active == designerCtx.root ? undefined : designerCtx.activeEl" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
-      </div>
-    </infinite-viewer>
-    
-    <!-- Setting -->
-    <aside w256 b-l="1px solid [--el-border-color]" overflow-overlay>
-      <setting-panel />
-    </aside>
-    <state-drawer />
+      </infinite-viewer>
+      
+      <!-- Setting -->
+      <aside w256 b-l="1px solid [--el-border-color]" overflow-overlay>
+        <setting-panel />
+      </aside>
+      <state-drawer />
+    </div>
   </div>
 </template>
 
@@ -106,6 +109,7 @@ import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
 import { parseAttrs, importJs } from '../components/_utils'
 import { BoxProps, ElLowcodeConfig } from '../components/type'
 import { DesignerCtx, designerCtxKey } from './interface'
+import Activitybar from './components/Activitybar.vue'
 import SelectedLayer from './components/selected-layer.vue'
 import LayerTree from './components/LayerTree.vue'
 import SettingPanel from './setting-panel.vue'
@@ -157,6 +161,14 @@ const root = useLocalStorage(
   }
 })()
 
+const sss = ['/el-lowcode/designer/packages/designer/plugins/base']
+const xxx = {}
+const aaa = computed(() => sss.map(url => 
+  (xxx[url] ??= computedAsync(() => import(/* @vite-ignore */ `${url}/.lowcode/index.js`))).value
+))
+
+const activitybars = computed(() => aaa.value.map(e => e?.contributes?.activitybar).filter(e => e).flat())
+const activeView = ref()
 
 // 时间旅行
 const { history, undo, redo, canRedo, canUndo, commit,  } = useDebouncedRefHistory(root, { deep: true, debounce: 500, capacity: 20 })
