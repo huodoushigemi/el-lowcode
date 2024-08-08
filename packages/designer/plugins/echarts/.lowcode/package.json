@@ -1,0 +1,7 @@
+{
+  "name": "echarts",
+  "description": "一个基于 JavaScript 的开源可视化图表库",
+  "icon": "https://echarts.apache.org/zh/images/favicon.png",
+  "homepage": "https://gitee.com/httpsgiteecomepalserver/el-lowcode/tree/main/public/plugins/echarts",
+  "author": "xxx"
+}

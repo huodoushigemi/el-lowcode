@@ -1,7 +1,7 @@
 <template>
   <div flex aic px8 py12 text-22 b-b="1 solid [--el-border-color]">
-    插件市场
-    <ElTooltip content="远程插件"><i-ep:plus mla p6 text-24 bg-hover cursor-pointer @click="addRemotePlugin()" /></ElTooltip>
+    <!-- 插件市场 -->
+    <ElTooltip content="远程插件" placement="right"><i-ep:plus p6 text-24 bg-hover cursor-pointer @click="addRemotePlugin()" /></ElTooltip>
   </div>
   <div>
     <template v-for="[url, pkg] in plugins.map(e => [e, loadPkg(e)])">
@@ -22,7 +22,7 @@
 
   <!-- README -->
   <ElDrawer v-model="drawer.vis" class="[&>.el-drawer\_\_body]:p0" modal-class="bg-#000/20" size="80%" :with-header="false" destroy-on-close>
-    <MD :url="drawer.url + '/README.md'" wfull />
+    <MD :url="drawer.url + '/.lowcode/README.md'" wfull />
   </ElDrawer>
 </template>
 
@@ -39,16 +39,7 @@ const designerCtx = inject<DesignerCtx>('designerCtx')!
 
 const pkgCache = {}
 function loadPkg(url) {
-  return (pkgCache[url] ??= computedAsync(() => fetch(`${url}/package.json`).then(e => e.json()))).value
-}
-
-const configCache = {}
-function asyncConfig(url): ElLowcodeConfig[] {
-  return (configCache[url] ??= computedAsync(() => loadConfig(url))).value
-}
-
-function loadConfig(url): Promise<ElLowcodeConfig[]> {
-  return import(/* @vite-ignore */ `${url}/.lowcode/config.js`).then(e => e.default)
+  return (pkgCache[url] ??= computedAsync(() => fetch(`${url}/.lowcode/package.json`).then(e => e.json()))).value
 }
 
 async function addRemotePlugin(url?) {

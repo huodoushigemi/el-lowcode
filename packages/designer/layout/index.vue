@@ -1,7 +1,7 @@
 <template>
   <div class="layout" flex="~ col" data-designer>
     <!-- Header -->
-    <header col-span-full h56 flex aic bg="#3c3c3c">
+    <header col-span-full h35 flex aic bg="#3c3c3c">
       <!-- <div flex aic>
         <i-ep:eleme w44 h44 c="[--el-color-primary]" />
         <b ml8 text-22>El lowcode</b>
@@ -27,10 +27,18 @@
       </div>
     </header>
 
-    <div flex hfull>
-      <Activitybar v-model="activeView" :list="activitybars" />
+    <div flex flex-1 h0>
+      <Activitybar v-model="activeView" :list="activitybars" @update:modelValue="log" />
 
-      <div w300 bg="#252526"></div>
+      <!-- <div w300 bg="#252526"></div> -->
+      <!-- <template v-for="bar in activitybars">
+        <Views :activitybar="bar" />
+      </template> -->
+
+      <KeepAlive>
+        <Views v-if="activeView" :activitybar="activitybars.find(e => e.id == activeView)" :key="activeView" w300 bg="#252526" />
+      </KeepAlive>
+
 
       <!-- <el-tabs tab-position="left" type="border-card" hfull b-r="1px solid [--el-border-color]" box-border>
         <el-tab-pane v-for="[url, pkg] in installedPlugins?.map(e => [e, loadPkg(e)])" :key="pkg?.name" lazy w200>
@@ -110,6 +118,7 @@ import { parseAttrs, importJs } from '../components/_utils'
 import { BoxProps, ElLowcodeConfig } from '..'
 import { DesignerCtx, designerCtxKey } from './interface'
 import Activitybar from './components/Activitybar.vue'
+import Views from './components/Views.vue'
 import SelectedLayer from './components/selected-layer.vue'
 import LayerTree from './components/LayerTree.vue'
 import SettingPanel from './setting-panel.vue'
@@ -167,13 +176,18 @@ const aaa = computed(() => sss.map(url =>
   (xxx[url] ??= computedAsync(async () => {
     const plugin = await import(/* @vite-ignore */ `${url}/.lowcode/index.js`)
     const packageJSON = await fetch(`${url}/.lowcode/package.json`).then(e => e.json())
-    return {
+    const isActive = ref(false)
+    const activate = async () => { await plugin.activate(designerCtx); isActive.value = true }
+    const deactivate = async () => { await plugin.deactivate(designerCtx); isActive.value = false }
+    await activate()
+    return reactive({
       url,
       contributes: plugin.contributes,
       packageJSON,
-      activate: () => plugin.activate(designerCtx),
-      deactivate: () => plugin.deactivate(designerCtx),
-    } as DesignerCtx['plugins'][0]
+      isActive,
+      activate,
+      deactivate,
+    }) as DesignerCtx['plugins'][0]
   })).value
 ).filter(e => e))
 
@@ -263,7 +277,8 @@ const designerCtx = reactive({
   hoverEl: computed(() => designerCtx.hoverId ? designerCtx.canvas.doc.querySelector(`[_id='${designerCtx.hoverId}']`) : void 0),
   dragged: computed(() => designerCtx.draggedId && treeUtils.find([root.value], designerCtx.draggedId, { key: '_id' })),
 // } as { [K in keyof DesignerCtx]: MaybeRef<DesignerCtx[K]> })
-  plugins: aaa
+  plugins: aaa,
+  viewRenderer: {},
 }) as DesignerCtx
 
 provide(designerCtxKey, designerCtx)
@@ -508,5 +523,16 @@ function scanFiles(entry: FileSystemEntry | null, list: FileSystemFileEntry[] = 
   &:hover::-webkit-scrollbar-thumb {
     display: block;
   }
+}
+
+[tabindex="0"]:focus {
+  outline-color: #007fd4;
+  outline-offset: -1px;
+  outline-style: solid;
+  outline-width: 1px;
+}
+
+[tabindex="0"]:active {
+  outline-width: 0;
 }
 </style>

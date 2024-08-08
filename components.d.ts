@@ -37,6 +37,7 @@ declare module 'vue' {
     'ISolar:arrowUpLinear': typeof import('~icons/solar/arrow-up-linear')['default']
     'ISolar:copyLineDuotone': typeof import('~icons/solar/copy-line-duotone')['default']
     'ISolar:trashBinMinimalisticLinear': typeof import('~icons/solar/trash-bin-minimalistic-linear')['default']
+    'ITdesign:chevronRight': typeof import('~icons/tdesign/chevron-right')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

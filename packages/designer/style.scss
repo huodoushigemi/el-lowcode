@@ -1,0 +1,43 @@
+:root {
+  --vscode-foreground: #ccc;
+  --vscode-list-activeSelectionBackground: #04395e;
+  --vscode-sideBarSectionHeader-border: rgba(204, 204, 204, 0.2);
+  --vscode-scrollbarSlider-background: rgba(121, 121, 121, 0.4);
+}
+
+.monaco-li {
+  @apply flex aic pr12 lh-22 cursor-pointer;
+  // color: var(--vscode-list-activeSelectionBackground);
+}
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  // border-bottom: 1px solid var(--vscode-sideBarSectionHeader-border);
+  border-top: 1px solid var(--vscode-sideBarSectionHeader-border);
+
+  &:last-of-type {
+    // border-bottom: unset;
+  }
+  
+  // > #{&}-body {
+  //   &:empty::after {
+  //     content: '';
+  //     display: block;
+  //     height: 120px;
+  //   }
+  // }
+}
+
+.monaco-workbench, .monaco-base {
+  @apply text-13 lh-[1.4] select-none c-[--vscode-foreground];
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--vscode-scrollbarSlider-background);
+}

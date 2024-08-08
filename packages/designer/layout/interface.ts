@@ -70,9 +70,12 @@ export interface DesignerCtx {
     url: string
     packageJSON: Record<string, any>
     contributes: Contributes
+    isActive: boolean
     activate()
     deactivate()
   }[]
+
+  viewRenderer: Record<string, Renderer>
 }
 
 export interface Contributes {
@@ -81,6 +84,11 @@ export interface Contributes {
     id: string
     name: string
   }[]>
+}
+
+export interface Renderer {
+  mount: (container: HTMLElement) => any
+  unmount?: (container: HTMLElement) => any
 }
 
 export interface Activitybar {
