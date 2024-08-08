@@ -524,15 +524,4 @@ function scanFiles(entry: FileSystemEntry | null, list: FileSystemFileEntry[] = 
     display: block;
   }
 }
-
-[tabindex="0"]:focus {
-  outline-color: #007fd4;
-  outline-offset: -1px;
-  outline-style: solid;
-  outline-width: 1px;
-}
-
-[tabindex="0"]:active {
-  outline-width: 0;
-}
 </style>

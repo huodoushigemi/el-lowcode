@@ -1,19 +1,21 @@
 <template>
   <div flex aic px8 py12 text-22 b-b="1 solid [--el-border-color]">
     <!-- 插件市场 -->
-    <ElTooltip content="远程插件" placement="right"><i-ep:plus p6 text-24 bg-hover cursor-pointer @click="addRemotePlugin()" /></ElTooltip>
+    <ElTooltip content="远程插件" placement="right"><i-ep:plus mla p6 text-24 bg-hover cursor-pointer @click="addRemotePlugin()" /></ElTooltip>
+     <!-- <button class="vs-btn" flex aic mla @click="addRemotePlugin()">+ 远程插件</button> -->
   </div>
-  <div>
+  <div class="">
     <template v-for="[url, pkg] in plugins.map(e => [e, loadPkg(e)])">
-      <div v-if="pkg" :key="url" :class="[url == drawer.url && 'is-active b-y-1']" flex aic pr8 py8 h74 bg-hover rd-0 cursor-pointer select-none :op="pkg.disabled && 40 " :title="`${pkg.name}\n\n${pkg.description}`" @click="showMD(url)">
+      <div v-if="pkg" :key="url" :class="['monaco-li plugin-li', url == drawer.url && 'selected']" flex aic pr8 h74 :op="pkg.disabled && 40 " :title="`${pkg.name}\n\n${pkg.description}`" tabindex="0" @click="showMD(url)">
         <img :src="pkg.icon" :alt="pkg.name" mx16 w42 h42 />
         <div w0 flex-1>
-          <div truncate text-18>{{ pkg.name }}</div>
-          <div truncate text-12 op60>{{ pkg.description }}</div>
-          <div flex text-12 mt4>
-            <div op40>{{ pkg.author }}</div>
-            <el-button v-if="!designerCtx.root.plugins?.includes(url)" class="py0! px4! rd-0!" type="info" size="small" :disabled="pkg.disabled" mla op80 style="height: 16px" @click.stop="(designerCtx.root.plugins ??= []).push(url)">install</el-button>
-            <div v-else></div>
+          <div truncate font-700 lh-19>{{ pkg.displayName || pkg.name }}</div>
+          <div class="desc" truncate lh-17>{{ pkg.description }}</div>
+          <div flex aic text-12 lh-24>
+            <div class="author" lh-24>{{ pkg.author?.author || pkg.author }}</div>
+            <!-- <el-button v-if="!designerCtx.root.plugins?.includes(url)" class="py0! px4! rd-0!" type="info" size="small" :disabled="pkg.disabled" mla op80 style="height: 16px" @click.stop="(designerCtx.root.plugins ??= []).push(url)">install</el-button>
+            <div v-else></div> -->
+            <button class="vs-btn mla px5! text-11! lh-16!" :disabled="pkg.disabled" @click.stop>Install</button>
           </div>
         </div>
       </div>
@@ -60,3 +62,15 @@ function showMD(url) {
   drawer.url = url
 }
 </script>
+
+<style lang="scss">
+.plugin-li {
+  > div {
+    > .desc, > div > .author { color: var(--vs-desc-c); }
+  
+  }
+  &.selected > div {
+    > .desc, > div > .author { color: unset; }
+  }
+}
+</style>

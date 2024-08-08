@@ -1,6 +1,5 @@
 <template>
-  <div px8 py12 text-22 b-b="1 solid [--el-border-color]">图层</div>
-  <el-tree
+  <ElTree
     ref="treeRef"
     class="hfull overflow-overlay [&>.el-tree\_\_drop-indicator]:h4"
     style="--el-color-primary-light-9: var(--el-color-primary-light-8)"
@@ -31,17 +30,17 @@
         </div>
       </div>
     </template>
-  </el-tree>
+  </ElTree>
 </template>
 
 <script setup>
 import { computed, inject, ref, watchEffect, watch } from 'vue'
 import { isArray, isString, remove } from '@vue/shared'
 import { onClickOutside, useEventListener } from '@vueuse/core'
+import { ElTree } from 'element-plus'
 import { treeUtils } from '@el-lowcode/utils'
-import { designerCtxKey } from '../interface'
 
-const designerCtx = inject(designerCtxKey)
+const designerCtx = inject('designerCtx')
 
 const treeRef = ref()
 const tree = computed(() => treeUtils.changeProp(designerCtx.root.children, [['children', 'children', v => isArray(v) ? v : undefined]]))

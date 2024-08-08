@@ -13,7 +13,7 @@
     />
 
     <div v-for="pane in list" class="pane" :style="{ flex: sizeMap[pane.id]?.grow, height: expanded[pane.id] ? 0 : void 0 }">
-      <div :class="['monaco-li pane-header', expanded[pane.id] && 'shadow-md']" tabindex="0" @click="expanded[pane.id] = !expanded[pane.id]">
+      <div :class="['pane-header flex aic lh-22', expanded[pane.id] && 'expanded']" tabindex="0" @click="expanded[pane.id] = !expanded[pane.id]">
         <i-tdesign:chevron-right :rotate="expanded[pane.id] ? 90 : 0" ml4 />
         <div font-700 truncate uppercase>{{ pane.name }}</div>
       </div>
@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, onMounted, PropType, ref, FunctionDirective, reactive, shallowReactive } from 'vue'
+import { computed, inject, PropType, ref, reactive } from 'vue'
 import { useResizeObserver } from '@vueuse/core'
 import { Activitybar, Contributes, DesignerCtx } from '../interface'
 
@@ -72,6 +72,31 @@ function unmount(el, id) {
 }
 </script>
 
-<style>
+<style lang="scss">
+.pane {
+  display: flex;
+  flex-direction: column;
+  // border-bottom: 1px solid var(--vscode-sideBarSectionHeader-border);
+  border-top: 1px solid var(--vs-sideBarSectionHeader-border);
 
+  &:last-of-type {
+    // border-bottom: unset;
+  }
+
+  #{&}-header {
+    position: relative;
+    cursor: pointer;
+  }
+
+  #{&}-header.expanded {
+    &::after{
+      content: '';
+      position: absolute;
+      top: 100%;
+      width: 100%;
+      height: 3px;
+      box-shadow: #000 0 6px 6px -6px inset;
+    }
+  }
+}
 </style>

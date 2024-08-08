@@ -1,36 +1,66 @@
 :root {
-  --vscode-foreground: #ccc;
-  --vscode-list-activeSelectionBackground: #04395e;
-  --vscode-sideBarSectionHeader-border: rgba(204, 204, 204, 0.2);
-  --vscode-scrollbarSlider-background: rgba(121, 121, 121, 0.4);
-}
+  --vs-c: #ccc;
+  --vs-sideBarSectionHeader-border: rgba(204, 204, 204, 0.2);
+  --vs-scrollbarSlider-background: rgba(121, 121, 121, 0.4);
+  --vs-desc-c: rgba(204, 204, 204, 0.7);
+  --vs-li-hover-bg: #2a2d2e;
+  --vs-li-activeSelectionBg: #04395e;
+  --vs-li-inactiveSelectionBg: #37373d;
+  --vs-li-activeSelectionC: #fff;
 
-.monaco-li {
-  @apply flex aic pr12 lh-22 cursor-pointer;
-  // color: var(--vscode-list-activeSelectionBackground);
-}
+  --vs-btn-c: #fff;
+  --vs-btn-bg: #0e639c;
+  --vs-btn-hover-bg: #1177bb;
 
-.pane {
-  display: flex;
-  flex-direction: column;
-  // border-bottom: 1px solid var(--vscode-sideBarSectionHeader-border);
-  border-top: 1px solid var(--vscode-sideBarSectionHeader-border);
-
-  &:last-of-type {
-    // border-bottom: unset;
-  }
-  
-  // > #{&}-body {
-  //   &:empty::after {
-  //     content: '';
-  //     display: block;
-  //     height: 120px;
-  //   }
-  // }
+  --vs-focus-b-c: #007fd4;
 }
 
 .monaco-workbench, .monaco-base {
-  @apply text-13 lh-[1.4] select-none c-[--vscode-foreground];
+  @apply text-13 lh-[1.4] select-none c-[--vs-c];
+}
+
+.monaco-li {
+  cursor: pointer;
+  &:hover {
+    background: var(--vs-li-hover-bg);
+  }
+  &.selected {
+    background: var(--vs-li-inactiveSelectionBg);
+    &:focus {
+      color: var(--vs-li-activeSelectionC );
+      background: var(--vs-li-activeSelectionBg);
+
+    }
+  }
+}
+
+.vs-btn {
+  border: none;
+  display: inline-block;
+  padding: 0 10px;
+  line-height: 26px;
+  font-size: 14px;
+  outline: 1px solid transparent;
+  outline-offset: 2px !important;
+  color: var(--vs-btn-c);
+  background: var(--vs-btn-bg);
+  cursor: pointer;
+
+  &:disabled {
+    filter: grayscale(1);
+  }
+
+  &:not([disabled]):hover {
+    background: var(--vs-btn-hover-bg);
+  }
+
+  &:not([disabled]):focus {
+    outline-color: var(--vs-focus-b-c);
+  }
+
+  & + & {
+    margin-left: 12px;
+  }
 }
 
 ::-webkit-scrollbar {
@@ -39,5 +69,16 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--vscode-scrollbarSlider-background);
+  background: var(--vs-scrollbarSlider-background);
+}
+
+[tabindex="0"]:focus {
+  outline-color: #007fd4;
+  outline-offset: -1px;
+  outline-style: solid;
+  outline-width: 1px;
+}
+
+[tabindex="0"]:active {
+  outline-width: 0;
 }

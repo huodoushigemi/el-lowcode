@@ -3,6 +3,28 @@ import { DesignerCtx } from '@el-lowcode/designer'
 
 export function activate(designerCtx: DesignerCtx) {
   
+  designerCtx.viewRenderer['comp-tree'] = (() => {
+    let app
+    return {
+      mount(container) {
+        app = createApp({ provide: { designerCtx }, render: () => h(defineAsyncComponent(() => import('./views/CompTree.vue'))) })
+        app.mount(container)
+      },
+      unmount: () => app.unmount()
+    }
+  })()
+  
+  designerCtx.viewRenderer['schema-sourcecode'] = (() => {
+    let app
+    return {
+      mount(container) {
+        app = createApp({ provide: { designerCtx }, render: () => h(defineAsyncComponent(() => import('./views/Schema.vue'))) })
+        app.mount(container)
+      },
+      unmount: () => app.unmount()
+    }
+  })()
+  
   designerCtx.viewRenderer['plugin-market'] = (() => {
     let app
     return {
