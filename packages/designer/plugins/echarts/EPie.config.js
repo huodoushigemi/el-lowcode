@@ -5,6 +5,7 @@ import { enable2 } from './.lowcode/utils'
 export default {
   is: 'EPie',
   label: '饼图',
+  category: '基础图表',
   props: ({ option }) => [
     { lp: 'data', script: true },
     { lp: 'fields', script: true },

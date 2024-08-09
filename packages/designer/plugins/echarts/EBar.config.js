@@ -5,6 +5,7 @@ import { bool, enable2, segm2 } from './.lowcode/utils'
 export default {
   is: 'EBar',
   label: '柱状图',
+  category: '基础图表',
   props: (props) => {
     const { _id, option } = props
 

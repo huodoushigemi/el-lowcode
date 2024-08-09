@@ -1,59 +1,23 @@
 import { createApp, provide, defineAsyncComponent, h } from 'vue'
 import { DesignerCtx } from '@el-lowcode/designer'
 
-export function activate(designerCtx: DesignerCtx) {
-  
-  designerCtx.viewRenderer['comp-tree'] = (() => {
-    let app
-    return {
-      mount(container) {
-        app = createApp({ provide: { designerCtx }, render: () => h(defineAsyncComponent(() => import('./views/CompTree.vue'))) })
-        app.mount(container)
-      },
-      unmount: () => app.unmount()
-    }
-  })()
-  
-  designerCtx.viewRenderer['schema-sourcecode'] = (() => {
-    let app
-    return {
-      mount(container) {
-        app = createApp({ provide: { designerCtx }, render: () => h(defineAsyncComponent(() => import('./views/Schema.vue'))) })
-        app.mount(container)
-      },
-      unmount: () => app.unmount()
-    }
-  })()
-  
-  designerCtx.viewRenderer['plugin-market'] = (() => {
-    let app
-    return {
-      mount(container) {
-        app = createApp({ provide: { designerCtx }, render: () => h(defineAsyncComponent(() => import('./views/PluginsView.vue'))) })
-        app.mount(container)
-      },
-      unmount: () => app.unmount()
-    }
-  })()
-  
-  designerCtx.viewRenderer['plugin-market.views.all'] = (() => {
-    return {
-      mount(container) {
-        container.innerHTML = '<p>xxx</p><p>xxx</p><p>xxx</p><p>xxx</p>'
-      },
-    }
-  })()
+function create(AsyncComp) {
+  let app
+  return {
+    mount(container) {
+      app = createApp({ provide: { designerCtx }, render: () => h(AsyncComp) })
+      app.mount(container)
+    },
+    unmount: () => app.unmount()
+  }
+}
 
-  designerCtx.viewRenderer['plugin-market.views.installed'] = (() => {
-    let app
-    return {
-      mount(container) {
-        app = createApp({ provide: { designerCtx }, render: () => h(defineAsyncComponent(() => import('./views/PluginsView.vue'))) })
-        app.mount(container)
-      },
-      unmount: () => app.unmount()
-    }
-  })()
+export function activate(designerCtx: DesignerCtx) {
+  designerCtx.viewRenderer['comp-tree'] = create(defineAsyncComponent(() => import('./views/CompTree.vue')))
+  designerCtx.viewRenderer['schema-sourcecode'] = create(defineAsyncComponent(() => import('./views/Schema.vue')))
+  designerCtx.viewRenderer['plugin-market'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
+  designerCtx.viewRenderer['plugin-market.views.all'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
+  designerCtx.viewRenderer['plugin-market.views.installed'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
 }
 
 export function deactivate(designer) {
@@ -65,7 +29,7 @@ export const contributes = {
     {
       id: 'comp-tree',
       title: '组件树',
-      icon: 'https://api.iconify.design/tdesign:layers.svg'
+      icon: 'https://api.iconify.design/tdesign:tree-list.svg'
     },
     {
       id: 'schema-sourcecode',
@@ -75,7 +39,7 @@ export const contributes = {
     {
       id: 'plugin-market',
       title: '插件市场',
-      icon: 'https://api.iconify.design/tdesign:app.svg'
+      icon: 'https://api.iconify.design/tdesign:extension.svg'
     },
   ],
   views: {

@@ -19,7 +19,7 @@
   @apply text-13 lh-[1.4] select-none c-[--vs-c];
 }
 
-.monaco-li {
+.monaco-li, .vs-li {
   cursor: pointer;
   &:hover {
     background: var(--vs-li-hover-bg);

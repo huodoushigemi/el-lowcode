@@ -5,6 +5,7 @@ import { enable2, num } from './.lowcode/utils'
 export default {
   is: 'ERadar',
   label: '雷达图',
+  category: '基础图表',
   props: ({ data, option }) => [
     { lp: 'data' },
 

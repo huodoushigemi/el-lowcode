@@ -5,6 +5,7 @@ import { bool, segm, segm2 } from './.lowcode/utils'
 export default {
   is: 'ELine',
   label: '线型图',
+  category: '基础图表',
   props: (props) => {
     const { _id, option } = props
 

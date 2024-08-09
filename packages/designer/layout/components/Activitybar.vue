@@ -2,7 +2,9 @@
   <div class="activitybar" flex="~ col" w48 bg="#333333">
     <div v-for="bar in list" :class="modelValue == bar.id ? 'op100' : 'op40'" c-white hover="op100" :title="bar.title" @click="emit('update:modelValue', modelValue == bar.id ? void 0 : bar.id)">
       <div v-if="modelValue == bar.id" absolute w1 h48 bg-white />
-      <div class="activitybar_icon w48 h48" :style="`-webkit-mask-image: url(${bar.icon})`" />
+
+      <div v-if="bar.icon.includes('.svg')" class="activitybar_icon w48 h48" :style="`-webkit-mask-image: url(${bar.icon})`" />
+      <img v-else :src="bar.icon" w48 h48 p12 cursor-pointer />
     </div>
   </div>
 </template>

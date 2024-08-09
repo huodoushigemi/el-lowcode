@@ -42,7 +42,7 @@ const props = defineProps({
 
 const designer = inject<DesignerCtx>('designerCtx')!
 
-const list = computed(() => designer.plugins.flatMap(e => e.contributes.views[props.activitybar!.id] || []))
+const list = computed(() => designer.plugins.flatMap(e => e.contributes.views?.[props.activitybar!.id] || []))
 
 const expanded = ref({})
 

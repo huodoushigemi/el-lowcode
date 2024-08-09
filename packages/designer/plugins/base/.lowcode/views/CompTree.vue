@@ -1,7 +1,7 @@
 <template>
   <ElTree
     ref="treeRef"
-    class="hfull overflow-overlay [&>.el-tree\_\_drop-indicator]:h4"
+    class="overflow-overlay [&>.el-tree\_\_drop-indicator]:h4"
     style="--el-color-primary-light-9: var(--el-color-primary-light-8)"
     :data="tree"
     :current-node-key="designerCtx.activeId"

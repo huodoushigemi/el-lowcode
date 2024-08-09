@@ -30,52 +30,9 @@
     <div flex flex-1 h0>
       <Activitybar v-model="activeView" :list="activitybars" @update:modelValue="log" />
 
-      <!-- <div w300 bg="#252526"></div> -->
-      <!-- <template v-for="bar in activitybars">
-        <Views :activitybar="bar" />
-      </template> -->
-
       <KeepAlive>
         <Views v-if="activeView" :activitybar="activitybars.find(e => e.id == activeView)" :key="activeView" w300 bg="#252526" />
       </KeepAlive>
-
-
-      <!-- <el-tabs tab-position="left" type="border-card" hfull b-r="1px solid [--el-border-color]" box-border>
-        <el-tab-pane v-for="[url, pkg] in installedPlugins?.map(e => [e, loadPkg(e)])" :key="pkg?.name" lazy w200>
-          <template #label><el-tooltip v-if="pkg" :content="pkg.name" placement="right" :hide-after="0"><img :src="pkg.icon" :alt="pkg.name" /></el-tooltip></template>
-          <div v-if="pkg" flex aic px8 py12 text-22 b-b="1 solid [--el-border-color]">
-            <img :src="pkg.icon" :alt="pkg.name" mr8 w32 h32 />
-            {{ pkg.name }}
-          </div>
-          <div v-for="(list, category) in groupBy(asyncConfig(url) || [], 'category')" p8>
-            <div mt4 mb10 text-16 font-bold>{{ category == 'undefined' ? '其他' : category }}</div>
-            <div grid="~ cols-2" gap-8>
-              <div v-for="wgtConfig in list.filter(e => e.drag != false)" class="cell" :data-is="wgtConfig.is" draggable="true" text-14 truncate>{{ wgtConfig.label }}</div>
-            </div>
-          </div>
-        </el-tab-pane>
-
-        <el-tab-pane name="plugins" lazy w250>
-          <template #label><el-tooltip content="插件市场" placement="right" :hide-after="0"><i-mdi:power-plug-outline /></el-tooltip></template>
-          <PluginsMarket />
-        </el-tab-pane>
-
-        <el-tab-pane name="tree" lazy w200>
-          <template #label><el-tooltip content="组件树" placement="right" :hide-after="0"><i-mdi:file-tree /></el-tooltip></template>
-          <LayerTree />
-        </el-tab-pane>
-        <el-tab-pane name="state" lazy w256>
-          <template #label><el-tooltip content="当前状态" placement="right" :hide-after="0"><i-mdi:code-json /></el-tooltip></template>
-          <div px8 py12 text-22 b-b="1 solid [--el-border-color]">当前状态</div>
-          <current-state hfull />
-        </el-tab-pane>
-        <el-tab-pane name="schema" lazy w512>
-          <template #label><el-tooltip content="Schema" placement="right" :hide-after="0"><i-mdi:code-tags /></el-tooltip></template>
-          <div px8 py12 text-22 b-b="1 solid [--el-border-color]">Schema 源码</div>
-          <schema />
-        </el-tab-pane>
-        <slot name="activity-bar"></slot>
-      </el-tabs> -->
 
       <!-- Canvas Viewport -->
        <!-- v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y"  -->
@@ -120,14 +77,10 @@ import { DesignerCtx, designerCtxKey } from './interface'
 import Activitybar from './components/Activitybar.vue'
 import Views from './components/Views.vue'
 import SelectedLayer from './components/selected-layer.vue'
-import LayerTree from './components/LayerTree.vue'
 import SettingPanel from './setting-panel.vue'
 import StateDrawer from './components/state-drawer.vue'
-import CurrentState from './components/current-state.vue'
-import PluginsMarket from './components/PluginsMarket.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import CanvasIframe from './components/iframe-temp.html?url'
-import Schema from './components/schema.vue'
 // import { vue2esm } from './vue2esm'
 import { PageCtx } from '../plugins/web/page'
 import { builtins } from './config'
@@ -161,16 +114,18 @@ const root = useLocalStorage(
 )
 
 ;(async () => {
-  for (const url of builtins) {
-    const config = await loadConfig(url)
-    Object.assign(el_lowcode_widgets, keyBy(config, 'is'))
-  }
   if (root.value.is != 'Page') {
     root.value = parseAttrs(el_lowcode_widgets.Page!) as PageCtx
   }
 })()
 
-const sss = ['/el-lowcode/designer/packages/designer/plugins/base']
+const installedPlugins = computed(() => [...new Set([...root.value?.plugins || [], ...builtins])])
+const sss = [
+  '/el-lowcode/designer/packages/designer/plugins/base',
+  '/el-lowcode/designer/packages/designer/plugins/web',
+  '/el-lowcode/designer/packages/designer/plugins/element-plus',
+  '/el-lowcode/designer/packages/designer/plugins/echarts',
+]
 const xxx = {} as Record<string, Ref<DesignerCtx['plugins'][0]>>
 const aaa = computed(() => sss.map(url => 
   (xxx[url] ??= computedAsync(async () => {
@@ -188,14 +143,14 @@ const aaa = computed(() => sss.map(url =>
       activate,
       deactivate,
     }) as DesignerCtx['plugins'][0]
-  })).value
+  }, void 0, { onError: e => console.error(e) })).value
 ).filter(e => e))
 
 const activitybars = computed(() => designerCtx.plugins.flatMap(e => e.contributes.activitybar))
 const activeView = ref()
 
 // 时间旅行
-const { history, undo, redo, canRedo, canUndo, commit,  } = useDebouncedRefHistory(root, { deep: true, debounce: 500, capacity: 20 })
+const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500, capacity: 20 })
 
 // 组件树
 const tree = computed<BoxProps[]>(() => treeUtils.changeProp([root.value], [['children', 'children', v => isArray(v) ? v : undefined]]))
@@ -225,40 +180,6 @@ const viewer = {
 //   ...Object.entries(groupBy(Object.values(el_lowcode_widgets), 'category')).map(([title, list]) => ({ title, list }))
 // ])
 // const collapse = ref(groups.map(e => e.title))
-
-const installedPlugins = computed(() => [...new Set([...root.value?.plugins || [], ...builtins])])
-
-// 加载插件 config
-watchEffect(() => {
-  installedPlugins.value.forEach(async url => {
-    const config = await loadConfig(url)
-    if (isArray(config)) {
-      Object.assign(el_lowcode_widgets, keyBy(config, 'is'))
-    }
-  })
-})
-
-const pkgCache = {}
-function loadPkg(url) {
-  return (pkgCache[url] ??= computedAsync(() => fetch(`${url}/package.json`).then(e => e.json()))).value
-}
-
-const configCache = {}
-function asyncConfig(url): ElLowcodeConfig[] {
-  return (configCache[url] ??= computedAsync(() => loadConfig(url))).value
-}
-
-function loadConfig(url): Promise<ElLowcodeConfig[]> {
-  return import(/* @vite-ignore */ `${url}/.lowcode/config.js`).then(e => e.default)
-}
-
-async function addRemotePlugin(url?) {
-  const { value } = await ElMessageBox.prompt('', '远程插件', { inputValue: url, inputPlaceholder: 'http://xxx' })
-  if (!/https?:\/\//.test(value)) return ElMessage.error({ message: '地址错误' })
-  const plugins = root.value.plugins ??= []
-  plugins.push(value)
-}
-
 
 const viewport = ref<HTMLElement>()
 
@@ -439,69 +360,18 @@ function scanFiles(entry: FileSystemEntry | null, list: FileSystemFileEntry[] = 
 }
 </script>
 
-<style scoped lang="scss">
-.viewport {
-  position: relative;
-  height: 100%;
-  background: var(--el-fill-color-extra-light);
-}
-
-.cell {
-  display: flex;
-  justify-content: center;
-  padding: 4px 6px;
-  height: max-content;
-  border: 1px dashed var(--el-border-color);
-  cursor: move;
-
-  &:hover {
-    background: #c0c0c040;
-  }
-}
-
-:deep(.el-collapse) {
-  > .el-collapse-item .el-collapse-item__content {
-    padding-bottom: 10px;
-  }
-}
-
-:deep(.el-tabs--left) {
-  .el-tab-pane {
-    display: flex;
-    flex-direction: column;
+<style lang="scss">
+.layout {
+  .viewport {
+    position: relative;
     height: 100%;
-    overflow: auto;
+    background: var(--el-fill-color-extra-light);
   }
-  .el-tabs__nav-wrap {
-    margin-right: 0 !important;
-  }
-  .el-tabs__header {
-    margin-right: 0 !important;
-  }
-  .el-tabs__item {
-    padding: 0;
-    border: unset !important;
-    margin: 0 !important;
-    outline: unset !important;
-    &:hover {
-      background: var(--el-fill-color-extra-light) !important;
+  
+  .el-collapse {
+    > .el-collapse-item .el-collapse-item__content {
+      padding-bottom: 10px;
     }
-
-    &>:first-child {
-      padding: 8px;
-      width: 36px;
-      height: 36px;
-      outline: unset;
-    }
-    &.is-active {
-      border: unset !important;
-      margin: unset !important;
-      background-color: unset !important;
-    }
-  }
-  .el-tabs__content {
-    padding: 0;
-    height: 100%;
   }
 }
 </style>
