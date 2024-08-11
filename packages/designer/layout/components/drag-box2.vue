@@ -36,7 +36,6 @@ const Render = createRender({
   processProps: (_props: any) => {
     if (_props[EMPTY]) return _props
     if (_props[NILL]) return _props
-    console.log(_props.is, getCurrentInstance());
     const designer = inject('designerCtx') as DesignerCtx
     const { state } = inject('pageCtx', _props)
     return wm.get(_props)?.value || wm.set(_props, computed(() => {

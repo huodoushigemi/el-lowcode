@@ -7,6 +7,7 @@
   --vs-li-activeSelectionBg: #04395e;
   --vs-li-inactiveSelectionBg: #37373d;
   --vs-li-activeSelectionC: #fff;
+  --vs-tree-indentGuidesStroke: #585858;
 
   --vs-btn-c: #fff;
   --vs-btn-bg: #0e639c;
@@ -17,6 +18,23 @@
 
 .monaco-workbench, .monaco-base {
   @apply text-13 lh-[1.4] select-none c-[--vs-c];
+}
+
+.vs-ul {
+  position: relative;
+  outline: 0 !important;
+
+  &:focus::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    outline-color: var(--vs-focus-b-c);
+    outline-offset: -1px;
+    outline-style: solid;
+    outline-width: 1px;
+  }
 }
 
 .monaco-li, .vs-li {
@@ -73,7 +91,7 @@
 }
 
 [tabindex="0"]:focus {
-  outline-color: #007fd4;
+  outline-color: var(--vs-focus-b-c);
   outline-offset: -1px;
   outline-style: solid;
   outline-width: 1px;

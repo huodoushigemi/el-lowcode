@@ -13,7 +13,8 @@ function create(AsyncComp) {
 }
 
 export function activate(designerCtx: DesignerCtx) {
-  designerCtx.viewRenderer['comp-tree'] = create(defineAsyncComponent(() => import('./views/CompTree.vue')))
+  // designerCtx.viewRenderer['comp-tree'] = create(defineAsyncComponent(() => import('./views/CompTree.vue')))
+  designerCtx.viewRenderer['comp-tree'] = create(defineAsyncComponent(() => import('./views/CompTreeView.vue')))
   designerCtx.viewRenderer['schema-sourcecode'] = create(defineAsyncComponent(() => import('./views/Schema.vue')))
   designerCtx.viewRenderer['plugin-market'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
   designerCtx.viewRenderer['plugin-market.views.all'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))

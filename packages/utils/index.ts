@@ -52,3 +52,5 @@ export const pick = <T extends object, KS extends (keyof T)[]>(obj: T, arr: KS) 
 export const mapValues = (obj: Obj, fn: AnyFn) => Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fn(v)]))
 
 export const prefixedObject = <T extends object, P extends string>(prefix: P, obj: T) => Object.fromEntries(Object.entries(obj).map(([k, v]) => [prefix + k, v])) as AddPrefixToKeys<T, P>
+
+export const inRange = (v: number, min = 0, max = Infinity) => v >= min && v <= max

@@ -6,7 +6,7 @@
 
     <div
       tabindex="0"
-      class="h0 overflow-auto"
+      class="vs-ul h0 overflow-auto"
       :style="{ flex: sizeMap[activitybar!.id]?.grow }"
       @vue:mounted="({ el }) => mount(el, activitybar!.id)"
       @vue:unmounted="({ el }) => unmount(el, activitybar!.id)"
@@ -54,15 +54,14 @@ function mount(el, id) {
   sizeMap[id] ??= {}
   const xxx = sizeMap[id]
   xxx.scrollHeight = 0
-  xxx.ob = useResizeObserver(el, ([e]) => (xxx.scrollHeight = el.scrollHeight, console.log(e)))
+  // xxx.ob = useResizeObserver(el, ([e]) => (xxx.scrollHeight = el.scrollHeight, console.log(e)))
+  xxx.ob = useResizeObserver(el, ([e]) => xxx.scrollHeight = el.scrollHeight)
   xxx.grow = computed(() => {
     // @ts-ignore
     const t: number = Object.values(sizeMap).reduce((t, e) => t + (e?.scrollHeight || 0), 0)
-    console.log(t);
     
     return t ? Math.max(xxx.scrollHeight, t * .2) / t : 0
   })
-  console.log(sizeMap)
 }
 
 function unmount(el, id) {
