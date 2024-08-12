@@ -1,8 +1,9 @@
 <template>
   <Tree
-    :data="[designerCtx.root]"
+    :data="designerCtx.root.children"
     :props="{ id: '_id', label: e => e['data-layer'] || (isString(e.children) && e.children) || e.is, children: e => typeof e.children == 'string' ? void 0 : e.children }"
     draggable
+    :dropable="({ to }) => to.dir"
   />
 </template>
 

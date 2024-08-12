@@ -1,9 +1,9 @@
 <template>
   <div class='vs-tree' @dragstart="onDragstart" @dragover="onDragover" @drop="onDrop" @dragend="onDragend" @click="onClick">
-    <div class="drag-guide" />
+    <div class="drag-guide" :style="dragGuideStyle" />
     
     <template v-for="(node, i) in expandTree" :key="node.id">
-      <div :class="['vs-li relative flex aic lh-22', node.selected && 'selected']" :style="`padding-left: ${4 + (indent * node.deep)}px`" :tabindex="node.selected ? 0 : -1" :data-index="i" :data-id="node.id" draggable="true">
+      <div :class="['vs-li relative flex aic h22 lh-22', node.selected && 'selected']" :style="`padding-left: ${4 + (indent * node.deep)}px`" :data-index="i" :data-id="node.id" draggable="true">
         <!-- indent guide -->
         <div v-if="node.expand && node.children!.length" :class="['indent-guide', (node.selected || (node.id == selected?.parent.id && !selected.expand)) && 'active']" :style="`left: ${(node.deep + 1) * indent}px; height: ${node.expandCount * 22}px`" />
 
@@ -12,7 +12,7 @@
 
         <!-- content -->
         <slot v-bind="{ node, data: node.data }">
-          {{ node.label }}
+          <div flex-1 w0 pr4 truncate>{{ node.label }}</div>
         </slot>
       </div>
     </template>
@@ -20,11 +20,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, reactive, ref, proxyRefs, toRaw, } from 'vue'
-import { isArray, isString, remove } from '@vue/shared'
-import { toReactive, extendRef } from '@vueuse/core'
-import { get, keyBy, unFn } from '@el-lowcode/utils'
-import { Node } from './TreeCtx'
+import { computed, reactive, toRaw, shallowRef } from 'vue'
+import { isArray, isString } from '@vue/shared'
+import { toReactive, useEventListener } from '@vueuse/core'
+import { get, keyBy, mapValues, unFn } from '@el-lowcode/utils'
+import { Node } from './Node
 
 type Props = {
   data: any[]
@@ -39,9 +39,10 @@ type Props = {
   expandKeys?: Record<string, boolean>
 
   draggable?: boolean | ((node: DisplayNode) => boolean)
-  // dropable?: boolean | ((dragNode, dropNode, type: 'prev' | 'inner' | 'next') => boolean)
-  dropable?: boolean | ((e: { from: DisplayNode; to: DisplayNode; node: DisplayNode; oldIndex: number; newIndex: number }) => boolean)
+  dropable?: boolean | ((e: DropEvent) => boolean)
 }
+
+type DropEvent = { from: DisplayNode; to: DisplayNode; node: DisplayNode; oldIndex: number; newIndex: number }
 
 const props = withDefaults(defineProps<Props>(), {
   data: () => [],
@@ -51,43 +52,31 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 class DisplayNode extends Node {
-  // @ts-ignore
-  Type = DisplayNode
-  // @ts-ignore
-  parent?: DisplayNode
-  // @ts-ignore
-  // children?: DisplayNode[]
-
   get id () { return isString(props.props.id) ? get(this.data, props.props.id) : props.props.id?.(this.data) }
   get label () { return isString(props.props.label) ? get(this.data, props.props.label) : props.props.label?.(this.data) }
-  get dir() { console.log(this, this.props); return isArray(this.data_children) }
+  get data_children () { return isString(props.props.children) ? get(this.data, props.props.children) : props.props.children?.(this.data) }
+  get dir() { return isArray(this.data_children) }
   get expand() { return props.expandKeys[this.id] }
   get expandCount(): number { return this.expand ? this.children!.reduce((t, e) => t + e.expandCount, this.children!.length) : 0 }
   get selected() { return selected.value?.id == this.id }
   get siblingSelected() { return selected.value?.id == this.parent?.id }
 }
 
-const selected = ref()
+const rootNode = computed(() => new DisplayNode({ children: props.data }))
 
-const rootCtx = computed(() => new DisplayNode({ children: props.data }, props.props))
+const selected = shallowRef()
 
-console.log(rootCtx.value)
+const dragGuideStyle = reactive({ left: '', top: '', height: '', width: '' })
 
 const expandTree = computed(() => {
-  const ret = [...rootCtx.value.children!]
+  const ret = [...rootNode.value.children!]
   for (let i = 0; i < ret.length; i++) {
     if (ret[i].expand) ret.splice(i + 1, 0, ...ret[i].children!)
   }
   return ret
 })
 
-// const keyed = toRaw(toReactive(computed(() => keyBy(expandTree.value, 'id'))))
-// const _keyed = computed(() => keyBy(expandTree.value, 'id'))
-const keyed = computed(() => keyBy(expandTree.value, 'id'))
-// const keyed = new Proxy({}, { get(_, p, receiver) { return Reflect.get(_keyed.value, p, receiver) } })
-
-// console.log(keyed[expandTree.value[0].id]);
-
+const keyed = toRaw(toReactive(computed(() => keyBy(expandTree.value, 'id'))))
 
 function onClick(e: MouseEvent) {
   const node = getNode(e)
@@ -96,8 +85,9 @@ function onClick(e: MouseEvent) {
   selected.value = node
 }
 
-let dragLi
-let dropEvent, dropBool = false
+let dragLi: DisplayNode | undefined
+let dropEl: HTMLElement | undefined
+let dropEvent: DropEvent | undefined
 
 function onDragstart(e: DragEvent) {
   const node = getNode(e)
@@ -109,36 +99,88 @@ function onDragstart(e: DragEvent) {
 }
 
 function onDragover(e: DragEvent) {
+  dropEl?.classList.remove('drop-inner')
   if (!dragLi) return
   const drop = getNode(e)
   if (!drop) return
-  const dropEl = e.composedPath().find(e => e.getAttribute?.('data-id')) as HTMLElement
+  if (dragLi != drop && dragLi.contains(drop)) return
+  dropEl = e.composedPath().find(e => e.getAttribute?.('data-id')) as HTMLElement
   const dropRect = dropEl.getBoundingClientRect()
-  const type = 
-    e.x < dropRect.y + (dropRect.height * .33) ? 'prev' :
-    e.x < dropRect.y + (dropRect.height * .66) ? 'inner' : 'next'
-  const to = type == 'inner' ? drop.parent : drop
-  const newIndex = { inner: drop.children?.length || 0, prev: drop.index, next: drop.index + 1 }[type]
-  dropEvent = { from: dragLi.parent, to, node: dragLi, oldIndex: dragLi.index, newIndex }
-  console.log(dropEvent);
-  if (!(dropBool = unFn(props.dropable, dropEvent))) return
+
+  let type: 'inner' | 'prev' | 'next'
+  let dropBool = false
+  dropEvent = { from: dragLi.parent!, to: drop.parent!, node: dragLi, oldIndex: dragLi.index, newIndex: 0 }
+
+  const lte = (r: number) => e.y <= dropRect.y + (dropRect.height * r)
+
+  if (lte(.25)) {
+    type = 'prev'
+    dropEvent.to = drop.parent!
+    dropEvent.newIndex = drop.index
+    dropBool = unFn(props.dropable, dropEvent)
+  }
+  else if (lte(.75)) {
+    if (dragLi != drop) {
+      type = 'inner'
+      dropEvent.to = drop
+      dropEvent.newIndex = drop.children?.length ?? 0
+      dropBool = unFn(props.dropable, dropEvent)
+    }
+    if (!dropBool) {
+      type = lte(.5) ? 'prev' : 'next'
+      dropEvent.to = drop.parent!
+      dropEvent.newIndex = drop.index + (lte(.5) ? 0 : 1)
+      dropBool = unFn(props.dropable, dropEvent)
+    }
+  }
+  else {
+    type = 'next'
+    dropEvent.to = drop.parent!
+    dropEvent.newIndex = drop.index + 1
+    dropBool = unFn(props.dropable, dropEvent)
+  }
+  
+  if (!dropBool) {
+    for (const k in dragGuideStyle) dragGuideStyle[k] = ''
+    dropEvent = void 0
+    return
+  } else {
+    if (type == 'prev') {
+      Object.assign(dragGuideStyle, { left: `${dropRect.left + parseInt(dropEl.style.paddingLeft)}px`, top: `${dropRect.top}px`, width: `${dropRect.width - parseInt(dropEl.style.paddingLeft)}px`, height: `2px` })
+    }
+    else if (type == 'next') {
+      Object.assign(dragGuideStyle, { left: `${dropRect.left + parseInt(dropEl.style.paddingLeft)}px`, top: `${dropRect.bottom - 2}px`, width: `${dropRect.width - parseInt(dropEl.style.paddingLeft)}px`, height: `2px` })
+    }
+    else if (type == 'inner') {
+      for (const k in dragGuideStyle) dragGuideStyle[k] = ''
+      dropEl.classList.add(`drop-inner`)
+    }
+  }
+
   e.preventDefault()
   e.stopPropagation()
 }
 
 function onDrop(e: DragEvent) {
-  if (!dropBool) return
-  dropEvent.to.insertBefore(dropEvent.node, dropEvent.to.children[dropEvent.newIndex])
+  if (dropEvent) {
+    console.log(dropEvent);
+    
+    dropEvent.to.insertBefore(dropEvent.node, dropEvent.to.children![dropEvent.newIndex])
+  }
+  onDragend()
 }
 
-function onDragend(e: DragEvent) {
+function onDragend() {
   dragLi = void 0
+  dropEl?.classList.remove('drop-inner')
+  dropEl = void 0
   dropEvent = void 0
+  for (const k in dragGuideStyle) dragGuideStyle[k] = ''
 }
 
 function getNode(e: Event) {
   const id = e.composedPath().find(e => e.getAttribute?.('data-id'))?.getAttribute?.('data-id')
-  return keyed.value[id]
+  return keyed[id]
 }
 </script>
 
@@ -147,25 +189,28 @@ function getNode(e: Event) {
   opacity: .4;
 }
 
-.vs-tree {
-  > .drag-guide {
-    position: absolute;
-    left: 0;
-    height: 3px;
-    background: var(--vs-focus-b-c);
-  }
-}
-
-.indent-guide {
+.vs-tree .indent-guide {
   position: absolute;
   top: 22px;
   border-left: 1px solid var(--vs-tree-indentGuidesStroke);
   opacity: 0;
   z-index: 1;
   transition: .1s opacity;
+  pointer-events: none;
 
   &.active {
     opacity: 100% !important;
+  }
+}
+
+.vs-tree {
+  > .drag-guide {
+    position: fixed;
+    background: var(--vs-focus-b-c);
+    z-index: 1;
+  }
+  > .drop-inner {
+    background: var(--vs-li-inactiveSelectionBg) !important;
   }
 }
 </style>

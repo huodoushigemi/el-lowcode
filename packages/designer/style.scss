@@ -35,6 +35,10 @@
     outline-style: solid;
     outline-width: 1px;
   }
+  &:focus .vs-li.selected {
+    color: var(--vs-li-activeSelectionC );
+    background: var(--vs-li-activeSelectionBg);
+  }
 }
 
 .monaco-li, .vs-li {
@@ -44,11 +48,16 @@
   }
   &.selected {
     background: var(--vs-li-inactiveSelectionBg);
-    &:focus {
+    &:focus, &.focused {
       color: var(--vs-li-activeSelectionC );
       background: var(--vs-li-activeSelectionBg);
-
     }
+  }
+  &.focused {
+    outline-color: var(--vs-focus-b-c);
+    outline-offset: -1px;
+    outline-style: solid;
+    outline-width: 1px;
   }
 }
 
