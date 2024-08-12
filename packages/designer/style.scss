@@ -30,34 +30,30 @@
     inset: 0;
     z-index: 1;
     pointer-events: none;
-    outline-color: var(--vs-focus-b-c);
+    outline: 1px solid var(--vs-focus-b-c);
     outline-offset: -1px;
-    outline-style: solid;
-    outline-width: 1px;
+  }
+  &:focus .vs-li.focused {
+    outline: 1px solid var(--vs-focus-b-c);
+    outline-offset: -1px;
   }
   &:focus .vs-li.selected {
     color: var(--vs-li-activeSelectionC );
     background: var(--vs-li-activeSelectionBg);
   }
+
+  &.element-focused, &.element-selection {
+    &::before { display: none; }
+  }
 }
 
-.monaco-li, .vs-li {
+.vs-li {
   cursor: pointer;
   &:hover {
     background: var(--vs-li-hover-bg);
   }
   &.selected {
     background: var(--vs-li-inactiveSelectionBg);
-    &:focus, &.focused {
-      color: var(--vs-li-activeSelectionC );
-      background: var(--vs-li-activeSelectionBg);
-    }
-  }
-  &.focused {
-    outline-color: var(--vs-focus-b-c);
-    outline-offset: -1px;
-    outline-style: solid;
-    outline-width: 1px;
   }
 }
 

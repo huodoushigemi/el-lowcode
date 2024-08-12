@@ -5,8 +5,7 @@
     </div>
 
     <div
-      tabindex="0"
-      class="vs-ul h0 overflow-auto"
+      class="h0 overflow-auto"
       :style="{ flex: sizeMap[activitybar!.id]?.grow }"
       @vue:mounted="({ el }) => mount(el, activitybar!.id)"
       @vue:unmounted="({ el }) => unmount(el, activitybar!.id)"
@@ -20,7 +19,6 @@
       <!-- <el-collapse-transition> -->
         <div
           v-if="expanded[pane.id]"
-          tabindex="0"
           duration="150!"
           class="pane-body flex-1 overflow-auto"
           @vue:mounted="({ el }) => mount(el, pane.id)"

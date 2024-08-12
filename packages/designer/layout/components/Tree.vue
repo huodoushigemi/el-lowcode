@@ -1,9 +1,16 @@
 <template>
-  <div class='vs-tree' @dragstart="onDragstart" @dragover="onDragover" @drop="onDrop" @dragend="onDragend" @click="onClick">
+  <div :class="['vs-tree vs-ul hfull', selected && 'element-selection']" tabindex="0" @dragstart="onDragstart" @dragover="onDragover" @drop="onDrop" @dragend="onDragend" @click="onClick">
     <div class="drag-guide" :style="dragGuideStyle" />
     
     <template v-for="(node, i) in expandTree" :key="node.id">
-      <div :class="['vs-li relative flex aic h22 lh-22', node.selected && 'selected']" :style="`padding-left: ${4 + (indent * node.deep)}px`" :data-index="i" :data-id="node.id" draggable="true">
+      <div
+        :class="['vs-li relative flex aic h22 lh-22', node.selected && 'selected']"
+        :style="`padding-left: ${4 + (indent * node.deep)}px`"
+        :data-index="i"
+        :data-id="node.id"
+        draggable="true"
+        :aria-expanded="node.dir ? node.expand : void 0"
+      >
         <!-- indent guide -->
         <div v-if="node.expand && node.children!.length" :class="['indent-guide', (node.selected || (node.id == selected?.parent.id && !selected.expand)) && 'active']" :style="`left: ${(node.deep + 1) * indent}px; height: ${node.expandCount * 22}px`" />
 
@@ -24,7 +31,7 @@ import { computed, reactive, toRaw, shallowRef } from 'vue'
 import { isArray, isString } from '@vue/shared'
 import { toReactive, useEventListener } from '@vueuse/core'
 import { get, keyBy, mapValues, unFn } from '@el-lowcode/utils'
-import { Node } from './Node
+import { Node } from './Node'
 
 type Props = {
   data: any[]
@@ -80,9 +87,12 @@ const keyed = toRaw(toReactive(computed(() => keyBy(expandTree.value, 'id'))))
 
 function onClick(e: MouseEvent) {
   const node = getNode(e)
-  if (!node) return
-  if (node.dir) props.expandKeys[node.id] = !node.expand
-  selected.value = node
+  if (node) {
+    if (node.dir) props.expandKeys[node.id] = !node.expand
+    selected.value = node
+  } else {
+    selected.value = void 0
+  }
 }
 
 let dragLi: DisplayNode | undefined
@@ -163,8 +173,6 @@ function onDragover(e: DragEvent) {
 
 function onDrop(e: DragEvent) {
   if (dropEvent) {
-    console.log(dropEvent);
-    
     dropEvent.to.insertBefore(dropEvent.node, dropEvent.to.children![dropEvent.newIndex])
   }
   onDragend()
