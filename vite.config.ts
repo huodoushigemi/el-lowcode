@@ -21,7 +21,8 @@ export default defineConfig(async () => ({
     proxy: {
       '/gitee.com': {
         target: 'https://gitee.com',
-        rewrite: path => (console.log(path), path.replace(/^\/gitee.com/, ''))
+        rewrite: path => path.replace(/^\/gitee.com/, ''),
+        changeOrigin: true
       },
       '/httpsgiteecomepalserver': 'https://gitee.com'
     }

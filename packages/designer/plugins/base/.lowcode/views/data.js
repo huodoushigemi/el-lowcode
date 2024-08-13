@@ -19,3 +19,21 @@ export const plugins = [
 ]
 
 export const builtins = plugins[0]
+
+export const extIcons = {
+  html: 'https://api.iconify.design/vscode-icons:file-type-xml.svg',
+  js: 'https://api.iconify.design/vscode-icons:file-type-js.svg',
+  ts: 'https://api.iconify.design/vscode-icons:file-type-typescript.svg',
+  json: 'https://api.iconify.design/vscode-icons:file-type-json.svg',
+  yaml: 'https://api.iconify.design/vscode-icons:file-type-light-yaml.svg',
+  md: 'https://api.iconify.design/vscode-icons:file-type-markdown.svg',
+  txt: 'https://api.iconify.design/vscode-icons:default-file.svg',
+  css: 'https://api.iconify.design/vscode-icons:file-type-scss.svg',
+  scss: 'https://api.iconify.design/vscode-icons:file-type-scss.svg',
+  vue: 'https://api.iconify.design/vscode-icons:file-type-vue.svg',
+  jsx: 'https://api.iconify.design/vscode-icons:file-type-reactjs.svg',
+  tsx: 'https://api.iconify.design/vscode-icons:file-type-reactjs.svg',
+  py: 'https://api.iconify.design/vscode-icons:file-type-python.svg',
+  
+  LICENSE: 'https://api.iconify.design/vscode-icons:file-type-license.svg'
+}
