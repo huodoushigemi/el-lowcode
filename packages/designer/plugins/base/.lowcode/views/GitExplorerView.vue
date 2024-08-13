@@ -4,7 +4,7 @@
     :props="{ id: 'path', label: 'name', children: 'files' }"
     #default="{ node, data }"
   >
-    <img v-if="!data.files" :src="extIcons[data.name] ?? extIcons[data.ext] ?? extIcons.txt" mr5 w14 />
+    <img v-if="!data.files" :src="extIcons[data.name] ?? extIcons[data.ext] ?? extIcons.txt" mr5 w14 h14 object-contain />
     {{ data.name }}
   </Tree>
 </template>

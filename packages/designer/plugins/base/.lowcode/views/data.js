@@ -15,7 +15,6 @@ export const plugins = [
   "/el-lowcode/designer/packages/designer/plugins/threejs",
   "/el-lowcode/designer/packages/designer/plugins/threejs",
   "/el-lowcode/designer/packages/designer/plugins/threejs",
-
 ]
 
 export const builtins = plugins[0]
@@ -26,7 +25,7 @@ export const extIcons = {
   ts: 'https://api.iconify.design/vscode-icons:file-type-typescript.svg',
   json: 'https://api.iconify.design/vscode-icons:file-type-json.svg',
   yaml: 'https://api.iconify.design/vscode-icons:file-type-light-yaml.svg',
-  md: 'https://api.iconify.design/vscode-icons:file-type-markdown.svg',
+  md: 'https://api.iconify.design/file-icons:rmarkdown.svg?color=%23329672&width=16&height=14',
   txt: 'https://api.iconify.design/vscode-icons:default-file.svg',
   css: 'https://api.iconify.design/vscode-icons:file-type-scss.svg',
   scss: 'https://api.iconify.design/vscode-icons:file-type-scss.svg',
