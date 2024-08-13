@@ -37,7 +37,7 @@ type Props = {
   data: any[]
   props: {
     id: string | ((item) => any)
-    label: string | ((item) => string)
+    label?: string | ((item) => string)
     icon?: string | ((item) => string)
     children: string | ((item) => any[] | undefined)
   }
@@ -59,9 +59,14 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 class DisplayNode extends Node {
-  get id () { return isString(props.props.id) ? get(this.data, props.props.id) : props.props.id?.(this.data) }
-  get label () { return isString(props.props.label) ? get(this.data, props.props.label) : props.props.label?.(this.data) }
-  get data_children () { return isString(props.props.children) ? get(this.data, props.props.children) : props.props.children?.(this.data) }
+  props: Props['props']
+  constructor(data, p = props.props) {
+    super(data)
+    this.props = p
+  }
+  get id () { return isString(this.props.id) ? get(this.data, this.props.id) : this.props.id?.(this.data) }
+  get label () { return isString(this.props.label) ? get(this.data, this.props.label) : this.props.label?.(this.data) }
+  get data_children () { return isString(this.props.children) ? get(this.data, this.props.children) : this.props.children?.(this.data) }
   get dir() { return isArray(this.data_children) }
   get expand() { return props.expandKeys[this.id] }
   get expandCount(): number { return this.expand ? this.children!.reduce((t, e) => t + e.expandCount, this.children!.length) : 0 }
@@ -69,7 +74,7 @@ class DisplayNode extends Node {
   get siblingSelected() { return selected.value?.id == this.parent?.id }
 }
 
-const rootNode = computed(() => new DisplayNode({ children: props.data }))
+const rootNode = computed(() => new DisplayNode({ children: props.data }, { id: '', children: 'children' }))
 
 const selected = shallowRef()
 

@@ -19,6 +19,10 @@ export default defineConfig(async () => ({
   server: {
     port: 5174,
     proxy: {
+      '/gitee.com': {
+        target: 'https://gitee.com',
+        rewrite: path => (console.log(path), path.replace(/^\/gitee.com/, ''))
+      },
       '/httpsgiteecomepalserver': 'https://gitee.com'
     }
   },

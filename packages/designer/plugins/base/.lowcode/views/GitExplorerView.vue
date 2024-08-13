@@ -1,15 +1,14 @@
 <template>
   <Tree
-    :data="designerCtx.root.children"
-    :props="{ id: '_id', label: e => e['data-layer'] || (isString(e.children) && e.children) || e.is, children: e => typeof e.children == 'string' ? void 0 : e.children }"
-    draggable
-    :dropable="({ to }) => to.dir"
+    :data="tree"
+    :props="{ id: 'path', label: 'name', children: 'files' }"
   />
 </template>
 
 <script setup>
-import { inject } from 'vue'
+import { computed, inject, ref, triggerRef } from 'vue'
 import { isString } from '@vue/shared'
+import { computedAsync } from '@vueuse/core/index.cjs'
 import { Tree } from '@el-lowcode/designer'
 import http from 'https://unpkg.com/isomorphic-git/http/web/index.js'
 
@@ -21,7 +20,29 @@ const fs = window.fs
 const pfs = window.pfs
 const git = window.git
 
-const files = ref([])
+const tree = ref([])
+
+async function readdir(dir) {
+  const files = await pfs.readdir(dir)
+  const ps = files.map(async name => {
+    const path = `${dir}/${name}`
+    const file = await pfs.stat(path)
+    if (file.isFile()) {
+      return { type: 'file', name, path }
+    } else {
+      return { type: 'dir', name, path, files: await readdir(path) }
+    }
+  })
+  return await Promise.all(ps)
+}
+
+async function refresh() {
+  tree.value = await readdir(dir)
+  console.log(tree.value);
+  
+}
+
+refresh()
 
 ;(async () => {
   await pfs.stat(dir).catch(() => pfs.mkdir(dir))
@@ -35,8 +56,9 @@ const files = ref([])
       fs,
       http,
       dir,
-      corsProxy: location.origin,
-      url: 'https://gitee.com/httpsgiteecomepalserver/git-test.git',
+      // corsProxy: location.origin,
+      // url: 'https://gitee.com/httpsgiteecomepalserver/git-test.git',
+      url: location.origin + '/httpsgiteecomepalserver/git-test.git',
       ref: 'master',
       singleBranch: true,
       depth: 1,
@@ -44,7 +66,7 @@ const files = ref([])
         return { username: prompt('Enter username'), password: prompt('Enter password') }
       },
       onAuthSuccess: (url, auth) => {
-  
+      
       },
       onAuthFailure(url, auth) {
         if (confirm('Access was denied. Try again?')) {
@@ -55,7 +77,7 @@ const files = ref([])
       }
     })
   }
-
-  files.value = await git.listFiles({ fs, dir: '/test-dir' })
+  
+  refresh()
 })()
 </script>
