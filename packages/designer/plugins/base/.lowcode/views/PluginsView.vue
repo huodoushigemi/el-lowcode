@@ -4,9 +4,9 @@
     <ElTooltip content="远程插件" placement="right"><i-ep:plus mla p6 text-24 bg-hover cursor-pointer @click="addRemotePlugin()" /></ElTooltip>
      <!-- <button class="vs-btn" flex aic mla @click="addRemotePlugin()">+ 远程插件</button> -->
   </div>
-  <div class="">
-    <template v-for="[url, pkg] in plugins.map(e => [e, loadPkg(e)])">
-      <div v-if="pkg" :key="url" :class="['vs-li plugin-li', url == drawer.url && 'selected']" flex aic pr8 h74 :op="pkg.disabled && 40 " :title="`${pkg.name}\n\n${pkg.description}`" tabindex="0" @click="showMD(url)">
+  <div :class="['vs-ul', drawer.url && 'element-selection']" tabindex="0">
+    <template v-for="([url, pkg], i) in plugins.map(e => [e, loadPkg(e)])">
+      <div v-if="pkg" :key="url" :class="['vs-li plugin-li', url == drawer.url && 'selected']" flex aic pr8 h74 :op="pkg.disabled && 40 " :title="`${pkg.name}\n\n${pkg.description}`" :data-index="i" @click="showMD(url)">
         <img :src="pkg.icon" :alt="pkg.name" mx16 w42 h42 />
         <div w0 flex-1>
           <div truncate font-700 lh-19>{{ pkg.displayName || pkg.name }}</div>

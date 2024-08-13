@@ -13,6 +13,7 @@ function create(AsyncComp) {
 }
 
 export function activate(designerCtx: DesignerCtx) {
+  designerCtx.viewRenderer['git-explorer'] = create(defineAsyncComponent(() => import('./views/GitExplorerView.vue')))
   designerCtx.viewRenderer['comp-tree'] = create(defineAsyncComponent(() => import('./views/CompTreeView.vue')))
   designerCtx.viewRenderer['schema-sourcecode'] = create(defineAsyncComponent(() => import('./views/Schema.vue')))
   designerCtx.viewRenderer['plugin-market'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
@@ -26,6 +27,11 @@ export function deactivate(designer) {
 
 export const contributes = {
   activitybar: [
+    {
+      id: 'git-explorer',
+      title: '资源管理器',
+      icon: 'https://api.iconify.design/vscode-icons:default-folder.svg'
+    },
     {
       id: 'comp-tree',
       title: '组件树',
