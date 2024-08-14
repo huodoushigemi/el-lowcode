@@ -19,6 +19,8 @@ export function activate(designerCtx: DesignerCtx) {
   designerCtx.viewRenderer['plugin-market'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
   designerCtx.viewRenderer['plugin-market.views.all'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
   designerCtx.viewRenderer['plugin-market.views.installed'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
+
+  // designerCtx.customEditorRenderer['schema.json.editor'] = create(() => )
 }
 
 export function deactivate(designer) {
@@ -52,6 +54,68 @@ export const contributes = {
     'plugin-market': [
       { id: 'plugin-market.views.all', name: 'All' },
       { id: 'plugin-market.views.installed', name: 'Installed' },
+    ],
+  },
+  customEditors: [
+    {
+      id: 'schema.json.editor',
+      displayName: '',
+      selector: [
+        { filenamePattern: '*.schema.json' }
+      ],
+      priority: 'default',
+    },
+    {
+      id: 'img.editor',
+      displayName: '',
+      selector: [
+        { filenamePattern: '*.+(jp{,e}g|png|svg|gif)' }
+      ],
+      priority: 'default',
+    },
+    {
+      id: 'md.editor',
+      displayName: '',
+      selector: [
+        { filenamePattern: '*.md' }
+      ],
+      priority: 'default',
+    },
+    {
+      id: 'md.editor',
+      displayName: '',
+      selector: [
+        { filenamePattern: '*.+(js{,x}|ts{,x}|html|vue|json)' }
+      ],
+      priority: 'default',
+    }
+  ],
+  commands: [
+
+  ],
+  menus: {
+    'view/title': [
+      {
+        command: '',
+        when: e => e.view.id == 'plugin-market.views.all',
+        group: 'navigation' // inline
+      }
+    ],
+    'view/item/context': [
+      {
+        command: '',
+        when: e => e.view.id == 'plugin-market.views.all',
+        group: 'navigation'
+      }
+    ],
+    'editor/context': [
+
+    ],
+    'editor/title': [
+      
+    ],
+    'editor/title/context': [
+      
     ],
   }
 }

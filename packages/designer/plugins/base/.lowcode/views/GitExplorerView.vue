@@ -10,9 +10,7 @@
 </template>
 
 <script setup>
-import { computed, inject, ref, triggerRef } from 'vue'
-import { isString } from '@vue/shared'
-import { computedAsync } from '@vueuse/core/index.cjs'
+import { inject, ref } from 'vue'
 import { Tree } from '@el-lowcode/designer'
 import http from 'https://unpkg.com/isomorphic-git/http/web/index.js'
 import { extIcons } from './data'
