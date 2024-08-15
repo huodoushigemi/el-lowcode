@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="sl-theme-dark mdui-theme-auto">
+<html class="sl-theme-dark mdui-theme-auto">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
@@ -32,11 +32,31 @@
 
     <script src="/node_modules/vue/dist/vue.runtime.global.js"></script>
 
-    <script src="https://unpkg.com/@isomorphic-git/lightning-fs"></script>
+    <!-- <script src="https://unpkg.com/@isomorphic-git/lightning-fs"></script>
     <script src="https://unpkg.com/isomorphic-git"></script>
     <script>
       window.fs = new LightningFS('fs')
       window.pfs = window.fs.promises
+    </script> -->
+
+    <script>
+      document.addEventListener('dragstart', e => {
+        const is = e.target.getAttribute('data-is')
+        if (!is) return
+        e.dataTransfer.setData('data-is', is)
+      })
+    </script>
+
+    <script>
+      document.addEventListener('wheel', e => {
+        e.stopPropagation()
+        // e.preventDefault()
+      }, { passive: false })
+      
+      document.addEventListener('mousedown', e => {
+        e.stopPropagation()
+        // e.preventDefault()
+      }, { passive: false })
     </script>
   </head>
   <body>

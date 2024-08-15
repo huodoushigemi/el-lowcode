@@ -44,6 +44,22 @@ export default defineConfig(async () => ({
   },
   plugins: [
     // vue(),
+    {
+      name: 'xxxxxxxxxxxxxxx',
+      enforce: 'post',
+      transform: {
+        order: 'post',
+        handler(code, id, options) {
+          return code?.replaceAll('/el-lowcode/designer', 'http://localhost:5174/el-lowcode/designer')
+        },
+      },
+      transformIndexHtml: {
+        order: 'post',
+        handler(code) {
+          return code?.replaceAll('/el-lowcode/designer', 'http://localhost:5174/el-lowcode/designer')
+        }
+      }
+    },
     (await import('unplugin-vue-macros/vite')).default({
       plugins: {
         vue: (await import('@vitejs/plugin-vue')).default(),
@@ -57,6 +73,6 @@ export default defineConfig(async () => ({
     (await import('unplugin-icons/vite')).default({ autoInstall: true, compiler: 'vue3' }),
     (await import('vite-plugin-pages')).default({ dirs: 'designer/pages' }),
     
-    { ...(await import('rollup-plugin-external-globals')).default({ vue: 'Vue' }), enforce: 'post' } as any
+    { ...(await import('rollup-plugin-external-globals')).default({ vue: 'Vue' }), enforce: 'post' } as any,
   ]
 }))

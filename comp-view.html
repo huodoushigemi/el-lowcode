@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="/node_modules/vue/dist/vue.runtime.global.js"></script>
+</head>
+<body>
+  <div id="app">
+
+  </div>
+
+  <script>
+    document.addEventListener('dragstart', e => {
+      const is = e.target.getAttribute('data-is')
+      if (!is) return
+      e.stopPropagation()
+      e.dataTransfer.setData('data-is', is)
+    })
+  </script>
+
+  <script type="module">
+    import { createApp, h } from 'vue'
+    import 'virtual:uno.css'
+    import { CompView } from '@el-lowcode/designer'
+    import widgets from './packages/designer/plugins/web/.lowcode/config'
+
+    createApp({ render: () => h(CompView, { list: widgets }) }).mount('#app')
+  </script>
+</body>
+</html>

@@ -28,7 +28,7 @@
     </header>
 
     <div flex flex-1 h0>
-      <Activitybar v-model="activeView" :list="activitybars" @update:modelValue="log" />
+      <!-- <Activitybar v-model="activeView" :list="activitybars" @update:modelValue="log" /> -->
 
       <KeepAlive>
         <Views v-if="activeView" :activitybar="activitybars.find(e => e.id == activeView)" :key="activeView" w300 bg="#252526" />
@@ -40,8 +40,9 @@
         <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
           <!-- @vue-ignore -->
           <iframe
+            :key="CanvasIframe1"
             class="wfull hfull"
-            :src="CanvasIframe"
+            :srcdoc="CanvasIframe1"
             @load="e => designerCtx.canvas.doc = e.target.contentDocument"
             @vue:mounted="({ el }) => el.contentWindow.designerCtx = designerCtx"
           />
@@ -72,7 +73,7 @@ import { get, keyBy, groupBy, set, treeUtils } from '@el-lowcode/utils'
 import { useTransformer } from 'el-form-render'
 import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
 import { parseAttrs, importJs } from '../components/_utils'
-import { BoxProps, ElLowcodeConfig } from '..'
+import { BoxProps, ElLowcodeConfig } from '../index'
 import { DesignerCtx, designerCtxKey } from './interface'
 import Activitybar from './components/Activitybar.vue'
 import Views from './components/Views.vue'
@@ -80,7 +81,6 @@ import SelectedLayer from './components/selected-layer.vue'
 import SettingPanel from './setting-panel.vue'
 import StateDrawer from './components/state-drawer.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
-import CanvasIframe from './components/iframe-temp.html?url'
 // import { vue2esm } from './vue2esm'
 import { PageCtx } from '../plugins/web/page'
 import { builtins } from './config'
@@ -92,6 +92,9 @@ import InputNumbers from '../components/InputNumbers.vue'
 import Collapse from '../components/Collapse.vue'
 import EditTable from '../components/EditTable.vue'
 import Tabs from '../components/Tabs.vue'
+
+import CanvasIframe from './components/iframe-temp.html?url'
+const CanvasIframe1 = computedAsync(() => fetch(CanvasIframe).then(e => e.text()))
 
 const app = getCurrentInstance()!.appContext.app
 app.component('OptionsInput', OptionsInput)
@@ -145,6 +148,8 @@ const aaa = computed(() => sss.map(url =>
     }) as DesignerCtx['plugins'][0]
   }, void 0, { onError: e => console.error(e) })).value
 ).filter(e => e))
+
+aaa.value
 
 const activitybars = computed(() => designerCtx.plugins.flatMap(e => e.contributes.activitybar))
 const activeView = ref()
@@ -307,7 +312,7 @@ useEventListener('keydown', e => {
 })
 
 // 拖拽 .vue 自定义组件
-const dropZone = ref<HTMLDivElement>(), { isOverDropZone } = useDropZone(dropZone, onDrop)
+// const dropZone = ref<HTMLDivElement>(), { isOverDropZone } = useDropZone(dropZone, onDrop)
 async function onDrop(_, e: DragEvent) {
   const list = [] as FileSystemFileEntry[]
   for (const item of e.dataTransfer!.items) scanFiles(item.webkitGetAsEntry(), list)

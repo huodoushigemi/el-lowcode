@@ -49,7 +49,7 @@ import { deepClone, treeUtils } from '@el-lowcode/utils'
 import { v4 as uuidv4 } from 'uuid'
 import { designerCtxKey } from '../interface'
 import { sloveConfig } from '../../components/_utils'
-import { BoxProps } from '../..'
+import { BoxProps } from '../../index'
 
 const designerCtx = inject(designerCtxKey)!
 

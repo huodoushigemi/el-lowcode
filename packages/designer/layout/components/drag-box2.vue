@@ -141,10 +141,11 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRe
   const target = () => isArray(props.children) ? nillRef.value?.parentElement : void 0
   let x = 0, y = 0
   useEventListener(target, 'dragover', e => {
-    if (!dragEl || dragEl.contains(e.currentTarget as Node)) return
-    const is = dragEl.getAttribute('data-is')
-    const _id = dragEl.getAttribute('_id')
-    if (!is && !_id) return
+    // if (!dragEl || dragEl.contains(e.currentTarget as Node)) return
+    if (dragEl?.contains(e.currentTarget as Node)) return
+    // const is = dragEl.getAttribute('data-is')
+    // const _id = dragEl.getAttribute('_id')
+    // if (!is && !_id) return
 
     e.preventDefault()
     e.stopPropagation()
@@ -221,10 +222,12 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRe
   })
 
   useEventListener(target, 'drop', async (e) => {
-    if (!dragEl || dragEl.contains(e.currentTarget as Node)) return
-    const is = dragEl.getAttribute('data-is')
-    const _id = dragEl.getAttribute('_id')
-    if (!is && !_id) return
+    // if (!dragEl || dragEl.contains(e.currentTarget as Node)) return
+    if (dragEl?.contains(e.currentTarget as Node)) return
+    const is = dragEl?.getAttribute('data-is') ?? e.dataTransfer?.getData('data-is')
+    const _id = dragEl?.getAttribute('_id')
+    
+    if (!is && !_id) return dragEnd()
     e.stopPropagation()
 
     const el = e.currentTarget as HTMLElement
@@ -249,7 +252,7 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRe
       const newIndex = dragRelated
         ? children.findIndex(e => e._id == dragRelated.getAttribute('_id')) + (dragRelatedDir == 'L' || dragRelatedDir == 'T' ? 0  : 1)
         : 0
-      const isMove = e.currentTarget == dragEl.parentElement
+      const isMove = e.currentTarget == dragEl?.parentElement
       if (isMove) {
         const oldIndex = children.findIndex(e => e._id == _id)
         dragObj = children[oldIndex]
@@ -292,7 +295,7 @@ useEventListener('dragstart', dragStart)
 useEventListener('dragend', dragEnd)
 if (frameElement) {
   const doc = frameElement.ownerDocument
-  useEventListener(doc, 'dragstart', dragStart)
+  // useEventListener(doc, 'dragstart', dragStart)
   useEventListener(doc, 'dragend', dragEnd)
 }
 
