@@ -1,12 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="scrollbar-color: unset;">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <script src="/node_modules/vue/dist/vue.runtime.global.js"></script>
+
+  <style>
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+  </style>
 </head>
-<body>
+<body class="px0!">
   <div id="app">
 
   </div>
@@ -21,12 +28,37 @@
   </script>
 
   <script type="module">
-    import { createApp, h } from 'vue'
+    import { createApp, h, computed } from 'vue'
+    import { computedAsync } from '@vueuse/core'
     import 'virtual:uno.css'
     import { CompView } from '@el-lowcode/designer'
-    import widgets from './packages/designer/plugins/web/.lowcode/config'
 
-    createApp({ render: () => h(CompView, { list: widgets }) }).mount('#app')
+    const sss = [
+      '/el-lowcode/designer/packages/designer/plugins/web',
+      '/el-lowcode/designer/packages/designer/plugins/element-plus',
+      '/el-lowcode/designer/packages/designer/plugins/echarts',
+    ]
+
+    const xxx = {}
+
+    const aaa = computed(() => sss.map(url => 
+      (xxx[url] ??= computedAsync(async () => {
+        const plugin = await import(/* @vite-ignore */ `${url}/.lowcode/index.js`)
+        const packageJSON = await fetch(`${url}/.lowcode/package.json`).then(e => e.json())
+        return { url, packageJSON, widgets: plugin.widgets }
+      }, void 0, { onError: e => console.error(e) })).value
+    ).filter(e => e))
+
+    createApp({ render: () => aaa.value.map(e => [
+      h('div', {  class: 'flex aic px20' }, [
+        h('img', { src: e.packageJSON.icon, class: 'w24 h24 mr8' }, ),
+        h('h2', { class: 'my0 uppercase' }, e.packageJSON.displayName ?? e.packageJSON.name),
+      ]),
+      h(CompView, { list: e.widgets }),
+      
+      h('div', { class: 'mt8 mb12', style: 'height: 1px; background: var(--vscode-dropdown-border)' })
+
+    ])}).mount('#app')
   </script>
 </body>
 </html>

@@ -1,0 +1,53 @@
+
+// 拖拽 .vue 自定义组件
+// const dropZone = ref<HTMLDivElement>(), { isOverDropZone } = useDropZone(dropZone, onDrop)
+async function onDrop(_, e: DragEvent) {
+  const list = [] as FileSystemFileEntry[]
+  for (const item of e.dataTransfer!.items) scanFiles(item.webkitGetAsEntry(), list)
+
+  const fs = await Promise.all(list.map(e => new Promise<File>((s, j) => e.file(s, j))))
+  if (!fs.length) return
+  
+  const loading = ElLoading.service({ lock: true })
+
+  try {
+    root.value.extraElLowcodeWidgets ??= {}
+    root.value.customComponents ??= {}
+    
+    for (const file of fs) {
+      if (file.name.endsWith('.config.js')) {
+        root.value.extraElLowcodeWidgets[file.name] = await file.text()
+      }
+      else if (file.name.endsWith('.vue') || file.name.endsWith('.js')) {
+        const jscode = file.name.endsWith('.vue')
+          ? await vue2esm(await file.text(), file.name)
+          : await file.text()
+        const { default: comp } = await importJs(jscode)
+        if (!comp) throw new Error(`文件 ${file.name} 没有默认导出`)
+        if (!isPlainObject(comp)) throw new Error(`文件 ${file.name} 应默认导出 vue 组件，但导出的是 ${typeof comp}`)
+        const name = comp.name || file.name.split('.')[0]
+        root.value.customComponents[name] = jscode
+      }
+      else {
+        console.warn(`不支持的文件类型：${file.name}`)
+      }
+    }
+  } catch (e) {
+    alert('导入失败')
+    throw e
+  } finally {
+    loading.close()
+  }
+}
+
+function scanFiles(entry: FileSystemEntry | null, list: FileSystemFileEntry[] = []) {
+  if (!entry) return list
+  if (entry.isDirectory) {
+    let directoryReader = (entry as FileSystemDirectoryEntry).createReader()
+    directoryReader.readEntries((es) => list.push(...es.filter(e => e.isFile) as any[]))
+  }
+  else if (entry.isFile) {
+    list.push(entry as FileSystemFileEntry)
+  }
+  return list
+}

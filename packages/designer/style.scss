@@ -3,10 +3,11 @@
   --vs-sideBarSectionHeader-border: rgba(204, 204, 204, 0.2);
   --vs-scrollbarSlider-background: rgba(121, 121, 121, 0.4);
   --vs-desc-c: rgba(204, 204, 204, 0.7);
-  --vs-li-hover-bg: #2a2d2e;
+  --vs-li-hover-bg: var(--vscode-list-hoverBackground, #2a2d2e);
   --vs-li-activeSelectionBg: #04395e;
   --vs-li-inactiveSelectionBg: #37373d;
   --vs-li-activeSelectionC: #fff;
+  --vs-ai-hover-bg: var(--vscode-toolbar-hoverBackground);
   --vs-tree-indentGuidesStroke: #585858;
 
   --vs-btn-c: #fff;
@@ -38,7 +39,7 @@
     outline-offset: -1px;
   }
   &:focus .vs-li.selected {
-    color: var(--vs-li-activeSelectionC );
+    color: var(--vs-li-activeSelectionC);
     background: var(--vs-li-activeSelectionBg);
   }
 
@@ -54,6 +55,13 @@
   }
   &.selected {
     background: var(--vs-li-inactiveSelectionBg);
+  }
+}
+
+.vs-ai {
+  cursor: pointer;
+  &:hover {
+    background: var(--vs-ai-hover-bg);
   }
 }
 

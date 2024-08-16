@@ -1,32 +1,5 @@
 <template>
   <div class="layout" flex="~ col" data-designer>
-    <!-- Header -->
-    <header col-span-full h35 flex aic bg="#3c3c3c">
-      <!-- <div flex aic>
-        <i-ep:eleme w44 h44 c="[--el-color-primary]" />
-        <b ml8 text-22>El lowcode</b>
-      </div> -->
-
-      <!-- 尺寸 -->
-       <!-- style="--el-border-color: 0"  -->
-      <ElFormRender class="flex aic mxa text-12 [&>*]:mb0!" :model="designerCtx.canvas" size="small" :items="[
-        { lp: ['尺寸: ', 'style.wh'], type: 'select', options: [['iPhone SE', '375 × 667'], ['iPhone12 Pro', '390 × 844'], ['iPad Mini', '768 × 1024']], class: 'w160 mr8', get: () => ['width', 'height'].map(k => parseFloat(get(root, `designer.canvas.style.${k}`)) || ' - ').join(' × '), set: v => (['width', 'height'].forEach((k, i) => set(root, `designer.canvas.style.${k}`, v && v.split(' × ')[i] + 'px')), void 0), el: { clearable: true } },
-        { prop: 'style.width', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
-        { is: 'div', class: 'mx4', children: '×' },
-        { prop: 'style.height', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
-        // { prop: 'designer.canvas.zoom', type: 'slider', class: 'w100 ml16 mr4', get: v => parseInt(v * 100) || 100, set: v => v / 100,  el: { min: 40, max: 250, showTooltip: false } },
-        // { is: 'div', class: 'w50', children: () => `${parseInt(get(root, 'designer.canvas.zoom') * 100) || 100}%` },
-        { prop: 'zoom', class: 'ml8 w55', displayValue: '100%', get: v => parseInt(v * 100) + '%', set: v => parseInt(v) / 100, el: { is: 'InputNumber', units: ['%'], min: 40, max: 250 } }
-      ]" />
-      
-      <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32" flex space-x-20 px20 shrink-0>
-        <el-tooltip content="clear"><i-mdi:close bg-hover @click="root = parseAttrs(el_lowcode_widgets.Page!)" /></el-tooltip>
-        <i-mdi:undo-variant :op="!canUndo && '20'" bg-hover @click="undo()" />
-        <i-mdi:redo-variant :op="!canRedo && '20'" bg-hover @click="redo()" ml4="!" />
-        <slot name="actions"></slot>
-      </div>
-    </header>
-
     <div flex flex-1 h0>
       <!-- <Activitybar v-model="activeView" :list="activitybars" @update:modelValue="log" /> -->
 
@@ -52,6 +25,23 @@
           <Moveable :target="designerCtx.active == designerCtx.root ? undefined : designerCtx.activeEl" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
         </div>
       </infinite-viewer>
+
+      <div class="fixed bottom-10 left-35 flex">
+        <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32" flex space-x-10 px6 style="background: var(--vscode-activityBar-background)">
+          <i-mdi:close data-title="clear" class="vs-ai" @click="root = parseAttrs(el_lowcode_widgets.Page!)" />
+          <i-mdi:undo-variant data-title="clear" class="vs-ai" :op="!canUndo && '20'" @click="undo()" />
+          <i-mdi:redo-variant :op="!canRedo && '20'" class="vs-ai" @click="redo()" ml4="!" />
+          <!-- <slot name="actions"></slot> -->
+        </div>
+
+        <ElFormRender class="flex aic ml8 px6 text-12 [&>*]:mb0!" style="background: var(--vscode-activityBar-background)" :model="designerCtx.canvas" size="small" :items="[
+          { prop: 'style.wh', type: 'select', options: [['iPhone SE', '375 × 667'], ['iPhone12 Pro', '390 × 844'], ['iPad Mini', '768 × 1024']], class: 'w110 mr8', get: () => ['width', 'height'].map(k => parseFloat(get(root, `designer.canvas.style.${k}`)) || ' - ').join(' × '), set: v => (['width', 'height'].forEach((k, i) => set(root, `designer.canvas.style.${k}`, v && v.split(' × ')[i] + 'px')), void 0), el: { clearable: true } },
+          { prop: 'style.width', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
+          { is: 'div', class: 'mx4', children: '×' },
+          { prop: 'style.height', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
+          { prop: 'zoom', class: 'ml8 w55', displayValue: '100%', get: v => parseInt(v * 100) + '%', set: v => parseInt(v) / 100, el: { is: 'InputNumber', units: ['%'], min: 40, max: 250 } }
+        ]" />
+      </div>
       
       <!-- Setting -->
       <aside w256 b-l="1px solid [--el-border-color]" overflow-overlay>
@@ -64,7 +54,7 @@
 
 <script setup lang="ts">
 import { computed, provide, reactive, ref, watchEffect, getCurrentInstance, watch, Ref } from 'vue'
-import { isArray, isPlainObject, remove } from '@vue/shared'
+import { isArray, isPlainObject, isString, remove } from '@vue/shared'
 import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage, useMagicKeys } from '@vueuse/core'
 import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
 import Moveable from 'vue3-moveable'
@@ -74,7 +64,7 @@ import { useTransformer } from 'el-form-render'
 import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
 import { parseAttrs, importJs } from '../components/_utils'
 import { BoxProps, ElLowcodeConfig } from '../index'
-import { DesignerCtx, designerCtxKey } from './interface'
+import { DesignerCtx, designerCtxKey, DisplayNode } from './interface'
 import Activitybar from './components/Activitybar.vue'
 import Views from './components/Views.vue'
 import SelectedLayer from './components/selected-layer.vue'
@@ -94,6 +84,7 @@ import EditTable from '../components/EditTable.vue'
 import Tabs from '../components/Tabs.vue'
 
 import CanvasIframe from './components/iframe-temp.html?url'
+import { Node } from './components/Node'
 const CanvasIframe1 = computedAsync(() => fetch(CanvasIframe).then(e => e.text()))
 
 const app = getCurrentInstance()!.appContext.app
@@ -121,6 +112,8 @@ const root = useLocalStorage(
     root.value = parseAttrs(el_lowcode_widgets.Page!) as PageCtx
   }
 })()
+
+const rootCtx = computed(() => new DisplayNode(root.value))
 
 const installedPlugins = computed(() => [...new Set([...root.value?.plugins || [], ...builtins])])
 const sss = [
@@ -162,6 +155,13 @@ const tree = computed<BoxProps[]>(() => treeUtils.changeProp([root.value], [['ch
 
 const initCanvas = () => get(root.value, 'designer.canvas') || set(root.value, 'designer.canvas', {})
 
+interface DisplayProps {
+  id: string | ((item) => any)
+  label?: string | ((item) => string)
+  icon?: string | ((item) => string)
+  children: string | ((item) => any[] | undefined)
+}
+
 const viewer = {
   // x: useTransformer(root, 'designer.canvas.x'),
   // y: useTransformer(root, 'designer.canvas.y'),
@@ -173,19 +173,6 @@ const viewer = {
   // get zoom() { return get(root.value, 'designer.canvas.zoom') },
   // set zoom(v) { toRaw(initCanvas()).zoom = v },
 }
-
-// const groups = reactive([
-//   {
-//     title: '自定义组件',
-//     list: computedAsync(() => Promise.all(Object.values(root.value.extraElLowcodeWidgets ?? {}).map(async id => {
-//       const { default: config } = await importJs(id) as { default: Arrable<ElLowcodeConfig> }
-//       return toArr(config).map(e => el_lowcode_widgets[e.is] = e)
-//     })).then(e => e.flat()), [], { onError: e => console.error(e) })
-//   },
-//   ...Object.entries(groupBy(Object.values(el_lowcode_widgets), 'category')).map(([title, list]) => ({ title, list }))
-// ])
-// const collapse = ref(groups.map(e => e.title))
-
 const viewport = ref<HTMLElement>()
 
 const designerCtx = reactive({
@@ -197,6 +184,8 @@ const designerCtx = reactive({
   root,
   flated: computed(() => treeUtils.flat([root.value])),
   keyed: computed(() => keyBy(designerCtx.flated, '_id')),
+  rootCtx: computed(() => new DisplayNode(designerCtx.root)),
+  keyedCtx: computed(() => keyBy(treeUtils.flat([designerCtx.rootCtx]), 'id')),
   active: computed(() => designerCtx.activeId && treeUtils.find([root.value], designerCtx.activeId, { key: '_id' })),
   activeEl: computed(() => designerCtx.activeId ? designerCtx.canvas.doc.querySelector(`[_id='${designerCtx.activeId}']`) : void 0),
   hover: computed(() => designerCtx.hoverId && treeUtils.find([root.value], designerCtx.hoverId, { key: '_id' })),
@@ -206,6 +195,8 @@ const designerCtx = reactive({
   plugins: aaa,
   viewRenderer: {},
 }) as DesignerCtx
+
+designerCtx.rootCtx.designerCtx = designerCtx
 
 provide(designerCtxKey, designerCtx)
 provide('designerCtx', designerCtx)
@@ -310,59 +301,6 @@ useEventListener('keydown', e => {
     case 'y': return redo()
   }
 })
-
-// 拖拽 .vue 自定义组件
-// const dropZone = ref<HTMLDivElement>(), { isOverDropZone } = useDropZone(dropZone, onDrop)
-async function onDrop(_, e: DragEvent) {
-  const list = [] as FileSystemFileEntry[]
-  for (const item of e.dataTransfer!.items) scanFiles(item.webkitGetAsEntry(), list)
-
-  const fs = await Promise.all(list.map(e => new Promise<File>((s, j) => e.file(s, j))))
-  if (!fs.length) return
-  
-  const loading = ElLoading.service({ lock: true })
-
-  try {
-    root.value.extraElLowcodeWidgets ??= {}
-    root.value.customComponents ??= {}
-    
-    for (const file of fs) {
-      if (file.name.endsWith('.config.js')) {
-        root.value.extraElLowcodeWidgets[file.name] = await file.text()
-      }
-      else if (file.name.endsWith('.vue') || file.name.endsWith('.js')) {
-        const jscode = file.name.endsWith('.vue')
-          ? await vue2esm(await file.text(), file.name)
-          : await file.text()
-        const { default: comp } = await importJs(jscode)
-        if (!comp) throw new Error(`文件 ${file.name} 没有默认导出`)
-        if (!isPlainObject(comp)) throw new Error(`文件 ${file.name} 应默认导出 vue 组件，但导出的是 ${typeof comp}`)
-        const name = comp.name || file.name.split('.')[0]
-        root.value.customComponents[name] = jscode
-      }
-      else {
-        console.warn(`不支持的文件类型：${file.name}`)
-      }
-    }
-  } catch (e) {
-    alert('导入失败')
-    throw e
-  } finally {
-    loading.close()
-  }
-}
-
-function scanFiles(entry: FileSystemEntry | null, list: FileSystemFileEntry[] = []) {
-  if (!entry) return list
-  if (entry.isDirectory) {
-    let directoryReader = (entry as FileSystemDirectoryEntry).createReader()
-    directoryReader.readEntries((es) => list.push(...es.filter(e => e.isFile) as any[]))
-  }
-  else if (entry.isFile) {
-    list.push(entry as FileSystemFileEntry)
-  }
-  return list
-}
 </script>
 
 <style lang="scss">

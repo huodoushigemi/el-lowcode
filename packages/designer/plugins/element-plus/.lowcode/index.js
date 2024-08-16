@@ -20,6 +20,8 @@ export function activate(designerCtx) {
   Object.assign(designerCtx.widgets, keyBy(widgets, 'is'))
 }
 
+export { default as widgets } from './config'
+
 export const contributes = {
   activitybar: [
     {

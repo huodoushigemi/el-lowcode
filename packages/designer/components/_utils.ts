@@ -10,11 +10,11 @@ export const parseAttrs = (config: ElLowcodeConfig, extra?: Obj): BoxProps => {
   return attrs
 }
 
-export const sloveConfig = (el?: BoxProps) => {
+export const sloveConfig = (el?: BoxProps, widgets: Record<string, ElLowcodeConfig | undefined> = el_lowcode_widgets) => {
   if (!el) return
   const is = el.el?.is || el.is
-  if (!el_lowcode_widgets[is]) console.error(`${is}: Unable to find a matching el_lowcode configuration of ${is}`, el)
-  return el_lowcode_widgets[is]
+  if (!widgets[is]) console.error(`${is}: Unable to find a matching el_lowcode configuration of ${is}`, el)
+  return widgets[is]
 }
 
 const importCache = {} as Record<string, Promise<any> | undefined>

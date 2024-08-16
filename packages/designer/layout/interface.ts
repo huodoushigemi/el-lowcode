@@ -1,5 +1,8 @@
-import { InjectionKey } from 'vue'
+import { computed, ComputedRef, InjectionKey, ref, Ref, shallowRef } from 'vue'
 import { Obj } from '@el-lowcode/utils'
+import { isArray, isObject, isString, remove } from '@vue/shared'
+import { createNode, Node } from './components/Node'
+import { sloveConfig } from '../components/_utils'
 
 export interface ElLowcodeConfig {
   is: string
@@ -27,15 +30,17 @@ export interface BoxProps {
   [k: string]: any
 }
 
-export interface BoxCtx {
-  parent?: BoxProps
-  node: BoxProps
-  index: number
-  active2parent?: undefined | (() => void)
-  swap?: undefined | ((d?: number) => void)
-  remove?: undefined | (() => void)
-  copy?: undefined | (() => void)
-  config: ElLowcodeConfig
+export class DisplayNode extends createNode<BoxProps>() {
+  get id () { return this.data._id }
+  get label () { return this.data['data-layer'] || (isString(this.data.children) && this.data.children) || this.data.is }
+  get data_children () { return isObject(this.data.children) ? this.data.children : void 0 }
+  get dir() { return isArray(this.data_children) }
+  get config() { return sloveConfig(this.data, this.designerCtx.widgets) }
+
+  __designerCtx = shallowRef<DesignerCtx>()
+  _designerCtx = computed(() => this.__designerCtx.value ?? this.parent?.designerCtx) as ComputedRef<DesignerCtx>
+  get designerCtx() { return this._designerCtx.value }
+  set designerCtx(v) { this.__designerCtx.value = v }
 }
 
 export interface DesignerCtx {
@@ -53,7 +58,8 @@ export interface DesignerCtx {
   root: BoxProps
   flated: BoxProps[]
   keyed: Record<string, BoxProps>
-  // keyedCtx: Record<string, BoxCtx> // todo
+  rootCtx: DisplayNode
+  keyedCtx: Record<string, DisplayNode>
 
   currentState: Obj
   readonly viewport: HTMLElement
