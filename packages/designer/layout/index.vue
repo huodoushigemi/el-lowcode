@@ -1,47 +1,57 @@
 <template>
   <div class="layout" flex="~ col" data-designer>
     <div flex flex-1 h0>
-      <!-- <Activitybar v-model="activeView" :list="activitybars" @update:modelValue="log" /> -->
+      <Activitybar v-model="activeView" :list="activitybars" @update:modelValue="log" />
 
       <KeepAlive>
         <Views v-if="activeView" :activitybar="activitybars.find(e => e.id == activeView)" :key="activeView" w300 bg="#252526" />
       </KeepAlive>
 
-      <!-- Canvas Viewport -->
-       <!-- v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y"  -->
-      <infinite-viewer flex-1 w0 hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
-        <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
-          <!-- @vue-ignore -->
-          <iframe
-            :key="CanvasIframe1"
-            class="wfull hfull"
-            :srcdoc="CanvasIframe1"
-            @load="e => designerCtx.canvas.doc = e.target.contentDocument"
-            @vue:mounted="({ el }) => el.contentWindow.designerCtx = designerCtx"
-          />
+      <div relative flex-1 w0 hfull>
+        <!-- Canvas Viewport -->
+         <!-- v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y"  -->
+        <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
+          <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
+            <!-- @vue-ignore -->
+            <iframe
+              :key="CanvasIframe1"
+              class="wfull hfull"
+              :srcdoc="CanvasIframe1"
+              @load="e => designerCtx.canvas.doc = e.target.contentDocument"
+              @vue:mounted="({ el }) => el.contentWindow.designerCtx = designerCtx"
+            />
+            
+            <selected-layer />
+            <!-- resize -->
+            <Moveable :target="designerCtx.active == designerCtx.root ? undefined : designerCtx.activeEl" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
+          </div>
+        </infinite-viewer>
+
+        <div class="absolute top-20 left-35 flex aic text-13 lh-32" @mouseleave="designerCtx.hoverId = void 0">
+          <div v-for="(node, i, len) in designerCtx.keyedCtx[designerCtx.activeId!]?.path" class="vs-breadcrumb-li" @click="designerCtx.activeId = node.id" @mouseenter="designerCtx.hoverId = node.id">
+            <div class="max-w150 truncate">{{ node.label }}</div>
+            <div v-if="node.id != designerCtx.activeId" mx4> > </div>
+          </div>
+        </div>
+
+        <div class="fixed bottom-10 left-35 flex">
+          <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32" flex space-x-10 px6 style="background: var(--vscode-activityBar-background)">
+            <i-mdi:close data-title="clear" class="vs-ai" @click="root = parseAttrs(el_lowcode_widgets.Page!)" />
+            <i-mdi:undo-variant data-title="clear" class="vs-ai" :op="!canUndo && '20'" @click="undo()" />
+            <i-mdi:redo-variant :op="!canRedo && '20'" class="vs-ai" @click="redo()" ml4="!" />
+            <!-- <slot name="actions"></slot> -->
+          </div>
   
-          <selected-layer />
-          <!-- resize -->
-          <Moveable :target="designerCtx.active == designerCtx.root ? undefined : designerCtx.activeEl" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
+          <ElFormRender class="flex aic ml8 px6 text-12 [&>*]:mb0!" style="background: var(--vscode-activityBar-background)" :model="designerCtx.canvas" size="small" :items="[
+            { prop: 'style.wh', type: 'select', options: [['iPhone SE', '375 × 667'], ['iPhone12 Pro', '390 × 844'], ['iPad Mini', '768 × 1024']], class: 'w110 mr8', get: () => ['width', 'height'].map(k => parseFloat(get(root, `designer.canvas.style.${k}`)) || ' - ').join(' × '), set: v => (['width', 'height'].forEach((k, i) => set(root, `designer.canvas.style.${k}`, v && v.split(' × ')[i] + 'px')), void 0), el: { clearable: true } },
+            { prop: 'style.width', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
+            { is: 'div', class: 'mx4', children: '×' },
+            { prop: 'style.height', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
+            { prop: 'zoom', class: 'ml8 w55', displayValue: '100%', get: v => parseInt(v * 100) + '%', set: v => parseInt(v) / 100, el: { is: 'InputNumber', units: ['%'], min: 40, max: 250 } }
+          ]" />
         </div>
-      </infinite-viewer>
-
-      <div class="fixed bottom-10 left-35 flex">
-        <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32" flex space-x-10 px6 style="background: var(--vscode-activityBar-background)">
-          <i-mdi:close data-title="clear" class="vs-ai" @click="root = parseAttrs(el_lowcode_widgets.Page!)" />
-          <i-mdi:undo-variant data-title="clear" class="vs-ai" :op="!canUndo && '20'" @click="undo()" />
-          <i-mdi:redo-variant :op="!canRedo && '20'" class="vs-ai" @click="redo()" ml4="!" />
-          <!-- <slot name="actions"></slot> -->
-        </div>
-
-        <ElFormRender class="flex aic ml8 px6 text-12 [&>*]:mb0!" style="background: var(--vscode-activityBar-background)" :model="designerCtx.canvas" size="small" :items="[
-          { prop: 'style.wh', type: 'select', options: [['iPhone SE', '375 × 667'], ['iPhone12 Pro', '390 × 844'], ['iPad Mini', '768 × 1024']], class: 'w110 mr8', get: () => ['width', 'height'].map(k => parseFloat(get(root, `designer.canvas.style.${k}`)) || ' - ').join(' × '), set: v => (['width', 'height'].forEach((k, i) => set(root, `designer.canvas.style.${k}`, v && v.split(' × ')[i] + 'px')), void 0), el: { clearable: true } },
-          { prop: 'style.width', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
-          { is: 'div', class: 'mx4', children: '×' },
-          { prop: 'style.height', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
-          { prop: 'zoom', class: 'ml8 w55', displayValue: '100%', get: v => parseInt(v * 100) + '%', set: v => parseInt(v) / 100, el: { is: 'InputNumber', units: ['%'], min: 40, max: 250 } }
-        ]" />
       </div>
+
       
       <!-- Setting -->
       <aside w256 b-l="1px solid [--el-border-color]" overflow-overlay>
@@ -84,7 +94,7 @@ import EditTable from '../components/EditTable.vue'
 import Tabs from '../components/Tabs.vue'
 
 import CanvasIframe from './components/iframe-temp.html?url'
-import { Node } from './components/Node'
+import { genVueCode } from './components/utils'
 const CanvasIframe1 = computedAsync(() => fetch(CanvasIframe).then(e => e.text()))
 
 const app = getCurrentInstance()!.appContext.app
@@ -203,6 +213,8 @@ provide('designerCtx', designerCtx)
 defineExpose(designerCtx)
 
 console.log(window.designerCtx = designerCtx)
+
+watchEffect(() => console.log(genVueCode(designerCtx)))
 
 // moveable
 function onDragStart(e) {

@@ -32,10 +32,17 @@ export interface BoxProps {
 
 export class DisplayNode extends createNode<BoxProps>() {
   get id () { return this.data._id }
-  get label () { return this.data['data-layer'] || (isString(this.data.children) && this.data.children) || this.data.is }
+  get label () { return this.data['data-layer'] || (isString(this.data.children) && this.data.children) || this.config?.label || this.data.is }
   get data_children () { return isObject(this.data.children) ? this.data.children : void 0 }
   get dir() { return isArray(this.data_children) }
   get config() { return sloveConfig(this.data, this.designerCtx.widgets) }
+
+  // 自由拖拽
+  get isAbs() { return this.data.position == 'absolute' }
+  // 自由布局
+  get isAbsLayout() { return this.data['data-absolute-layout'] }
+
+  get isRoot() { return !this.parent }
 
   __designerCtx = shallowRef<DesignerCtx>()
   _designerCtx = computed(() => this.__designerCtx.value ?? this.parent?.designerCtx) as ComputedRef<DesignerCtx>

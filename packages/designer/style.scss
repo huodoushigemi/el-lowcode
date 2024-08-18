@@ -94,6 +94,16 @@
   }
 }
 
+.vs-breadcrumb-li {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--vscode-breadcrumb-foreground, rgba(204, 204, 204, 0.8));
+  &:hover {
+    color: var(--vscode-breadcrumb-focusForeground, #e0e0e0);
+  }
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
