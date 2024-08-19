@@ -17,5 +17,12 @@ export default {
     state: {
       count: 0
     }
-  })
+  }),
+  purify(props) {
+    props = { ...props }
+    delete props.state
+    delete props.plugins
+    delete props.designer
+    return props
+  }
 }

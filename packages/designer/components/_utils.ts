@@ -1,16 +1,16 @@
 import { v4 as uuidv4 } from 'uuid'
 import { Obj, unFn, treeUtils } from '@el-lowcode/utils'
-import { BoxProps, ElLowcodeConfig } from '../'
+import { BoxProps, Widget } from '../'
 import { el_lowcode_widgets } from './el_lowcode_widgets'
 
-export const parseAttrs = (config: ElLowcodeConfig, extra?: Obj): BoxProps => {
+export const parseAttrs = (config: Widget, extra?: Obj): BoxProps => {
   const attrs = { is: config.is } as BoxProps
   Object.assign(attrs, config.defaultProps?.(), extra)
   treeUtils.flat([attrs]).forEach(e => e._id ||= uuidv4())
   return attrs
 }
 
-export const sloveConfig = (el?: BoxProps, widgets: Record<string, ElLowcodeConfig | undefined> = el_lowcode_widgets) => {
+export const sloveConfig = (el?: BoxProps, widgets: Record<string, Widget | undefined> = el_lowcode_widgets) => {
   if (!el) return
   const is = el.el?.is || el.is
   if (!widgets[is]) console.error(`${is}: Unable to find a matching el_lowcode configuration of ${is}`, el)

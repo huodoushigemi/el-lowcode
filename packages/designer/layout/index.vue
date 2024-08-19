@@ -39,6 +39,15 @@
             <i-mdi:close data-title="clear" class="vs-ai" @click="root = parseAttrs(el_lowcode_widgets.Page!)" />
             <i-mdi:undo-variant data-title="clear" class="vs-ai" :op="!canUndo && '20'" @click="undo()" />
             <i-mdi:redo-variant :op="!canRedo && '20'" class="vs-ai" @click="redo()" ml4="!" />
+            <!-- download code -->
+            <div class="group" relative>
+              <i-tdesign:download class="vs-ai wfull hfull box-content" />
+              <div class="vs-ul absolute bottom-full hidden group-hover:block">
+                <div class="vs-li flex aic px12 py4 max-w100" @click="download(genVueCode(designerCtx), `${+new Date}.vue`)">
+                  <i-vscode-icons:file-type-vue class="vs-ai" mr8 /> Vue
+                </div>
+              </div>
+            </div>
             <!-- <slot name="actions"></slot> -->
           </div>
   
@@ -66,14 +75,13 @@
 import { computed, provide, reactive, ref, watchEffect, getCurrentInstance, watch, Ref } from 'vue'
 import { isArray, isPlainObject, isString, remove } from '@vue/shared'
 import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage, useMagicKeys } from '@vueuse/core'
-import { ElLoading, ElMessage, ElMessageBox } from 'element-plus'
 import Moveable from 'vue3-moveable'
 
-import { get, keyBy, groupBy, set, treeUtils } from '@el-lowcode/utils'
+import { get, keyBy, groupBy, set, treeUtils, download } from '@el-lowcode/utils'
 import { useTransformer } from 'el-form-render'
 import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
 import { parseAttrs, importJs } from '../components/_utils'
-import { BoxProps, ElLowcodeConfig } from '../index'
+import { BoxProps, Widget } from '../index'
 import { DesignerCtx, designerCtxKey, DisplayNode } from './interface'
 import Activitybar from './components/Activitybar.vue'
 import Views from './components/Views.vue'

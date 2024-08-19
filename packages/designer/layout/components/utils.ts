@@ -1,6 +1,6 @@
-import { isArray, isBooleanAttr, isPlainObject, isString } from '@vue/shared'
+import { isArray, isBooleanAttr, isObject, isPlainObject, isString } from '@vue/shared'
+import { execExp, expReg, deepClone } from '@el-lowcode/utils'
 import { BoxProps, DesignerCtx } from '../interface'
-import { execExp, expReg } from '@el-lowcode/utils'
 
 export function parseTransform(str = '') {
   const matched = str.match(/translate\(([^\)]+?)\)/)
@@ -36,23 +36,54 @@ export function useMoveable(desingerCtx: DesignerCtx) {
   }
 }
 
+function objStringify(obj, fn) {
+  if (isArray(obj)) {
+    return `[${obj.map(e => objStringify(e, fn)).join(', ')}]`
+  } else if (isObject(obj)) {
+    let str = '{'
+    for (const k in obj) str += ` ${k}: ${objStringify(obj[k], fn)},`
+    str = str.replace(/,$/, '') + ' }'
+    return str
+  } else {
+    return fn(obj)
+  }
+}
+
 export function genVueCode(designer: DesignerCtx) {
   let xml = ``
-  const vars = []
+  const vars = [] as any
+  function parseExp(v) {
+    if (isString(v)) {
+      const matched = v.match(expReg)
+      if (!matched) return v
+      const exp = matched[1].trim()
+      if (exp.includes("\n")) {
+        const varname = `$_var${vars.length}`
+        vars.push([varname, `() => ${exp}`])
+        return `${varname}()`
+      } else {
+        return exp
+      }
+    }
+    return v
+  }
   function through(props: BoxProps, queue = [] as BoxProps[]) {
-    const { is, _id, children, $, ...attrs } = props
+    const { is, _id, children, $, ...attrs } = designer.keyedCtx[props._id].config?.purify?.(props) ?? props
     const indent = '  '.repeat(queue.length)
 
     xml += `${indent}<${is}`
+
+    if ($) {
+      // v-if
+      if ($.condition) xml += ` v-if=${JSON.stringify(parseExp($.condition).replaceAll(`"`, `'`))}`
+      // todo v-for
+      if ($.loop) {}
+    }
+    
     for (const k in attrs) {
       const v = attrs[k]
       if (isString(v)) {
-        if (expReg.test(v)) {
-          xml += ` :${k}="${JSON.stringify(v.match(expReg)![1])}"`
-        }
-        else {
-          xml += ` ${k}=${JSON.stringify(v)}`
-        }
+        xml += expReg.test(v) ? ` :${k}=${JSON.stringify(parseExp(v))}` : ` ${k}=${JSON.stringify(v)}`
       }
       else if (typeof v == 'number') {
         xml += ` :${k}="${v}"`
@@ -61,7 +92,7 @@ export function genVueCode(designer: DesignerCtx) {
         xml += v ? ` ${k}` : ` :${k}="false"`
       }
       else if (v) {
-        xml += ` :${k}=${JSON.stringify(JSON.stringify(v))}`
+        xml += ` :${k}=${JSON.stringify(objStringify(v, v => JSON.stringify(parseExp(v))).replaceAll(`"`, `'`))}`
       }
     }
 
@@ -78,7 +109,7 @@ export function genVueCode(designer: DesignerCtx) {
     }
     else if (isString(children)) {
       if (expReg.test(children)) {
-        xml += `\n${indent}  {{ ${JSON.stringify(children.match(expReg)![1])} }}\n${indent}`
+        xml += `\n${indent}  {{ ${children.match(expReg)![1]} }}\n${indent}`
       }
       else {
         xml += children.length <= 20 ? children : `\n${indent}  ${children}\n${indent}`
@@ -90,10 +121,13 @@ export function genVueCode(designer: DesignerCtx) {
 
   through(designer.root)
 
-  return `<template>
-${xml}</template>
+  return `<template>\n${xml}</template>
 
 <script setup>
+import { ref, reactive } from 'vue'
 
+const state = reactive(${JSON.stringify(designer.root.state, void 0, ' ')})
+
+${vars.map(e => `const ${e[0]} = ${e[1]}`).join('\n\n')}
 </script>`
 }

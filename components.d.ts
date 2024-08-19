@@ -33,6 +33,9 @@ declare module 'vue' {
     'ISolar:copyLineDuotone': typeof import('~icons/solar/copy-line-duotone')['default']
     'ISolar:trashBinMinimalisticLinear': typeof import('~icons/solar/trash-bin-minimalistic-linear')['default']
     'ITdesign:chevronRight': typeof import('~icons/tdesign/chevron-right')['default']
+    'ITdesign:download': typeof import('~icons/tdesign/download')['default']
+    'ITdesign:fileDownload': typeof import('~icons/tdesign/file-download')['default']
+    'IVscodeIcons:fileTypeVue': typeof import('~icons/vscode-icons/file-type-vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

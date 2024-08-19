@@ -44,22 +44,22 @@ export default defineConfig(async () => ({
   },
   plugins: [
     // vue(),
-    {
-      name: 'xxxxxxxxxxxxxxx',
-      enforce: 'post',
-      transform: {
-        order: 'post',
-        handler(code, id, options) {
-          return code?.replaceAll('/el-lowcode/designer', 'http://localhost:5174/el-lowcode/designer')
-        },
-      },
-      transformIndexHtml: {
-        order: 'post',
-        handler(code) {
-          return code?.replaceAll('/el-lowcode/designer', 'http://localhost:5174/el-lowcode/designer')
-        }
-      }
-    },
+    // {
+    //   name: 'xxxxxxxxxxxxxxx',
+    //   enforce: 'post',
+    //   transform: {
+    //     order: 'post',
+    //     handler(code, id, options) {
+    //       return code?.replaceAll('/el-lowcode/designer', 'http://localhost:5174/el-lowcode/designer')
+    //     },
+    //   },
+    //   transformIndexHtml: {
+    //     order: 'post',
+    //     handler(code) {
+    //       return code?.replaceAll('/el-lowcode/designer', 'http://localhost:5174/el-lowcode/designer')
+    //     }
+    //   }
+    // },
     (await import('unplugin-vue-macros/vite')).default({
       plugins: {
         vue: (await import('@vitejs/plugin-vue')).default(),

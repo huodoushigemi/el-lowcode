@@ -13,9 +13,8 @@
 - [x] 支持任意一处使用 `JavaScript` 编写自定义代码
 - [x] 支持扩展自定义组件 [【详见】](http://httpsgiteecomepalserver.gitee.io/el-lowcode/designer/custom-component.html)
 - [x] 提供在线示例模板
-- [x] `css` 属性面板
-- [ ] 适配 `h5`
+- [x] 适配 `h5`
 - [x] 深色模式 【关爱眼睛，更关心你】
-- [ ] 生成静态代码
+- [x] 生成静态代码
 - [ ] 支持 AI 辅助开发
 - [ ] 更多功能等你探究……

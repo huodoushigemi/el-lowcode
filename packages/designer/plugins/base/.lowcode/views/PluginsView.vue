@@ -33,7 +33,7 @@ import { reactive, inject } from 'vue'
 import { computedAsync } from '@vueuse/core'
 import { ElLoading, ElMessage, ElMessageBox, ElDrawer, ElTooltip } from 'element-plus'
 
-import { DesignerCtx, ElLowcodeConfig } from '@el-lowcode/designer'
+import { DesignerCtx } from '@el-lowcode/designer'
 import { plugins } from './data'
 import MD from './MD.vue'
 

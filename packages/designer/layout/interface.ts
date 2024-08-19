@@ -4,15 +4,16 @@ import { isArray, isObject, isString, remove } from '@vue/shared'
 import { createNode, Node } from './components/Node'
 import { sloveConfig } from '../components/_utils'
 
-export interface ElLowcodeConfig {
+export interface Widget {
   is: string
   label?: string
   drag?: boolean
   sortablePut?: boolean
   cover?: string
-  JSONSchemaOutput?(props: Obj): Obj
   props?: any[]
   defaultProps?(): Obj
+  JSONSchemaOutput?(props: Obj): Obj
+  purify?(props: Obj): Obj
 }
 
 export interface BoxProps {
@@ -77,7 +78,7 @@ export interface DesignerCtx {
     style?: Record<string, any>
     doc: Document
   }
-  widgets: Record<string, ElLowcodeConfig | undefined>
+  widgets: Record<string, Widget | undefined>
 
   plugins: {
     url: string
