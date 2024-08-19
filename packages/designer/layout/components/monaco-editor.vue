@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, defineAsyncComponent } from 'vue'
+import { PropType, defineAsyncComponent, h, mergeProps } from 'vue'
 import { useDark, useSessionStorage } from '@vueuse/core'
 import { refWithWatch } from '../../components/hooks'
 
@@ -33,15 +33,16 @@ const VueMonacoEditor = defineAsyncComponent(async () => {
   const editorWorker = (await import("monaco-editor/esm/vs/editor/editor.worker?worker")).default
   const jsonWorker = (await import('monaco-editor/esm/vs/language/json/json.worker?worker')).default
   const tsWorker = (await import('monaco-editor/esm/vs/language/typescript/ts.worker?worker')).default
+  const htmlWorker = (await import('monaco-editor/esm/vs/language/html/html.worker?worker')).default
 
   self.MonacoEnvironment = {
     getWorker: (_, label) => new {
       editorWorkerService: editorWorker,
       typescript: tsWorker,
       json: jsonWorker,
+      html: htmlWorker,
     }[label]()
   }
-
   const { VueMonacoEditor, loader } = await import('@guolao/vue-monaco-editor')
   loader.config({ monaco })
   return VueMonacoEditor

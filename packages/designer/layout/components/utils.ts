@@ -121,13 +121,33 @@ export function genVueCode(designer: DesignerCtx) {
 
   through(designer.root)
 
-  return `<template>\n${xml}</template>
+  let js = `<script setup>
+import { ref, reactive } from 'vue'`
+
+  if (designer.root.state) {
+    js += `\n\nconst state = reactive(${JSON.stringify(designer.root.state, void 0, ' ')})`
+  }
+
+  if (vars.length) {
+    js += `\n\n${vars.map(e => `const ${e[0]} = ${e[1]}`).join('\n\n')}`
+  }
+
+  js += `\n</script>`
+  
+
+  return `<template>\n${xml}</template>\n\n${js}`
+}
+
+export function genJSONRenderCode(designer: DesignerCtx) {
+  return `<template>
+  <ConfigProvider v-bind="schema">
+    <Render v-bind="schema" />
+  </ConfigProvider>
+</template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ConfigProvider, Render } from 'el-lowcode'
 
-const state = reactive(${JSON.stringify(designer.root.state, void 0, ' ')})
-
-${vars.map(e => `const ${e[0]} = ${e[1]}`).join('\n\n')}
+const schema = ${JSON.stringify(designer.root)}
 </script>`
 }

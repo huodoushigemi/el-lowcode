@@ -39,15 +39,7 @@
             <i-mdi:close data-title="clear" class="vs-ai" @click="root = parseAttrs(el_lowcode_widgets.Page!)" />
             <i-mdi:undo-variant data-title="clear" class="vs-ai" :op="!canUndo && '20'" @click="undo()" />
             <i-mdi:redo-variant :op="!canRedo && '20'" class="vs-ai" @click="redo()" ml4="!" />
-            <!-- download code -->
-            <div class="group" relative>
-              <i-tdesign:download class="vs-ai wfull hfull box-content" />
-              <div class="vs-ul absolute bottom-full hidden group-hover:block">
-                <div class="vs-li flex aic px12 py4 max-w100" @click="download(genVueCode(designerCtx), `${+new Date}.vue`)">
-                  <i-vscode-icons:file-type-vue class="vs-ai" mr8 /> Vue
-                </div>
-              </div>
-            </div>
+            <i-tdesign:download class="vs-ai" @click="$refs.exportCode.vis = true" />
             <!-- <slot name="actions"></slot> -->
           </div>
   
@@ -67,6 +59,8 @@
         <setting-panel />
       </aside>
       <state-drawer />
+
+      <ExportCode ref="exportCode" />
     </div>
   </div>
 </template>
@@ -85,6 +79,7 @@ import { BoxProps, Widget } from '../index'
 import { DesignerCtx, designerCtxKey, DisplayNode } from './interface'
 import Activitybar from './components/Activitybar.vue'
 import Views from './components/Views.vue'
+import ExportCode from './components/ExportCode.vue'
 import SelectedLayer from './components/selected-layer.vue'
 import SettingPanel from './setting-panel.vue'
 import StateDrawer from './components/state-drawer.vue'
