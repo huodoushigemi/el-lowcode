@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, defineAsyncComponent, h, mergeProps } from 'vue'
+import { defineAsyncComponent } from 'vue'
 import { useDark, useSessionStorage } from '@vueuse/core'
 import { refWithWatch } from '../../components/hooks'
 
@@ -29,19 +29,13 @@ import { refWithWatch } from '../../components/hooks'
 
 const VueMonacoEditor = defineAsyncComponent(async () => {
   const monaco = window.monaco = await import('monaco-editor')
-  
-  const editorWorker = (await import("monaco-editor/esm/vs/editor/editor.worker?worker")).default
-  const jsonWorker = (await import('monaco-editor/esm/vs/language/json/json.worker?worker')).default
-  const tsWorker = (await import('monaco-editor/esm/vs/language/typescript/ts.worker?worker')).default
-  const htmlWorker = (await import('monaco-editor/esm/vs/language/html/html.worker?worker')).default
-
   self.MonacoEnvironment = {
-    getWorker: (_, label) => new {
-      editorWorkerService: editorWorker,
-      typescript: tsWorker,
-      json: jsonWorker,
-      html: htmlWorker,
-    }[label]()
+    getWorker: async (_, label) => new (await {
+      // editorWorkerService: () => import("monaco-editor/esm/vs/editor/editor.worker?worker"),
+      // typescript: () => import('monaco-editor/esm/vs/language/typescript/ts.worker?worker'),
+      // json: () => import('monaco-editor/esm/vs/language/json/json.worker?worker'),
+      // html: () => import('monaco-editor/esm/vs/language/html/html.worker?worker'),
+    }[label]())
   }
   const { VueMonacoEditor, loader } = await import('@guolao/vue-monaco-editor')
   loader.config({ monaco })
@@ -54,7 +48,6 @@ const props = defineProps({
   // ...VueMonacoEditor.props as { [k in keyof EditorProps]: any },
   value: String,
   language: String,
-  height: String,
   options: Object,
   // autoFormat: { type: Boolean, default: true },
   tsExtraLibs: Object

@@ -7,7 +7,6 @@
   --vs-li-activeSelectionBg: #04395e;
   --vs-li-inactiveSelectionBg: #37373d;
   --vs-li-activeSelectionC: #fff;
-  --vs-ai-hover-bg: var(--vscode-toolbar-hoverBackground);
   --vs-tree-indentGuidesStroke: #585858;
 
   --vs-btn-c: #fff;
@@ -61,7 +60,7 @@
 .vs-ai {
   cursor: pointer;
   &:hover {
-    background: var(--vs-ai-hover-bg);
+    background: var(--vscode-toolbar-hoverBackground, rgba(90, 93, 94, 0.31));
   }
 }
 

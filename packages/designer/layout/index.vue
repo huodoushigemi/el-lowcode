@@ -34,8 +34,8 @@
           </div>
         </div>
 
-        <div class="fixed bottom-10 left-35 flex">
-          <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32" flex space-x-10 px6 style="background: var(--vscode-activityBar-background)">
+        <div class="absolute bottom-10 left-35 flex">
+          <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32" flex space-x-10 px6 style="background: var(--vscode-activityBar-background, #333333)">
             <i-mdi:close data-title="clear" class="vs-ai" @click="root = parseAttrs(el_lowcode_widgets.Page!)" />
             <i-mdi:undo-variant data-title="clear" class="vs-ai" :op="!canUndo && '20'" @click="undo()" />
             <i-mdi:redo-variant :op="!canRedo && '20'" class="vs-ai" @click="redo()" ml4="!" />
@@ -43,7 +43,7 @@
             <!-- <slot name="actions"></slot> -->
           </div>
   
-          <ElFormRender class="flex aic ml8 px6 text-12 [&>*]:mb0!" style="background: var(--vscode-activityBar-background)" :model="designerCtx.canvas" size="small" :items="[
+          <ElFormRender class="flex aic ml8 px6 text-12 [&>*]:mb0!" style="background: var(--vscode-activityBar-background, #333333)" :model="designerCtx.canvas" size="small" :items="[
             { prop: 'style.wh', type: 'select', options: [['iPhone SE', '375 × 667'], ['iPhone12 Pro', '390 × 844'], ['iPad Mini', '768 × 1024']], class: 'w110 mr8', get: () => ['width', 'height'].map(k => parseFloat(get(root, `designer.canvas.style.${k}`)) || ' - ').join(' × '), set: v => (['width', 'height'].forEach((k, i) => set(root, `designer.canvas.style.${k}`, v && v.split(' × ')[i] + 'px')), void 0), el: { clearable: true } },
             { prop: 'style.width', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
             { is: 'div', class: 'mx4', children: '×' },
@@ -157,7 +157,7 @@ const aaa = computed(() => sss.map(url =>
 
 aaa.value
 
-const activitybars = computed(() => designerCtx.plugins.flatMap(e => e.contributes.activitybar))
+const activitybars = computed(() => designerCtx.plugins.flatMap(e => e.contributes.activitybar || []))
 const activeView = ref()
 
 // 时间旅行
@@ -167,13 +167,6 @@ const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, {
 const tree = computed<BoxProps[]>(() => treeUtils.changeProp([root.value], [['children', 'children', v => isArray(v) ? v : undefined]]))
 
 const initCanvas = () => get(root.value, 'designer.canvas') || set(root.value, 'designer.canvas', {})
-
-interface DisplayProps {
-  id: string | ((item) => any)
-  label?: string | ((item) => string)
-  icon?: string | ((item) => string)
-  children: string | ((item) => any[] | undefined)
-}
 
 const viewer = {
   // x: useTransformer(root, 'designer.canvas.x'),
@@ -197,7 +190,7 @@ const designerCtx = reactive({
   root,
   flated: computed(() => treeUtils.flat([root.value])),
   keyed: computed(() => keyBy(designerCtx.flated, '_id')),
-  rootCtx: computed(() => new DisplayNode(designerCtx.root)),
+  rootCtx: computed(() => new (class $DisplayNode extends DisplayNode { designerCtx = designerCtx })(designerCtx.root)),
   keyedCtx: computed(() => keyBy(treeUtils.flat([designerCtx.rootCtx]), 'id')),
   active: computed(() => designerCtx.activeId && treeUtils.find([root.value], designerCtx.activeId, { key: '_id' })),
   activeEl: computed(() => designerCtx.activeId ? designerCtx.canvas.doc.querySelector(`[_id='${designerCtx.activeId}']`) : void 0),
@@ -208,8 +201,6 @@ const designerCtx = reactive({
   plugins: aaa,
   viewRenderer: {},
 }) as DesignerCtx
-
-designerCtx.rootCtx.designerCtx = designerCtx
 
 provide(designerCtxKey, designerCtx)
 provide('designerCtx', designerCtx)

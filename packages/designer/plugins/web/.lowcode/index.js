@@ -23,11 +23,11 @@ export function activate(designerCtx) {
 export { default as widgets } from './config'
 
 export const contributes = {
-  activitybar: [
-    {
-      id: 'web',
-      title: 'web',
-      icon: 'https://gd-hbimg.huaban.com/a0b457393dccfdd658d709b890a3fddd4ef5756c24cd-6hPlHQ_fw658webp',
-    }
-  ]
+  // activitybar: [
+  //   {
+  //     id: 'web',
+  //     title: 'web',
+  //     icon: 'https://gd-hbimg.huaban.com/a0b457393dccfdd658d709b890a3fddd4ef5756c24cd-6hPlHQ_fw658webp',
+  //   }
+  // ]
 }

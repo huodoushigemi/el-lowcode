@@ -1,11 +1,13 @@
 <template>
-  <Render v-bind="schema" />
+  <ConfigProvider v-bind="schema">
+    <Render v-bind="schema" />
+  </ConfigProvider>
 </template>
 
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { Render } from 'el-lowcode'
+import { ConfigProvider, Render } from 'el-lowcode'
 
 const route = useRoute()
 

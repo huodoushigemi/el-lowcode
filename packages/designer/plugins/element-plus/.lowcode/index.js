@@ -23,11 +23,11 @@ export function activate(designerCtx) {
 export { default as widgets } from './config'
 
 export const contributes = {
-  activitybar: [
-    {
-      id: 'element-plus',
-      title: 'element-plus',
-      icon: 'https://element.eleme.cn/2.0/favicon.ico',
-    }
-  ]
+  // activitybar: [
+  //   {
+  //     id: 'element-plus',
+  //     title: 'element-plus',
+  //     icon: 'https://element.eleme.cn/2.0/favicon.ico',
+  //   }
+  // ]
 }

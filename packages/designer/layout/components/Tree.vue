@@ -27,29 +27,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, toRaw, shallowRef } from 'vue'
+import { computed, reactive, toRaw, shallowRef, ref } from 'vue'
 import { isArray, isString } from '@vue/shared'
 import { toReactive, useEventListener } from '@vueuse/core'
 import { get, keyBy, mapValues, unFn } from '@el-lowcode/utils'
-import { Node } from './Node'
+import { DisplayNode } from '../interface'
 
 type Props = {
   data: any[]
-  props: {
-    id: string | ((item) => any)
-    label?: string | ((item) => string)
-    icon?: string | ((item) => string)
-    children: string | ((item) => any[] | undefined)
-  }
+  DisplayNode: typeof DisplayNode
   indent?: number
   showLine?: boolean
   expandKeys?: Record<string, boolean>
 
-  draggable?: boolean | ((node: DisplayNode) => boolean)
+  draggable?: boolean | ((node: $_DisplayNode) => boolean)
   dropable?: boolean | ((e: DropEvent) => boolean)
 }
 
-type DropEvent = { from: DisplayNode; to: DisplayNode; node: DisplayNode; oldIndex: number; newIndex: number }
+type DropEvent = { from: $_DisplayNode; to: $_DisplayNode; node: $_DisplayNode; oldIndex: number; newIndex: number }
 
 const props = withDefaults(defineProps<Props>(), {
   data: () => [],
@@ -58,15 +53,7 @@ const props = withDefaults(defineProps<Props>(), {
   dropable: true
 })
 
-class DisplayNode extends Node {
-  props: Props['props']
-  constructor(data, p = props.props) {
-    super(data)
-    this.props = p
-  }
-  get id () { return isString(this.props.id) ? get(this.data, this.props.id) : this.props.id?.(this.data) }
-  get label () { return isString(this.props.label) ? get(this.data, this.props.label) : this.props.label?.(this.data) }
-  get data_children () { return isString(this.props.children) ? get(this.data, this.props.children) : this.props.children?.(this.data) }
+class $_DisplayNode extends props.DisplayNode {
   get dir() { return isArray(this.data_children) }
   get expand() { return props.expandKeys[this.id] }
   get expandCount(): number { return this.expand ? this.children!.reduce((t, e) => t + e.expandCount, this.children!.length) : 0 }
@@ -74,7 +61,11 @@ class DisplayNode extends Node {
   get siblingSelected() { return selected.value?.id == this.parent?.id }
 }
 
-const rootNode = computed(() => new DisplayNode({ children: props.data }, { id: '', children: 'children' }))
+const rootNode = computed(() => {
+  const root = new $_DisplayNode({})
+  Object.defineProperty(root, 'data_children', { get() { return props.data } })
+  return root
+})
 
 const selected = shallowRef()
 
@@ -100,7 +91,7 @@ function onClick(e: MouseEvent) {
   }
 }
 
-let dragLi: DisplayNode | undefined
+let dragLi: $_DisplayNode | undefined
 let dropEl: HTMLElement | undefined
 let dropEvent: DropEvent | undefined
 

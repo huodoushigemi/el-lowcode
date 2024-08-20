@@ -1,11 +1,12 @@
 import { v4 } from 'uuid'
 
-const createH = (is) => ({
+const createH = (is, hide = true) => ({
   is,
   label: is,
+  hide,
   props: [
     { lp: ['text', 'children'] },
-    { lp: ['level', 'is'], script: false, type: 'radio-group', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }
+    { lp: ['level', 'is'], type: 'radio-group', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }
   ],
   defaultProps: () => ({
     children: 'Heading'
@@ -22,7 +23,7 @@ export default [
     })
   },
 
-  createH('h1'),
+  createH('h1', false),
   createH('h2'),
   createH('h3'),
   createH('h4'),

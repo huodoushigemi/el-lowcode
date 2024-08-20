@@ -1,7 +1,7 @@
 import { computed, ComputedRef, InjectionKey, ref, Ref, shallowRef } from 'vue'
 import { Obj } from '@el-lowcode/utils'
 import { isArray, isObject, isString, remove } from '@vue/shared'
-import { createNode, Node } from './components/Node'
+import { Node } from './components/Node'
 import { sloveConfig } from '../components/_utils'
 
 export interface Widget {
@@ -31,7 +31,9 @@ export interface BoxProps {
   [k: string]: any
 }
 
-export class DisplayNode extends createNode<BoxProps>() {
+export abstract class DisplayNode extends Node<BoxProps> {
+  abstract designerCtx: DesignerCtx
+
   get id () { return this.data._id }
   get label () { return this.data['data-layer'] || (isString(this.data.children) && this.data.children) || this.config?.label || this.data.is }
   get data_children () { return isObject(this.data.children) ? this.data.children : void 0 }
@@ -44,11 +46,6 @@ export class DisplayNode extends createNode<BoxProps>() {
   get isAbsLayout() { return this.data['data-absolute-layout'] }
 
   get isRoot() { return !this.parent }
-
-  __designerCtx = shallowRef<DesignerCtx>()
-  _designerCtx = computed(() => this.__designerCtx.value ?? this.parent?.designerCtx) as ComputedRef<DesignerCtx>
-  get designerCtx() { return this._designerCtx.value }
-  set designerCtx(v) { this.__designerCtx.value = v }
 }
 
 export interface DesignerCtx {
@@ -93,8 +90,8 @@ export interface DesignerCtx {
 }
 
 export interface Contributes {
-  activitybar: Activitybar[]
-  views: Record<string, {
+  activitybar?: Activitybar[]
+  views?: Record<string, {
     id: string
     name: string
   }[]>

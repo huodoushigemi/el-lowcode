@@ -23,11 +23,11 @@ export function activate(designerCtx) {
 export { default as widgets } from './config'
 
 export const contributes = {
-  activitybar: [
-    {
-      id: 'echarts',
-      title: 'echarts',
-      icon: 'https://echarts.apache.org/zh/images/favicon.png',
-    }
-  ]
+  // activitybar: [
+  //   {
+  //     id: 'echarts',
+  //     title: 'echarts',
+  //     icon: 'https://echarts.apache.org/zh/images/favicon.png',
+  //   }
+  // ]
 }

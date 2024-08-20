@@ -10,6 +10,7 @@ declare module 'vue' {
     'IBi:arrowsMove': typeof import('~icons/bi/arrows-move')['default']
     'IBytesize:github': typeof import('~icons/bytesize/github')['default']
     'IEp:arrowUp': typeof import('~icons/ep/arrow-up')['default']
+    'IEp:plus': typeof import('~icons/ep/plus')['default']
     'IMaterialSymbolsLight:alignHorizontalCenter': typeof import('~icons/material-symbols-light/align-horizontal-center')['default']
     'IMaterialSymbolsLight:alignHorizontalLeft': typeof import('~icons/material-symbols-light/align-horizontal-left')['default']
     'IMaterialSymbolsLight:alignHorizontalRight': typeof import('~icons/material-symbols-light/align-horizontal-right')['default']
@@ -33,7 +34,6 @@ declare module 'vue' {
     'ISolar:trashBinMinimalisticLinear': typeof import('~icons/solar/trash-bin-minimalistic-linear')['default']
     'ITdesign:chevronRight': typeof import('~icons/tdesign/chevron-right')['default']
     'ITdesign:download': typeof import('~icons/tdesign/download')['default']
-    'IVscodeIcons:fileTypeVue': typeof import('~icons/vscode-icons/file-type-vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

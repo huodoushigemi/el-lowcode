@@ -19,6 +19,7 @@ export function activate(designerCtx: DesignerCtx) {
   designerCtx.viewRenderer['plugin-market'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
   designerCtx.viewRenderer['plugin-market.views.all'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
   designerCtx.viewRenderer['plugin-market.views.installed'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
+  designerCtx.viewRenderer['widgets'] = create(defineAsyncComponent(() => import('./views/CompView2.vue')))
 
   // designerCtx.customEditorRenderer['schema.json.editor'] = create(() => )
 }
@@ -30,10 +31,15 @@ export function deactivate(designer) {
 export const contributes = {
   activitybar: [
     {
-      id: 'git-explorer',
-      title: '资源管理器',
-      icon: 'https://api.iconify.design/vscode-icons:default-folder.svg'
+      id: 'widgets',
+      title: '组件',
+      icon: 'https://api.iconify.design/tdesign:widget.svg'
     },
+    // {
+    //   id: 'git-explorer',
+    //   title: '资源管理器',
+    //   icon: 'https://api.iconify.design/vscode-icons:default-folder.svg'
+    // },
     {
       id: 'comp-tree',
       title: '组件树',
