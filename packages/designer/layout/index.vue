@@ -111,7 +111,6 @@ app.component('Tabs', Tabs)
 
 const log = (...arg) => console.log(...arg)
 
-const { control } = useMagicKeys()
 
 // 根节点
 const root = useLocalStorage(
@@ -119,14 +118,6 @@ const root = useLocalStorage(
   { is: 'div' } as PageCtx,
   { listenToStorageChanges: false, deep: true, shallow: false }
 )
-
-;(async () => {
-  if (root.value.is != 'Page') {
-    root.value = parseAttrs(el_lowcode_widgets.Page!) as PageCtx
-  }
-})()
-
-const rootCtx = computed(() => new DisplayNode(root.value))
 
 const installedPlugins = computed(() => [...new Set([...root.value?.plugins || [], ...builtins])])
 const sss = [
@@ -163,9 +154,6 @@ const activeView = ref()
 // 时间旅行
 const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500, capacity: 20 })
 
-// 组件树
-const tree = computed<BoxProps[]>(() => treeUtils.changeProp([root.value], [['children', 'children', v => isArray(v) ? v : undefined]]))
-
 const initCanvas = () => get(root.value, 'designer.canvas') || set(root.value, 'designer.canvas', {})
 
 const viewer = {
@@ -192,12 +180,11 @@ const designerCtx = reactive({
   keyed: computed(() => keyBy(designerCtx.flated, '_id')),
   rootCtx: computed(() => new (class $DisplayNode extends DisplayNode { designerCtx = designerCtx })(designerCtx.root)),
   keyedCtx: computed(() => keyBy(treeUtils.flat([designerCtx.rootCtx]), 'id')),
-  active: computed(() => designerCtx.activeId && treeUtils.find([root.value], designerCtx.activeId, { key: '_id' })),
+  active: computed(() => designerCtx.activeId && designerCtx.keyedCtx[designerCtx.activeId]),
   activeEl: computed(() => designerCtx.activeId ? designerCtx.canvas.doc.querySelector(`[_id='${designerCtx.activeId}']`) : void 0),
-  hover: computed(() => designerCtx.hoverId && treeUtils.find([root.value], designerCtx.hoverId, { key: '_id' })),
+  hover: computed(() => designerCtx.hoverId && designerCtx.keyedCtx[designerCtx.hoverId]),
   hoverEl: computed(() => designerCtx.hoverId ? designerCtx.canvas.doc.querySelector(`[_id='${designerCtx.hoverId}']`) : void 0),
-  dragged: computed(() => designerCtx.draggedId && treeUtils.find([root.value], designerCtx.draggedId, { key: '_id' })),
-// } as { [K in keyof DesignerCtx]: MaybeRef<DesignerCtx[K]> })
+  dragged: computed(() => designerCtx.draggedId && designerCtx.keyedCtx[designerCtx.draggedId]),
   plugins: aaa,
   viewRenderer: {},
 }) as DesignerCtx
@@ -208,7 +195,14 @@ defineExpose(designerCtx)
 
 console.log(window.designerCtx = designerCtx)
 
-watchEffect(() => console.log(genVueCode(designerCtx)))
+// 
+watchEffect(() => {
+  if (designerCtx.root.is != 'Page') {
+    if (designerCtx.widgets.Page) {
+      root.value = parseAttrs(designerCtx.widgets.Page) as PageCtx
+    }
+  }
+})
 
 // moveable
 function onDragStart(e) {

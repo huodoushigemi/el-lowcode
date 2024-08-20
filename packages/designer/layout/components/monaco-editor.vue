@@ -31,11 +31,11 @@ const VueMonacoEditor = defineAsyncComponent(async () => {
   const monaco = window.monaco = await import('monaco-editor')
   self.MonacoEnvironment = {
     getWorker: async (_, label) => new (await {
-      // editorWorkerService: () => import("monaco-editor/esm/vs/editor/editor.worker?worker"),
-      // typescript: () => import('monaco-editor/esm/vs/language/typescript/ts.worker?worker'),
-      // json: () => import('monaco-editor/esm/vs/language/json/json.worker?worker'),
-      // html: () => import('monaco-editor/esm/vs/language/html/html.worker?worker'),
-    }[label]())
+      editorWorkerService: () => import("monaco-editor/esm/vs/editor/editor.worker?worker"),
+      typescript: () => import('monaco-editor/esm/vs/language/typescript/ts.worker?worker'),
+      json: () => import('monaco-editor/esm/vs/language/json/json.worker?worker'),
+      html: () => import('monaco-editor/esm/vs/language/html/html.worker?worker'),
+    }[label]()).default
   }
   const { VueMonacoEditor, loader } = await import('@guolao/vue-monaco-editor')
   loader.config({ monaco })

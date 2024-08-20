@@ -50,7 +50,6 @@ function onDownload() {
 </script>
 
 <template>
-  <div h100vh>
     <Designer ref="designer" h100vh>
       <!-- 额外按钮 -->
       <template #actions>
@@ -79,5 +78,4 @@ function onDownload() {
         </el-tab-pane>
       </template>
     </Designer>
-  </div>
 </template>
