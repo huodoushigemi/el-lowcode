@@ -68,7 +68,7 @@ export interface DesignerCtx {
   keyedCtx: Record<string, DisplayNode>
 
   currentState: Obj
-  readonly viewport: HTMLElement
+  // readonly viewport: HTMLElement
   canvas: {
     x: number
     y: number

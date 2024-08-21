@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, reactive, ref, watchEffect, getCurrentInstance, watch, Ref } from 'vue'
+import { computed, provide, reactive, ref, watchEffect, getCurrentInstance, watch, Ref, PropType } from 'vue'
 import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage, useMagicKeys } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import Moveable from 'vue3-moveable'
@@ -84,8 +84,9 @@ import SettingPanel from './setting-panel.vue'
 import StateDrawer from './components/state-drawer.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 // import { vue2esm } from './vue2esm'
-import { PageCtx } from '../plugins/web/page'
 import { builtins } from './config'
+import { createDesignerCtx } from '../utils'
+import { PageCtx } from '../plugins/web/page'
 
 import OptionsInput from '../components/OptionsInput.vue'
 import PairInput from '../components/PairInput.vue'
@@ -96,7 +97,6 @@ import EditTable from '../components/EditTable.vue'
 import Tabs from '../components/Tabs.vue'
 
 import CanvasIframe from './components/iframe-temp.html?url'
-import { useId } from 'element-plus'
 const CanvasIframe1 = computedAsync(() => fetch(CanvasIframe).then(e => e.text()))
 
 const app = getCurrentInstance()!.appContext.app
@@ -111,7 +111,7 @@ app.component('Tabs', Tabs)
 const log = (...arg) => console.log(...arg)
 
 const props = defineProps({
-  json: Object
+  json: Object as PropType<PageCtx>
 })
 
 const initial = () => ({
@@ -130,31 +130,6 @@ const initial = () => ({
 const root = ref(props.json ?? initial())
 
 const installedPlugins = computed(() => [...new Set([...root.value?.plugins || [], ...builtins])])
-const sss = [
-  '/el-lowcode/designer/packages/designer/plugins/base'
-]
-const xxx = {} as Record<string, Ref<DesignerCtx['plugins'][0]>>
-const aaa = computed(() => [...sss, ...root.value?.plugins || []].map(url => 
-  (xxx[url] ??= computedAsync(async () => {
-    const plugin = await import(/* @vite-ignore */ `${url}/.lowcode/index.js`)
-    const packageJSON = await fetch(`${url}/.lowcode/package.json`).then(e => e.json())
-    const isActive = ref(false)
-    const activate = async () => { await plugin.activate(designerCtx); isActive.value = true }
-    const deactivate = async () => { await plugin.deactivate(designerCtx); isActive.value = false }
-    await activate()
-    return reactive({
-      url,
-      contributes: plugin.contributes,
-      widgets: plugin.widgets,
-      packageJSON,
-      isActive,
-      activate,
-      deactivate,
-    }) as DesignerCtx['plugins'][0]
-  }, void 0, { onError: e => console.error(e) })).value
-).filter(e => e))
-
-aaa.value
 
 const activitybars = computed(() => designerCtx.plugins.flatMap(e => e.contributes.activitybar || []))
 const activeView = ref()
@@ -177,28 +152,7 @@ const viewer = {
 }
 const viewport = ref<HTMLElement>()
 
-class $DisplayNode extends DisplayNode { designerCtx = designerCtx }
-
-const designerCtx = reactive({
-  currentState: {},
-  viewport,
-  // canvas: computed(() => root.value.designer?.canvas || { zoom: 1 }),
-  canvas: { x: 0, y: 0, zoom: 1, style: useTransformer(root, 'designer.canvas.style') } as any,
-  root,
-  flated: computed(() => treeUtils.flat([root.value])),
-  keyed: computed(() => keyBy(designerCtx.flated, '_id')),
-  rootCtx: computed(() => new designerCtx.DisplayNode(designerCtx.root)),
-  keyedCtx: computed(() => keyBy(treeUtils.flat([designerCtx.rootCtx]), 'id')),
-  active: computed(() => designerCtx.activeId ? designerCtx.keyedCtx[designerCtx.activeId] : void 0),
-  activeEl: computed(() => designerCtx.activeId ? designerCtx.canvas.doc.querySelector(`[_id='${designerCtx.activeId}']`) : void 0),
-  hover: computed(() => designerCtx.hoverId ? designerCtx.keyedCtx[designerCtx.hoverId] : void 0),
-  hoverEl: computed(() => designerCtx.hoverId ? designerCtx.canvas.doc.querySelector(`[_id='${designerCtx.hoverId}']`) : void 0),
-  dragged: computed(() => designerCtx.draggedId ? designerCtx.keyedCtx[designerCtx.draggedId] : void 0),
-  plugins: aaa,
-  widgets: computed(() => keyBy(designerCtx.plugins.flatMap(e => e.widgets || []), 'is')),
-  viewRenderer: {},
-  DisplayNode: $DisplayNode
-}) as DesignerCtx
+const designerCtx = createDesignerCtx(root)
 
 provide(designerCtxKey, designerCtx)
 provide('designerCtx', designerCtx)

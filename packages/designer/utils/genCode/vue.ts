@@ -3,7 +3,7 @@ import { expReg } from '@el-lowcode/utils'
 import { BoxProps, DesignerCtx } from '../../layout/interface'
 import { objStringify } from '../index'
 
-export function vue(designer: DesignerCtx) {
+export function vue(ctx: DesignerCtx) {
   let xml = ``
   const vars = [] as any
   function parseExp(v) {
@@ -22,7 +22,7 @@ export function vue(designer: DesignerCtx) {
     return v
   }
   function through(props: BoxProps, queue = [] as BoxProps[]) {
-    const { is, _id, children, $, ...attrs } = designer.keyedCtx[props._id].config?.purify?.(props) ?? props
+    const { is, _id, children, $, ...attrs } = ctx.keyedCtx[props._id].config?.purify?.(props) ?? props
     const indent = '  '.repeat(queue.length)
 
     xml += `${indent}<${is}`
@@ -37,7 +37,7 @@ export function vue(designer: DesignerCtx) {
     for (const k in attrs) {
       const v = attrs[k]
       if (isString(v)) {
-        xml += expReg.test(v) ? ` :${k}=${JSON.stringify(parseExp(v))}` : ` ${k}=${JSON.stringify(v)}`
+        xml += expReg.test(v) ? ` :${k}=${JSON.stringify(parseExp(v).replaceAll(`"`, `'`))}` : ` ${k}=${JSON.stringify(v)}`
       }
       else if (typeof v == 'number') {
         xml += ` :${k}="${v}"`
@@ -46,7 +46,7 @@ export function vue(designer: DesignerCtx) {
         xml += v ? ` ${k}` : ` :${k}="false"`
       }
       else if (v) {
-        xml += ` :${k}=${JSON.stringify(objStringify(v, v => JSON.stringify(parseExp(v))).replaceAll(`"`, `'`))}`
+        xml += ` :${k}=${JSON.stringify(objStringify(v, v => expReg.test(v) ? parseExp(v) : JSON.stringify(v)).replaceAll(`"`, `'`))}`
       }
     }
 
@@ -59,11 +59,11 @@ export function vue(designer: DesignerCtx) {
       xml += indent
     }
     else if (isPlainObject(children)) {
-      
+      // todo
     }
     else if (isString(children)) {
       if (expReg.test(children)) {
-        xml += `\n${indent}  {{ ${children.match(expReg)![1]} }}\n${indent}`
+        xml += `\n${indent}  {{ ${parseExp(children)} }}\n${indent}`
       }
       else {
         xml += children.length <= 20 ? children : `\n${indent}  ${children}\n${indent}`
@@ -73,13 +73,18 @@ export function vue(designer: DesignerCtx) {
     xml = children != null ? `${xml}</${is}>\n` : `${xml.slice(0, -1)} />\n`
   }
 
-  through(designer.root)
+  const { designer, state, plugins, ...root } = ctx.root
+  
+  through(root)
 
   let js = `<script setup>
-import { ref, reactive } from 'vue'`
+import { reactive, getCurrentInstance } from 'vue'
 
-  if (designer.root.state) {
-    js += `\n\nconst state = reactive(${JSON.stringify(designer.root.state, void 0, ' ')})`
+const app = getCurrentInstance().appContext.app
+${plugins.map(url => `import(/* @vite-ignore */ '${url}/index.js').then(e => app.use(e.default))`).join('\n')}`
+
+  if (ctx.root.state) {
+    js += `\n\nconst state = reactive(${JSON.stringify(ctx.root.state, void 0, ' ')})`
   }
 
   if (vars.length) {
@@ -92,7 +97,7 @@ import { ref, reactive } from 'vue'`
   return `<template>\n${xml}</template>\n\n${js}`
 }
 
-export function jsonRender(designer: DesignerCtx) {
+export function jsonRender(ctx: DesignerCtx) {
   const omitKey = new Set(['_id', 'data-absolute-layout'])
   return `<template>
   <ConfigProvider v-bind="schema">
@@ -103,6 +108,6 @@ export function jsonRender(designer: DesignerCtx) {
 <script setup>
 import { ConfigProvider, Render } from 'el-lowcode'
 
-const schema = ${JSON.stringify(designer.root, (k, v) => omitKey.has(k) ? void 0 : v)}
+const schema = ${JSON.stringify(ctx.root, (k, v) => omitKey.has(k) ? void 0 : v)}
 </script>`
 }
