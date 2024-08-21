@@ -1,4 +1,4 @@
-import { computed, Ref, shallowRef } from 'vue'
+import { computed, Ref, ComputedRef, shallowRef } from 'vue'
 import { isString, remove } from '@vue/shared'
 
 export abstract class Node<T = any> {
@@ -6,6 +6,8 @@ export abstract class Node<T = any> {
   get data() { return this.#data.value }
   set data(v) { this.#data.value = v }
 
+  abstract get id(): string
+  abstract get label(): string
   abstract get data_children(): any[] | undefined
 
   get root() { let node = this; while(node.parent) node = node.parent; return node }
@@ -33,14 +35,14 @@ export abstract class Node<T = any> {
   
   #children = computed(() => this.data_children?.map(e => {
     // @ts-ignore
-    const node = this.#wm.get(e) ?? this.#wm.set(e, new this.constructor(e)).get(e)
+    const node = this.#wm.get(e) ?? this.#wm.set(e, new this.constructor(e)).get(e)!
     node.parent = this
-    return node as typeof this
+    return node
   }))
   get children() { return this.#children.value }
 
-  get previousSibling() { return this.parent?.children![this.index - 1] }
-  get nextSibling() { return this.parent?.children![this.index + 1] }
+  get previousSibling(): typeof this | undefined { return this.parent?.children![this.index - 1] }
+  get nextSibling(): typeof this | undefined { return this.parent?.children![this.index + 1] }
 
   remove() {
     return this.parent ? (remove(this.parent.data_children!, this.data), this.parent = void 0, this) : this

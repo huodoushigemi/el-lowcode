@@ -1,5 +1,5 @@
 <template>
-  <div class="layout" flex="~ col" data-designer>
+  <div class="designer" flex="~ col">
     <div flex flex-1 h0>
       <Activitybar v-model="activeView" :list="activitybars" @update:modelValue="log" />
 
@@ -23,7 +23,7 @@
             
             <selected-layer />
             <!-- resize -->
-            <Moveable :target="designerCtx.active == designerCtx.root ? undefined : designerCtx.activeEl" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
+            <Moveable :target="designerCtx.active?.isRoot ? undefined : designerCtx.activeEl" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active?.data)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
           </div>
         </infinite-viewer>
 
@@ -36,9 +36,9 @@
 
         <div class="absolute bottom-10 left-35 flex">
           <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32" flex space-x-10 px6 style="background: var(--vscode-activityBar-background, #333333)">
-            <i-mdi:close data-title="clear" class="vs-ai" @click="root = parseAttrs(el_lowcode_widgets.Page!)" />
-            <i-mdi:undo-variant data-title="clear" class="vs-ai" :op="!canUndo && '20'" @click="undo()" />
-            <i-mdi:redo-variant :op="!canRedo && '20'" class="vs-ai" @click="redo()" ml4="!" />
+            <i-mdi:close data-title="clear" class="vs-ai" @click="root = initial()" />
+            <i-mdi:undo-variant class="vs-ai" :op="!canUndo && '20'" @click="undo()" />
+            <i-mdi:redo-variant class="vs-ai" :op="!canRedo && '20'" @click="redo()" ml4="!" />
             <i-tdesign:download class="vs-ai" @click="$refs.exportCode.vis = true" />
             <!-- <slot name="actions"></slot> -->
           </div>
@@ -67,13 +67,12 @@
 
 <script setup lang="ts">
 import { computed, provide, reactive, ref, watchEffect, getCurrentInstance, watch, Ref } from 'vue'
-import { isArray, isPlainObject, isString, remove } from '@vue/shared'
 import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage, useMagicKeys } from '@vueuse/core'
+import { v4 as uuid } from 'uuid'
 import Moveable from 'vue3-moveable'
 
 import { get, keyBy, groupBy, set, treeUtils, download } from '@el-lowcode/utils'
 import { useTransformer } from 'el-form-render'
-import { el_lowcode_widgets } from '../components/el_lowcode_widgets'
 import { parseAttrs, importJs } from '../components/_utils'
 import { BoxProps, Widget } from '../index'
 import { DesignerCtx, designerCtxKey, DisplayNode } from './interface'
@@ -97,7 +96,7 @@ import EditTable from '../components/EditTable.vue'
 import Tabs from '../components/Tabs.vue'
 
 import CanvasIframe from './components/iframe-temp.html?url'
-import { genVueCode } from './components/utils'
+import { useId } from 'element-plus'
 const CanvasIframe1 = computedAsync(() => fetch(CanvasIframe).then(e => e.text()))
 
 const app = getCurrentInstance()!.appContext.app
@@ -111,23 +110,31 @@ app.component('Tabs', Tabs)
 
 const log = (...arg) => console.log(...arg)
 
+const props = defineProps({
+  json: Object
+})
+
+const initial = () => ({
+  _id: uuid(), is: 'Page', children: [],
+  state: { count: 0 }, plugins: [],
+  // designer: { canvas: { style: { width: '100%', height: '100%' } } }
+})
 
 // 根节点
-const root = useLocalStorage(
-  '@el-lowcode/designer-page',
-  { is: 'div' } as PageCtx,
-  { listenToStorageChanges: false, deep: true, shallow: false }
-)
+// const root = useLocalStorage(
+//   '@el-lowcode/designer-page',
+//   props.json ?? initial(),
+//   { listenToStorageChanges: false, deep: true, shallow: false }
+// )
+
+const root = ref(props.json ?? initial())
 
 const installedPlugins = computed(() => [...new Set([...root.value?.plugins || [], ...builtins])])
 const sss = [
-  '/el-lowcode/designer/packages/designer/plugins/base',
-  '/el-lowcode/designer/packages/designer/plugins/web',
-  '/el-lowcode/designer/packages/designer/plugins/element-plus',
-  '/el-lowcode/designer/packages/designer/plugins/echarts',
+  '/el-lowcode/designer/packages/designer/plugins/base'
 ]
 const xxx = {} as Record<string, Ref<DesignerCtx['plugins'][0]>>
-const aaa = computed(() => sss.map(url => 
+const aaa = computed(() => [...sss, ...root.value?.plugins || []].map(url => 
   (xxx[url] ??= computedAsync(async () => {
     const plugin = await import(/* @vite-ignore */ `${url}/.lowcode/index.js`)
     const packageJSON = await fetch(`${url}/.lowcode/package.json`).then(e => e.json())
@@ -138,6 +145,7 @@ const aaa = computed(() => sss.map(url =>
     return reactive({
       url,
       contributes: plugin.contributes,
+      widgets: plugin.widgets,
       packageJSON,
       isActive,
       activate,
@@ -169,24 +177,27 @@ const viewer = {
 }
 const viewport = ref<HTMLElement>()
 
+class $DisplayNode extends DisplayNode { designerCtx = designerCtx }
+
 const designerCtx = reactive({
   currentState: {},
   viewport,
   // canvas: computed(() => root.value.designer?.canvas || { zoom: 1 }),
   canvas: { x: 0, y: 0, zoom: 1, style: useTransformer(root, 'designer.canvas.style') } as any,
-  widgets: el_lowcode_widgets,
   root,
   flated: computed(() => treeUtils.flat([root.value])),
   keyed: computed(() => keyBy(designerCtx.flated, '_id')),
-  rootCtx: computed(() => new (class $DisplayNode extends DisplayNode { designerCtx = designerCtx })(designerCtx.root)),
+  rootCtx: computed(() => new designerCtx.DisplayNode(designerCtx.root)),
   keyedCtx: computed(() => keyBy(treeUtils.flat([designerCtx.rootCtx]), 'id')),
-  active: computed(() => designerCtx.activeId && designerCtx.keyedCtx[designerCtx.activeId]),
+  active: computed(() => designerCtx.activeId ? designerCtx.keyedCtx[designerCtx.activeId] : void 0),
   activeEl: computed(() => designerCtx.activeId ? designerCtx.canvas.doc.querySelector(`[_id='${designerCtx.activeId}']`) : void 0),
-  hover: computed(() => designerCtx.hoverId && designerCtx.keyedCtx[designerCtx.hoverId]),
+  hover: computed(() => designerCtx.hoverId ? designerCtx.keyedCtx[designerCtx.hoverId] : void 0),
   hoverEl: computed(() => designerCtx.hoverId ? designerCtx.canvas.doc.querySelector(`[_id='${designerCtx.hoverId}']`) : void 0),
-  dragged: computed(() => designerCtx.draggedId && designerCtx.keyedCtx[designerCtx.draggedId]),
+  dragged: computed(() => designerCtx.draggedId ? designerCtx.keyedCtx[designerCtx.draggedId] : void 0),
   plugins: aaa,
+  widgets: computed(() => keyBy(designerCtx.plugins.flatMap(e => e.widgets || []), 'is')),
   viewRenderer: {},
+  DisplayNode: $DisplayNode
 }) as DesignerCtx
 
 provide(designerCtxKey, designerCtx)
@@ -194,15 +205,6 @@ provide('designerCtx', designerCtx)
 defineExpose(designerCtx)
 
 console.log(window.designerCtx = designerCtx)
-
-// 
-watchEffect(() => {
-  if (designerCtx.root.is != 'Page') {
-    if (designerCtx.widgets.Page) {
-      root.value = parseAttrs(designerCtx.widgets.Page) as PageCtx
-    }
-  }
-})
 
 // moveable
 function onDragStart(e) {
@@ -212,7 +214,7 @@ function onDrag(e) {
   e.target.style.transform = e.transform
 }
 function onDragEnd(e) {
-  const style = designerCtx.dragged!.style ??= {}
+  const style = designerCtx.dragged!.data!.style ??= {}
   ;['transform'].forEach(k => style[k] = e.target.style.getPropertyValue(k))
   designerCtx.draggedId = undefined
 }
@@ -226,7 +228,7 @@ function onResize({ target, width, height, transform, drag }) {
   }
 }
 function onResizeEnd(e) {
-  const style = designerCtx.dragged!.style ??= {}
+  const style = designerCtx.dragged!.data!.style ??= {}
   ;['width', 'height', 'transform'].forEach(k => style[k] = e.target.style.getPropertyValue(k) || undefined)
   designerCtx.draggedId = undefined
 }
@@ -243,10 +245,8 @@ const middlePressed = ref(false)
 useEventListener('keydown', (e) => {
   if (e.key !== 'Delete') return
   if (!designerCtx.activeId) return
-  const flated = treeUtils.flat([root.value]) as BoxProps[]
-  const parent = flated.find(e => isArray(e.children) ? e.children.includes(designerCtx.active!) : false)
-  if (parent) {
-    remove(parent.children as [], designerCtx.active)
+  if (designerCtx.active!.parent) {
+    designerCtx.active!.remove()
     designerCtx.activeId = undefined
     designerCtx.hoverId = undefined
   } else {
@@ -259,7 +259,7 @@ useEventListener('keydown', e => {
   if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return
   if (!['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(e.key)) return
   
-  const node = designerCtx.active
+  const node = designerCtx.active?.data
   if (!node) return
   e.preventDefault()
   e.stopPropagation()
@@ -304,7 +304,7 @@ useEventListener('keydown', e => {
 </script>
 
 <style lang="scss">
-.layout {
+.designer {
   .viewport {
     position: relative;
     height: 100%;

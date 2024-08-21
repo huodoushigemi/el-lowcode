@@ -82,6 +82,7 @@ async function onMount(_editor) {
 function onKeydown(e: KeyboardEvent) {
   if (e.key.toLowerCase() == 's' && e.ctrlKey) {
     e.preventDefault()
+    e.stopPropagation()
     emit('save', _val.value)
   }
 }

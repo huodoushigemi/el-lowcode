@@ -1,7 +1,7 @@
 <template>
   <Tree
     :data="designerCtx.root.children"
-    :DisplayNode="$DisplayNode"
+    :Node="$DisplayNode"
     draggable
     :dropable="({ to }) => to.dir"
   />

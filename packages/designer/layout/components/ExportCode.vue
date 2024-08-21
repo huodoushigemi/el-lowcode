@@ -20,7 +20,7 @@
 import { computed, inject, ref } from 'vue'
 import { download } from '@el-lowcode/utils'
 import { DesignerCtx } from '../interface'
-import { genJSONRenderCode, genVueCode } from './utils'
+import { genCode } from '../../utils'
 import MonacoEditor from './monaco-editor.vue'
 
 const designer = inject<DesignerCtx>('designerCtx')!
@@ -29,10 +29,10 @@ const vis = ref(false)
 
 const type = ref('vue')
 const options = [
-  { icon: 'https://api.iconify.design/vscode-icons:file-type-vue.svg', label: 'Vue', value: 'vue', lang: 'html', code: () => genVueCode(designer) },
-  { icon: 'https://api.iconify.design/vscode-icons:file-type-vue.svg', label: 'Json Render', value: 'jsonr', ext: 'vue', lang: 'html', code: () => genJSONRenderCode(designer) },
-  { icon: 'https://api.iconify.design/vscode-icons:file-type-json.svg', label: 'Json', value: 'json', code: () => JSON.stringify(designer.root, null, '  ') },
-  { icon: 'https://osawards.com/javascript/pic/2022/SolidJS.png', label: 'Solid-js', value: 'solid-js', ext: 'jsx', lang: 'jsx', code: () => 'Developing……' },
+  { icon: 'https://api.iconify.design/vscode-icons:file-type-vue.svg', label: 'Vue', value: 'vue', lang: 'html', code: () => genCode.vue(designer) },
+  { icon: 'https://api.iconify.design/vscode-icons:file-type-vue.svg', label: 'Json Render', value: 'jsonr', ext: 'vue', lang: 'html', code: () => genCode.jsonRender(designer) },
+  { icon: 'https://api.iconify.design/vscode-icons:file-type-json.svg', label: 'Json', value: 'json', code: () => JSON.stringify(designer.root, null, 2) },
+  { icon: 'https://osawards.com/javascript/pic/2022/SolidJS.png', label: 'Solid-js', value: 'solid-js', ext: 'jsx', lang: 'jsx', code: () => genCode.solidjs(designer) },
 ]
 const curr = computed(() => options.find(e => e.value == type.value)!)
 

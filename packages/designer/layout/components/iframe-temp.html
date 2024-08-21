@@ -100,7 +100,7 @@
           ]),
           h(Moveable, {
             // key: control.value + '',
-            target: designerCtx.hover != designerCtx.root && designerCtx.hover?.style?.position == 'absolute' ? designerCtx.hoverEl : undefined,
+            target: !designerCtx.hover?.isRoot && designerCtx.hover?.isAbs ? designerCtx.hoverEl : undefined,
             // target: designerCtx.hoverEl,
             // draggable: control.value,
             draggable: true,
@@ -110,7 +110,7 @@
             onDragStart: e => designerCtx.draggedId = e.target.getAttribute('_id'),
             onDrag: e => e.target.style.transform = e.transform,
             onDragEnd: e => {
-              const style = designerCtx.active.style ??= {}
+              const style = designerCtx.active.data.style ??= {}
               style.transform = e.target.style.getPropertyValue('transform')
               designerCtx.draggedId = undefined
             }

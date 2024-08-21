@@ -24,13 +24,13 @@ import { computed, inject, ref } from 'vue'
 import { ElButton, ElButtonGroup, ElDialog } from 'element-plus'
 import MonacoEditor from '../../layout/components/monaco-editor.vue'
 import { designerCtxKey } from '../../layout/interface'
-import { el_lowcode_widgets } from '../el_lowcode_widgets'
 
 const designerCtx = inject(designerCtxKey)!
 
 const show = ref(false)
 
-const jsonSchema = computed(() => JSON.stringify(el_lowcode_widgets.Form!.JSONSchemaOutput!(designerCtx.active!), null, '  '))
+// todo
+const jsonSchema = computed(() => JSON.stringify(designerCtx.widgets.Form!.JSONSchemaOutput!(designerCtx.active!), null, '  '))
 const previewUrl = computed(() => `https://form.lljj.me/v3/#/demo?type=Test&schema=${encodeURIComponent(jsonSchema.value)}`)
 
 function onExport() {

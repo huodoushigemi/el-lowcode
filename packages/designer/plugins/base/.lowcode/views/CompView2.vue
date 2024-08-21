@@ -22,8 +22,9 @@ const aaa = computed(() => {
   const plugins = designer.root.plugins ?? []
   return plugins.map(url => 
     (xxx[url] ??= computedAsync(async () => {
-      const plugin = await import(/* @vite-ignore */ `${url}/.lowcode/index.js`)
-      const packageJSON = await fetch(`${url}/.lowcode/package.json`).then(e => e.json())
+      const _url = url.startsWith('/') ? `http://localhost:5174${url}` : url
+      const plugin = await import(/* @vite-ignore */ `${_url}/.lowcode/index.js`)
+      const packageJSON = await fetch(`${_url}/.lowcode/package.json`).then(e => e.json())
       return { url, packageJSON, widgets: plugin.widgets }
     }, void 0, { onError: e => console.error(e) })).value
   ).filter(e => e)

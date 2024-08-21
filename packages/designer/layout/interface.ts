@@ -41,7 +41,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get config() { return sloveConfig(this.data, this.designerCtx.widgets) }
 
   // 自由拖拽
-  get isAbs() { return this.data.position == 'absolute' }
+  get isAbs() { return this.data.style?.position == 'absolute' }
   // 自由布局
   get isAbsLayout() { return this.data['data-absolute-layout'] }
 
@@ -49,16 +49,17 @@ export abstract class DisplayNode extends Node<BoxProps> {
 }
 
 export interface DesignerCtx {
-  activeId?: BoxProps['_id']
-  readonly active?: BoxProps
+  DisplayNode: { new (...args: ConstructorParameters<typeof DisplayNode>): DisplayNode }
+  activeId?: string
+  readonly active?: DisplayNode
   readonly activeEl?: HTMLElement | null
 
-  hoverId?: BoxProps['_id']
-  readonly hover?: BoxProps
+  hoverId?: string
+  readonly hover?: DisplayNode
   readonly hoverEl?: HTMLElement | null
 
-  draggedId?: BoxProps['_id'],
-  readonly dragged?: BoxProps,
+  draggedId?: string
+  readonly dragged?: DisplayNode
 
   root: BoxProps
   flated: BoxProps[]
@@ -80,6 +81,7 @@ export interface DesignerCtx {
   plugins: {
     url: string
     packageJSON: Record<string, any>
+    widgets: Widget[]
     contributes: Contributes
     isActive: boolean
     activate()

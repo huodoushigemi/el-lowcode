@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { cloneVNode, computed, defineComponent, getCurrentInstance, h, inject, mergeProps, nextTick, onBeforeUnmount, reactive, ref, watch, watchEffect } from 'vue'
+import { computed, defineComponent, h, inject, mergeProps, nextTick, onBeforeUnmount, reactive, ref, watchEffect } from 'vue'
 import type { Ref } from 'vue'
-import { isArray, isObject, remove } from '@vue/shared'
+import { isArray, isObject } from '@vue/shared'
 import { unrefElement, useEventListener } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
-import { deepClone, execExp, treeUtils } from '@el-lowcode/utils'
-import { parseAttrs, sloveConfig } from '../../components/_utils'
+import { deepClone, execExp } from '@el-lowcode/utils'
+import { parseAttrs } from '../../components/_utils'
 import { DisplayNode, type DesignerCtx } from '../interface'
 import type { BoxProps } from '../..'
 
@@ -85,13 +85,6 @@ function setup(props: BoxProps, designer: DesignerCtx) {
   if (propsCtx.has(props)) propsCtx.get(props)
   
   const elRef = ref(), boxRef = ref(), nillRef = ref()
-  const config = computed(() => sloveConfig(props))
-
-  const box = computed(() => {
-    if (!config.value || config.value.sortablePut == false) return
-    if (!isArray(props.children)) return
-    return unrefElement(boxRef.value || elRef.value)
-  })
   
   useDrop(props, elRef, boxRef, nillRef, designer)
   useDrag(props, elRef, designer)
@@ -243,13 +236,13 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRe
       const { x, y } = empty.getBoundingClientRect()
       empty.remove()
       // 计算坐标
-      dragNode = _id ? designer.keyedCtx[_id] : new DisplayNode(parseAttrs(designer.widgets[is!]!))
+      dragNode = _id ? designer.keyedCtx[_id] : new designer.DisplayNode(parseAttrs(designer.widgets[is!]!))
       dragNode.data = mergeProps(dragNode.data, { style: { position: 'absolute', transform: `translate(${e.x - x}px, ${e.y - y}px)`, margin: 0 } }) as any
       node.insertBefore(dragNode)
     }
     // 排序布局
     else {
-      dragNode = _id ? designer.keyedCtx[_id] : new DisplayNode(parseAttrs(designer.widgets[is!]!))
+      dragNode = _id ? designer.keyedCtx[_id] : new designer.DisplayNode(parseAttrs(designer.widgets[is!]!))
       const before = dragRelatedDir == 'L' || dragRelatedDir == 'T'
       dragRelated
         ? designer.keyedCtx[dragRelated!.getAttribute('_id')!][before ? 'before' : 'after'](dragNode)

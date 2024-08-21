@@ -28,23 +28,23 @@
 
 <script setup lang="ts">
 import { computed, reactive, toRaw, shallowRef, ref } from 'vue'
-import { isArray, isString } from '@vue/shared'
-import { toReactive, useEventListener } from '@vueuse/core'
-import { get, keyBy, mapValues, unFn } from '@el-lowcode/utils'
-import { DisplayNode } from '../interface'
+import { isArray } from '@vue/shared'
+import { toReactive } from '@vueuse/core'
+import { keyBy, unFn } from '@el-lowcode/utils'
+import { Node } from './Node'
 
 type Props = {
   data: any[]
-  DisplayNode: typeof DisplayNode
+  Node: { new (...args: ConstructorParameters<typeof Node>): Node }
   indent?: number
   showLine?: boolean
   expandKeys?: Record<string, boolean>
 
-  draggable?: boolean | ((node: $_DisplayNode) => boolean)
+  draggable?: boolean | ((node: $_Node) => boolean)
   dropable?: boolean | ((e: DropEvent) => boolean)
 }
 
-type DropEvent = { from: $_DisplayNode; to: $_DisplayNode; node: $_DisplayNode; oldIndex: number; newIndex: number }
+type DropEvent = { from: $_Node; to: $_Node; node: $_Node; oldIndex: number; newIndex: number }
 
 const props = withDefaults(defineProps<Props>(), {
   data: () => [],
@@ -53,7 +53,7 @@ const props = withDefaults(defineProps<Props>(), {
   dropable: true
 })
 
-class $_DisplayNode extends props.DisplayNode {
+class $_Node extends props.Node {
   get dir() { return isArray(this.data_children) }
   get expand() { return props.expandKeys[this.id] }
   get expandCount(): number { return this.expand ? this.children!.reduce((t, e) => t + e.expandCount, this.children!.length) : 0 }
@@ -62,7 +62,7 @@ class $_DisplayNode extends props.DisplayNode {
 }
 
 const rootNode = computed(() => {
-  const root = new $_DisplayNode({})
+  const root = new $_Node({})
   Object.defineProperty(root, 'data_children', { get() { return props.data } })
   return root
 })
@@ -91,7 +91,7 @@ function onClick(e: MouseEvent) {
   }
 }
 
-let dragLi: $_DisplayNode | undefined
+let dragLi: $_Node | undefined
 let dropEl: HTMLElement | undefined
 let dropEvent: DropEvent | undefined
 

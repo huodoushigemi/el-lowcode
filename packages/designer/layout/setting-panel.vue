@@ -37,7 +37,6 @@ import { createRender } from '@el-lowcode/render'
 import { mapValues, pick, set, unFn } from '@el-lowcode/utils'
 import { ElFormRender, normalizeItem } from 'el-form-render'
 import { designerCtxKey } from './interface'
-import { sloveConfig } from '../components/_utils'
 import Scriptable from './components/scriptable.vue'
 import Input from './components/input.vue'
 import MonacoEditorDialog from './components/MonacoEditorDialog.vue'
@@ -77,12 +76,8 @@ const Render = createRender({
 
 const designerCtx = inject(designerCtxKey)
 
-const model = computed(() => designerCtx.active ?? designerCtx.root)
-
-const config = computed(() => {
-  if (!model.value) return
-  return sloveConfig(model.value)
-})
+const model = computed(() => designerCtx.active?.data ?? designerCtx.root)
+const config = computed(() => designerCtx.active?.config ?? designerCtx.rootCtx.config)
 
 const _items = computed(() => unFn(config.value?.props, model.value))
 

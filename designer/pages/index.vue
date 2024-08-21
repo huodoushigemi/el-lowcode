@@ -1,29 +1,44 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { computedAsync } from '@vueuse/core'
+import { computedAsync, watchDebounced } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
-import Designer from '@el-lowcode/designer'
+import Designer, { DesignerCtx } from '@el-lowcode/designer'
 import { download, unFn } from '@el-lowcode/utils'
 
 const router = useRouter()
 const route = useRoute()
 
-const designer = ref()
+const designer = ref<DesignerCtx>()
 const encodeSchema = (schema) => encodeURIComponent(JSON.stringify(schema))
 
-const templateModules = Object.values(import.meta.glob('../template/*.ts'))
-const templatesPromise = async () => ((await Promise.all(templateModules.map(e => e()))).map(e => e.default).filter(e => e))
-const templates = computedAsync(templatesPromise)
+const json = window.__LCD_JSON__
 
-// query.templateId
-templatesPromise().then(async templates => {
-  watch(() => route.query.templateId, id => {
-    const temp = templates.find(e => e.id == id)
-    if (temp) onEdit(temp)
-    router.replace({ query: { ...route.query, templateId: null } })
-  }, { immediate: true, flush: 'post' })
-})
+// @ts-ignore
+// vscode extension
+const vscode = window.acquireVsCodeApi?.()
+if (vscode) {
+  onMounted(() => {
+    watchDebounced(() => JSON.stringify(designer.value!.root), txt => {
+      if (!txt) return
+      console.log('updateText')
+      vscode.postMessage(['updateText', txt])
+    }, { debounce: 200 })
+  })
+}
+
+// const templateModules = Object.values(import.meta.glob('../template/*.ts'))
+// const templatesPromise = async () => ((await Promise.all(templateModules.map(e => e()))).map(e => e.default).filter(e => e))
+// const templates = computedAsync(templatesPromise)
+
+// // query.templateId
+// templatesPromise().then(async templates => {
+//   watch(() => route.query.templateId, id => {
+//     const temp = templates.find(e => e.id == id)
+//     if (temp) onEdit(temp)
+//     router.replace({ query: { ...route.query, templateId: null } })
+//   }, { immediate: true, flush: 'post' })
+// })
 
 // query.schema
 const schema = useRouteQuery<string | undefined>('schema')
@@ -35,7 +50,7 @@ watch([schema, designer], ([val, designer]) => {
 }, { immediate: true, flush: 'post' })
 
 function onEdit(item) {
-  designer.value.root = unFn(item.schema)
+  designer.value!.root = unFn(item.schema)
 }
 function demoUrl(schema) {
   return router.resolve({ path: '/demo', query: { schema: encodeSchema(schema) } })
@@ -50,7 +65,7 @@ function onDownload() {
 </script>
 
 <template>
-    <Designer ref="designer" h100vh>
+    <Designer ref="designer" :json="json" h100vh>
       <!-- 额外按钮 -->
       <template #actions>
         <el-tooltip content="preview"><i-mdi:play-circle-outline bg-hover @click="$router.push(demoUrl(designer.root).fullPath)" /></el-tooltip>
