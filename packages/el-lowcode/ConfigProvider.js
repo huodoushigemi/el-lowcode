@@ -1,4 +1,4 @@
-import { defineComponent, getCurrentInstance, provide, ref, renderSlot, watch } from 'vue'
+import { defineComponent, getCurrentInstance, provide, reactive, ref, renderSlot, toRef, watch } from 'vue'
 
 export const ConfigProvider = defineComponent({
   inheritAttrs: false,
@@ -8,7 +8,9 @@ export const ConfigProvider = defineComponent({
     css: String,
   },
   setup(props, { slots }) {
-    provide('pageCtx', props)
+    provide('pageCtx', reactive({
+      state: toRef(props, 'state')
+    }))
 
     const ins = getCurrentInstance()
     const loading = ref(false)
