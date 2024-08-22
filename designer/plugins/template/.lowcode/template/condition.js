@@ -1,9 +1,9 @@
 export default {
   id: 'condition',
   title: '组件联动',
-  schema: () => ({
+  schema: {
     is: 'Page',
-    _id: '710ca988-63f7-47bd-837f-4e45f6c0b59e',
+    _id: '63f7-47bd-837f-4e45f6c0b59e',
     children: [
       {
         is: 'ElCard',
@@ -11,7 +11,7 @@ export default {
         header: '组件联动',
         children: [
           {
-            is: 'ElForm$$',
+            is: 'ElForm-c',
             _id: 'cf70094f-5da9-4770-b6a0-c8787fac72ba',
             labelWidth: 80,
             style: {
@@ -82,7 +82,7 @@ export default {
                 },
                 $: {
                   condition: "{{state.formData.sex != '1'}}",
-                }
+                },
               },
               {
                 is: 'ElDivider',
@@ -106,12 +106,20 @@ export default {
       count: 0,
       formData: {},
     },
+    designer: {
+      canvas: {
+        style: {
+          width: '768px',
+          height: '1024px',
+        },
+      },
+    },
     style: {
       'padding-top': '100px',
     },
     plugins: [
-      "/el-lowcode/designer/packages/designer/plugins/web",
-      "/el-lowcode/designer/packages/designer/plugins/element-plus"
+      '/el-lowcode/designer/packages/designer/plugins/web',
+      '/el-lowcode/designer/packages/designer/plugins/element-plus',
     ],
-  }),
+  },
 }

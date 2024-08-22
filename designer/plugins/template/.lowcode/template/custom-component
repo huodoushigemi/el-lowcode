@@ -1,7 +1,7 @@
 export default {
   id: 'custom-component',
   title: '自定义组件',
-  schema: () => ({
+  schema: {
     is: 'Page',
     _id: 'cebde1a5-23ee-498e-a179-cc2df5c3fe38',
     children: [
@@ -107,5 +107,5 @@ export default {
       "/el-lowcode/designer/packages/designer/plugins/web",
       "/el-lowcode/designer/packages/designer/plugins/ant-design-vue"
     ],
-  }),
+  },
 }

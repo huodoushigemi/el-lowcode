@@ -1,4 +1,4 @@
-import { computed, reactive, Ref, ref } from 'vue'
+import { computed, MaybeRefOrGetter, reactive, Ref, ref, toValue, watchEffect, watchSyncEffect } from 'vue'
 import { isArray, isObject } from '@vue/shared'
 import { useTransformer } from 'el-form-render'
 import { keyBy, treeUtils } from '@el-lowcode/utils'
@@ -21,12 +21,19 @@ export function objStringify(obj, fn) {
   }
 }
 
-export function createDesignerCtx(root: Ref<PageCtx>) {
+export function createDesignerCtx(root: Ref<PageCtx>, builtinPluginUrls?: MaybeRefOrGetter<string[] | undefined>) {
   const xxx = {} as Record<string, Ref<DesignerCtx['plugins'][0]>>
-  const sss = [
-    '/el-lowcode/designer/packages/designer/plugins/base'
-  ]
-  const aaa = computed(() => [...sss, ...root.value?.plugins || []].map(url => 
+  const web = '/el-lowcode/designer/packages/designer/plugins/web'
+  watchSyncEffect(() => {
+    root.value.plugins ??= []
+    root.value.plugins.includes(web) || root.value.plugins.push(web)
+  })
+  const allUrls = computed(() => [
+    '/el-lowcode/designer/packages/designer/plugins/base',
+    ...toValue(builtinPluginUrls) || [],
+    ...root.value.plugins || []
+  ])
+  const plugins = computed(() => allUrls.value.map(url => 
     (xxx[url] ??= computedAsync(async () => {
       const plugin = await import(/* @vite-ignore */ `${url}/.lowcode/index.js`)
       const packageJSON = await fetch(`${url}/.lowcode/package.json`).then(e => e.json())
@@ -46,7 +53,7 @@ export function createDesignerCtx(root: Ref<PageCtx>) {
     }, void 0, { onError: e => console.error(e) })).value
   ).filter(e => e))
 
-  aaa.value
+  plugins.value
 
   class $DisplayNode extends DisplayNode { designerCtx = designerCtx }
 
@@ -65,7 +72,8 @@ export function createDesignerCtx(root: Ref<PageCtx>) {
     hover: computed(() => designerCtx.hoverId ? designerCtx.keyedCtx[designerCtx.hoverId] : void 0),
     hoverEl: computed(() => designerCtx.hoverId ? designerCtx.canvas.doc.querySelector(`[_id='${designerCtx.hoverId}']`) : void 0),
     dragged: computed(() => designerCtx.draggedId ? designerCtx.keyedCtx[designerCtx.draggedId] : void 0),
-    plugins: aaa,
+    plugins,
+    pluginsLoading: computed(() => plugins.value.length != allUrls.value.length),
     widgets: computed(() => keyBy(designerCtx.plugins.flatMap(e => e.widgets || []), 'is')),
     viewRenderer: {},
     DisplayNode: $DisplayNode

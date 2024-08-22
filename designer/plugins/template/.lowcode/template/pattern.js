@@ -4,7 +4,7 @@ export default {
   id: 'pattern',
   title: '表单校验',
   cover,
-  schema: () => ({
+  schema: {
     is: 'Page',
     _id: 'a0246183-b618-4a98-b353-207896342181',
     children: [
@@ -29,7 +29,7 @@ export default {
         header: '',
         children: [
           {
-            is: 'ElForm$$',
+            is: 'ElForm-c',
             _id: '23e1cb33-98b8-4e6b-a6f5-13b144e26fa7',
             labelWidth: 80,
             style: {
@@ -99,5 +99,13 @@ export default {
       "/el-lowcode/designer/packages/designer/plugins/web",
       "/el-lowcode/designer/packages/designer/plugins/element-plus"
     ],
-  }),
+    designer: {
+      canvas: {
+        style: {
+          width: '768px',
+          height: '1024px',
+        },
+      },
+    },
+  },
 }

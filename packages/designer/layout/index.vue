@@ -14,7 +14,7 @@
           <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
             <!-- @vue-ignore -->
             <iframe
-              :key="CanvasIframe1"
+              :key="root._id + CanvasIframe1"
               class="wfull hfull"
               :srcdoc="CanvasIframe1"
               @load="e => designerCtx.canvas.doc = e.target.contentDocument"
@@ -66,16 +66,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, reactive, ref, watchEffect, getCurrentInstance, watch, Ref, PropType } from 'vue'
-import { computedAsync, useDebouncedRefHistory, useDropZone, useEventListener, useLocalStorage, useMagicKeys } from '@vueuse/core'
+import { computed, provide, ref, getCurrentInstance, PropType } from 'vue'
+import { computedAsync, useDebouncedRefHistory, useEventListener, useLocalStorage, useMagicKeys } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import Moveable from 'vue3-moveable'
 
-import { get, keyBy, groupBy, set, treeUtils, download } from '@el-lowcode/utils'
+import { get, set } from '@el-lowcode/utils'
 import { useTransformer } from 'el-form-render'
-import { parseAttrs, importJs } from '../components/_utils'
 import { BoxProps, Widget } from '../index'
-import { DesignerCtx, designerCtxKey, DisplayNode } from './interface'
+import { DesignerCtx, designerCtxKey } from './interface'
 import Activitybar from './components/Activitybar.vue'
 import Views from './components/Views.vue'
 import ExportCode from './components/ExportCode.vue'
@@ -84,7 +83,6 @@ import SettingPanel from './setting-panel.vue'
 import StateDrawer from './components/state-drawer.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 // import { vue2esm } from './vue2esm'
-import { builtins } from './config'
 import { createDesignerCtx } from '../utils'
 import { PageCtx } from '../plugins/web/page'
 
@@ -111,7 +109,8 @@ app.component('Tabs', Tabs)
 const log = (...arg) => console.log(...arg)
 
 const props = defineProps({
-  json: Object as PropType<PageCtx>
+  json: Object as PropType<PageCtx>,
+  extraPlugins: Array as PropType<string[]>,
 })
 
 const initial = () => ({
@@ -128,8 +127,6 @@ const initial = () => ({
 // )
 
 const root = ref(props.json ?? initial())
-
-const installedPlugins = computed(() => [...new Set([...root.value?.plugins || [], ...builtins])])
 
 const activitybars = computed(() => designerCtx.plugins.flatMap(e => e.contributes.activitybar || []))
 const activeView = ref()
@@ -152,7 +149,7 @@ const viewer = {
 }
 const viewport = ref<HTMLElement>()
 
-const designerCtx = createDesignerCtx(root)
+const designerCtx = createDesignerCtx(root, () => props.extraPlugins)
 
 provide(designerCtxKey, designerCtx)
 provide('designerCtx', designerCtx)

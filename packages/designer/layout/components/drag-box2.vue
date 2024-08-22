@@ -217,9 +217,10 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRe
 
   useEventListener(target, 'drop', async (e) => {
     if (dragEl?.contains(e.currentTarget as Node)) return
-    if (dragEl == dragRelated) return
+    if (dragEl && dragEl == dragRelated) return
     const is = dragEl?.getAttribute('data-is') ?? e.dataTransfer?.getData('data-is')
     const _id = dragEl?.getAttribute('_id')
+
     
     if (!is && !_id) return dragEnd()
     e.stopPropagation()

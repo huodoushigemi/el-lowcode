@@ -50,6 +50,7 @@ export default [
       'data-absolute-layout': true,
       style: { height: '300px' },
       children: [],
-    })
+    }),
+    purify: (props) => ({ ...props, is: 'div' })
   }
 ]

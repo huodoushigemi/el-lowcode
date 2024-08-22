@@ -1,13 +1,13 @@
-import cover from './choice-question.png'
+import cover from './choice-question.png?url'
 
 export default {
   id: 'choice-question',
   title: '选择填空',
   cover,
-  schema: () => ({
+  schema: {
     children: [
       {
-        is: 'ElForm$$',
+        is: 'ElForm-c',
         _id: '15870304-528c-4f18-b4c2-7529dcb30837',
         labelWidth: '20',
         style: {
@@ -193,5 +193,13 @@ export default {
       "/el-lowcode/designer/packages/designer/plugins/web",
       "/el-lowcode/designer/packages/designer/plugins/element-plus"
     ],
-  }),
+    designer: {
+      canvas: {
+        style: {
+          width: '768px',
+          height: '1024px',
+        },
+      },
+    },
+  },
 }

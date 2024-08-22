@@ -14,7 +14,7 @@ import { ElFormItem, FormInstance } from 'element-plus'
 import { ElFormRender, formRenderProps } from 'el-form-render'
 
 defineOptions({
-  name: 'ElForm$$'
+  name: 'ElForm-c'
 })
 
 defineProps(formRenderProps)

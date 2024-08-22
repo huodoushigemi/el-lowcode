@@ -15,7 +15,7 @@ export const ConfigProvider = defineComponent({
     const loaded = {}
 
     // load plugin
-    watch(() => props.plugins, async (urls, old) => {
+    watch(() => [...props.plugins], async (urls, old) => {
       if (JSON.stringify(urls) == JSON.stringify(old)) return
       if (!urls?.length) return
       

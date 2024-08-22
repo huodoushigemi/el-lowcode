@@ -4,7 +4,7 @@ export default {
   id: 'home',
   title: '首页',
   cover,
-  schema: () => ({
+  schema: {
     is: 'Page',
     _id: '276a574a-a57c-40b9-a70c-e30caea01039',
     children: [
@@ -357,5 +357,5 @@ export default {
     plugins: [
       "/el-lowcode/designer/packages/designer/plugins/web"
     ],
-  }),
+  },
 }

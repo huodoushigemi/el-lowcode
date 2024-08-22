@@ -42,13 +42,17 @@ export default defineConfig(async () => ({
       transform: {
         order: 'post',
         handler(code, id, options) {
-          return code?.replaceAll('/el-lowcode/designer', 'http://localhost:5174/el-lowcode/designer')
+          return code
+            ?.replaceAll('\'/el-lowcode/designer', '\'http://localhost:5174/el-lowcode/designer')
+            .replaceAll('\"/el-lowcode/designer', '\"http://localhost:5174/el-lowcode/designer')
         },
       },
       transformIndexHtml: {
         order: 'post',
         handler(code) {
-          return code?.replaceAll('/el-lowcode/designer', 'http://localhost:5174/el-lowcode/designer')
+          return code
+            ?.replaceAll('\'/el-lowcode/designer', '\'http://localhost:5174/el-lowcode/designer')
+            .replaceAll('\"/el-lowcode/designer', '\"http://localhost:5174/el-lowcode/designer')
         }
       }
     },

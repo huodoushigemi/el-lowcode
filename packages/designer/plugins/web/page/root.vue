@@ -31,7 +31,7 @@ watchEffect(() => {
 })
 
 // todo
-const winSize = useWindowSize()
+// const winSize = useWindowSize()
 const parentSize = useElementSize(useParentElement())
 
 const { el } = useFit({

@@ -1,10 +1,6 @@
-if (typeof document != 'undefined') import('wc-appbar')
-if (typeof document != 'undefined') import('wc-waterfall')
-
 import { Plugin, inject } from 'vue'
 import { deepClone, execExp } from '@el-lowcode/utils'
 import { createRender } from '@el-lowcode/render'
-import Web from '../designer/plugins/web'
 
 export * from './ConfigProvider'
 
@@ -31,6 +27,6 @@ export const Render = createRender({
 
 export default {
  install(app, ...options) {
-    app.use(Web)
+    
  },
 } as Plugin

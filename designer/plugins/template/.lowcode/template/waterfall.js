@@ -4,7 +4,7 @@ export default {
   id: 'waterfall',
   title: '瀑布流',
   cover,
-  schema: () => ({
+  schema: {
     is: 'Page',
     _id: 'fa0c45d7-55f3-4d1a-a1dc-e8ad6b5e1026',
     children: [
@@ -171,5 +171,13 @@ export default {
     plugins: [
       "/el-lowcode/designer/packages/designer/plugins/web"
     ],
-  }),
+    designer: {
+      canvas: {
+        style: {
+          width: '768px',
+          height: '1024px',
+        },
+      },
+    },
+  },
 }

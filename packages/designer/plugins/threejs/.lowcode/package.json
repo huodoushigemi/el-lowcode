@@ -1,5 +1,6 @@
 {
   "name": "threejs",
+  "displayName": "Threejs",
   "description": "世界上最流行的Web 3D JavaScript框架。",
   "icon": "https://threejs.org/files/favicon_white.ico",
   "homepage": "https://gitee.com/httpsgiteecomepalserver/el-lowcode/tree/main/public/plugins/threejs",

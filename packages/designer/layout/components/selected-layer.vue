@@ -7,7 +7,7 @@
     </div>
     <!-- <selected-rect :el="designerCtx.active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(activeEl())" /> -->
     <div v-if="active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(designerCtx.activeEl)">
-      <div v-if="active.isAbs && designerCtx.draggedId == null" class="actions absolute bottom-[100%] flex text-15 text-nowrap pointer-events-auto c-white bg-[--el-color-primary]">  
+      <div v-if="!active.isAbs && designerCtx.draggedId == null" class="actions absolute bottom-[100%] flex text-15 text-nowrap pointer-events-auto c-white bg-[--el-color-primary]">  
         <div flex aic px12 bg="#17d57e">{{ active.label }}</div>
         <i-solar:arrow-to-top-right-bold v-if="activeCtx?.active2parent" class="icon" @click="activeCtx?.active2parent" />
         <i-solar:arrow-up-linear v-if="activeCtx?.moveUp" class="icon" @click="activeCtx?.moveUp" />
@@ -43,8 +43,6 @@
 import { getCurrentInstance, inject, computed, ref, watchEffect } from 'vue'
 import { unrefElement, useMutationObserver, useResizeObserver } from '@vueuse/core'
 import Moveable from 'vue3-moveable'
-import { deepClone, treeUtils } from '@el-lowcode/utils'
-import { v4 as uuidv4 } from 'uuid'
 import { designerCtxKey } from '../interface'
 
 const designerCtx = inject(designerCtxKey)!
@@ -52,7 +50,6 @@ const designerCtx = inject(designerCtxKey)!
 // new MouseEvent()
 // document.addEventListener('pointerdown', e => {})
 document.addEventListener('mouseup', e => {})
-PointerEvent
 
 const active = computed(() => designerCtx.active)
 
@@ -62,7 +59,7 @@ const activeCtx = computed(() => {
   return {
     parent: active.parent,
     moveUp: () => active.previousSibling ? active.previousSibling.before(active) : void 0,
-    moveDown: () => active.nextSibling ? active.nextSibling!.before(active) : void 0,
+    moveDown: () => active.nextSibling ? active.nextSibling!.after(active) : void 0,
     active2parent: () => designerCtx.activeId = active.parent!.id,
     remove: () => active.remove(),
     // copy: () => children.splice(i + 1, 0, deepClone(active, (v, k) => k == '_id' ? uuidv4() : v))

@@ -4,7 +4,7 @@ export default {
   id: 'questionnaire',
   title: '麦当劳调查问卷',
   cover,
-  schema: () => ({
+  schema: {
     children: [
       {
         labelWidth: '80',
@@ -249,7 +249,7 @@ export default {
             _id: 'b1e7e737-493f-4edc-9af7-6c1d9d22120a',
           },
         ],
-        is: 'ElForm$$',
+        is: 'ElForm-c',
         _id: '1e8c282f-a74f-48f8-bf0a-7e2f2c8a6dc9',
         labelPosition: 'top',
         model: '{{state.formData}}',
@@ -260,7 +260,7 @@ export default {
       formData: {},
     },
     is: 'Page',
-    _id: '13f4e3cc-2aca-4f04-8507-f9d52411a34a',
+    _id: '2aca-4f04-8507',
     style: {
       padding: '12px',
     },
@@ -268,5 +268,13 @@ export default {
       "/el-lowcode/designer/packages/designer/plugins/web",
       "/el-lowcode/designer/packages/designer/plugins/element-plus"
     ],
-  }),
+    designer: {
+      canvas: {
+        style: {
+          width: '768px',
+          height: '1024px',
+        },
+      },
+    },
+  },
 }

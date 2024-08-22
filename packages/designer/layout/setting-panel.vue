@@ -24,10 +24,10 @@
     </el-tab-pane>
   </el-tabs>
 
-  <!-- <MonacoEditorDialog
+  <MonacoEditorDialog
     v-model="editModel" language="json"
     v-model:visible="visible" :dialog="{ is: 'el-drawer', title: config?.label, size: 500 }"
-  /> -->
+  />
 </template>
 
 <script setup>

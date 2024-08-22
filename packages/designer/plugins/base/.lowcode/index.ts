@@ -20,7 +20,6 @@ export function activate(designerCtx: DesignerCtx) {
   designerCtx.viewRenderer['plugin-market.views.all'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
   designerCtx.viewRenderer['plugin-market.views.installed'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
   designerCtx.viewRenderer['widgets'] = create(defineAsyncComponent(() => import('./views/CompView2.vue')))
-
   // designerCtx.customEditorRenderer['schema.json.editor'] = create(() => )
 }
 

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <style>
+    html, body { margin: 0; padding: 0; }
+  </style>
+
+  <script src="/node_modules/vue/dist/vue.runtime.global.js"></script>
+
+  <script type="module">
+    import { createApp, reactive, h, computed, watchEffect } from 'vue'
+    import { ConfigProvider, Render } from 'el-lowcode'
+
+    const schema = computed(() => {
+      // const undecode = route.query.schema 
+      // return undecode ? JSON.parse(decodeURIComponent(undecode)) : { is: 'h1', children: 'no more' }
+      const str = new URLSearchParams(location.href.split('?')[1]).get('schema')
+      return reactive(str ? JSON.parse(str) : { is: 'h1', children: 'no more' })
+    })
+
+    watchEffect(() => {
+      console.log(schema.value)
+    })
+
+    createApp(() => h(ConfigProvider, schema.value, h(Render, schema.value)))
+      .mount(document.body)
+  </script>
+</head>
+<body>
+
+</body>
+</html>

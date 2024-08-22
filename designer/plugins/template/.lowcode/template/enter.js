@@ -4,16 +4,19 @@ export default {
   id: 'enter',
   title: '用户信息录入',
   cover,
-  schema: () => ({
+  schema: {
     is: 'Page',
     _id: '710ca988-63f7-47bd-837f-4e45f6c0b59e',
     children: [
       {
-        is: 'ElForm$$',
+        is: 'ElForm-c',
         _id: 'cf70094f-5da9-4770-b6a0-c8787fac72ba',
-        labelWidth: 80,
+        labelWidth: 60,
         style: {
           overflow: 'hidden',
+          marginTop: '16px',
+          marginLeft: '0px',
+          paddingRight: '16px',
         },
         children: [
           {
@@ -110,15 +113,59 @@ export default {
             },
           },
           {
-            is: 'Descriptions',
-            _id: 'a522cde2-bbb4-4ccd-bbea-10a6c8027937',
+            is: 'ElDescriptions',
             column: 3,
             border: true,
-            options: "{{[\r\n  { label: 'Username', value: state.formData.name },\r\n  { label: 'Phone', value: state.formData.phone},\r\n  { label: 'Sex', value: state.formData.sex},\r\n  { label: 'Age', value: state.formData.age },\r\n  { label: 'Time', value: state.formData.time },\r\n  { label: 'Address', value: state.formData.address},\r\n  { label: 'Remark', value: state.formData.remark },\r\n]}}",
+            children: [
+              {
+                is: 'ElDescriptionsItem',
+                label: 'Username',
+                children: '{{state.formData.name}}',
+                _id: '9d4e60ff-4e3b-45fc-8788-0d9ad77e7c10',
+              },
+              {
+                is: 'ElDescriptionsItem',
+                label: 'Phone',
+                children: '{{state.formData.phone}}',
+                _id: 'd6582674-46e6-4dd6-ac58-19da8b064ce7',
+              },
+              {
+                is: 'ElDescriptionsItem',
+                label: 'Sex',
+                children: '{{state.formData.sex}}',
+                _id: '385a05ff-e18a-4727-8c41-d2456a4133b4',
+              },
+              {
+                is: 'ElDescriptionsItem',
+                label: 'Age',
+                children: '{{state.formData.age}}',
+                _id: '3c0d1198-e61f-4676-aa54-e56cd5f16964',
+              },
+              {
+                is: 'ElDescriptionsItem',
+                label: 'Time',
+                children: '{{state.formData.time}}',
+                _id: 'f7995122-69e2-4198-bcf1-9ee9ff0ce8b7',
+              },
+              {
+                is: 'ElDescriptionsItem',
+                label: 'Address',
+                children: '{{state.formData.address}}',
+              },
+              {
+                is: 'ElDescriptionsItem',
+                label: 'Remark',
+                children: '{{state.formData.remark}}',
+              },
+            ],
+            _id: 'e94a1c1a-0eda-417c-a5c5-e6a411be0484',
             style: {
-              margin: '0 0 18px 80px',
+              marginBottom: '40px',
+              marginTop: '40px',
+              marginLeft: '16px',
             },
             direction: 'horizontal',
+            size: 'small',
           },
           {
             is: 'ElDivider',
@@ -133,11 +180,28 @@ export default {
     ],
     state: {
       count: 0,
-      formData: {},
+      formData: {
+        name: '12313',
+        phone: '123213',
+        age: 5,
+        sex: '',
+        time: '',
+        address: '123r2',
+        remark: 'ewrgetgw',
+      },
     },
     plugins: [
-      "/el-lowcode/designer/packages/designer/plugins/web",
-      "/el-lowcode/designer/packages/designer/plugins/element-plus"
+      '/el-lowcode/designer/packages/designer/plugins/web',
+      '/el-lowcode/designer/packages/designer/plugins/element-plus',
     ],
-  }),
+    designer: {
+      canvas: {
+        style: {
+          width: '768px',
+          height: '1024px',
+        },
+      },
+    },
+    style: {},
+  },
 }

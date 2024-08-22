@@ -1,5 +1,5 @@
 <template>
-  <template v-for="e in aaa">
+  <template v-for="e in designer.plugins.filter(e => e.widgets?.length)">
     <div class="flex aic px20">
       <img class="w24 h24 mr8" :src="e.packageJSON.icon" />
       <h2 class="my0 uppercase">{{ e.packageJSON.displayName ?? e.packageJSON.name }}</h2>
@@ -10,23 +10,8 @@
 </template>
 
 <script setup>
-import { inject, computed } from 'vue'
-import { computedAsync } from '@vueuse/core'
+import { inject } from 'vue'
 import { CompView } from '@el-lowcode/designer'
 
 const designer = inject('designerCtx')
-
-const xxx = {}
-
-const aaa = computed(() => {
-  const plugins = designer.root.plugins ?? []
-  return plugins.map(url => 
-    (xxx[url] ??= computedAsync(async () => {
-      const _url = url.startsWith('/') ? `http://localhost:5174${url}` : url
-      const plugin = await import(/* @vite-ignore */ `${_url}/.lowcode/index.js`)
-      const packageJSON = await fetch(`${_url}/.lowcode/package.json`).then(e => e.json())
-      return { url, packageJSON, widgets: plugin.widgets }
-    }, void 0, { onError: e => console.error(e) })).value
-  ).filter(e => e)
-})
 </script>

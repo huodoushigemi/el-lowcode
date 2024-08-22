@@ -1,7 +1,7 @@
 export default {
   id: 'echarts-demo',
   title: 'Echarts Demo',
-  schema: () => ({
+  schema: {
     "is": "Page",
     "children": [
       {
@@ -864,6 +864,7 @@ export default {
     },
     "_id": "7403c48a-0611-4a38-8aee-4884eddac613",
     "plugins": [
+      "/el-lowcode/designer/packages/designer/plugins/web",
       "/el-lowcode/designer/packages/designer/plugins/echarts"
     ],
     "designer": {
@@ -881,5 +882,5 @@ export default {
       "paddingRight": "32px",
       "paddingLeft": "32px"
     }
-  }),
+  },
 }

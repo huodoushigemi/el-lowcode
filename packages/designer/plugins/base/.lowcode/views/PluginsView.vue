@@ -15,7 +15,7 @@
             <div class="author" lh-24>{{ pkg.author?.author || pkg.author }}</div>
             <!-- <el-button v-if="!designerCtx.root.plugins?.includes(url)" class="py0! px4! rd-0!" type="info" size="small" :disabled="pkg.disabled" mla op80 style="height: 16px" @click.stop="(designerCtx.root.plugins ??= []).push(url)">install</el-button>
             <div v-else></div> -->
-            <button class="vs-btn mla px5! text-11! lh-16!" :disabled="pkg.disabled" @click.stop="(designerCtx.root.plugins ??= []).push(url)">Install</button>
+            <button v-if="!designerCtx.root.plugins?.includes(url)" class="vs-btn mla px5! text-11! lh-16!" :disabled="pkg.disabled" @click.stop="(designerCtx.root.plugins ??= []).push(url)">Install</button>
           </div>
         </div>
       </div>
