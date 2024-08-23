@@ -44,5 +44,10 @@ watch([schema, designer], ([val, designer]) => {
 </script>
 
 <template>
-  <Designer ref="designer" :json="json" :extra-plugins="[TemplatePluginUrl.replace('/index.js', '')]" h100vh />
+  <Designer
+    ref="designer"
+    :json="json"
+    :extra-plugins="[TemplatePluginUrl].map(e => e.replace('/index.js', ''))"
+    h100vh
+  />
 </template>

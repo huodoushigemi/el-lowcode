@@ -1,5 +1,5 @@
 <template>
-  <div class="infinite-viewer" relative>
+  <div class="infinite-viewer" ref="el" relative>
     <div absolute w20 h20 z-1 @click="viewer.scrollCenter(); viewer.setZoom(1); viewer.emit('pinch', { zoom: 1 })" />
     <div class="guides-x" absolute left-20 right-0 h20 z-1 />
     <div class="guides-y" absolute top-20 bottom-0 w20 z-1 />
@@ -17,8 +17,8 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeMount, watchEffect } from 'vue'
-import { useCurrentElement, useResizeObserver } from '@vueuse/core'
+import { ref, onMounted, onBeforeMount, watchEffect } from 'vue'
+import { useResizeObserver } from '@vueuse/core'
 import Guides from '@scena/guides'
 import InfiniteViewer, { EVENTS, OPTIONS, METHODS } from 'infinite-viewer'
 import { pick } from '@el-lowcode/utils'
@@ -27,7 +27,7 @@ const props = defineProps([...OPTIONS, 'x', 'y'])
 
 const emit = defineEmits([...EVENTS, 'update:zoom', 'update:x', 'update:y'])
 
-const el = useCurrentElement()
+const el = ref()
 
 let viewer
 let guidesX, guidesY

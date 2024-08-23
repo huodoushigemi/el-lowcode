@@ -6,7 +6,8 @@
     "composite": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
+    "allowJs": true,
     "types": ["node"]
   },
-  "include": ["vite.config.ts", "build", "docs/.vitepress/config.ts", "test.js"]
+  "include": ["vite.config.ts", "build", "docs/.vitepress/config.ts"]
 }

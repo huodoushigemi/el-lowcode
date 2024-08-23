@@ -1,8 +1,0 @@
-{
-  "name": "naive-ui",
-  "description": "A Vue 3 Component Library. Fairly Complete, Theme Customizable, Uses TypeScript, Fast",
-  "icon": "https://camo.githubusercontent.com/fd9a8639673e678263354fdf7a36a5ee018b50ab1b3f10a6f83e638e80f9e675/68747470733a2f2f6e6169766575692e6f73732d636e2d686f6e676b6f6e672e616c6979756e63732e636f6d2f6e616976656c6f676f2e737667",
-  "homepage": "https://gitee.com/httpsgiteecomepalserver/el-lowcode/tree/main/public/plugins/naive-ui",
-  "author": "xxx",
-  "disabled": true
-}
