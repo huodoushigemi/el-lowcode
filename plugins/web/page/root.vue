@@ -1,13 +1,13 @@
 <template>
   <div ref="el" class="Page">
-    <slot />
+    <slot></slot>
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineAsyncComponent, getCurrentInstance, inject, provide, toRef, reactive, watch, watchEffect, Plugin, ref, PropType, nextTick } from 'vue'
 import { useWindowSize, useParentElement, useElementSize } from '@vueuse/core'
-import { importJs } from '../../../components/_utils'
+// import { importJs } from '../../../components/_utils'
 import { useFit } from './hooks'
 
 defineOptions({
@@ -24,11 +24,11 @@ const props = defineProps({
 
 const ins = getCurrentInstance()!
 // custom components
-watchEffect(() => {
-  Object.entries(props.customComponents ?? {}).forEach(([name, id]) => {
-    ins.appContext.app.component(name, defineAsyncComponent(async () => (await importJs(id)).default))
-  })
-})
+// watchEffect(() => {
+//   Object.entries(props.customComponents ?? {}).forEach(([name, id]) => {
+//     ins.appContext.app.component(name, defineAsyncComponent(async () => (await importJs(id)).default))
+//   })
+// })
 
 // todo
 // const winSize = useWindowSize()

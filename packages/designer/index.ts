@@ -7,8 +7,7 @@ import './style.scss'
 
 export * from './layout/interface'
 
-import Layout from './layout/index.vue'
-export default Layout
+export { default }  from './layout/index.vue'
 
 document.addEventListener('keydown', e => {
   const i =

@@ -12,34 +12,8 @@
       }
     </style>
 
-    <script src="/vue.runtime.global.js"></script>
+    <script src="/vue.runtime.global.prod.js"></script>
 
-    <script type="module">
-      // import Vue from './node_modules/vue/dist/vue.runtime.global.js'
-      // import * as Vue from './node_modules/vue/dist/vue.runtime.esm-browser.js'
-      // window.Vue = Vue
-      // console.log(Vue)
-      // import Vue from 'vue'
-    </script>
-
-    <!-- <script type="importmap">
-      {
-        "imports": {
-          "vue-echarts": "/el-lowcode/designer/node_modules/vue-echarts",
-          "echarts": "/el-lowcode/designer/node_modules/echarts",
-          "echarts/": "/el-lowcode/designer/node_modules/echarts/",
-          "lodash-es": "/el-lowcode/designer/node_modules/lodash-es",
-          "lodash-es/": "/el-lowcode/designer/node_modules/lodash-es/"
-        }
-      }
-    </script> -->
-    <!-- "vue-echarts": "https://unpkg.com/vue-echarts@latest/dist/index.esm.js"
-    "vue-demi": "https://unpkg.com/vue-demi@latest",
-    "echarts": "https://unpkg.com/echarts@latest",
-    "echarts/core": "https://unpkg.com/echarts@latest/core.js",
-    "resize-detector": "https://unpkg.com/resize-detector@latest/esm/index.js",
-    "tslib": "https://unpkg.com/tslib@latest/tslib.es6.js" -->
-    
     <script>
       document.addEventListener('dragstart', e => {
         const is = e.target.getAttribute('data-is')
@@ -50,7 +24,6 @@
   </head>
   <body>
     <div id="app"></div>
-    <!-- <script type="module" src="/main.ts"></script> -->
     <script type="module" src="/designer/main.ts"></script>
   </body>
 </html>

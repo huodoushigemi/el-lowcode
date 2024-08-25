@@ -40,6 +40,9 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get dir() { return isArray(this.data_children) }
   get config() { return sloveConfig(this.data, this.designerCtx.widgets) }
 
+  #el = computed(() => this.data.is ? this.designerCtx.canvas.doc.querySelector(`[_id='${this.id}']`) : null)
+  get el() { return this.#el.value }
+
   // 自由拖拽
   get isAbs() { return this.data.style?.position == 'absolute' }
   // 自由布局
@@ -89,6 +92,8 @@ export interface DesignerCtx {
   }[]
 
   viewRenderer: Record<string, Renderer>
+
+  dict: Record<string, any> & { plugins: string[] }
 }
 
 export interface Contributes {

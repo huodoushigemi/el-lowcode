@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     'IBi:arrowsMove': typeof import('~icons/bi/arrows-move')['default']
     'IEp:arrowUp': typeof import('~icons/ep/arrow-up')['default']
+    'IEp:plus': typeof import('~icons/ep/plus')['default']
     'IMaterialSymbolsLight:alignHorizontalCenter': typeof import('~icons/material-symbols-light/align-horizontal-center')['default']
     'IMaterialSymbolsLight:alignHorizontalLeft': typeof import('~icons/material-symbols-light/align-horizontal-left')['default']
     'IMaterialSymbolsLight:alignHorizontalRight': typeof import('~icons/material-symbols-light/align-horizontal-right')['default']
@@ -16,8 +17,10 @@ declare module 'vue' {
     'IMaterialSymbolsLight:formatBold': typeof import('~icons/material-symbols-light/format-bold')['default']
     'IMaterialSymbolsLight:formatItalic': typeof import('~icons/material-symbols-light/format-italic')['default']
     'IMaterialSymbolsLight:formatUnderlined': typeof import('~icons/material-symbols-light/format-underlined')['default']
+    'IMdi:applicationImport': typeof import('~icons/mdi/application-import')['default']
     'IMdi:close': typeof import('~icons/mdi/close')['default']
     'IMdi:cursorMove': typeof import('~icons/mdi/cursor-move')['default']
+    'IMdi:eyeOutline': typeof import('~icons/mdi/eye-outline')['default']
     'IMdi:redoVariant': typeof import('~icons/mdi/redo-variant')['default']
     'IMdi:undoVariant': typeof import('~icons/mdi/undo-variant')['default']
     'ISolar:arrowDownLinear': typeof import('~icons/solar/arrow-down-linear')['default']

@@ -97,6 +97,13 @@ import Tabs from '../components/Tabs.vue'
 import CanvasIframe from './components/iframe-temp.html?url'
 const CanvasIframe1 = computedAsync(() => fetch(CanvasIframe).then(e => e.text()))
 
+// const iframeurl = import.meta.resolve('./components/iframe-temp.html')
+// const CanvasIframe1 = new URL('./components/iframe-temp.html', import.meta.url)
+// import html from './components/iframe-temp.html?transform'
+// console.log(html)
+// import aaa from '../components/Tabs.vue?raw'
+// console.log(aaa)
+
 const app = getCurrentInstance()!.appContext.app
 app.component('OptionsInput', OptionsInput)
 app.component('PairInput', PairInput)

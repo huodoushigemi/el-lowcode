@@ -32,9 +32,12 @@ export default defineConfig(async () => ({
       },
       plugins: [
         (await import('rollup-plugin-visualizer')).visualizer(),
-        (await import('rollup-plugin-external-globals')).default({
-          'monaco-editor': 'MonacoEditor',
-          '@guolao/vue-monaco-editor': 'VueMonacoEditor'
+        // (await import('rollup-plugin-external-globals')).default({
+        //   'monaco-editor': 'MonacoEditor',
+        //   '@guolao/vue-monaco-editor': 'VueMonacoEditor'
+        // })
+        (await import('rollup-plugin-external-globals')).default(id => {
+          return id.startsWith('monaco-editor') ? 'MonacoEditor' : void 0
         })
       ]
     }
@@ -61,6 +64,9 @@ export default defineConfig(async () => ({
     //     }
     //   }
     // },
+
+    (await import('./build/plugins/rollup-plugin-transform-html')).default(),
+    
     (await import('unplugin-vue-macros/vite')).default({
       plugins: {
         vue: (await import('@vitejs/plugin-vue')).default(),

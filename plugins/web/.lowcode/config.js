@@ -1,12 +1,14 @@
 import native from './config/native'
+import page from '../page/config'
+import grid from '../grid/config'
+import code from '../code/config'
 
 export default [
   ...native,
 
-  (await import('../page/config')).default,
-  (await import('../grid/config')).default,
-  (await import('../code/config')).default,
-
+  page,
+  grid,
+  code,
   {
     is: 'wc-waterfall',
     label: 'waterfall',
@@ -51,6 +53,6 @@ export default [
       style: { height: '300px' },
       children: [],
     }),
-    purify: (props) => ({ ...props, is: 'div' })
+    purify: (props) => ({ ...props, is: 'div', 'data-absolute-layout': void 0 })
   }
 ]

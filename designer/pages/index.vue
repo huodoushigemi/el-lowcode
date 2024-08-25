@@ -1,15 +1,47 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, watchSyncEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { computedAsync, watchDebounced } from '@vueuse/core'
+import { watchDebounced } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
+import { v4 as uuid } from 'uuid'
 import Designer, { DesignerCtx } from '@el-lowcode/designer'
 
 import TemplatePluginUrl from '../plugins/template?url'
 
 const designer = ref<DesignerCtx>()
 
-const json = window.__LCD_JSON__
+const initial = () => ({
+  _id: uuid(),
+  is: 'Page',
+  state: { count: 0 },
+  children: [],
+  plugins: ['/plugins/web']
+})
+
+const json = window.__LCD_JSON__ ?? initial()
+
+
+onMounted(() => {
+  designer.value!.dict.plugins.push(...[
+    "/plugins/web",
+    "/plugins/element-plus",
+    "/plugins/echarts",
+    "/plugins/chatgpt",
+    "/plugins/ant-design-vue",
+    "/plugins/naive-ui",
+    "/plugins/shoelace",
+    "/plugins/mdui",
+    "/plugins/threejs",
+
+    "/plugins/threejs",
+    "/plugins/threejs",
+    "/plugins/threejs",
+    "/plugins/threejs",
+    "/plugins/threejs",
+    "/plugins/threejs",
+    "/plugins/threejs",
+  ])
+})
 
 // @ts-ignore
 // vscode extension
