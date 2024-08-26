@@ -355,7 +355,7 @@ export default {
     },
     style: {},
     plugins: [
-      "/el-lowcode/designer/packages/designer/plugins/web"
+      "/plugins/web"
     ],
   },
 }

@@ -6,8 +6,6 @@ import { useRouteQuery } from '@vueuse/router'
 import { v4 as uuid } from 'uuid'
 import Designer, { DesignerCtx } from '@el-lowcode/designer'
 
-import TemplatePluginUrl from '../plugins/template?url'
-
 const designer = ref<DesignerCtx>()
 
 const initial = () => ({
@@ -79,7 +77,7 @@ watch([schema, designer], ([val, designer]) => {
   <Designer
     ref="designer"
     :json="json"
-    :extra-plugins="[TemplatePluginUrl].map(e => e.replace('/index.js', ''))"
+    :extra-plugins="['/plugins/template']"
     h100vh
   />
 </template>

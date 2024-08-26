@@ -54,13 +54,6 @@ async function build1(input, outDir) {
       copyPublicDir: false,
       rollupOptions: {
         treeshake: 'smallest',
-        external(source, importer, isResolved) {
-          return (
-            source == 'vue'
-            // || source == 'element-plus'
-            || source == 'monaco-editor' || source.includes('monaco-editor')
-          )
-        },
         manualChunks: (id) => {
           const dep = [...ALL_DEPS, '@vue'].find(e => id.includes(`node_modules/${e}/`))
           if (dep && dep != 'vue') return dep.replaceAll('/', '-')
@@ -81,39 +74,13 @@ async function build1(input, outDir) {
       }),
       (await import('unplugin-icons/vite')).default({ autoInstall: true }),
 
-      // (await import('rollup-plugin-visualizer')).visualizer(),
-    ]
-  })
-
-  await build({
-    configFile: false,
-    root: cwd,
-    build: {
-      outDir,
-      target: 'esnext',
-      emptyOutDir: false,
-      lib: {
-        entry: path.join(outDir, 'index.js'),
-        formats: ['es'],
-      },
-      minify: false,
-      copyPublicDir: false,
-      rollupOptions: {
-        // external: ['vue', 'monaco-editor', 'element-plus'],
-        output: {
-          preserveModules: true,
-          chunkFileNames: `[name].js`,
-          entryFileNames: `[name].js`,
-        }
-      },
-    },
-    plugins: [
       (await import('rollup-plugin-external-globals')).default(id => (
         id == 'vue' ? 'Vue' :
-        // id == 'element-plus' ? 'ElementPlus' :
-        // id == '@vueuse/core' ? 'VueuseCore' :
+        id == 'vue-demi' ? 'Vue' :
         id.includes('monaco-editor') ? 'MonacoEditor' : void 0
       ))
+
+      // (await import('rollup-plugin-visualizer')).visualizer(),
     ]
   })
 
@@ -124,8 +91,8 @@ async function build1(input, outDir) {
 }
 
 async function buildPlugin(name) {
-  await build1(`plugins/${name}/index.js`, `docs/dest/designer/plugins/${name}`)
-  await build1(`plugins/${name}/.lowcode/index.js`, `docs/dest/designer/plugins/${name}/.lowcode`)
+  await build1(`plugins/${name}/index.js`, `dist/plugins/${name}`)
+  await build1(`plugins/${name}/.lowcode/index.js`, `dist/plugins/${name}/.lowcode`)
 }
 
 
@@ -139,3 +106,4 @@ await buildPlugin('material-web')
 await buildPlugin('shoelace')
 await buildPlugin('threejs')
 await buildPlugin('chatgpt')
+await buildPlugin('template')

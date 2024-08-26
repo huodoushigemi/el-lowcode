@@ -20,6 +20,7 @@ function TransformHtml() {
       }
     },
     async load(id) {
+      return
       if (!xxx[id]) return
       const dom = new jsdom.JSDOM(readFileSync(xxx[id], 'utf8'))
       const doc = dom.window.document

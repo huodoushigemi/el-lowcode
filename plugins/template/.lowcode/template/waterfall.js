@@ -169,7 +169,7 @@ export default {
       margin: 'auto',
     },
     plugins: [
-      "/el-lowcode/designer/packages/designer/plugins/web"
+      "/plugins/web"
     ],
     designer: {
       canvas: {

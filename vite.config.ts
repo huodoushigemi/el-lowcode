@@ -21,7 +21,7 @@ export default defineConfig(async () => ({
     port: 5174
   },
   build: {
-    outDir: 'docs/dest/designer',
+    // outDir: 'docs/dest/designer',
     emptyOutDir: false,
     rollupOptions: {
       output: {
@@ -80,6 +80,9 @@ export default defineConfig(async () => ({
     (await import('unplugin-icons/vite')).default({ autoInstall: true, compiler: 'vue3' }),
     (await import('vite-plugin-pages')).default({ dirs: 'designer/pages' }),
     
-    { ...(await import('rollup-plugin-external-globals')).default({ vue: 'Vue' }), enforce: 'post' } as any,
+    (await import('rollup-plugin-external-globals')).default({
+      'vue': 'Vue',
+      'vue-demi': 'Vue'
+    }),
   ]
 }))

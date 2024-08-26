@@ -40,7 +40,7 @@ export function createDesignerCtx(root: Ref<PageCtx>, builtinPluginUrls?: MaybeR
       designerCtx.plugins.push(plugin)
       return plugin
     }, void 0, { onError: e => console.error(e) })))
-  })
+  }, { immediate: true })
 
   const designerCtx = reactive({
     currentState: {},

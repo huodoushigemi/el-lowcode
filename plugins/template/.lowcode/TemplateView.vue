@@ -37,7 +37,7 @@ function demoUrl({ title, schema }) {
   const h = Math.min(parseInt(schema.designer?.canvas?.style?.height || sh), sh)
 
   const win = window.open(
-    `http://localhost:5174/el-lowcode/designer/demo.html?schema=${encodeSchema(schema)}`,
+    `/demo.html?schema=${encodeSchema(schema)}`,
     '_blank',
     `popup,width=${w},height=${h},left=${sw - w >> 1},top=${sh - h >> 1}`
   )

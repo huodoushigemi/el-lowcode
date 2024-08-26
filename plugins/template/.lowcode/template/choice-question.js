@@ -190,8 +190,8 @@ export default {
       padding: '12px',
     },
     plugins: [
-      "/el-lowcode/designer/packages/designer/plugins/web",
-      "/el-lowcode/designer/packages/designer/plugins/element-plus"
+      "/plugins/web",
+      "/plugins/element-plus"
     ],
     designer: {
       canvas: {
