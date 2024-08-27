@@ -1,19 +1,10 @@
-import { defineConfig } from 'vite'
+import { defineConfig, mergeConfig } from 'vite'
 import { ALL_DEPS } from './build/all-pkgs.js'
-
-// console.log(ALL_DEPS);
-
-import { entries } from './build/plugins/alias'
+import { defaultConfig } from './build/defaultConfig.js'
 
 // https://vitejs.dev/config/
-export default defineConfig(async () => ({
-  // base: '/el-lowcode/designer',
+export default mergeConfig(defaultConfig, defineConfig({
   base: './',
-  resolve: {
-    alias: [
-      ...entries,
-    ]
-  },
   optimizeDeps: {
     exclude: ['vue'],
   },
@@ -32,57 +23,11 @@ export default defineConfig(async () => ({
       },
       plugins: [
         (await import('rollup-plugin-visualizer')).visualizer(),
-        // (await import('rollup-plugin-external-globals')).default({
-        //   'monaco-editor': 'MonacoEditor',
-        //   '@guolao/vue-monaco-editor': 'VueMonacoEditor'
-        // })
-        (await import('rollup-plugin-external-globals')).default(id => {
-          return id.startsWith('monaco-editor') ? 'MonacoEditor' : void 0
-        })
       ]
     }
   },
   plugins: [
-    // vue(),
-    // {
-    //   name: 'xxxxxxxxxxxxxxx',
-    //   enforce: 'post',
-    //   transform: {
-    //     order: 'post',
-    //     handler(code, id, options) {
-    //       return code
-    //         ?.replaceAll('\'/el-lowcode/designer', '\'http://localhost:5174/el-lowcode/designer')
-    //         .replaceAll('\"/el-lowcode/designer', '\"http://localhost:5174/el-lowcode/designer')
-    //     },
-    //   },
-    //   transformIndexHtml: {
-    //     order: 'post',
-    //     handler(code) {
-    //       return code
-    //         ?.replaceAll('\'/el-lowcode/designer', '\'http://localhost:5174/el-lowcode/designer')
-    //         .replaceAll('\"/el-lowcode/designer', '\"http://localhost:5174/el-lowcode/designer')
-    //     }
-    //   }
-    // },
-
     (await import('./build/plugins/rollup-plugin-transform-html')).default(),
-    
-    (await import('unplugin-vue-macros/vite')).default({
-      plugins: {
-        vue: (await import('@vitejs/plugin-vue')).default(),
-        vueJsx: (await import('@vitejs/plugin-vue-jsx')).default(), // if needed
-      }
-    }),
-    (await import('unocss/vite')).default(),
-    (await import('unplugin-vue-components/vite')).default({
-      resolvers: [(await import('unplugin-icons/resolver')).default()]
-    }),
-    (await import('unplugin-icons/vite')).default({ autoInstall: true, compiler: 'vue3' }),
     (await import('vite-plugin-pages')).default({ dirs: 'designer/pages' }),
-    
-    (await import('rollup-plugin-external-globals')).default({
-      'vue': 'Vue',
-      'vue-demi': 'Vue'
-    }),
   ]
 }))
