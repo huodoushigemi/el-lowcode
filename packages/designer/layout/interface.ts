@@ -1,6 +1,7 @@
-import { computed, ComputedRef, InjectionKey, ref, Ref, shallowRef } from 'vue'
-import { Obj } from '@el-lowcode/utils'
+import { computed, ComputedRef, InjectionKey, nextTick, ref, Ref, shallowRef } from 'vue'
 import { isArray, isObject, isString, remove } from '@vue/shared'
+import { computedAsync } from '@vueuse/core'
+import { Obj } from '@el-lowcode/utils'
 import { Node } from './components/Node'
 import { sloveConfig } from '../components/_utils'
 
@@ -40,7 +41,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get dir() { return isArray(this.data_children) }
   get config() { return sloveConfig(this.data, this.designerCtx.widgets) }
 
-  #el = computed(() => this.data.is ? this.designerCtx.canvas.doc.querySelector(`[_id='${this.id}']`) : null)
+  #el = computedAsync(() => this.data.is ? nextTick().then(() => this.designerCtx.canvas.doc.querySelector(`[_id='${this.id}']`)) : null)
   get el() { return this.#el.value }
 
   // 自由拖拽

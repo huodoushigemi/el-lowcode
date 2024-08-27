@@ -13,7 +13,6 @@ importers:
       '@iconify/json': ^2.2.121
       '@rollup/plugin-alias': ^5.0.0
       '@rollup/plugin-commonjs': ^25.0.5
-      '@rollup/plugin-json': ^6.1.0
       '@rollup/plugin-node-resolve': ^15.1.0
       '@rollup/plugin-typescript': ^11.1.2
       '@rollup/pluginutils': ^5.0.4
@@ -53,7 +52,6 @@ importers:
       micromatch: ^4.0.5
       msw: ^1.2.3
       postcss: ^8.4.41
-      postcss-scss: ^4.0.9
       qs: ^6.11.2
       rollup: ^3.27.2
       rollup-plugin-dts: ^5.3.1
@@ -61,7 +59,6 @@ importers:
       rollup-plugin-external-globals: ^0.11.0
       rollup-plugin-import-meta-glob: ^1.0.1
       rollup-plugin-postcss: ^4.0.2
-      rollup-plugin-sass: ^1.13.2
       rollup-plugin-scss: ^4.0.0
       rollup-plugin-visualizer: ^5.9.2
       sass: ^1.65.1
@@ -81,6 +78,7 @@ importers:
       vite-plugin-css-injected-by-js: ^3.5.1
       vite-plugin-markdown-preview: ^1.1.1
       vite-plugin-pages: ^0.31.0
+      vite-plugin-singlefile: ^2.0.2
       vitepress: 1.0.0-beta.7
       vue: ^3.3.4
       vue-demi: ^0.14.7
@@ -124,7 +122,6 @@ importers:
       '@iconify/json': 2.2.223
       '@rollup/plugin-alias': 5.1.0_rollup@3.29.4
       '@rollup/plugin-commonjs': 25.0.8_rollup@3.29.4
-      '@rollup/plugin-json': 6.1.0_rollup@3.29.4
       '@rollup/plugin-node-resolve': 15.2.3_rollup@3.29.4
       '@rollup/plugin-typescript': 11.1.6_twb35qw35l6t6tx4f5gea6nd5a
       '@rollup/pluginutils': 5.1.0_rollup@3.29.4
@@ -151,14 +148,12 @@ importers:
       magic-string: 0.30.10
       micromatch: 4.0.7
       msw: 1.3.3_typescript@5.5.2
-      postcss-scss: 4.0.9_postcss@8.4.41
       rollup: 3.29.4
       rollup-plugin-dts: 5.3.1_ypnp5tzewiwavfnpoxhralgvia
       rollup-plugin-esbuild: 5.0.0_xvsdwgezebiuvgqivuhxoq3354
       rollup-plugin-external-globals: 0.11.0_rollup@3.29.4
       rollup-plugin-import-meta-glob: 1.0.2
       rollup-plugin-postcss: 4.0.2_postcss@8.4.41
-      rollup-plugin-sass: 1.13.2_rollup@3.29.4
       rollup-plugin-scss: 4.0.0
       rollup-plugin-visualizer: 5.12.0_rollup@3.29.4
       sass: 1.77.6
@@ -177,6 +172,7 @@ importers:
       vite-plugin-css-injected-by-js: 3.5.1_vite@4.5.3
       vite-plugin-markdown-preview: 1.1.1
       vite-plugin-pages: 0.31.0_owzbjehsnlmd7hrfy4pfg6tgk4
+      vite-plugin-singlefile: 2.0.2_rollup@3.29.4+vite@4.5.3
       vitepress: 1.0.0-beta.7_73fjuefmtogynlwn3kn6bud6la
       vue-demi: 0.14.8_vue@3.4.30
       vue-tsc: 1.8.27_typescript@5.5.2
@@ -1651,19 +1647,6 @@ packages:
       glob: 8.1.0
       is-reference: 1.2.1
       magic-string: 0.30.10
-      rollup: 3.29.4
-    dev: true
-
-  /@rollup/plugin-json/6.1.0_rollup@3.29.4:
-    resolution: {integrity: sha512-EGI2te5ENk1coGeADSIwZ7G2Q8CJS2sF120T7jLw4xFw9n7wIOXHo+kIYRAoVpJAN+kmqZSoO3Fp4JtoNF4ReA==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-    dependencies:
-      '@rollup/pluginutils': 5.1.0_rollup@3.29.4
       rollup: 3.29.4
     dev: true
 
@@ -6588,15 +6571,6 @@ packages:
       postcss-value-parser: 4.2.0
     dev: true
 
-  /postcss-scss/4.0.9_postcss@8.4.41:
-    resolution: {integrity: sha512-AjKOeiwAitL/MXxQW2DliT28EKukvvbEWx3LBmJIRN8KfBGZbRTxNYW0kSqi1COiTZ57nZ9NW06S6ux//N1c9A==}
-    engines: {node: '>=12.0'}
-    peerDependencies:
-      postcss: ^8.4.29
-    dependencies:
-      postcss: 8.4.41
-    dev: true
-
   /postcss-selector-parser/6.0.4:
     resolution: {integrity: sha512-gjMeXBempyInaBqpp8gODmwZ52WaYsVOsfr4L4lDQ7n3ncD6mEyySiDtgzCT+NYC0mmeOLvtsF8iaEf0YT6dBw==}
     engines: {node: '>=4'}
@@ -6909,17 +6883,6 @@ packages:
       style-inject: 0.3.0
     transitivePeerDependencies:
       - ts-node
-    dev: true
-
-  /rollup-plugin-sass/1.13.2_rollup@3.29.4:
-    resolution: {integrity: sha512-Ff+NePHCWpLKzcb7k8D+v1c7+I6DyFXJyLYF6MBkt24ei6Gsp4WMRZv1i/EtTZF980b5eWKjQpxLXDZh2CSXwA==}
-    engines: {node: '>=10'}
-    dependencies:
-      '@rollup/pluginutils': 5.1.0_rollup@3.29.4
-      resolve: 1.22.8
-      sass: 1.77.6
-    transitivePeerDependencies:
-      - rollup
     dev: true
 
   /rollup-plugin-scss/4.0.0:
@@ -7844,6 +7807,18 @@ packages:
       yaml: 2.4.5
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /vite-plugin-singlefile/2.0.2_rollup@3.29.4+vite@4.5.3:
+    resolution: {integrity: sha512-Z2ou6HcvED5CF0hM+vcFSaFa+klyS8RyyLxW0PbMRLnMbvzTI6ueWyxdYNFhpuXZgz/aj6+E/dHFTdEcw6gb9w==}
+    engines: {node: '>18.0.0'}
+    peerDependencies:
+      rollup: ^4.18.0
+      vite: ^5.3.1
+    dependencies:
+      micromatch: 4.0.7
+      rollup: 3.29.4
+      vite: 4.5.3_6tea7d2h5elskagnjbyikbrjaq
     dev: true
 
   /vite/4.5.3_6tea7d2h5elskagnjbyikbrjaq:

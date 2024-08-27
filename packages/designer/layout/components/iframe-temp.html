@@ -13,7 +13,10 @@
 
     <!-- 共享 Vue 内存，以便实现数据响应 -->
     <script>
-      if (window.parent) window.Vue = window.parent.Vue
+      if (window.parent) {
+        window.Vue = window.parent.Vue
+        window.Moveable = window.parent.Moveable
+      }
     </script>
 
 

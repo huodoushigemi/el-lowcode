@@ -28,7 +28,7 @@ import { refWithWatch } from '../../components/hooks'
 // ==========================================================================================
 
 const VueMonacoEditor = defineAsyncComponent(async () => {
-  const monaco = window.monaco = await import('monaco-editor')
+  const monaco = window.monaco = await import('monaco-editor/esm/vs/editor/editor.api')
   self.MonacoEnvironment = {
     getWorker: async (_, label) => new (await {
       editorWorkerService: () => import("monaco-editor/esm/vs/editor/editor.worker?worker"),
