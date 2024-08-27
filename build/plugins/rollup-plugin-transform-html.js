@@ -1,7 +1,7 @@
-import { readFileSync } from 'fs'
-import jsdom from 'jsdom'
 import path from 'path'
 import { v4 as uuid } from 'uuid'
+import { build, defineConfig, mergeConfig } from 'vite'
+import { defaultConfig } from '../defaultConfig.js'
 
 /**
  * @returns {import('rollup').Plugin}
@@ -13,29 +13,33 @@ function TransformHtml() {
     name: 'rollup-plugin-transform-html',
     enforce: 'pre',
     resolveId(id, importer, options) {
-      if (id.includes('.html?transform')) {
+      if (id?.includes('.html?transform')) {
         const virtualModuleId = `virtual:${uuid()}`
         xxx[virtualModuleId] = path.join(path.dirname(importer), id.split('?')[0])
         return virtualModuleId
       }
     },
     async load(id) {
-      return
-      if (!xxx[id]) return
-      const dom = new jsdom.JSDOM(readFileSync(xxx[id], 'utf8'))
-      const doc = dom.window.document
-      const modules = [...doc.querySelectorAll('script[type="module"]')].filter(e => e.innerHTML)
-      for (const node of modules) {
-        // const jscode = this.transform(node.innerHTML, `${id}.${i}.js`)
-        // const jscode = await this.resolve(node.innerHTML, xxx[id], { isEntry: true })
-        // console.log(1111, jscode, node.innerHTML)
-        this.emitFile({ code: '' })
-        node.innerHTML = jscode
-      }
-      return `export default ${JSON.stringify(dom.serialize())}`
+      const input = xxx[id]
+      if (!input) return
+      const bundle = await build(mergeConfig(defaultConfig, defineConfig({
+        configFile: false,
+        mode: 'production',
+        build: {
+          copyPublicDir: false,
+          rollupOptions: {
+            input
+          }
+        },
+        plugins: [(await import('vite-plugin-singlefile')).viteSingleFile()]
+      })))
+
+      const code = bundle.output[0].source?.replace('(void 0).accept', '(void 0)?.accept')
+
+      return `export default ${JSON.stringify(code)}`
     },
-    transform(id) {
-      
+    transform(code, id) {
+      return xxx[id] ? code : void 0
     }
   }
 }
