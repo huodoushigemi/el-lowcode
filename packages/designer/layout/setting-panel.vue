@@ -1,4 +1,5 @@
 <template>
+  <Render2 v-bind="{ is: 'ElTooltip', content: 'content', children: [{ is: 'span', children: 'span' }] }" />
   <div flex aic p8 text-26 font-medium capitalize>
     <div mra>{{ config?.label }}</div>
     <i-mdi:cursor-move v-if="model && designerCtx.root != model" bg-hover w28 h28 p4 mr8 :bg="model.style?.position == 'absolute' ? '#404040' : ''" @click="add2absolute(model)" />
@@ -33,7 +34,7 @@
 <script setup>
 import { computed, inject, ref } from 'vue'
 import { isArray, parseStringStyle, stringifyStyle, isOn } from '@vue/shared'
-import { createRender } from '@el-lowcode/render'
+import Render2, { createRender } from '@el-lowcode/render'
 import { mapValues, pick, set, unFn } from '@el-lowcode/utils'
 import { ElFormRender, normalizeItem } from 'el-form-render'
 import { designerCtxKey } from './interface'

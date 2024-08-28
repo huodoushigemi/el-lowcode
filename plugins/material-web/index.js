@@ -1,3 +1,5 @@
+import 'https://cdn.jsdelivr.net/npm/@material/web/all.js/+esm'
+
 const list = [
   // Object.assign(document.createElement('script'), {
   //   type: 'importmap',
@@ -11,7 +13,6 @@ const list = [
 
 list.forEach(el => document.head.append(el))
 
-await import('https://cdn.jsdelivr.net/npm/@material/web/all.js/+esm')
 // todo 'lit'
 // const { styles } = await import('https://cdn.jsdelivr.net/npm/@material/web/typography/md-typescale-styles.js')
 // console.log(styles);

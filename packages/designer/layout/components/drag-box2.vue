@@ -53,7 +53,7 @@ const Render = createRender({
 
       if (isArray(children)) {
         if (!children.length) {
-          children = [{ ref: ctx.boxRef, is: 'div', class: 'empty-placeholder', [EMPTY]: 1, children }]
+          children = [{ ref: ctx.boxRef, is: 'div', class: 'empty-placeholder', [EMPTY]: 1 }]
         }
         else {
           sortAbsolute(children)
@@ -71,7 +71,7 @@ const Render = createRender({
       // 合并属性
       props = mergeProps(props, { ref: ctx.ref }, ctx.attrs)
       props.children = _execExp(children)
-      
+
       return props
     })).get(_props).value
     
@@ -265,10 +265,11 @@ function useDrag(props: BoxProps, elRef: Ref, designer: DesignerCtx) {
     e.dataTransfer!.setDragImage(new Image(), 0, 0)
   })
   watchEffect(() => {
+    // el 可能是 TEXT_NODE
     const el = unrefElement<HTMLElement>(elRef)
     if (!el) return
-    el.setAttribute('draggable', (!node.isRoot && !node.isAbs) + '')
-    el.setAttribute('_id', props._id)
+    el.setAttribute?.('draggable', (!node.isRoot && !node.isAbs) + '')
+    el.setAttribute?.('_id', props._id)
   })
 }
 

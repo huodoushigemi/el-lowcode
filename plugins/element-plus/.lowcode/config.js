@@ -1,5 +1,8 @@
+import DateTime from '../date-time/config'
+import Form from '../form/config'
+
 export default [
   ...Object.values(import.meta.glob('./config/*', { eager: true, import: 'default' })),
-  (await import('../date-time/config')).default,
-  (await import('../form/config')).default,
+  DateTime,
+  Form,
 ]

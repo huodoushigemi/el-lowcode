@@ -9,6 +9,8 @@ export default {
   ],
   defaultProps: () => ({
     content: 'content',
-    children: []
+    children: [
+      { is: 'span', children: 'text' }
+    ]
   })
 }

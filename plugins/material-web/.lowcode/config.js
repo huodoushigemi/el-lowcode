@@ -1,4 +1,5 @@
 import { v4 } from 'uuid'
+import Tabs from './config/tabs'
 
 const buttons = [
   'md-elevated-button',
@@ -119,5 +120,5 @@ export default [
     ]
   },
 
-  ...(await import('./config/tabs')).default
+  Tabs,
 ]
