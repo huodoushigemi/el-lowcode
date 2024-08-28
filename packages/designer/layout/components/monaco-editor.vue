@@ -20,29 +20,10 @@
   />
 </template>
 
-<script setup lang="ts">
-import { defineAsyncComponent } from 'vue'
-import { useDark, useSessionStorage } from '@vueuse/core'
+<script setup>
+import { ref } from 'vue'
+import { useDark } from '@vueuse/core'
 import { refWithWatch } from '../../components/hooks'
-
-// ==========================================================================================
-
-const VueMonacoEditor = defineAsyncComponent(async () => {
-  const monaco = window.monaco = await import('monaco-editor/esm/vs/editor/editor.api')
-  self.MonacoEnvironment = {
-    getWorker: async (_, label) => new (await {
-      editorWorkerService: () => import("monaco-editor/esm/vs/editor/editor.worker?worker"),
-      typescript: () => import('monaco-editor/esm/vs/language/typescript/ts.worker?worker'),
-      json: () => import('monaco-editor/esm/vs/language/json/json.worker?worker'),
-      html: () => import('monaco-editor/esm/vs/language/html/html.worker?worker'),
-    }[label]()).default
-  }
-  const { VueMonacoEditor, loader } = await import('@guolao/vue-monaco-editor')
-  loader.config({ monaco })
-  return VueMonacoEditor
-})
-// ==========================================================================================
-
 
 const props = defineProps({
   // ...VueMonacoEditor.props as { [k in keyof EditorProps]: any },
@@ -57,21 +38,19 @@ let editorIns
 
 let _val = refWithWatch(() => props.value || '')
 
-const emit = defineEmits<{ (e: 'save', val: string): void }>()
+const emit = defineEmits(['save'])
 
-const isMount = useSessionStorage('monaco-editor-is-mounted', false)
+const isMount = ref(false)
 const isDark = useDark({ storageKey: 'vitepress-theme-appearance' })
 
-async function onMount(_editor) {
+async function onMount(_editor, monaco) {
   isMount.value = true
   editorIns = _editor
   setTimeout(() => {
     // if (props.autoFormat) editor.getAction('editor.action.formatDocument').run()
     editorIns.focus()
   }, 100);
-  // const { languages } = await import('monaco-editor')
-  const { languages } = self.monaco
-  // const languages: any = {}
+  const { languages } = monaco
   if (props.tsExtraLibs) {
     Object.entries(props.tsExtraLibs).forEach(([k, v]) => {
       languages.typescript.typescriptDefaults.addExtraLib(v, k)
@@ -79,13 +58,26 @@ async function onMount(_editor) {
   }
 }
 
-function onKeydown(e: KeyboardEvent) {
+function onKeydown(e) {
   if (e.key.toLowerCase() == 's' && e.ctrlKey) {
     e.preventDefault()
     e.stopPropagation()
     emit('save', _val.value)
   }
 }
+</script>
+
+<script>
+import { defineAsyncComponent } from 'vue'
+
+const VueMonacoEditor = defineAsyncComponent(async () => {
+  const vs = 'https://unpkg.com/monaco-editor@0.51.0/min/vs'
+
+  const { VueMonacoEditor, loader } = await import('@guolao/vue-monaco-editor')
+  // loader.config({ monaco })
+  loader.config({ paths: { vs } })
+  return VueMonacoEditor
+})
 </script>
 
 <style lang="scss">
