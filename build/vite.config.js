@@ -9,6 +9,9 @@ async function build1(input, outDir) {
   await build(mergeConfig({
     configFile: false,
     mode: 'production',
+    define: {
+      'process.env.NODE_ENV': '"production"'
+    },
     build: {
       outDir,
       target: 'esnext',
@@ -20,7 +23,10 @@ async function build1(input, outDir) {
       minify: false,
       copyPublicDir: false,
       rollupOptions: {
-        // treeshake: 'smallest',
+        treeshake: {
+          preset: 'smallest',
+          moduleSideEffects: true,
+        },
         manualChunks: (id) => {
           const dep = [...ALL_DEPS, '@vue'].find(e => id.includes(`node_modules/${e}/`))
           if (dep && dep != 'vue') return dep.replaceAll('/', '-')
@@ -28,7 +34,7 @@ async function build1(input, outDir) {
       }
     },
     plugins: [
-      (await import('vite-plugin-css-injected-by-js')).default({ relativeCSSInjection: true }),
+      (await import('vite-plugin-css-injected-by-js')).default(),
       // (await import('rollup-plugin-visualizer')).visualizer(),
     ]
   }))
