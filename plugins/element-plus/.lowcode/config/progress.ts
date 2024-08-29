@@ -4,8 +4,8 @@ export default {
   category: '数据展示',
   props: [
     { lp: ['value', 'percentage'], type: 'input-number' },
-    { lp: 'stroke-width', type: 'input-number', defaultValue: 6 },
-    { lp: 'type', type: 'radio-group', defaultValue: 'line', options: ['line', 'circle', 'dashboard'] },
+    { lp: 'stroke-width', type: 'input-number', displayValue: 6 },
+    { lp: 'type', type: 'radio-group', displayValue: 'line', options: ['line', 'circle', 'dashboard'] },
     { lp: 'text-inside', type: 'switch' },
     { lp: 'color', type: 'color-picker' },
   ],

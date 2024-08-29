@@ -8,15 +8,15 @@ export default {
   category: '数据输入',
   props: [
     ...formItemPropsConfig(),
-    { lp: ['show-format', 'el.format'], type: 'select', defaultValue: 'HH:mm:ss', options: ['HH:mm:ss', 'hh:mm:ss', 'HH时mm分ss秒', 'hh时mm分ss秒'] },
-    { lp: 'default-value' },
+    { lp: ['show-format', 'el.format'], type: 'select', displayValue: 'HH:mm:ss', options: ['HH:mm:ss', 'hh:mm:ss', 'HH时mm分ss秒', 'hh时mm分ss秒'] },
+    { lp: 'default-value' },  
   ],
   defaultProps: () => ({
     is: 'ElFormItemRender',
     label: 'time',
     prop: `time${++count}`,
     defaultValue: '',
-    el: { is: 'ElTimePicker', format: 'HH:mm:ss' }
+    el: { is: 'ElTimePicker' }
   }),
   JSONSchemaOutput: (props) => ({
     type: 'string',

@@ -8,9 +8,9 @@ export default {
   category: '数据输入',
   props: [
     ...formItemPropsConfig({ exclude: ['readonly', 'placeholder'] }),
-    { lp: ['max', 'el.max'], type: 'input-number', defaultValue: 5 },
-    // { lp: ['low-threshold', 'el.lowThreshold'], type: 'input-number', defaultValue: 2 },
-    // { lp: ['high-threshold', 'el.highThreshold'], type: 'input-number', defaultValue: 4 },
+    { lp: ['max', 'el.max'], type: 'input-number', displayValue: 5 },
+    // { lp: ['low-threshold', 'el.lowThreshold'], type: 'input-number', displayValue: 2 },
+    // { lp: ['high-threshold', 'el.highThreshold'], type: 'input-number', displayValue: 4 },
     { lp: ['void-color', 'el.voidColor'], type: 'color-picker' },
     { lp: ['show-score', 'el.showScore'], type: 'switch' },
     { lp: 'default-value', type: 'input-number' },

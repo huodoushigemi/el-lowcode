@@ -7,7 +7,7 @@ export default {
     { lp: 'href' },
     { lp: 'target', type: 'radio-group', options: ['_self', '_blank'] },
     { lp: 'disabled', type: 'switch' },
-    { lp: 'underline', type: 'switch', defaultValue: true },
+    { lp: 'underline', type: 'switch', displayValue: true },
     { lp: 'type', type: 'select', options: ['default', 'primary', 'success', 'warning', 'danger', 'info'] },
   ],
   defaultProps: () => ({

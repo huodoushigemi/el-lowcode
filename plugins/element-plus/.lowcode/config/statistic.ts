@@ -5,11 +5,11 @@ export default {
   props: [
     { lp: 'title' },
     { lp: 'value', type: 'input-number' },
-    { lp: 'precision', type: 'input-number', defaultValue: 0 },
+    { lp: 'precision', type: 'input-number', displayValue: 0 },
     { lp: 'prefix' },
     { lp: 'suffix' }, 
-    { lp: 'decimal-separator', defaultValue: '.' },
-    { lp: 'group-separator', defaultValue: ',' },
+    { lp: 'decimal-separator', displayValue: '.' },
+    { lp: 'group-separator', displayValue: ',' },
   ],
   defaultProps: () => ({
     title: 'Daily active users',

@@ -12,7 +12,7 @@ export default {
     { lp: ['max', 'el.max'], type: 'input-number' },
     { lp: ['step', 'el.step'], type: 'input-number' },
     { lp: ['precision', 'el.precision'], type: 'input-number' },
-    { lp: ['controls', 'el.controls'], type: 'switch', defaultValue: true },
+    { lp: ['controls', 'el.controls'], type: 'switch', displayValue: true },
     { lp: 'default-value', type: 'input-number' },
   ],
   defaultProps: () => ({

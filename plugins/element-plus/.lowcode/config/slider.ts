@@ -13,7 +13,7 @@ export default {
     { lp: ['step', 'el.step'], type: 'input-number' },
     { lp: ['show-input', 'el.showInput'], type: 'switch' },
     { lp: ['show-stops', 'el.showStops'], type: 'switch' },
-    { lp: ['show-tooltip', 'el.showTooltip'], type: 'switch', defaultValue: true },
+    { lp: ['show-tooltip', 'el.showTooltip'], type: 'switch', displayValue: true },
     { lp: 'default-value', type: 'input-number' },
   ],
   defaultProps: () => ({
