@@ -59,6 +59,9 @@ const Render = createRender({
           sortAbsolute(children)
         }
         children = [{ ref: ctx.nillRef, is: 'div', hidden: 1, [NILL]: 1, }, ...children]
+
+        // el-tooltip 特殊处理
+        if (_props['data-single-child'])  children = [{ is: 'div', style: 'display: contents', [NILL]: 1, children }]
       }
       else if (isObject(children)) {
         // 插槽
