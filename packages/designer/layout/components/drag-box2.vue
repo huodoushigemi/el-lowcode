@@ -156,7 +156,11 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRe
     
     // 自由布局
     if (node.isAbsLayout) {
-      
+      Object.assign(dragLineStyle, {
+        transform: ``,
+        width: ``,
+        height: ``,
+      })
     }
     // 排序布局
     else {
