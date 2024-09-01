@@ -1,5 +1,5 @@
 export default {
-  is: 'ElTooltip',
+  is: 'ElTooltip-lcd',
   label: 'tooltip',
   props: [
     { lp: 'content' },
@@ -8,7 +8,6 @@ export default {
     { lp: 'offset', type: 'input-number' },
   ],
   defaultProps: () => ({
-    'data-single-child': true,
     content: 'content',
     children: [
       { is: 'span', children: 'text' }

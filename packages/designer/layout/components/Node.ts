@@ -4,7 +4,7 @@ import { isString, remove } from '@vue/shared'
 export abstract class Node<T = any> {
   #data: Ref<T>
   get data() { return this.#data.value }
-  set data(v) { this.#data.value = v }
+  // set data(v) { this.#data.value = v }
 
   abstract get id(): string
   abstract get label(): string

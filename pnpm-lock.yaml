@@ -37,7 +37,7 @@ importers:
       echarts: ^5.5.1
       el-form-render: workspace:*
       el-lowcode: workspace:*
-      element-plus: ^2.7.7
+      element-plus: ^2.8.1
       esbuild: ^0.19.4
       esbuild-register: ^3.4.2
       estree-walker: ^3.0.3
@@ -105,7 +105,7 @@ importers:
       echarts: 5.5.1
       el-form-render: link:packages/el-form-render
       el-lowcode: link:packages/el-lowcode
-      element-plus: 2.7.7_vue@3.4.30
+      element-plus: 2.8.1_vue@3.4.30
       infinite-viewer: 0.29.1
       lodash-es: 4.17.21
       postcss: 8.4.41
@@ -4068,8 +4068,8 @@ packages:
     resolution: {integrity: sha512-7L8fC2Ey/b6SePDFKR2zHAy4mbdp1/38Yk5TsARO66W3hC5KEaeKMMHoxwtuH+jcu2AYLSn9QX04i95t6Fl1Hg==}
     dev: true
 
-  /element-plus/2.7.7_vue@3.4.30:
-    resolution: {integrity: sha512-7ucUiDAxevyBE8JbXBTe9ofHhS047VmWMLoksE45zZ08XSnhnyG7WUuk3gmDbAklfVMHedb9sEV3OovPUWt+Sw==}
+  /element-plus/2.8.1_vue@3.4.30:
+    resolution: {integrity: sha512-p11/6w/O0+hGvPhiN3jrcgh+XG+eg5jZlLdQVYvcPHZYhhCh3J3YeZWW1JO/REPES1vevkboT6VAi+9wHA8Dsg==}
     peerDependencies:
       vue: ^3.2.0
     dependencies:

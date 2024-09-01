@@ -1,5 +1,4 @@
 <template>
-  <Render2 v-bind="{ is: 'ElTooltip', content: 'content', children: [{ is: 'span', children: 'span' }] }" />
   <div flex aic p8 text-26 font-medium capitalize>
     <div mra>{{ config?.label }}</div>
     <i-mdi:cursor-move v-if="model && designerCtx.root != model" bg-hover w28 h28 p4 mr8 :bg="model.style?.position == 'absolute' ? '#404040' : ''" @click="add2absolute(model)" />

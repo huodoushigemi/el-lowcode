@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, defineComponent, h, inject, mergeProps, nextTick, onBeforeUnmount, reactive, ref, watchEffect } from 'vue'
 import type { Ref } from 'vue'
-import { isArray, isObject } from '@vue/shared'
+import { isArray, isObject, normalizeStyle } from '@vue/shared'
 import { unrefElement, useEventListener } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
 import { deepClone, execExp } from '@el-lowcode/utils'
@@ -29,13 +29,12 @@ defineRender(() => {
 })
 
 const wm = new WeakMap()
-const NILL = Symbol(), EMPTY = Symbol()
+const EMPTY = Symbol()
 
 const Render = createRender({
   defaultIs: 'div',
   processProps: (_props: any) => {
     if (_props[EMPTY]) return _props
-    if (_props[NILL]) return _props
     const designer = inject('designerCtx') as DesignerCtx
     const { state } = inject('pageCtx', _props)
     return wm.get(_props)?.value || wm.set(_props, computed(() => {
@@ -58,10 +57,6 @@ const Render = createRender({
         else {
           sortAbsolute(children)
         }
-        children = [{ ref: ctx.nillRef, is: 'div', hidden: 1, [NILL]: 1, }, ...children]
-
-        // el-tooltip 特殊处理
-        if (_props['data-single-child'])  children = [{ is: 'div', style: 'display: contents', [NILL]: 1, children }]
       }
       else if (isObject(children)) {
         // 插槽
@@ -87,9 +82,9 @@ const propsCtx = new WeakMap()
 function setup(props: BoxProps, designer: DesignerCtx) {
   if (propsCtx.has(props)) propsCtx.get(props)
   
-  const elRef = ref(), boxRef = ref(), nillRef = ref()
+  const elRef = designer.keyedCtx[props._id].ref, boxRef = ref(), nillRef = ref()
   
-  useDrop(props, elRef, boxRef, nillRef, designer)
+  useDrop(props, elRef, boxRef, designer)
   useDrag(props, elRef, designer)
   
   useEventListener(elRef, 'mousedown', e => {
@@ -136,9 +131,10 @@ function sortAbsolute(arr: BoxProps[]) {
   }
 }
 
-function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRef: Ref<HTMLElement>, designer: DesignerCtx) {
+function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, designer: DesignerCtx) {
   const node = designer.keyedCtx[props._id]
-  const target = () => isArray(props.children) ? nillRef.value?.parentElement : void 0
+  const firstEl = () => node.children![0]?.el ?? emptyRef.value
+  const target = () => isArray(props.children) ? firstEl()?.parentElement : void 0
   let x = 0, y = 0
   useEventListener(target, 'dragover', e => {
     if (dragEl?.contains(e.currentTarget as Node)) return
@@ -156,10 +152,11 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRe
     
     // 自由布局
     if (node.isAbsLayout) {
+      const rect = el.getBoundingClientRect()
       Object.assign(dragLineStyle, {
-        transform: ``,
-        width: ``,
-        height: ``,
+        transform: `translate(${rect.x}px, ${rect.y}px)`,
+        width: `${rect.width}px`,
+        height: `${rect.height}px`,
       })
     }
     // 排序布局
@@ -223,12 +220,11 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRe
   })
 
   useEventListener(target, 'drop', async (e) => {
-    if (dragEl?.contains(e.currentTarget as Node)) return
-    if (dragEl && dragEl == dragRelated) return
+    if (dragEl?.contains(e.currentTarget as Node)) return dragEnd()
+    if (dragEl && dragEl == dragRelated) return dragEnd()
+
     const is = dragEl?.getAttribute('data-is') ?? e.dataTransfer?.getData('data-is')
     const _id = dragEl?.getAttribute('_id')
-
-    
     if (!is && !_id) return dragEnd()
     e.stopPropagation()
 
@@ -239,13 +235,13 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRe
     // 自由布局
     if (node.isAbsLayout) {
       // 获取初始坐标
-      const empty = doc.createElement('div')
-      nillRef.value.before(empty)
-      const { x, y } = empty.getBoundingClientRect()
-      empty.remove()
+      const nill = doc.createElement('div')
+      firstEl().before(nill)
+      const { x, y } = nill.getBoundingClientRect()
+      nill.remove()
       // 计算坐标
       dragNode = _id ? designer.keyedCtx[_id] : new designer.DisplayNode(parseAttrs(designer.widgets[is!]!))
-      dragNode.data = mergeProps(dragNode.data, { style: { position: 'absolute', transform: `translate(${e.x - x}px, ${e.y - y}px)`, margin: 0 } }) as any
+      dragNode.data.style = normalizeStyle([dragNode.data.style, { position: 'absolute', transform: `translate(${e.x - x}px, ${e.y - y}px)`, margin: 0 }])
       node.insertBefore(dragNode)
     }
     // 排序布局
@@ -265,7 +261,8 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, nillRe
 
 function useDrag(props: BoxProps, elRef: Ref, designer: DesignerCtx) {
   const node = designer.keyedCtx[props._id]
-  const target = () => node.isRoot || node.isAbs ? void 0 : unrefElement<HTMLElement>(elRef)
+  const draggable = () => !node.isRoot && !node.isAbs
+  const target = () => draggable() ? unrefElement<HTMLElement>(elRef) : void 0
   useEventListener(target, 'dragstart', e => {
     e.stopPropagation()
     dragStart(e)
@@ -275,7 +272,7 @@ function useDrag(props: BoxProps, elRef: Ref, designer: DesignerCtx) {
     // el 可能是 TEXT_NODE
     const el = unrefElement<HTMLElement>(elRef)
     if (!el) return
-    el.setAttribute?.('draggable', (!node.isRoot && !node.isAbs) + '')
+    el.setAttribute?.('draggable', draggable() + '')
     el.setAttribute?.('_id', props._id)
   })
 }
