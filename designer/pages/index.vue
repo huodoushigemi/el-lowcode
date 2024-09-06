@@ -13,7 +13,10 @@ const initial = () => ({
   is: 'Page',
   state: { count: 0 },
   children: [],
-  plugins: ['/plugins/web']
+  plugins: ['/plugins/web'],
+  designer: {
+    canvas: { style: { width: '768px', height: '1024px' } }
+  }
 })
 
 const json = window.__LCD_JSON__ ?? initial()

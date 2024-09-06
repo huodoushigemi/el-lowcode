@@ -207,8 +207,16 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, design
       })
 
       if (!rects.length) {
-        const { x, y, width, height } = emptyRef.value.getBoundingClientRect()
-        style = { left: x, top: y, width, height }
+        if (emptyRef.value) {
+          const { x, y, width, height } = emptyRef.value.getBoundingClientRect()
+          style = { left: x, top: y, width, height }
+        } else {
+          const nill = Object.assign(firstEl().ownerDocument.createElement('div'), { style: 'min-width: 3px; min-height: 3px' })
+          firstEl().before(nill)
+          const { x, y, width, height } = nill.getBoundingClientRect()
+          nill.remove()
+          style = { left: x, top: y, width, height }
+        }
       }
 
       Object.assign(dragLineStyle, {
@@ -241,7 +249,8 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, design
       nill.remove()
       // 计算坐标
       dragNode = _id ? designer.keyedCtx[_id] : new designer.DisplayNode(parseAttrs(designer.widgets[is!]!))
-      dragNode.data.style = normalizeStyle([dragNode.data.style, { position: 'absolute', transform: `translate(${e.x - x}px, ${e.y - y}px)`, margin: 0 }])
+      dragNode.isAbs = true
+      dragNode.xy = [e.x - x, e.y - y]
       node.insertBefore(dragNode)
     }
     // 排序布局

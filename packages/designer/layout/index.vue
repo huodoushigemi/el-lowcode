@@ -23,7 +23,7 @@
             
             <selected-layer />
             <!-- resize -->
-            <Moveable :target="designerCtx.active?.isRoot ? undefined : designerCtx.activeEl" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active?.data)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
+            <Moveable :target="designerCtx.active?.isRoot ? undefined : designerCtx.activeEl" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
           </div>
         </infinite-viewer>
 
@@ -67,14 +67,13 @@
 
 <script setup lang="ts">
 import { computed, provide, ref, getCurrentInstance, PropType } from 'vue'
-import { computedAsync, useDebouncedRefHistory, useEventListener, useLocalStorage, useMagicKeys } from '@vueuse/core'
+import { useDebouncedRefHistory, useEventListener } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import Moveable from 'vue3-moveable'
 
 import { get, set } from '@el-lowcode/utils'
 import { useTransformer } from 'el-form-render'
-import { BoxProps, Widget } from '../index'
-import { DesignerCtx, designerCtxKey } from './interface'
+import { designerCtxKey, DisplayNode } from './interface'
 import Activitybar from './components/Activitybar.vue'
 import Views from './components/Views.vue'
 import ExportCode from './components/ExportCode.vue'
@@ -182,10 +181,10 @@ function onResizeEnd(e) {
   ;['width', 'height', 'transform'].forEach(k => style[k] = e.target.style.getPropertyValue(k) || undefined)
   designerCtx.draggedId = undefined
 }
-function resizeDir(node?: BoxProps) {
+function resizeDir(node?: DisplayNode) {
   if (!node) return undefined
-  if (node.is == 'Page') return []
-  return node.style?.position == 'absolute' ? undefined : ['e', 'se', 's']
+  if (node.data.is == 'Page') return []
+  return node.isAbs ? undefined : ['e', 'se', 's']
 }
 
 // 中建按下
@@ -209,20 +208,17 @@ useEventListener('keydown', e => {
   if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return
   if (!['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(e.key)) return
   
-  const node = designerCtx.active?.data
+  const node = designerCtx.active
   if (!node) return
   e.preventDefault()
   e.stopPropagation()
-  if (node == designerCtx.root) return
+  if (node == designerCtx.rootCtx) return
   const offset = e.shiftKey ? 10 : 1
-  const absolute = node.style?.position == 'absolute'
-  if (absolute) {
+  if (node.isAbs) {
     const plus = (i, v) => {
-      if (!node.style?.transform) set(node, 'style.transform', `translate(0px, 0px)`)
-      const matched = node.style.transform.match(/translate\(([^\)]+?)\)/)
-      const xy = matched[1].split(',').map(e => parseInt(e))
+      const xy = node.xy
       xy[i] += v
-      node.style.transform = node.style.transform.replace(matched[0], `translate(${xy[0]}px, ${xy[1]}px)`)
+      node.xy = xy
     }
     if (e.key == 'ArrowUp') plus(1, -offset)
     if (e.key == 'ArrowLeft') plus(0, -offset)

@@ -7,13 +7,13 @@
     </div>
     <!-- <selected-rect :el="designerCtx.active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(activeEl())" /> -->
     <div v-if="active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(designerCtx.activeEl)">
-      <div v-if="!active.isAbs && designerCtx.draggedId == null" class="actions absolute bottom-[100%] flex text-15 text-nowrap pointer-events-auto c-white bg-[--el-color-primary]">  
+      <div v-if="active.parent && !active.isAbs && designerCtx.draggedId == null" class="actions absolute bottom-[100%] flex text-14 text-nowrap pointer-events-auto c-white bg-[--el-color-primary]">  
         <div flex aic px12 bg="#17d57e">{{ active.label }}</div>
-        <i-solar:arrow-to-top-right-bold v-if="activeCtx?.active2parent" class="icon" @click="activeCtx?.active2parent" />
-        <i-solar:arrow-up-linear v-if="activeCtx?.moveUp" class="icon" @click="activeCtx?.moveUp" />
-        <i-solar:arrow-down-linear v-if="activeCtx?.moveDown" class="icon" @click="activeCtx?.moveDown" />
-        <i-solar:copy-line-duotone v-if="activeCtx?.copy" class="icon" @click="activeCtx?.copy" />
-        <i-solar:trash-bin-minimalistic-linear v-if="activeCtx?.remove" class="icon" hover="c-red" @click="activeCtx?.remove" />
+        <i-solar:arrow-to-top-right-bold class="icon" @click="active2parent" />
+        <i-solar:arrow-up-linear class="icon" @click="moveUp" />
+        <i-solar:arrow-down-linear class="icon" @click="moveDown" />
+        <i-solar:copy-line-duotone class="icon" @click="copy" />
+        <i-solar:trash-bin-minimalistic-linear class="icon" hover="c-red" @click="remove" />
 
         <!-- <template v-if="isString(active!.children)">
           <div mx12 w1 bg="#000/20" />
@@ -26,11 +26,11 @@
           <el-color-picker show-alpha size="small" self-center />
         </template> -->
       </div>
-      <div v-if="active.isAbs" class="actions absolute bottom-[100%] flex text-15 text-nowrap pointer-events-auto c-white bg-[--el-color-primary]" :op="designerCtx.draggedId ? 0 : 100" @mouseenter="designerCtx.hoverId = active.id" @mouseover="designerCtx.hoverId = active.id">
+      <div v-if="active.parent && active.isAbs" class="actions absolute bottom-[100%] flex text-14 text-nowrap pointer-events-auto c-white bg-[--el-color-primary]" :op="designerCtx.draggedId ? 0 : 100" @mouseenter="designerCtx.hoverId = active.id" @mouseover="designerCtx.hoverId = active.id">
         <div flex aic px12 bg="#17d57e">{{ active.label }}</div>
-        <i-solar:arrow-to-top-right-bold v-if="activeCtx?.active2parent" class="icon" @click="activeCtx?.active2parent" />
+        <i-solar:arrow-to-top-right-bold class="icon" @click="active2parent" />
         <i-bi:arrows-move ref="moveHandle" class="icon" text-16="!" cursor-move />
-        <i-solar:copy-line-duotone v-if="activeCtx?.copy" class="icon" @click="activeCtx?.copy" />
+        <i-solar:copy-line-duotone class="icon" @click="copy" />
 
         <Moveable :target="active.isRoot ? undefined : designerCtx.activeEl" :dragTarget="unrefElement(moveHandle)" :draggable="true" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
       </div>
@@ -40,31 +40,20 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, inject, computed, ref, watchEffect } from 'vue'
+import { getCurrentInstance, inject, computed, ref } from 'vue'
 import { unrefElement, useMutationObserver, useResizeObserver } from '@vueuse/core'
 import Moveable from 'vue3-moveable'
 import { designerCtxKey } from '../interface'
 
 const designerCtx = inject(designerCtxKey)!
 
-// new MouseEvent()
-// document.addEventListener('pointerdown', e => {})
-document.addEventListener('mouseup', e => {})
-
 const active = computed(() => designerCtx.active)
 
-const activeCtx = computed(() => {
-  const { active } = designerCtx
-  if (!active?.parent) return
-  return {
-    parent: active.parent,
-    moveUp: () => active.previousSibling ? active.previousSibling.before(active) : void 0,
-    moveDown: () => active.nextSibling ? active.nextSibling!.after(active) : void 0,
-    active2parent: () => designerCtx.activeId = active.parent!.id,
-    remove: () => active.remove(),
-    // copy: () => children.splice(i + 1, 0, deepClone(active, (v, k) => k == '_id' ? uuidv4() : v))
-  }
-})
+const moveUp = () => designerCtx.active!.previousSibling ? designerCtx.active!.previousSibling.before(designerCtx.active!) : void 0
+const moveDown = () => designerCtx.active!.nextSibling ? designerCtx.active!.nextSibling!.after(designerCtx.active!) : void 0
+const active2parent = () => designerCtx.activeId = designerCtx.active!.parent!.id
+const remove = () => designerCtx.active!.remove()
+const copy = () => designerCtx.active!.after(designerCtx.active?.clone())
 
 
 const calcStyle = (el?: HTMLElement | null) => {
@@ -100,11 +89,11 @@ useResizeObserver(rootEl, fu)
 <style lang="scss">
 .selected-layer {
   .actions {
-    height: 36px;
+    height: 26px;
     > .icon {
       padding: 0 6px;
       box-sizing: content-box;
-      font-size: 18px;
+      font-size: 16px;
       height: 100%;
 
       &:hover {

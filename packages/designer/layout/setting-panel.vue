@@ -1,7 +1,7 @@
 <template>
   <div flex aic p8 text-26 font-medium capitalize>
     <div mra>{{ config?.label }}</div>
-    <i-mdi:cursor-move v-if="model && designerCtx.root != model" bg-hover w28 h28 p4 mr8 :bg="model.style?.position == 'absolute' ? '#404040' : ''" @click="add2absolute(model)" />
+    <i-mdi:cursor-move v-if="model && designerCtx.root != model" bg-hover w28 h28 p4 mr8 :bg="node.isAbs ? '#404040' : ''" @click="node.isAbs = true" />
     <i-material-symbols-light:code bg-hover w28 h28 p4 @click="visible = true" />
   </div>
   <el-tabs v-if="config" class="tabs">
@@ -76,8 +76,9 @@ const Render = createRender({
 
 const designerCtx = inject(designerCtxKey)
 
-const model = computed(() => designerCtx.active?.data ?? designerCtx.root)
-const config = computed(() => designerCtx.active?.config ?? designerCtx.rootCtx.config)
+const node = computed(() => designerCtx.active ?? designerCtx.rootCtx)
+const model = computed(() => node.value.data)
+const config = computed(() => node.value?.config)
 
 const _items = computed(() => unFn(config.value?.props, model.value))
 
@@ -90,7 +91,7 @@ const styles = computed(() => [
   { is: 'div', class: 'p20 pb1 bg-gray/5 mb12', children: [
     { prop: 'style', script: false, el: { is: BoxModel } }
   ] },
-  { lp: ['position', 'style.position'], type: 'select', options: ['static', 'relative', 'absolute', 'fixed', 'sticky'], displayValue: 'static' },
+  { lp: ['position', 'style.position'], options: [['—', 'static'], 'relative', 'absolute', 'fixed', 'sticky'], displayValue: 'static' },
   // { lp: ['layout', 'style.display'], type: 'radio-group', options: ['inline', 'block', 'flex'] },
   { is: 'div', class: 'mx--8 b-b-1' },
   { is: 'h4', class: 'my12', children: 'Layout' },
@@ -127,10 +128,6 @@ const commons = [
   { lp: ['onMounted','onVnodeMounted'] },
   { lp: ['onBeforeMount', 'onVnodeBeforeMount'] },
 ]
-
-function add2absolute(node) {
-  set(node, 'style.position', 'absolute')
-}
 </script>
 
 <style scoped lang="scss">

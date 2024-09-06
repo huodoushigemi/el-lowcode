@@ -1,9 +1,11 @@
-import { computed, ComputedRef, InjectionKey, nextTick, ref, Ref, shallowRef } from 'vue'
-import { isArray, isObject, isString, remove } from '@vue/shared'
-import { computedAsync, unrefElement } from '@vueuse/core'
-import { Obj } from '@el-lowcode/utils'
+import { InjectionKey, ref } from 'vue'
+import { isArray, isObject, isString, normalizeStyle, remove } from '@vue/shared'
+import { unrefElement } from '@vueuse/core'
+import { v4 as uuid } from 'uuid'
+import { deepClone, Obj, set } from '@el-lowcode/utils'
 import { Node } from './components/Node'
 import { sloveConfig } from '../components/_utils'
+import { parseTransform } from './components/utils'
 
 export interface Widget {
   is: string
@@ -50,10 +52,22 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   // 自由拖拽
   get isAbs() { return this.data.style?.position == 'absolute' }
+  set isAbs(bool) { this.data.style = bool ? normalizeStyle([this.data.style, { position: 'absolute', margin: 0 }]) : normalizeStyle([this.data.style, { position: void 0, transform: void 0, margin: void 0 }]) }
+
+  get xy() { return parseTransform(this.data.style?.transform) }
+  set xy([x, y]) { set(this.data, 'style.transform', `translate(${x}px, ${y}px)`) }
+
   // 自由布局
-  get isAbsLayout() { return this.data['data-absolute-layout'] }
+  get isAbsLayout() { return !!this.data['data-absolute-layout'] }
+  set isAbsLayout(bool) { this.data['data-absolute-layout'] = bool }
 
   get isRoot() { return !this.parent }
+
+  clone() {
+    const data = deepClone(this.data, (v, k) => k == '_id' ? uuid() : v)
+    // @ts-ignore
+    return new this.constructor(data)
+  }
 }
 
 export interface DesignerCtx {
