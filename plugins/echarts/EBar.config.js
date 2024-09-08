@@ -1,5 +1,5 @@
 import { serieBar, serieLine } from './.lowcode/option/series'
-import { axis, grid, legend, toolbox, tooltip, xAxis, yAxis } from './.lowcode/option'
+import { axis, grid, legend, toolbox, tooltip } from './.lowcode/option'
 import { bool, enable2, segm2 } from './.lowcode/utils'
 
 export default {

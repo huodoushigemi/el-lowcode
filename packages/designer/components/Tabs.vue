@@ -1,5 +1,5 @@
 <script setup lang='jsx'>
-import { ref, useSlots, watchEffect } from 'vue'
+import { onMounted, ref, useSlots, watchEffect, watchPostEffect } from 'vue'
 import { refWithControl } from '@vueuse/core'
 import { useSortable } from '@vueuse/integrations/useSortable.mjs'
 import { set } from '@el-lowcode/utils'
@@ -9,6 +9,8 @@ const props = defineProps({
   stretch: Boolean,
   tabs: Array,
   editable: Boolean,
+  sortable: { type: Boolean, defeault: true },
+  addable: { type: Boolean, default: true },
   new: Function,
   props: Object,
   showClose: Boolean
@@ -23,9 +25,11 @@ const edit = ref(false)
 const { inputRef } = useEdit(ref(), () => edit.value = false)
 
 const navRef = ref()
-const sortable = useSortable(navRef, () => props.tabs, { draggable: '.tab', animation: 100, disabled: !props.editable })
+const sortable = useSortable(navRef, () => props.tabs, { draggable: '.tab', animation: 100 })
 
-watchEffect(() => sortable.option('disabled', !props.editable))
+onMounted(() => {
+  watchEffect(() => sortable.option('disabled', !(props.editable && props.sortable)))
+})
 
 function onPlus() {
   const { tabs } = props
@@ -78,7 +82,7 @@ function del(i) {
 }
 
 defineRender(() => {
-  const { stretch, tabs, editable, showClose } = props
+  const { stretch, editable, showClose } = props
   children = slots.default?.()
   children.forEach((e, i) => {
     e.$key = e.key
@@ -99,12 +103,11 @@ defineRender(() => {
             {props.editable && showClose && <div class='i-ep-close hover:i-ep:circle-close-filled flex aic jcc ml4 -mr4 text-10' onClick={(e) => (e.stopPropagation(), del(i))} />}
           </div>
         ))}
-        {
-          props.editable &&
-          <div class='sticky right-0 flex aic mla px4 bg-inherit! shadow-md shadow-#000/40'>
-            <div class='tab-plus' onClick={onPlus}>+</div>
-          </div>
-        }
+        <div class='sticky right-0 flex aic mla bg-inherit! shadow-md shadow-#000/40'>
+          {props.editable && props.addable && <div class='tab-plus' onClick={onPlus}>+</div>}
+          {slots.extra?.()}
+        </div>
+        
       </div>
       {children.find(e => e.key == active.value)}
     </div>
@@ -149,7 +152,7 @@ defineRender(() => {
     }
 
     .tab-plus {
-      @apply flex aic jcc mla w20 h20 text-16 bg-hover cursor-pointer b-1;
+      @apply flex aic jcc mx4 w20 h20 text-16 bg-hover cursor-pointer b-1;
     }
   }
 

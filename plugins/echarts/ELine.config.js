@@ -1,5 +1,5 @@
 import { serieLine } from './.lowcode/option/series'
-import { axis, grid, legend, toolbox, tooltip } from './.lowcode/option'
+import { axiss, gridView, legend, toolbox, tooltip } from './.lowcode/option'
 import { bool, segm, segm2 } from './.lowcode/utils'
 
 export default {
@@ -18,18 +18,26 @@ export default {
         { lp: 'category', el: { placeholder: 'auto' } },
         bool('vertical'),
       ] },
-  
-      { is: 'ElFormRender', model: option, size: 'small', class: 'no-scriptable', children: [
-        grid(option),
-        axis(option, props),
-        legend(option),
-        toolbox(option),
-        tooltip(option),
-        { is: 'Tabs', key: _id, class: '-mx8 mt12', tabs: option.series, editable: true, props: { label: 'name' }, new: (i) => ({ type: 'line', name: `series-${i + 1}` }), children: option.series.map(e => (
-          { is: 'div', label: e.name, class: 'px8', children: () => [
-            e.type == 'bar' ? serieBar(e) : serieLine(e)
-          ] }
-        )) },
+
+      { is: 'Tabs', class: '-mx8 no-scriptable', children: [
+        { is: 'div', label: 'Grid', class: 'p8', children: [
+          gridView(option)
+        ] },
+        { is: 'div', label: 'Axis', children: [
+          axiss(option, props.vertical),
+        ] },
+        { is: 'div', label: 'Series', children: [
+          { is: 'Tabs', key: _id, tabs: option.series, editable: true, props: { label: 'name' }, new: (i) => ({ type: 'line', name: `series-${i + 1}` }), children: option.series.map(e => (
+            { is: 'div', label: e.name, class: 'px8', children: () => [
+              e.type == 'bar' ? serieBar(e) : serieLine(e)
+            ] }
+          )) },
+        ] },
+        { is: 'div', label: 'Other', class: 'p8 pt0', children: [
+          legend(option),
+          toolbox(option),
+          tooltip(option),
+        ] },
       ] },
   
       { is: 'ElDivider' },
@@ -51,8 +59,8 @@ export default {
     style: { height: '300px', width: '400px' },
     option: {
       legend: {},
-      xAxis: {},
-      yAxis: {},
+      $xAxis: [{}],
+      $yAxis: [{}],
       tooltip: { show: true, trigger: 'axis' },
       toolbox: {},
       dataset: {

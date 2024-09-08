@@ -16,7 +16,7 @@
             <iframe
               :key="root._id + CanvasIframe1"
               class="wfull hfull"
-              :srcdoc="CanvasIframe1"
+              :src="CanvasIframe1"
               @load="e => designerCtx.canvas.doc = e.target.contentDocument"
               @vue:mounted="({ el }) => el.contentWindow.designerCtx = designerCtx"
             />
@@ -93,7 +93,8 @@ import Collapse from '../components/Collapse.vue'
 import EditTable from '../components/EditTable.vue'
 import Tabs from '../components/Tabs.vue'
 
-import CanvasIframe1 from './components/iframe-temp.html?transform'
+// import CanvasIframe1 from './components/iframe-temp.html?transform'
+import CanvasIframe1 from './components/iframe-temp.html?url'
 
 const app = getCurrentInstance()!.appContext.app
 app.component('OptionsInput', OptionsInput)

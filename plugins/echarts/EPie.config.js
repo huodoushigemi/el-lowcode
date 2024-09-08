@@ -1,5 +1,5 @@
 import { seriePie } from './.lowcode/option/series'
-import { grid, legend, toolbox, tooltip, xAxis, yAxis } from './.lowcode/option'
+import { grid, legend, toolbox, tooltip } from './.lowcode/option'
 import { enable2 } from './.lowcode/utils'
 
 export default {

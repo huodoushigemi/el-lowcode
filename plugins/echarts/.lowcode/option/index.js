@@ -1,47 +1,70 @@
+import { h, resolveComponent } from 'vue'
 import { bool, checks, Collapse1, color, enable2, enable3, genDisplayValue, lineStyleItems, num, opts, radios, segm, textStyleItems } from '../utils'
 import { axisLabel, axisLine, axisName, axisSplitLine, axisTick } from './axis'
 
 export * from './series'
 
+const toArr = (arr) => Array.isArray(arr) ? arr : (arr == null ? [] : [arr])
+
 export const grid = (option) => enable2(option, 'Gird', void 0, () => [
-  { is: 'div', class: 'grid grid-cols-4 gap-x-8 [&>*]:mb8', children: [
-    num(['top', 'grid.top']),
-    num(['right', 'grid.right']),
-    num(['bottom', 'grid.bottom']),
-    num(['left', 'grid.left']),
-  ] }
+  gridView(option)
 ])
 
-export const xAxis = (option) => enable2(option.xAxis, 'XAxis', genDisplayValue(option, 'xAxis.show', true), () => [
-  { is: 'div', class: 'grid grid-cols-3', children: [
-    { lp: ['bound-gap', 'boundaryGap'], type: 'switch', displayValue: true },
-    { lp: 'inverse', type: 'switch' },
+export const gridView = (option) => ({ is: 'div', class: 'grid grid-cols-4 gap-x-8 [&>*]:mb8', children: [
+  num(['top', 'grid.top']),
+  num(['right', 'grid.right']),
+  num(['bottom', 'grid.bottom']),
+  num(['left', 'grid.left']),
+] })
+
+const xAxis = (axis, i, vertical) => ({ is: 'ElFormRender', model: axis, class: 'mt8', size: 'small', labelPosition: 'top', children: [
+  { is: 'div', class: 'grid grid-cols-2 gap-x-8 px8', children: [
+    segm('position', [['T', 'top'], ['B', 'bottom']]),
+    num('offset', { displayValue: 0 }),
+    bool(['bound-gap', 'boundaryGap'], true),
+    bool('inverse'),
   ] },
-  axisName(option.xAxis),
+  axisName(axis),
   { is: 'div', class: 'mb4' },
-  axisLabel(option.xAxis),
+  axisLabel(axis),
   { is: 'div', class: 'mb4' },
-  axisLine(option.xAxis, true),
+  axisLine(axis, !vertical),
   { is: 'div', class: 'mb4' },
-  axisSplitLine(option.xAxis, false),
+  axisSplitLine(axis, vertical),
   { is: 'div', class: 'mb4' },
-  axisTick(option.xAxis, true),
-])
+  axisTick(axis, !vertical),
+] })
 
-export const yAxis = (option) => enable2(option.yAxis, 'YAxis', genDisplayValue(option, 'yAxis.show', true), () => [
-  axisLabel(option.yAxis),
+const yAxis = (axis, i, vertical) => ({ is: 'ElFormRender', model: axis, class: 'mt8', size: 'small', labelPosition: 'top', children: [
+  { is: 'div', class: 'grid grid-cols-2 gap-x-8 px8', children: [
+    segm('position', [['L', 'left'], ['R', 'right']]),
+    num('offset', { displayValue: 0 }),
+    bool(['bound-gap', 'boundaryGap'], true),
+    bool('inverse'),
+  ] },
+  axisName(axis),
   { is: 'div', class: 'mb4' },
-  axisLine(option.yAxis, false),
+  axisLabel(axis),
   { is: 'div', class: 'mb4' },
-  axisSplitLine(option.yAxis, true),
+  axisLine(axis, vertical),
   { is: 'div', class: 'mb4' },
-  axisTick(option.yAxis, false),
-])
+  axisSplitLine(axis, !vertical),
+  { is: 'div', class: 'mb4' },
+  axisTick(axis, vertical),
+] })
+
+export const axiss = (option, vertical) => ({ is: (_, { slots }) => h(resolveComponent('Tabs'), { tabs: [...option.$xAxis, ...option.$yAxis], editable: true, sortable: false, addable: false, props: { label: 'name' } }, {
+  default: slots.default,
+  extra: () => h('div', { class: 'flex aic jcc mx4 w20 h20 text-16 bg-hover cursor-pointer b-1', onClick: () => option.$yAxis.push({}) }, '+'),
+}), children: [
+  ...toArr(option.$xAxis).map((axis, i) => ({ ...xAxis(axis, i, vertical), label: axis.name || `类目轴${i == 0 ? '' : ' ' + (i + 1)}` })),
+  ...toArr(option.$yAxis).map((axis, i) => ({ ...yAxis(axis, i, vertical), label: axis.name || `数值轴${i == 0 ? '' : ' ' + (i + 1)}` })),
+] })
 
 export const axis = (option, props) => ({ is: 'Collapse', title: 'Axis', children: () => [
   { is: 'Tabs', stretch: true, children: [
     // X Axis
-    { is: 'ElFormRender', model: option.xAxis, label: 'X Axis', class: 'mt8', size: 'small', labelPosition: 'top', children: [
+    { is: 'ElFormRender', model: toArr(option.xAxis)[0], label: 'X Axis', class: 'mt8', size: 'small', labelPosition: 'top', children: [
       { is: 'div', class: 'grid grid-cols-2 px8', children: [
         bool(['bound-gap', 'boundaryGap'], true),
         bool('inverse'),
@@ -57,7 +80,7 @@ export const axis = (option, props) => ({ is: 'Collapse', title: 'Axis', childre
       axisTick(option.xAxis, !props.vertical),
     ] },
     // Y Axis
-    { is: 'ElFormRender', model: option.yAxis, label: 'Y Axis', class: 'mt8', size: 'small', labelPosition: 'top', children: [
+    { is: 'ElFormRender', model: toArr(option.yAxis)[0], label: 'Y Axis', class: 'mt8', size: 'small', labelPosition: 'top', children: [
       { is: 'div', class: 'grid grid-cols-2 px8', children: [
         bool(['bound-gap', 'boundaryGap'], true),
         bool('inverse'),
@@ -73,7 +96,7 @@ export const axis = (option, props) => ({ is: 'Collapse', title: 'Axis', childre
   ] }
 ] })
 
-export const legend = (option) => enable2(option, 'Legend', genDisplayValue(option, 'legend.show', true), () => [
+export const legendView = (option) => ({ is: 'div', children: [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
     { is: 'div', class: 'flex [&>*]:flex-1', children: [
       num(['w', 'legend.width']),
@@ -93,6 +116,10 @@ export const legend = (option) => enable2(option, 'Legend', genDisplayValue(opti
       ...textStyleItems(['fontSize', 'lineHeight', 'color', 'fontStyle', 'fontWeight', 'fontFamily', 'width', 'height', 'overflow'], 'legend.textStyle')
     ] }
   ])
+] })
+
+export const legend = (option) => enable2(option, 'Legend', genDisplayValue(option, 'legend.show', true), () => [
+  legendView(option)
 ])
 
 export const toolbox = (option) => enable2(option, 'Toolbox', genDisplayValue(option, 'toolbox.show', void 0), () => [
