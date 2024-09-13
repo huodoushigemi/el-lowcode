@@ -40,7 +40,7 @@ const map = {
   b: () => <i-material-symbols-light-format-bold {...useToggle('b', 'bold')} />,
   i: () => <i-material-symbols-light-format-italic {...useToggle('i', 'italic')} />,
   r: () => <R v-model={r.v} />,
-  shadow: () => <Shadow class="w24 h24 bg-hover" model={props.model} prefix={props.prefix} fields={{ x: 'textShadowOffsetX', y: 'textShadowOffsetY', r: 'textShadowBlur', c: 'textShadowColor' }} displayValue={props.displayValue} />
+  shadow: () => <Shadow class="w24 h24 bg-hover" model={props.model} prefix={props.prefix} fields={{ x: 'textShadowOffsetX', y: 'textShadowOffsetY', r: 'textShadowBlur', c: 'textShadowColor' }} displayValue={props.displayValue} />,
 }
 
 function useT(k) {

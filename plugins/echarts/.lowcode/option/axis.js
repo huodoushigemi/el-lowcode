@@ -1,5 +1,6 @@
 import { enable3, num, color, opts, genDisplayValue, FONT_STYLES, FONT_WEIGHTS, FONT_FAMILYS, LINE_TYPES, FONT_OVERFLOWS, lineStyleItems, displayValue, enable2, textStyleItems, bool } from '../utils'
 import StyleText from '../components/StyleText.vue'
+import StyleText2 from '../components/StyleText2.vue'
 import StyleLine from '../components/StyleLine.vue'
 
 export const axisName = model => enable3(model, '轴名称', void 0, () => [
@@ -8,7 +9,7 @@ export const axisName = model => enable3(model, '轴名称', void 0, () => [
       { lp: 'name' },
       num(['offset', 'nameGap'], { displayValue: 15 })
     ] },
-    { is: StyleText, model, fields: { r: 'nameRotate' }, prefix: k => k == 'r' ? '' : 'nameTextStyle' },
+    { is: StyleText2, model, fields: { r: 'nameRotate' }, prefix: k => k == 'r' ? '' : 'nameTextStyle' },
   ] }
 ])
 

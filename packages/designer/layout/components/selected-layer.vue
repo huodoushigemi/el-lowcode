@@ -65,7 +65,7 @@ const calcStyle = (el?: HTMLElement | null) => {
 // moveable
 const moveHandle = ref()
 function onDragStart(e) {
-  designerCtx.draggedId = e.target.getAttribute('_id')
+  designerCtx.draggedId = active.value?.id
 }
 function onDrag(e) {
   e.target.style.transform = e.transform

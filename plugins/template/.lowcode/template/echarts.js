@@ -36,6 +36,9 @@ export default {
             }
           ]
         },
+        "initOptions": {
+          "renderer": "svg"
+        },
         "_id": "73475152-24dc-4851-944e-43fd6528f2bf"
       }
     ],

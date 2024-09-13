@@ -84,8 +84,8 @@ function setup(props: BoxProps, designer: DesignerCtx) {
   
   const elRef = designer.keyedCtx[props._id].ref, boxRef = ref(), nillRef = ref()
   
-  useDrop(props, elRef, boxRef, designer)
-  useDrag(props, elRef, designer)
+  useDrop(props, boxRef, designer)
+  useDrag(props, designer)
   
   useEventListener(elRef, 'mousedown', e => {
     if (e.button != 0) return
@@ -131,7 +131,7 @@ function sortAbsolute(arr: BoxProps[]) {
   }
 }
 
-function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, designer: DesignerCtx) {
+function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>, designer: DesignerCtx) {
   const node = designer.keyedCtx[props._id]
   const firstEl = () => node.children![0]?.el ?? emptyRef.value
   const target = () => isArray(props.children) ? firstEl()?.parentElement : void 0
@@ -238,7 +238,7 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, design
 
     const el = e.currentTarget as HTMLElement
     const doc = el.ownerDocument
-    let dragNode: DisplayNode
+    const dragNode = _id ? designer.keyedCtx[_id] : new designer.DisplayNode(parseAttrs(designer.widgets[is!]!))
     
     // 自由布局
     if (node.isAbsLayout) {
@@ -248,14 +248,12 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, design
       const { x, y } = nill.getBoundingClientRect()
       nill.remove()
       // 计算坐标
-      dragNode = _id ? designer.keyedCtx[_id] : new designer.DisplayNode(parseAttrs(designer.widgets[is!]!))
       dragNode.isAbs = true
       dragNode.xy = [e.x - x, e.y - y]
       node.insertBefore(dragNode)
     }
     // 排序布局
     else {
-      dragNode = _id ? designer.keyedCtx[_id] : new designer.DisplayNode(parseAttrs(designer.widgets[is!]!))
       const before = dragRelatedDir == 'L' || dragRelatedDir == 'T'
       dragRelated
         ? designer.keyedCtx[dragRelated!.getAttribute('_id')!][before ? 'before' : 'after'](dragNode)
@@ -268,10 +266,10 @@ function useDrop(props: BoxProps, elRef: Ref, emptyRef: Ref<HTMLElement>, design
   })
 }
 
-function useDrag(props: BoxProps, elRef: Ref, designer: DesignerCtx) {
+function useDrag(props: BoxProps, designer: DesignerCtx) {
   const node = designer.keyedCtx[props._id]
   const draggable = () => !node.isRoot && !node.isAbs
-  const target = () => draggable() ? unrefElement<HTMLElement>(elRef) : void 0
+  const target = () => draggable() ? node.el : void 0
   useEventListener(target, 'dragstart', e => {
     e.stopPropagation()
     dragStart(e)
@@ -279,7 +277,7 @@ function useDrag(props: BoxProps, elRef: Ref, designer: DesignerCtx) {
   })
   watchEffect(() => {
     // el 可能是 TEXT_NODE
-    const el = unrefElement<HTMLElement>(elRef)
+    const el = node.el
     if (!el) return
     el.setAttribute?.('draggable', draggable() + '')
     el.setAttribute?.('_id', props._id)

@@ -14,7 +14,7 @@
           <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
             <!-- @vue-ignore -->
             <iframe
-              :key="root._id + CanvasIframe1"
+              :key="CanvasIframe1"
               class="wfull hfull"
               :src="CanvasIframe1"
               @load="e => designerCtx.canvas.doc = e.target.contentDocument"

@@ -110,7 +110,7 @@
             origin: false,
             hideDefaultLines: true,
             throttleDrag: 1,
-            onDragStart: e => designerCtx.draggedId = e.target.getAttribute('_id'),
+            onDragStart: e => designerCtx.draggedId = designerCtx.active?.id,
             onDrag: e => e.target.style.transform = e.transform,
             onDragEnd: e => {
               const style = designerCtx.active.data.style ??= {}
