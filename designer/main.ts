@@ -8,9 +8,6 @@ import 'element-plus/theme-chalk/dark/css-vars.css'
 import { createRouter, createWebHashHistory, RouterView } from 'vue-router'
 import routes from '~pages'
 
-import './style.css'
-import 'virtual:uno.css'
-// import 'uno.css'
 
 import 'element-plus/es/components/loading/style/css'
 import 'element-plus/es/components/message/style/css'
@@ -52,6 +49,10 @@ import 'element-plus/es/components/color-picker/style/css'
 
 import ElLowcode from 'el-lowcode'
 import ElFormRender from 'el-form-render'
+
+import './style.css'
+import 'virtual:uno.css'
+// import 'uno.css'
 
 useDark({ storageKey: 'vitepress-theme-appearance' })
 

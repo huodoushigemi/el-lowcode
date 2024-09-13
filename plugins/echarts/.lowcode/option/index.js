@@ -1,6 +1,8 @@
 import { h, resolveComponent } from 'vue'
-import { bool, checks, Collapse1, color, enable2, enable3, genDisplayValue, lineStyleItems, num, opts, radios, segm, textStyleItems } from '../utils'
+import { bool, checks, Collapse1, color, displayValue, enable2, enable3, genDisplayValue, lineStyleItems, num, opts, radios, segm, textStyleItems } from '../utils'
 import { axisLabel, axisLine, axisName, axisSplitLine, axisTick } from './axis'
+import StyleText from '../components/StyleText.vue'
+import StyleLine from '../components/StyleLine.vue'
 
 export * from './series'
 
@@ -17,7 +19,7 @@ export const gridView = (option) => ({ is: 'div', class: 'grid grid-cols-4 gap-x
   num(['left', 'grid.left']),
 ] })
 
-const xAxis = (axis, i, vertical) => ({ is: 'ElFormRender', model: axis, class: 'mt8', size: 'small', labelPosition: 'top', children: [
+const xAxis = (axis, i) => ({ is: 'ElFormRender', model: axis, class: 'mt8', size: 'small', labelPosition: 'top', children: [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 px8', children: [
     segm('position', [['T', 'top'], ['B', 'bottom']]),
     num('offset', { displayValue: 0 }),
@@ -28,14 +30,14 @@ const xAxis = (axis, i, vertical) => ({ is: 'ElFormRender', model: axis, class: 
   { is: 'div', class: 'mb4' },
   axisLabel(axis),
   { is: 'div', class: 'mb4' },
-  axisLine(axis, !vertical),
+  axisLine(axis, true),
   { is: 'div', class: 'mb4' },
-  axisSplitLine(axis, vertical),
+  axisSplitLine(axis, false),
   { is: 'div', class: 'mb4' },
-  axisTick(axis, !vertical),
+  axisTick(axis, true),
 ] })
 
-const yAxis = (axis, i, vertical) => ({ is: 'ElFormRender', model: axis, class: 'mt8', size: 'small', labelPosition: 'top', children: [
+const yAxis = (axis, i) => ({ is: 'ElFormRender', model: axis, class: 'mt8', size: 'small', labelPosition: 'top', children: [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 px8', children: [
     segm('position', [['L', 'left'], ['R', 'right']]),
     num('offset', { displayValue: 0 }),
@@ -46,19 +48,19 @@ const yAxis = (axis, i, vertical) => ({ is: 'ElFormRender', model: axis, class: 
   { is: 'div', class: 'mb4' },
   axisLabel(axis),
   { is: 'div', class: 'mb4' },
-  axisLine(axis, vertical),
+  axisLine(axis, false),
   { is: 'div', class: 'mb4' },
-  axisSplitLine(axis, !vertical),
+  axisSplitLine(axis, true),
   { is: 'div', class: 'mb4' },
-  axisTick(axis, vertical),
+  axisTick(axis, false),
 ] })
 
 export const axiss = (option, vertical) => ({ is: (_, { slots }) => h(resolveComponent('Tabs'), { tabs: [...option.$xAxis, ...option.$yAxis], editable: true, sortable: false, addable: false, props: { label: 'name' } }, {
   default: slots.default,
   extra: () => h('div', { class: 'flex aic jcc mx4 w20 h20 text-16 bg-hover cursor-pointer b-1', onClick: () => option.$yAxis.push({}) }, '+'),
 }), children: [
-  ...toArr(option.$xAxis).map((axis, i) => ({ ...xAxis(axis, i, vertical), label: axis.name || `类目轴${i == 0 ? '' : ' ' + (i + 1)}` })),
-  ...toArr(option.$yAxis).map((axis, i) => ({ ...yAxis(axis, i, vertical), label: axis.name || `数值轴${i == 0 ? '' : ' ' + (i + 1)}` })),
+  ...toArr(option.$xAxis).map((axis, i) => ({ ...xAxis(axis, i), key: `x${i}`, label: `类目轴${i == 0 ? '' : ' ' + (i + 1)}` })),
+  ...toArr(option.$yAxis).map((axis, i) => ({ ...yAxis(axis, i), key: `y${i}`, label: `数值轴${i == 0 ? '' : ' ' + (i + 1)}` })),
 ] })
 
 export const axis = (option, props) => ({ is: 'Collapse', title: 'Axis', children: () => [
@@ -98,11 +100,11 @@ export const axis = (option, props) => ({ is: 'Collapse', title: 'Axis', childre
 
 export const legendView = (option) => ({ is: 'div', children: [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
-    { is: 'div', class: 'flex [&>*]:flex-1', children: [
+    { is: 'div', class: 'flex [&>*]:flex-1 [&>*]:mb0!', children: [
       num(['w', 'legend.width']),
       num(['h', 'legend.height']),
     ] },
-    { is: 'div', class: 'flex [&>*]:flex-1', children: [
+    { is: 'div', class: 'flex [&>*]:flex-1 [&>*]:mb0!', children: [
       num(['item-w', 'legend.itemWidth'], { displayValue: 25, el: { max: 50 } }),
       num(['item-h', 'legend.itemHeight'], { displayValue: 14, el: { max: 28 } }),
     ] },
@@ -112,8 +114,9 @@ export const legendView = (option) => ({ is: 'div', children: [
     num(['', 'legend.itemGap'], { displayValue: 10 }),
   ] },
   enable3(option, 'text', void 0, () => [
+    { is: StyleText, class: 'my8', model: option, disabled: ['r'], prefix: 'legend.textStyle' },
     { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
-      ...textStyleItems(['fontSize', 'lineHeight', 'color', 'fontStyle', 'fontWeight', 'fontFamily', 'width', 'height', 'overflow'], 'legend.textStyle')
+      ...textStyleItems(['width', 'height', 'overflow'], 'legend.textStyle')
     ] }
   ])
 ] })
@@ -137,16 +140,12 @@ export const toolbox = (option) => enable2(option, 'Toolbox', genDisplayValue(op
 export const tooltip = (option) => enable2(option, 'Tooltip', genDisplayValue(option, 'tooltip.show', true), () => [
   segm(['', 'tooltip.axisPointer.type'], ['line', 'shadow', 'cross'], { displayValue: 'line' }),
   // lineStyle
-  option.tooltip?.axisPointer?.type in { line: 1, undefined: 1 } && { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
-    ...lineStyleItems(['type', 'width', 'color'], 'tooltip.axisPointer.lineStyle')
-  ] },
+  option.tooltip?.axisPointer?.type in { line: 1, undefined: 1 } && { is: StyleLine, class: 'my8', model: option, prefix: 'tooltip.axisPointer.lineStyle', displayValue: { type: 'dashed' } },
+  // crossStyle
+  option.tooltip?.axisPointer?.type == 'cross' && { is: StyleLine, class: 'my8', model: option, prefix: 'tooltip.axisPointer.crossStyle', displayValue: { type: 'dashed' } },
   // shadowStyle
   option.tooltip?.axisPointer?.type == 'shadow' && { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
     ...lineStyleItems(['color'], 'tooltip.axisPointer.shadowStyle')
-  ] },
-  // crossStyle
-  option.tooltip?.axisPointer?.type == 'cross' && { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
-    ...lineStyleItems(['type', 'width', 'color'], 'tooltip.axisPointer.crossStyle')
   ] },
   // trigger
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
@@ -156,9 +155,10 @@ export const tooltip = (option) => enable2(option, 'Tooltip', genDisplayValue(op
     color(['bg', 'tooltip.backgroundColor'], { el: { size: 'small' } }),
   ] },
   // text
-  enable3(option.tooltip, 'text', void 0, () => [
+  enable3(option, 'text', void 0, () => [
+    { is: StyleText, class: 'my8', model: option, disabled: ['r'], prefix: 'tooltip.textStyle' },
     { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
-      ...textStyleItems(['fontSize', 'lineHeight', 'color', 'fontStyle', 'fontWeight', 'fontFamily', 'width', 'height', 'overflow'], 'tooltip.textStyle')
+      ...textStyleItems(['width', 'height', 'overflow'], 'tooltip.textStyle')
     ] }
   ])
 ])

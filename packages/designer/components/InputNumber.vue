@@ -1,6 +1,6 @@
 <template>
   <div class="input-number" :class="[isFocus && 'is-focus']" @click="inputRef.focus()">
-    <input ref="inputRef" :value="_value" @input="_value = $event.target.value" type="number" :min :max :step :class="[wresize && 'cursor-w-resize']" :placeholder="placeholder" @focus="isFocus = true" @blur="isFocus = false" />
+    <input ref="inputRef" :value="_value" @input="_value = $event.target.value" type="number" :min :max :step :placeholder="placeholder" @focus="isFocus = true" @blur="isFocus = false" />
     <select v-if="!hideUnit && !noUnit" ref="selectRef" :value="unit" px4 bg-hover rd-0 appearance-none outline-0 tabindex="-1" @click.stop @change="unit = $event.target.value; _value = _value">
       <option v-for="opt in units" :value="opt">{{ opt }}</option>
     </select>
@@ -10,8 +10,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { isString } from '@vue/shared'
-import { useEventListener, useMagicKeys } from '@vueuse/core'
-import { watchEffect } from 'vue'
+import { useSlide } from '@el-lowcode/utils'
 
 const props = defineProps({
   modelValue: [String, Number],
@@ -31,8 +30,6 @@ const emit = defineEmits(['update:modelValue'])
 const inputRef = ref()
 const selectRef = ref()
 const isFocus = ref(false)
-const controlMousedown = ref(false)
-const wresize = computed(() => (control.value && isMouseenter.value) || controlMousedown.value)
 
 const unit = ref('')
 watch(() => props.modelValue, v => {
@@ -41,55 +38,15 @@ watch(() => props.modelValue, v => {
 }, { immediate: true })
 
 const _value = computed({
-  get: () => props.modelValue == null ? props.modelValue : clamp(parseFloat(props.modelValue)),
-  set: v => emit('update:modelValue', v === '' ? undefined : unit.value ? `${clamp(v)}${unit.value}` : clamp(v))
+  get: () => props.modelValue == null ? props.modelValue : parseFloat(props.modelValue),
+  set: v => emit('update:modelValue', v === '' ? undefined : unit.value ? `${v}${unit.value}` : parseFloat(v))
 })
 
-const clamp = (v, min = props.min, max = props.max) => Math.max(min, Math.min(max, +(v || 0)))
-
-let sv = 0, sx = 0
-function mousedown(e) {
-  if (!control.value) return
-  controlMousedown.value = true
-  e.preventDefault()
-  sv = _value.value || 0
-  sx = e.pageX
-  const stop = useEventListener('mousemove', e => {
-    _value.value = sv + (e.pageX - sx) * props.step
-  })
-  useEventListener('mouseup', e => {
-    stop()
-    controlMousedown.value = false
-  }, { once: true })
-}
-
-const { control } = useMagicKeys()
-const isMouseenter = ref(false)
-useEventListener(inputRef, 'mouseenter', e => isMouseenter.value = true)
-useEventListener(inputRef, 'mouseleave', e => isMouseenter.value = false)
-useEventListener(inputRef, 'mousedown', mousedown)
-
-watch(() => isMouseenter.value && control.value, v => {
-  count.value += v ? 1 : -1
-})
-watch(controlMousedown, v => {
-  count.value += v ? 1 : -1
-})
+useSlide(inputRef, _value, props)
 </script>
 
 <script>
 const unitReg = /\d*([a-z%]*)$/
-const count = ref(0)
-
-watchEffect(() => {
-  if (count.value) document.body.classList.add('cursor-w-resize')
-  else document.body.classList.remove('cursor-w-resize')
-})
-
-// defineExpose({
-//   focus: () => inputRef.focus(),
-//   blur: () => inputRef.blur(),
-// })
 </script>
 
 <style lang="scss">

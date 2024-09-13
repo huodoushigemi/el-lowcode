@@ -8,6 +8,7 @@ import { useEdit } from './hooks'
 const props = defineProps({
   stretch: Boolean,
   tabs: Array,
+  nav: Object,
   editable: Boolean,
   sortable: { type: Boolean, defeault: true },
   addable: { type: Boolean, default: true },
@@ -82,7 +83,7 @@ function del(i) {
 }
 
 defineRender(() => {
-  const { stretch, editable, showClose } = props
+  const { stretch, editable, showClose, nav } = props
   children = slots.default?.()
   children.forEach((e, i) => {
     e.$key = e.key
@@ -95,7 +96,7 @@ defineRender(() => {
 
   return (
     <div class={['Tabs', editable && 'is-editable', stretch && 'is-stretch']}>
-      <div class='tab_nav flex' ref={navRef}>
+      <div class='tab_nav flex' ref={navRef} {...nav}>
         {children.map((c, i) => (
           <div key={c.key} class={['tab', active.value == c.key && 'is-active']} onPointerdown={onDown} onPointerup={e => onTab(e, c.key, i)} onDblclick={onEditLabel}>
             {c.props.label}

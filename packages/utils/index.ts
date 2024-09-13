@@ -7,6 +7,7 @@ export * from './types'
 export * from './tree'
 export * from './file'
 export * from './execExp'
+export * from './hooks'
 
 type SFCWithInstall<T> = T & ObjectPlugin
 type Comp = Component & { name: string } & ObjectPlugin

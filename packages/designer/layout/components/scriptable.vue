@@ -2,8 +2,10 @@
   <el-form-item-render class="el-form-item--label-truncate" v-bind="{ ...$props, ...$attrs }">
 
     <template v-if="_script" #label="{ label }">
-      {{ label }}
-      <el-tag v-if="script !== true" class="exp-flag" :effect="isScript ? 'dark' : 'plain'" :type="isScript ? 'primary' : 'info'" size="small" ml8 cursor-pointer @click.prevent="visible = !isScript; value = isScript ? '' : value">JS</el-tag>
+      <template v-if="label">
+        {{ label }}
+        <el-tag v-if="script !== true" class="exp-flag" :effect="isScript ? 'dark' : 'plain'" :type="isScript ? 'primary' : 'info'" size="small" ml8 cursor-pointer @click.prevent="visible = !isScript; value = isScript ? '' : value">JS</el-tag>
+      </template>
     </template>
 
     <div v-if="isScript || script === true" flex justify-between px8 wfull bg="[--el-fill-color-light]" bg-hover cursor-pointer :c="exp || '[--el-text-color-placeholder]'" style="border: var(--el-border)" @click="visible = true">
@@ -73,6 +75,10 @@ function onSave() {
 .el-form-item {
   &:hover .exp-flag { display: unset; }
   .exp-flag { display: none; }
+
+  & > .el-form-item__label:empty {
+    display: none;
+  }
 }
 
 .no-scriptable {

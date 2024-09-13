@@ -122,3 +122,8 @@
 [tabindex="0"]:active {
   outline-width: 0;
 }
+
+// element-plus
+.no-suffix {
+  &.el-select > .el-select__wrapper > .el-select__suffix { display: none; }
+}

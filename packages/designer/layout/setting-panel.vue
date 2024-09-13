@@ -84,8 +84,8 @@ const _items = computed(() => unFn(config.value?.props, model.value))
 
 const styles = computed(() => [
   { is: 'div', class: 'grid grid-cols-3', children: [
-    { lp: ['W', 'style.width'], el: { is: 'InputNumber' } },
-    { lp: ['H', 'style.height'], el: { is: 'InputNumber' } },
+    { lp: ['W', 'style.width'], el: { is: 'InputNumber', min: 0 } },
+    { lp: ['H', 'style.height'], el: { is: 'InputNumber', min: 0 } },
     // { is: MSLClose, class: 'bg-hover w28 h28 ml4', onClick: () => Object.assign(model.value.style || {}, { width: undefined, height: undefined }) }
   ] },
   { is: 'div', class: 'p20 pb1 bg-gray/5 mb12', children: [

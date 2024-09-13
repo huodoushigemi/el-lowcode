@@ -1,48 +1,42 @@
 import { enable3, num, color, opts, genDisplayValue, FONT_STYLES, FONT_WEIGHTS, FONT_FAMILYS, LINE_TYPES, FONT_OVERFLOWS, lineStyleItems, displayValue, enable2, textStyleItems, bool } from '../utils'
+import StyleText from '../components/StyleText.vue'
+import StyleLine from '../components/StyleLine.vue'
 
-export const axisName = model => enable3(model, 'name', void 0, () => [
-  { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
-    { lp: 'name' },
-    { lp: ['offset', 'nameGap'], displayValue: 15 },
-    num(['r °', 'nameRotate'], { el: { min: -180, max: 180 } }),
-    ...textStyleItems(['fontSize', 'lineHeight', 'color', 'fontStyle', 'fontWeight', 'fontFamily', 'width', 'height', 'overflow'], 'nameTextStyle')
+export const axisName = model => enable3(model, '轴名称', void 0, () => [
+  { is: 'div', class: '', children: [
+    { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
+      { lp: 'name' },
+      num(['offset', 'nameGap'], { displayValue: 15 })
+    ] },
+    { is: StyleText, model, fields: { r: 'nameRotate' }, prefix: k => k == 'r' ? '' : 'nameTextStyle' },
   ] }
 ])
 
-export const axisLabel = model => enable3(model, 'label', genDisplayValue(model, 'axisLabel.show', true), () => [
+export const axisLabel = model => enable3(model, '轴标签', genDisplayValue(model, 'axisLabel.show', true), () => [
+  { is: StyleText, class: 'my8', model, prefix: 'axisLabel' },
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
-    num(['size', 'axisLabel.fontSize'], { displayValue: 12 }),
     num(['offset', 'axisLabel.margin'], { get: displayValue(8) }),
-    color(['color', 'axisLabel.color'], { el: { size: 'small' } }),
-    opts(['style', 'axisLabel.fontStyle'], FONT_STYLES),
-    opts(['weight', 'axisLabel.fontWeight'], FONT_WEIGHTS),
-    opts(['family', 'axisLabel.fontFamily'], FONT_FAMILYS),
     num(['w', 'axisLabel.width']),
     num(['h', 'axisLabel.height']),
-    num(['r °', 'axisLabel.rotate'], { el: { min: -90, max: 90 } }),
     opts(['overflow', 'axisLabel.overflow'], FONT_OVERFLOWS),
     { lp: ['format', 'axisLabel.formatter'], displayValue: '{value}' },
   ] },
 ])
 
-export const axisLine = (model, displayValue) => enable3(model, 'line', genDisplayValue(model, 'axisLine.show', displayValue), () => [
+export const axisLine = (model, displayValue) => enable3(model, '轴线', genDisplayValue(model, 'axisLine.show', displayValue), () => [
+  { is: StyleLine, class: 'my8', model, prefix: 'axisLine.lineStyle' },
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
-    ...lineStyleItems(['type', 'width', 'color'], 'axisLine.lineStyle'),
     bool(['on-zero', 'axisLine.onZero'], true, { script: false })
   ] },
 ])
 
-export const axisSplitLine = (model, displayValue) => enable3(model, 'split-line', genDisplayValue(model, 'splitLine.show', displayValue), () => [
-  { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
-    ...lineStyleItems(['type', 'width', 'color'], 'axisLine.lineStyle')
-  ] },
+export const axisSplitLine = (model, displayValue) => enable3(model, '轴分割线', genDisplayValue(model, 'splitLine.show', displayValue), () => [
+  { is: StyleLine, class: 'my8', model, prefix: 'splitLine.lineStyle' },
 ])
 
-export const axisTick = (model, displayValue) => enable3(model, 'tick', genDisplayValue(model, 'axisTick.show', displayValue), () => [
+export const axisTick = (model, displayValue) => enable3(model, '轴刻度', genDisplayValue(model, 'axisTick.show', displayValue), () => [
+  { is: StyleLine, class: 'my8', model, prefix: 'axisTick.lineStyle' },
   { is: 'div', class: '[&>*]:mb8', style: 'display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px', children: [
     num(['len', 'axisTick.length'], { displayValue: 5, el: { max: 30 } }),
-    num(['size', 'axisTick.lineStyle.width'], { displayValue: 1, el: { max: 20 } }),
-    opts(['type', 'axisTick.lineStyle.type'], LINE_TYPES),
-    color(['color', 'axisTick.lineStyle.color'], { el: { size: 'small' } }),
   ] },
 ])

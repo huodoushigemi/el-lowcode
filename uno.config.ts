@@ -1,7 +1,7 @@
 import { defineConfig, presetAttributify, presetUno, presetIcons, transformerVariantGroup, transformerDirectives } from 'unocss'
 import presetRemToPx from '@unocss/preset-rem-to-px'
 
-const gaps = [-4, 0, 4, 8, 10, 12, 'a']
+const gaps = [-4, -2, -1, 0, 1, 2, 4, 6, 8, 10, 12, 'a']
 
 export default defineConfig({
   content: {
@@ -22,6 +22,7 @@ export default defineConfig({
   safelist: [
     'inline-block',
     'flex!',
+    'flex-wrap',
     'grid',
     'text-12',
     ...gaps.map(e => `m${e}`),
@@ -51,7 +52,10 @@ export default defineConfig({
     
     ...Array(4).fill(0).map((e, i) => `col-span-${i + 1}`),
     ...Array(4).fill(0).map((e, i) => `grid-cols-${i + 1}`),
+    ...Array(4).fill(0).map((e, i) => `space-x-${i + 1}`),
+    '[&>*]:mb0!',
     '[&>*]:mb8',
+    '[&>*]:mb8!',
     '[&>*]:flex-1',
     'cursor-cell'
   ],
