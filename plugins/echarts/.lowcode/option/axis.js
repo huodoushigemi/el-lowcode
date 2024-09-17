@@ -9,7 +9,7 @@ export const axisName = model => enable3(model, '轴名称', void 0, () => [
       { lp: 'name' },
       num(['offset', 'nameGap'], { displayValue: 15 })
     ] },
-    { is: StyleText2, model, fields: { r: 'nameRotate' }, prefix: k => k == 'r' ? '' : 'nameTextStyle' },
+    { is: StyleText, model, fields: { r: 'nameRotate' }, prefix: k => k == 'r' ? '' : 'nameTextStyle' },
   ] }
 ])
 
@@ -17,9 +17,6 @@ export const axisLabel = model => enable3(model, '轴标签', genDisplayValue(mo
   { is: StyleText, class: 'my8', model, prefix: 'axisLabel' },
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
     num(['offset', 'axisLabel.margin'], { get: displayValue(8) }),
-    num(['w', 'axisLabel.width']),
-    num(['h', 'axisLabel.height']),
-    opts(['overflow', 'axisLabel.overflow'], FONT_OVERFLOWS),
     { lp: ['format', 'axisLabel.formatter'], displayValue: '{value}' },
   ] },
 ])

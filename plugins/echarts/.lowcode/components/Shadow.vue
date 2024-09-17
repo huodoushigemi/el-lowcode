@@ -1,5 +1,5 @@
 <template>
-  <el-popover trigger="click" :width="180" :hide-after="0" :persistent="false" :teleported="false">
+  <el-popover trigger="click" :width="180" :hide-after="0" :persistent="false" :teleported="false" popper-class="fixed!">
     <template #reference>
       <i-radix-icons:shadow-inner v-bind="$attrs" cursor-pointer />
     </template>

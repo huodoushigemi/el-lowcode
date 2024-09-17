@@ -113,12 +113,8 @@ export const legendView = (option) => ({ is: 'div', children: [
     radios(['', 'legend.top'], [['T', 'top'], ['C', 'middle'], ['B', 'bottom']]),
     num(['', 'legend.itemGap'], { displayValue: 10 }),
   ] },
-  enable3(option, 'text', void 0, () => [
-    { is: StyleText, class: 'my8', model: option, disabled: ['r'], prefix: 'legend.textStyle' },
-    { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
-      ...textStyleItems(['width', 'height', 'overflow'], 'legend.textStyle')
-    ] }
-  ])
+  { is: 'div', class: 'text-12 op80', children: 'text' },
+  { is: StyleText, class: 'my8', model: option, disabled: ['r'], prefix: 'legend.textStyle' },
 ] })
 
 export const legend = (option) => enable2(option, 'Legend', genDisplayValue(option, 'legend.show', true), () => [
@@ -155,10 +151,8 @@ export const tooltip = (option) => enable2(option, 'Tooltip', genDisplayValue(op
     color(['bg', 'tooltip.backgroundColor'], { el: { size: 'small' } }),
   ] },
   // text
-  enable3(option, 'text', void 0, () => [
-    { is: StyleText, class: 'my8', model: option, disabled: ['r'], prefix: 'tooltip.textStyle' },
-    { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
-      ...textStyleItems(['width', 'height', 'overflow'], 'tooltip.textStyle')
-    ] }
-  ])
+  { is: 'div', class: 'text-12 op90', children: 'text' },
+  { is: StyleText, class: 'my8', model: option, disabled: ['r'], prefix: 'tooltip.textStyle' },
+  // enable3(option, 'text', void 0, () => [
+  // ])
 ])

@@ -19,8 +19,6 @@ export function useSlide(el: MaybeElementRef, val: Ref<number>, props: UseSlideO
   watch(() => control.value && pressed.value, v => count.value += v ? 1 : -1)
   watch(() => control.value && hover.value, v => unrefElement(el)!.style.cursor = v ? 'w-resize' : '')
 
-  watchEffect(() => console.log(control.value, hover.value))
-
   useEventListener(el, 'mousedown', mousedown)
 
   const _val = computed({

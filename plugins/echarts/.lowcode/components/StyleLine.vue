@@ -10,7 +10,7 @@
     
     <el-color-picker v-model="color" class="has-b" showAlpha />
 
-    <Shadow :model :prefix :fields :displayValue w24 h24 bg-hover />
+    <Shadow :model :prefix :fields="fields()" w24 h24 bg-hover />
   </div>
 </template>
 

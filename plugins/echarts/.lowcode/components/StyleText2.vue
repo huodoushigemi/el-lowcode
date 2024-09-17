@@ -1,25 +1,20 @@
 <template>
-  <el-popover trigger="click" :width="300" :hide-after="0" :persistent="false" placement="left">
-    <template #reference>
-      <i-tdesign:textbox v-bind="$attrs" p4 w24 h24 bg-hover cursor-pointer />
+   <Moreable>
+    <template v-for="k in enable">
+      <component v-if="!disabled?.includes(k)" :is="map[k]" v-bind="options?.[k]" />
     </template>
-    <div class="flex aic flex-wrap gap-2" style="--el-border-radius-base: 0">
-      <template v-for="k in enable">
-        <div v-if="!k" style="margin: 0 6px" />
-        <div v-else-if="!map[k]" style="margin: 0 6px; align-self: stretch; width: 1px; background: #ccc; opacity: .4" />
-        <component v-else-if="!disabled?.includes(k)" :is="map[k]" v-bind="options?.[k]" />
-      </template>
-    </div>
-  </el-popover>
+  </Moreable>
 </template>
 
 <script setup lang="jsx">
+import { isString } from '@vue/shared'
 import { useTransformer, solveOptions } from 'el-form-render'
 import { ElColorPicker, ElSelect, ElOption } from 'element-plus'
 import { unFn } from '@el-lowcode/utils'
 import R from './R.vue'
 import Shadow from './Shadow.vue'
 import OffsetXY from './OffsetXY.vue'
+import Moreable from './Moreable'
 
 const props = defineProps({
   model: Object,
@@ -27,29 +22,49 @@ const props = defineProps({
   displayValue: Object,
   prefix: String,
   options: Object,
-  enable: Array,
-  disabled: Array
+  enable: [Array, String],
+  disabled: Array,
+  sort: Function,
 })
 
 const FONT_FAMILYS = solveOptions([['—', void 0], 'sans-serif', 'serif', 'monospace', 'Arial', 'Courier New', 'Microsoft YaHei'])
 
-const enable = props.enable || ['size', 'family', 'c', 'bold', 'i', 'r', 'shadow', 'oxy']
+const enable = isString(props.enable) ? props.enable.split(' ') : props.enable || 'size c b i oxy family r shadow'.split(' ')
 const fields = () => Object.assign({ size: 'fontSize', c: 'color', b: 'fontWeight', i: 'fontStyle', r: 'rotate', family: 'fontFamily', 'oxy.0': 'offset.0', 'oxy.1': 'offset.1' }, props.fields)
 const displayValue = () => Object.assign({ size: 12, r: 0, 'oxy.0': 0, 'oxy.1': 0 }, props.displayValue)
 
 const r = useT('r')
+const c = useT('c')
+const family = useT('family')
 const ox = useT('oxy.0')
 const oy = useT('oxy.1')
 
 const map = {
-  size: () => <InputNumber v-model={useT('size').v} class='has-b' style="width: 34px" noUnit min={12} max={64} />,
-  family: () => <ElSelect v-model={useT('family').v} placeholder='字体' class='has-b no-suffix' style="width: 65px">{FONT_FAMILYS.map(e => <ElOption {...e} />)}</ElSelect>,
-  c: () => <ElColorPicker v-model={useT('c').v} class='has-b' showAlpha teleported={false} />,
-  bold: () => <i-material-symbols-light-format-bold {...useToggle('bold', 'bold')} />,
+  size: () => <InputNumber v-model={useT('size').v} class='has-b' style="width: 40px" noUnit min={12} max={64} />,
+  family: () => <ElSelect v-model={family.v} placeholder='字体' class='has-b no-suffix' style="width: 65px">{FONT_FAMILYS.map(e => <ElOption {...e} />)}</ElSelect>,
+  c: () => <ElColorPicker v-model={c.v} class='has-b' showAlpha />,
+  b: () => <i-material-symbols-light-format-bold {...useToggle('b', 'bold')} />,
   i: () => <i-material-symbols-light-format-italic {...useToggle('i', 'italic')} />,
   r: () => <R v-model={r.v} />,
   shadow: () => <Shadow class="w24 h24 bg-hover" model={props.model} prefix={props.prefix} fields={{ x: 'textShadowOffsetX', y: 'textShadowOffsetY', r: 'textShadowBlur', c: 'textShadowColor' }} displayValue={props.displayValue} />,
-  oxy: () => [<br />, <OffsetXY v-model:x={ox.v} v-model:y={oy.v} mt8 />]
+  oxy: () => (
+    <div>
+      <el-popover trigger="click" hide-after={0} width={180} popper-class='fixed!' teleported={false} persistent={false}>{{
+        reference: <i-tabler-math-xy class='block w24 h24 bg-hover' />,
+        default: () => <>
+          <h2 class='mt4 op60'>偏移</h2>
+          <div class='grid' style="grid-template-columns: min-content 25px auto;">
+            <OffsetXY v-model:x={ox.v} v-model:y={oy.v} class='row-span-2' />
+            <div class='mr8 text-right'>x</div>
+            <InputNumber v-model={ox.v} noUnit class='rd-0' />
+            <div class='mr8 text-right'>y</div>
+            <InputNumber v-model={oy.v} noUnit class='rd-0' />
+          </div>
+        </>
+      }}
+      </el-popover>
+    </div>
+  )
 }
 
 function useT(k) {
@@ -69,6 +84,6 @@ function useToggle(k, v) {
 
 <style scoped>
 * > :deep(.has-b + .has-b) {
-  margin-left: -3px;
+  margin-left: -5px;
 }
 </style>
