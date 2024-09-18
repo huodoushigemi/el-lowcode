@@ -7,14 +7,14 @@
       <h2 mt4 op60>阴影</h2>
 
       <div>偏移 X：{{ x }}</div>
-      <input v-model="x" type="range" min="-20" max="20" />
+      <input v-model.number="x" type="range" min="-20" max="20" />
       <div>偏移 Y：{{ y }}</div>
-      <input v-model="y" type="range" min="-20" max="20" />
+      <input v-model.number="y" type="range" min="-20" max="20" />
       <div>模糊 &ensp;：{{ r }}</div>
-      <input v-model="r" type="range" min="0" max="30" />
+      <input v-model.number="r" type="range" min="0" max="30" />
       
       <div flex aic mt8>
-        <el-color-picker v-model="c" size="default" showAlpha :teleported="false" />
+        <el-color-picker v-model="c" size="default" showAlpha popper-class="fixed!" :teleported="false" />
 
         <div mla w32 h32 bg-hover @click="x = y = r = c = void 0" title="清除">
           <i-tdesign:clear wfull hfull p6 op40 cursor-pointer />

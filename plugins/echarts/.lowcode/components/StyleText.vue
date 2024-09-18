@@ -42,17 +42,15 @@ const enable = computed(() => {
   return enable
 })
 const fields = () => Object.assign({ size: 'fontSize', c: 'color', b: 'fontWeight', i: 'fontStyle', r: 'rotate', family: 'fontFamily', oxy: 'offset', 'oxy.0': 'offset.0', 'oxy.1': 'offset.1', w: 'width' }, props.fields)
-const displayValue = () => Object.assign({ size: 12, r: 0, 'oxy.0': 0, 'oxy.1': 0, oxy: [0, 0] }, props.displayValue)
+const displayValue = () => Object.assign({ size: 12, r: 0, oxy: [0, 0] }, props.displayValue)
 
 const r = useT('r')
 const c = useT('c')
 const family = useT('family')
-const oxy = useT('oxy', { displayValue: void 0, get: v => (console.log(v), Object.assign(reactive(clone(displayValue().oxy)), v)), set: v => Object.assign(clone(displayValue().oxy), v) })
+const ox = useT('oxy.0', { get: v => v || 0, set: v => v || 0 })
+const oy = useT('oxy.1', { get: v => v || 0, set: v => v || 0 })
 const w = useT('w')
 const overflow = useT('overflow')
-
-console.log(oxy);
-
 
 const map = {
   size: () => <InputNumber v-model={useT('size').v} class='has-b' style="width: 40px" noUnit min={12} max={64} />,
@@ -76,11 +74,11 @@ const map = {
         default: () => <>
           <h2 class='mt4 op60'>偏移</h2>
           <div class='grid' style="grid-template-columns: min-content 25px auto;">
-            <OffsetXY v-model:x={oxy.v[0]} v-model:y={oxy.v[1]} class='row-span-2' />
+            <OffsetXY v-model:x={ox.v} v-model:y={oy.v} class='row-span-2' />
             <div class='mr8 text-right'>x</div>
-            <InputNumber v-model={oxy.v[0]} noUnit class='rd-0' />
+            <InputNumber v-model={ox.v} noUnit class='rd-0' />
             <div class='mr8 text-right'>y</div>
-            <InputNumber v-model={oxy.v[1]} noUnit class='rd-0' />
+            <InputNumber v-model={oy.v} noUnit class='rd-0' />
           </div>
         </>
       }}
