@@ -19,10 +19,10 @@ import { LabelLayout, UniversalTransition } from 'echarts/features'
 import { CanvasRenderer, SVGRenderer } from 'echarts/renderers'
 import VueEcharts from 'vue-echarts'
 
-import { BarChart } from 'echarts/charts'
+import { LineChart, BarChart } from 'echarts/charts'
 
 use([ LegendComponent, TooltipComponent, GridComponent, DatasetComponent, TransformComponent, ToolboxComponent, LabelLayout, UniversalTransition, CanvasRenderer, SVGRenderer ])
-use([ BarChart ])
+use([ LineChart, BarChart ])
 
 const props = defineProps({
   option: Object,

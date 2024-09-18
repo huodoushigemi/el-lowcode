@@ -25,8 +25,8 @@ export function normalizeLineOption({ option, vertical, seriesLayoutBy, category
       }
     }))
   }, {
+    ...option,
     $xAxis: void 0,
     $yAxis: void 0,
-    ...option,
   })
 }

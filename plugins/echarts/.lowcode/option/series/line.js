@@ -6,7 +6,7 @@ const _options = (arr) => (arr.map(e => ({ label: e[0], value: e[1] })))
 
 export const serieLine = (model) => ({ is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children: [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-    { lp: 'type', options: ['line', 'bar'] },
+    { lp: 'type', options: ['line', 'bar'], defaultValue: 'line' },
     { lp: ['key', '$key'] },
   ] },
   { is: StyleLine, class: 'my8', model, prefix: 'lineStyle', displayValue: { width: 2 } },

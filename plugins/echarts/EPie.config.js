@@ -1,4 +1,4 @@
-import { serieLine } from './.lowcode/option/series'
+import { serieBar, serieLine } from './.lowcode/option/series'
 import { axiss, gridView, legend, legendView, toolbox, tooltip } from './.lowcode/option'
 import { bool, segm, segm2 } from './.lowcode/utils'
 
