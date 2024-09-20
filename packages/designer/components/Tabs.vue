@@ -67,7 +67,6 @@ function onEditLabel() {
 
 function onChangeLabel(i, v) {
   set(props.tabs[i], props.props.label, v)
-  active.value = children[i].props.$key ?? v
   edit.value = false
 }
 
@@ -85,10 +84,7 @@ function del(i) {
 defineRender(() => {
   const { stretch, editable, showClose, nav } = props
   children = slots.default?.()
-  children.forEach((e, i) => {
-    e.$key = e.key
-    e.key ??= e.props.label ?? `tab-${i}`
-  })
+  children.forEach((e, i) => e.key ??= i)
 
   if (active.value == null) {
     active.lay(children[0].key)
@@ -119,6 +115,7 @@ defineRender(() => {
 <style lang="scss">
 .Tabs {
   background: var(--bg, var(--el-fill-color-lighter));
+  color: var(--el-text-color-primary);
 
   > .tab_nav {
     background: var(--el-fill-color-darker);

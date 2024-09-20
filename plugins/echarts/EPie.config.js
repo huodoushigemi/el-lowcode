@@ -29,7 +29,7 @@ export default {
         { is: 'div', label: '系列', children: [
           { is: 'Tabs', key: _id, tabs: option.series, editable: true, props: { label: 'name' }, new: (i) => ({ type: 'line', name: `series-${i + 1}` }), children: option.series.map(e => (
             { is: 'div', label: e.name, class: 'px8', children: () => [
-              e.type == 'bar' ? serieBar(e) : serieLine(e)
+              e.type == 'bar' ? serieBar(e, option) : serieLine(e, option)
             ] }
           )) },
         ] },
@@ -62,8 +62,8 @@ export default {
     style: { height: '300px', width: '400px' },
     option: {
       legend: {},
-      $xAxis: [{}],
-      $yAxis: [{}],
+      xAxis: [{}],
+      yAxis: [{}],
       tooltip: { show: true, trigger: 'axis' },
       toolbox: {},
       dataset: {

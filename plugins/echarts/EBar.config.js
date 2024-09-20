@@ -1,5 +1,5 @@
 import { serieBar, serieLine } from './.lowcode/option/series'
-import { axis, grid, legend, toolbox, tooltip } from './.lowcode/option'
+import { axiss, gridView, legend, legendView, toolbox, tooltip } from './.lowcode/option'
 import { bool, enable2, segm2 } from './.lowcode/utils'
 
 export default {
@@ -18,18 +18,28 @@ export default {
         { lp: 'category', el: { placeholder: 'auto' } },
         bool('vertical'),
       ] },
-  
-      { is: 'ElFormRender', model: option, size: 'small', class: 'no-scriptable', children: [
-        grid(option),
-        axis(option, props),
-        legend(option),
-        toolbox(option),
-        tooltip(option),
-        { is: 'Tabs', key: _id, class: '-mx8 mt12', tabs: option.series, editable: true, props: { label: 'name' }, new: (i) => ({ type: 'bar', name: `series-${i + 1}` }), children: option.series.map(e => (
-          { is: 'div', label: e.name, class: 'px8', children: () => [
-            e.type == 'line' ? serieLine(e) : serieBar(e)
-          ] }
-        )) },
+
+      { is: 'Tabs', class: '-mx8 no-scriptable', nav: { class: 'relative shadow-md' }, children: [
+        { is: 'div', label: '容器', class: 'p8', children: [
+          gridView(option)
+        ] },
+        { is: 'div', label: '轴', children: [
+          axiss(option),
+        ] },
+        { is: 'div', label: '系列', children: [
+          { is: 'Tabs', key: _id, tabs: option.series, editable: true, props: { label: 'name' }, new: (i) => ({ name: `series-${i + 1}` }), children: () => option.series.map(e => (
+            { is: 'div', label: e.name, class: 'px8', children: () => [
+              e.type == 'line' ? serieLine(e, option) : serieBar(e, option)
+            ] }
+          )) },
+        ] },
+        { is: 'div', label: '图例', class: 'p8 pt0 mt6', children: [
+          legendView(option),
+        ] },
+        { is: 'div', label: '其他', class: 'p8 pt0', children: [
+          toolbox(option),
+          tooltip(option),
+        ] },
       ] },
   
       { is: 'ElDivider' },
@@ -51,8 +61,8 @@ export default {
     style: { height: '300px', width: '400px' },
     option: {
       legend: {},
-      xAxis: {},
-      yAxis: {},
+      xAxis: [{}],
+      yAxis: [{}],
       tooltip: { show: true, trigger: 'axis' },
       toolbox: {},
       dataset: {

@@ -12,14 +12,14 @@ export const grid = (option) => enable2(option, 'Gird', void 0, () => [
   gridView(option)
 ])
 
-export const gridView = (option) => ({ is: 'div', class: 'grid grid-cols-4 gap-x-8 [&>*]:mb8', children: [
+export const gridView = (option) => ({ is: 'ElFormRender', class: 'grid grid-cols-4 gap-x-8 [&>*]:mb8', model: option, size: 'small', labelPosition: 'top', children: [
   num(['top', 'grid.top']),
   num(['right', 'grid.right']),
   num(['bottom', 'grid.bottom']),
   num(['left', 'grid.left']),
 ] })
 
-const xAxis = (axis, i) => ({ is: 'ElFormRender', model: axis, class: 'mt8', size: 'small', labelPosition: 'top', children: [
+const xAxis = (axis) => ({ is: 'ElFormRender', model: axis, class: 'mt8', size: 'small', labelPosition: 'top', children: [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 px8', children: [
     segm('position', [['T', 'top'], ['B', 'bottom']]),
     num('offset', { displayValue: 0 }),
@@ -37,7 +37,7 @@ const xAxis = (axis, i) => ({ is: 'ElFormRender', model: axis, class: 'mt8', siz
   axisTick(axis, true),
 ] })
 
-const yAxis = (axis, i) => ({ is: 'ElFormRender', model: axis, class: 'mt8', size: 'small', labelPosition: 'top', children: [
+const yAxis = (axis) => ({ is: 'ElFormRender', model: axis, class: 'mt8', size: 'small', labelPosition: 'top', children: [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 px8', children: [
     segm('position', [['L', 'left'], ['R', 'right']]),
     num('offset', { displayValue: 0 }),
@@ -55,12 +55,12 @@ const yAxis = (axis, i) => ({ is: 'ElFormRender', model: axis, class: 'mt8', siz
   axisTick(axis, false),
 ] })
 
-export const axiss = (option, vertical) => ({ is: (_, { slots }) => h(resolveComponent('Tabs'), { tabs: [...option.$xAxis, ...option.$yAxis], editable: true, sortable: false, addable: false, props: { label: 'name' } }, {
+export const axiss = (option) => ({ is: (_, { slots }) => h(resolveComponent('Tabs'), { tabs: [...option.xAxis, ...option.yAxis], editable: true, sortable: false, addable: false, props: { label: 'name' } }, {
   default: slots.default,
-  extra: () => h('div', { class: 'flex aic jcc mx4 w20 h20 text-16 bg-hover cursor-pointer b-1', onClick: () => option.$yAxis.push({}) }, '+'),
-}), children: [
-  ...toArr(option.$xAxis).map((axis, i) => ({ ...xAxis(axis, i), key: `x${i}`, label: `类目轴${i == 0 ? '' : ' ' + (i + 1)}` })),
-  ...toArr(option.$yAxis).map((axis, i) => ({ ...yAxis(axis, i), key: `y${i}`, label: `数值轴${i == 0 ? '' : ' ' + (i + 1)}` })),
+  extra: () => h('div', { class: 'flex aic jcc mx4 w20 h20 text-16 bg-hover cursor-pointer b-1', onClick: () => option.yAxis.push({}) }, '+'),
+}), children: () => [
+  ...toArr(option.xAxis).map((axis, i) => ({ ...xAxis(axis), key: `x${i}`, label: axis.name || `类目轴${i == 0 ? '' : ' ' + (i + 1)}` })),
+  ...toArr(option.yAxis).map((axis, i) => ({ ...yAxis(axis), key: `y${i}`, label: axis.name || `数值轴${i == 0 ? '' : ' ' + (i + 1)}` })),
 ] })
 
 export const axis = (option, props) => ({ is: 'Collapse', title: 'Axis', children: () => [

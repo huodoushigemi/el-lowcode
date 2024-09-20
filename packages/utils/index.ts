@@ -20,6 +20,8 @@ export function withInstall<T extends Comp>(comp: T, arr?: Comp[]) {
   return comp as SFCWithInstall<T>
 }
 
+const numReg = /^\d+$/
+
 export const ks = <T extends object>(obj: T) => Object.keys(obj) as (keyof T)[]
 
 export const toArr = <T>(arr?: Arrable<T>) => Array.isArray(arr) ? arr : (arr == null ? [] : [arr])
@@ -35,7 +37,7 @@ export function get(obj: any, path: string | ((...args) => any)) {
 }
 
 export function set<T>(obj: any, path: string, val: T) {
-  return path.split('.').reduce((o, k, i, ks) => o[k] = i == ks.length - 1 ? val : (o[k] ?? {}), obj)
+  return path.split('.').reduce((o, k, i, ks) => o[k] = i == ks.length - 1 ? val : (o[k] ?? (numReg.test(ks[i + 1]) ? [] : {})), obj)
 }
 
 export function deepClone(obj?: Record<string | number, any>, iteratee = (val, key) => val) {

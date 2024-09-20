@@ -1,19 +1,20 @@
-import { bool, color, details, enable, enable2, enable3, genDisplayValue, lineStyleItems, num, segm, textStyleItems } from '../../utils'
+import { bool, color, enable3, genDisplayValue, num, segm } from '../../utils'
 import StyleText from '../../components/StyleText.vue'
 import StyleLine from '../../components/StyleLine.vue'
 
 const _options = (arr) => (arr.map(e => ({ label: e[0], value: e[1] })))
 
-export const serieLine = (model) => ({ is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children: [
-  { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-    { lp: 'type', options: ['line', 'bar'], defaultValue: 'line' },
+export const serieLine = (model, option) => ({ is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children: [
+  { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
+    segm('type', ['line', 'bar'], { defaultValue: 'line' }),
     { lp: ['key', '$key'] },
   ] },
   { is: StyleLine, class: 'my8', model, prefix: 'lineStyle', displayValue: { width: 2 } },
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', size: 'small', children: [
     { lp: 'stack' },
+    { lp: ['轴', '$axis'], options: option.yAxis.map((e, i) => [e.name, i]) },
     { lp: 'step', options: ['start', ['mid', 'middle'], 'end'] },
-    bool('smooth', false)
+    bool('smooth', false),
   ] },
 
   { is: 'div', class: 'mb4' },

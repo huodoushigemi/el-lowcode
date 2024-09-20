@@ -14,8 +14,8 @@ export const Collapse1 = ({ title, oper, open }, { slots }) => (
   })
 )
 
-export const Collapse2 = ({ title, oper }, { slots }) => (
-  h(resolveComponent('Collapse'), { title, class: oper && 'enable', style: 'padding: 0 8px; background: var(--el-fill-color-extra-light); --el-collapse-header-height: 28px' }, {
+export const Collapse2 = ({ title, oper, open }, { slots }) => (
+  h(resolveComponent('Collapse'), { title, class: oper && 'enable', defaultOpen: open, style: 'padding: 0 8px; background: var(--el-fill-color-extra-light); --el-collapse-header-height: 28px' }, {
     extra: () => oper && h(resolveComponent('ElSwitch'), { modelValue: oper[0](), 'onUpdate:modelValue': oper[1], onClick: e => e.stopPropagation() }),
     default: slots.default
   })
@@ -49,7 +49,7 @@ export const enable2 = (model, title, oper, children, open) => ({ is: Collapse1,
   { is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children }
 ] })
 
-export const enable3 = (model, title, oper, children) => ({ is: Collapse2, title, oper, children: () => [
+export const enable3 = (model, title, oper, children, open) => ({ is: Collapse2, title, oper, open, children: () => [
   { is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children }
 ] })
 
