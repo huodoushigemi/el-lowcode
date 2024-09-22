@@ -6,23 +6,7 @@ export * from './ConfigProvider'
 
 export const Render = createRender({
   defaultIs: 'div',
-  processProps: props => {
-    // @ts-ignore
-    const { state } = inject('pageCtx', props)
-    const { children, ..._props } =  props
-    props = _props
-
-    const _execExp = (exp) => {
-      try {
-        return execExp(exp, { state })
-      } catch (e) {
-        console.error('exec expression error: ', e)
-      }
-    }
-
-    props = deepClone(props, _execExp)
-    return { ...props, children: _execExp(children) }
-  }
+  processProps
 })
 
 export default {
@@ -30,3 +14,22 @@ export default {
     
  },
 } as Plugin
+
+export function processProps(props, { state } = inject('pageCtx') as any) {
+  const { children, ..._props } =  props
+  props = _props
+
+  const vars = { state }
+  props = deepClone(props, e => _execExp(e, vars))
+  props.children = _execExp(children, vars)
+
+  return props
+}
+
+function _execExp(exp, vars) {
+  try {
+    return execExp(exp, vars)
+  } catch (e) {
+    console.error('exec expression error: ', e)
+  }
+}

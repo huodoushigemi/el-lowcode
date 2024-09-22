@@ -1,38 +1,42 @@
 import { bool, color, details, enable, enable2, enable3, genDisplayValue, lineStyleItems, num, nums, opts, segm, textStyleItems, LINE_TYPES, shadowStyleItems, borderStyleItems } from '../../utils'
+import StyleText from '../../components/StyleText.vue'
+import StyleLine from '../../components/StyleLine.vue'
+import { parseXYs } from '../../../normalizeOption'
 
-export const seriePie  = (model) => ({ is: 'ElFormRender', model, size: 'small', children: [
+export const seriePie = (model, option, ctx, node) => ({ is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children: [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
-    nums('radius', { get: () => [model.radius?.[0] || '0%', model.radius?.[1] || '75%'], set: v => [v[0] || '0%', v[1] || '75%'], el: { units: ['%'], hideUnit: false } }),
-    nums(['xy', 'center'], { get: () => [model.center?.[0] || '50%', model.center?.[1] || '50%'], set: v => [v[0] || '50%', v[1] || '50%'], el: { units: ['%'], hideUnit: false } }),
-    nums(['angle °', ''], { get: () => [model.startAngle, model.endAngle], set: () => void 0, out: v => ({ startAngle: v[0], endAngle: v[1] }), el: { min: -360 } }),
-    num(['gap', 'padAngle']),
-    num(['round', 'itemStyle.borderRadius']),
-    bool('rose-type'),
+    // opts(['类目', 'encode.itemName']),
+    // opts(['类目', 'encode.itemName']),
+    { lp: ['类目', 'encode.itemName'], options: parseXYs(node.$data.option.dataset.source, node.$data.seriesLayoutBy != 'row') },
+    { lp: ['数值', 'encode.value'], options: parseXYs(node.$data.option.dataset.source, node.$data.seriesLayoutBy != 'row') },
+    nums(['半径', 'radius'], { get: () => [model.radius?.[0] || '0%', model.radius?.[1] || '75%'], set: v => [v[0] || '0%', v[1] || '75%'], el: { units: ['%'], hideUnit: false } }),
+    nums(['位置', 'center'], { get: () => [model.center?.[0] || '50%', model.center?.[1] || '50%'], set: v => [v[0] || '50%', v[1] || '50%'], el: { units: ['%'], hideUnit: false } }),
+    nums(['角度 °', ''], { get: () => [model.startAngle, model.endAngle], set: () => void 0, out: v => ({ startAngle: v[0], endAngle: v[1] }), el: { min: -360 } }),
+    num(['间距', 'padAngle']),
+    num(['圆角', 'itemStyle.borderRadius']),
+    bool(['玫瑰图', 'rose-type']),
   ] },
 
   { is: 'div', class: 'mb4' },
   
-  enable3(model, 'label', genDisplayValue(model, 'label.show', true), () => [
+  enable3(model, '标签', genDisplayValue(model, 'label.show', true), () => [
+    { is: StyleText, class: 'my8', model, prefix: 'label' },
     { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
-      segm(['position', 'label.position'], ['outside', 'inside', 'center'], { class: 'col-span-3', displayValue: 'outside' }),
-      segm(['align', 'label.alignTo'], ['none', 'labelLine', 'edge'], { class: 'col-span-3', displayValue: 'none' }),
-      ...textStyleItems(['fontSize', 'lineHeight', 'color', 'fontStyle', 'fontWeight', 'fontFamily', 'width', 'height', 'overflow'], 'label'),
-      { lp: ['formatter', 'label.formatter'], displayValue: '{a}' },
-      { lp: ['offset', 'label.position'], set: v => v?.map(e => e ?? 0), el: { is: 'InputNumbers', len: 2, unit: null, hideUnit: true, placeholder: ['x', 'y'] } },
+      opts(['位置', 'label.position'], ['outside', 'inside', 'center'], { displayValue: 'outside' }),
+      opts(['对其', 'label.alignTo'], [['—', void 0], ['line', 'labelLine'], 'edge']),
+      { lp: ['格式化', 'label.formatter'], displayValue: '{a}' },
     ] },
   ]),
 
   { is: 'div', class: 'mb4' },
 
-  enable3(model, 'label-line', genDisplayValue(model, 'labelLine.show', true), () => [
-    { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
-      ...lineStyleItems(['type', 'width', 'color'], 'labelLine.lineStyle')
-    ] }
+  enable3(model, '标签线', genDisplayValue(model, 'labelLine.show', true), () => [
+    { is: StyleLine, class: 'my8', model, prefix: 'labelLine.lineStyle' },
   ]),
 
   { is: 'div', class: 'mb4' },
 
-  enable3(model, 'select', genDisplayValue(model, 'selectedMode', false), () => [
+  enable3(model, '选中状态', genDisplayValue(model, 'selectedMode', false), () => [
     { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
       { is: 'h4', class: 'col-span-3 mt10 mb0', children: 'Label' },
       ...textStyleItems(['fontSize', 'lineHeight', 'color', 'fontStyle', 'fontWeight', 'fontFamily'], 'select.label'),

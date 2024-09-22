@@ -4,9 +4,9 @@ import type { Ref } from 'vue'
 import { isArray, isObject, normalizeStyle } from '@vue/shared'
 import { unrefElement, useEventListener } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
-import { deepClone, execExp } from '@el-lowcode/utils'
+import { processProps } from 'el-lowcode'
 import { parseAttrs } from '../../components/_utils'
-import { DisplayNode, type DesignerCtx } from '../interface'
+import { type DesignerCtx } from '../interface'
 import type { BoxProps } from '../..'
 
 defineOptions({
@@ -36,17 +36,9 @@ const Render = createRender({
   processProps: (_props: any) => {
     if (_props[EMPTY]) return _props
     const designer = inject('designerCtx') as DesignerCtx
-    const { state } = inject('pageCtx', _props)
+    const pageCtx = inject('pageCtx')
     return wm.get(_props)?.value || wm.set(_props, computed(() => {
       let { children, ...props } = _props
-  
-      const _execExp = (exp) => {
-        try {
-          return execExp(exp, { state })
-        } catch (e) {
-          console.error('exec expression error: ', e)
-        }
-      }
 
       const ctx = setup(_props, designer)
 
@@ -59,16 +51,17 @@ const Render = createRender({
         }
       }
       else if (isObject(children)) {
-        // 插槽
+        // todo 插槽
       }
 
       // 移除值为 undefuned 的属性
       props = JSON.parse(JSON.stringify(props))
-      // 执行表达式
-      props = deepClone(props, _execExp)
+
+      props.children = children
+      props = processProps(props, pageCtx)
       // 合并属性
       props = mergeProps(props, { ref: ctx.ref }, ctx.attrs)
-      props.children = _execExp(children)
+      designer.keyedCtx[props._id].$data = props
 
       return props
     })).get(_props).value

@@ -50,6 +50,10 @@ export abstract class DisplayNode extends Node<BoxProps> {
     return el?.nodeType == 3 ? el.nextElementSibling : el
   }
 
+  #$data = ref()
+  get $data() { return this.#$data.value }
+  set $data(v) { this.#$data.value = v }
+
   // 自由拖拽
   get isAbs() { return this.data.style?.position == 'absolute' }
   set isAbs(bool) { this.data.style = bool ? normalizeStyle([this.data.style, { position: 'absolute', margin: 0 }]) : normalizeStyle([this.data.style, { position: void 0, transform: void 0, margin: void 0 }]) }

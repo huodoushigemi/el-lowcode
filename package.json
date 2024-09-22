@@ -32,6 +32,7 @@
     "element-plus": "^2.8.1",
     "infinite-viewer": "^0.29.1",
     "lodash-es": "^4.17.21",
+    "md5": "^2.3.0",
     "postcss": "^8.4.41",
     "qs": "^6.11.2",
     "uuid": "^9.0.1",

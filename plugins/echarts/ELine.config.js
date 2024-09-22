@@ -1,5 +1,5 @@
 import { serieBar, serieLine } from './.lowcode/option/series'
-import { axiss, gridView, legend, toolbox, tooltip } from './.lowcode/option'
+import { axiss, gridView, legend, legendView, toolbox, tooltip } from './.lowcode/option'
 import { bool, segm, segm2 } from './.lowcode/utils'
 
 export default {
@@ -19,22 +19,25 @@ export default {
         bool('vertical'),
       ] },
 
-      { is: 'Tabs', class: '-mx8 no-scriptable', children: [
-        { is: 'div', label: 'Grid', class: 'p8', children: [
+      { is: 'Tabs', class: '-mx8 no-scriptable', nav: { class: 'relative shadow-md' }, children: [
+        { is: 'div', label: '容器', class: 'p8', children: [
           gridView(option)
         ] },
-        { is: 'div', label: 'Axis', children: [
+        { is: 'div', label: '轴', children: [
           axiss(option, props.vertical),
         ] },
-        { is: 'div', label: 'Series', children: [
+        { is: 'div', label: '系列', children: [
           { is: 'Tabs', key: _id, tabs: option.series, editable: true, props: { label: 'name' }, new: (i) => ({ type: 'line', name: `series-${i + 1}` }), children: option.series.map(e => (
             { is: 'div', label: e.name, class: 'px8', children: () => [
-              e.type == 'bar' ? serieBar(e) : serieLine(e)
+              e.type == 'bar' ? serieBar(e, option) : serieLine(e, option)
             ] }
           )) },
         ] },
-        { is: 'div', label: 'Other', class: 'p8 pt0', children: [
-          legend(option),
+        { is: 'div', label: '图例', class: 'p8 pt0 mt6', children: [
+          legendView(option),
+        ] },
+        { is: 'div', label: '其他', class: 'p8 pt0', children: [
+          // legend(option),
           toolbox(option),
           tooltip(option),
         ] },
@@ -59,8 +62,8 @@ export default {
     style: { height: '300px', width: '400px' },
     option: {
       legend: {},
-      $xAxis: [{}],
-      $yAxis: [{}],
+      xAxis: [{}],
+      yAxis: [{}],
       tooltip: { show: true, trigger: 'axis' },
       toolbox: {},
       dataset: {
