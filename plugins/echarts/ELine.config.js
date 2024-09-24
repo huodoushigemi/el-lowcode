@@ -6,7 +6,7 @@ export default {
   is: 'ELine',
   label: '线型图',
   category: '基础图表',
-  props: (props) => {
+  props: (props, ctx, { node }) => {
     const { _id, option } = props
 
     return [
@@ -24,12 +24,12 @@ export default {
           gridView(option)
         ] },
         { is: 'div', label: '轴', children: [
-          axiss(option, props.vertical),
+          axiss(option),
         ] },
         { is: 'div', label: '系列', children: [
-          { is: 'Tabs', key: _id, tabs: option.series, editable: true, props: { label: 'name' }, new: (i) => ({ type: 'line', name: `series-${i + 1}` }), children: option.series.map(e => (
+          { is: 'Tabs', key: _id, tabs: option.series, editable: true, props: { label: 'name' }, new: (i) => ({ type: 'line', name: `series-${i + 1}` }), children: option.series.map((e, i) => (
             { is: 'div', label: e.name, class: 'px8', children: () => [
-              e.type == 'bar' ? serieBar(e, option) : serieLine(e, option)
+              e.type == 'bar' ? serieBar(e, i, option, ctx, node) : serieLine(e, i, option, ctx, node)
             ] }
           )) },
         ] },

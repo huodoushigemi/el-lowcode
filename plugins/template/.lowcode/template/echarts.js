@@ -119,7 +119,6 @@ export default {
             {
               "type": "bar",
               "name": "series-2",
-              "$key": "1",
               "$axis": 0,
               "itemStyle": {
                 "color": "rgba(84, 112, 198, 1)"
@@ -128,7 +127,6 @@ export default {
             {
               "type": "bar",
               "name": "series-3",
-              "$key": "2",
               "$axis": 1,
               "itemStyle": {
                 "color": "rgba(145, 204, 117, 1)"
@@ -138,7 +136,6 @@ export default {
               "name": "data",
               "label": {},
               "type": "line",
-              "$key": "3",
               "$axis": 2,
               "lineStyle": {
                 "color": "rgba(238, 102, 102, 1)"

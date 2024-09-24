@@ -1,13 +1,14 @@
 import { bool, color, enable3, genDisplayValue, num, segm } from '../../utils'
 import StyleText from '../../components/StyleText.vue'
 import StyleLine from '../../components/StyleLine.vue'
+import { parseEncode, parseXYs } from '../../../normalizeOption'
 
 const _options = (arr) => (arr.map(e => ({ label: e[0], value: e[1] })))
 
-export const serieLine = (model, option) => ({ is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children: [
+export const serieLine = (model, i, option, ctx, node) => ({ is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children: [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
     segm('type', ['line', 'bar'], { defaultValue: 'line' }),
-    { lp: ['key', '$key'] },
+    { lp: ['key', '$key'], options: parseXYs(node.$data), displayValue: parseEncode(node.$data, i).y, el: { allowCreate: true, filterable: true, defaultFirstOption: true } },
   ] },
   { is: StyleLine, class: 'my8', model, prefix: 'lineStyle', displayValue: { width: 2 } },
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', size: 'small', children: [
