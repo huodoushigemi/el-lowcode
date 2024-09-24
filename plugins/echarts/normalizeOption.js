@@ -37,28 +37,32 @@ export function normalizeBarOption(props) {
   return normalizeLineOption(props, 'bar')
 }
 
-export function normalizePieOption({ option, seriesLayoutBy = 'column' }) {
-  const col = seriesLayoutBy == 'column'
+export function normalizePieOption(props) {
+  const { option, seriesLayoutBy = 'column' } = props
   return merge({
-    series: option.series?.map(e => ({
+    series: option.series?.map((e, i) => ({
       type: 'pie',
       seriesLayoutBy,
-      // encode: e.encode?.itemName != null ? { itemName: '', value: '' } : void 0
+      encode: { itemName: parseEncode(props, i).x, value: parseEncode(props, i).y }
     }))
   }, option)
 }
 
-function parseEncode(data, i, col = true) {
-  i = i != null ? i + 1 : void 0
+export function parseEncode({ option, seriesLayoutBy = 'column' }, i) {
+  const col = seriesLayoutBy == 'column'
+  const data = option.dataset.source
+  i = i != null ? i + 1 : 1
   if (is2D(data)) {
-    return col ? { x: data[0][0], y: i ?? data[0][1] } : { x: data[0][0], y: data[1][0] }
+    return col ? { x: data[0][0], y: data[0][i] } : { x: data[0][0], y: data[i][0] }
   } else {
     const ks = Object.keys(data[0])
-    return { x: ks[0], y: ks[i ?? 1] }
+    return { x: ks[0], y: ks[i] }
   }
 }
 
-export function parseXYs(data, col = true) {
+export function parseXYs({ option, seriesLayoutBy = 'column' }) {
+  const col = seriesLayoutBy == 'column'
+  const data = option.dataset.source
   if (is2D(data)) {
     return col ? data[0] : data.map(e => e[0])
   } else {

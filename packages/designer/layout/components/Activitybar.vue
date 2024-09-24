@@ -21,7 +21,7 @@ const emit = defineEmits(['update:modelValue'])
 <style lang="scss">
 .activitybar {
   color: var(--vscode-activityBar-foreground, #fff);
-  background: var(--vscode-activityBar-background, #333333)
+  background: var(--vscode-activityBar-background, #333333);
 }
 .activitybar_icon {
   background-color: currentColor;

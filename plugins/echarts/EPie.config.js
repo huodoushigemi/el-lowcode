@@ -13,9 +13,9 @@ export default {
 
     { is: 'Tabs', class: '-mx8 no-scriptable', nav: { class: 'relative shadow-md' }, children: [
       { is: 'div', label: '系列', children: [
-        { is: 'Tabs', key: _id, tabs: option.series, editable: true, props: { label: 'name' }, new: (i) => ({ type: 'pie', name: `series-${i + 1}` }), children: option.series.map(e => (
+        { is: 'Tabs', key: _id, tabs: option.series, editable: true, props: { label: 'name' }, new: (i) => ({ type: 'pie', name: `series-${i + 1}` }), children: option.series.map((e, i) => (
           { is: 'div', label: e.name, class: 'px8', children: () => [
-            seriePie(e, option, ctx, node)
+            seriePie(e, i, option, ctx, node)
           ] }
         )) },
       ] },

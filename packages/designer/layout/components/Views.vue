@@ -16,22 +16,19 @@
         <i-tdesign:chevron-right :rotate="expanded[pane.id] ? 90 : 0" ml4 />
         <div font-700 truncate uppercase>{{ pane.name }}</div>
       </div>
-      <!-- <el-collapse-transition> -->
-        <div
-          v-if="expanded[pane.id]"
-          duration="150!"
-          class="pane-body flex-1 overflow-auto"
-          @vue:mounted="({ el }) => mount(el, pane.id)"
-          @vue:unmounted="({ el }) => unmount(el, pane.id)"
-        />
-      <!-- </el-collapse-transition> -->
+      <div
+        v-if="expanded[pane.id]"
+        class="pane-body flex-1 overflow-auto"
+        @vue:mounted="({ el }) => mount(el, pane.id)"
+        @vue:unmounted="({ el }) => unmount(el, pane.id)"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, inject, PropType, ref, reactive } from 'vue'
-import { useResizeObserver } from '@vueuse/core'
+import { useMutationObserver, useResizeObserver } from '@vueuse/core'
 import { Activitybar, Contributes, DesignerCtx } from '../interface'
 
 const props = defineProps({
@@ -51,20 +48,22 @@ function mount(el, id) {
   designer.viewRenderer[id]?.mount(el)
   sizeMap[id] ??= {}
   const xxx = sizeMap[id]
-  xxx.scrollHeight = 0
-  // xxx.ob = useResizeObserver(el, ([e]) => (xxx.scrollHeight = el.scrollHeight, console.log(e)))
-  xxx.ob = useResizeObserver(el, ([e]) => xxx.scrollHeight = el.scrollHeight)
+  xxx.scrollHeight = el.scrollHeight
+  xxx.sizeObs = useResizeObserver(el, () => xxx.scrollHeight = el.scrollHeight)
+  xxx.childObs = useMutationObserver(el, () => xxx.scrollHeight = el.scrollHeight, { subtree: false, childList: true })
   xxx.grow = computed(() => {
     // @ts-ignore
     const t: number = Object.values(sizeMap).reduce((t, e) => t + (e?.scrollHeight || 0), 0)
     
     return t ? Math.max(xxx.scrollHeight, t * .2) / t : 0
+    // return t ? xxx.scrollHeight / t : 0
   })
 }
 
 function unmount(el, id) {
   designer.viewRenderer[id]?.unmount?.(el)
-  sizeMap[id].ob.stop()
+  sizeMap[id].sizeObs?.stop()
+  sizeMap[id].childObs?.stop()
   sizeMap[id] = void 0
 }
 </script>
@@ -73,16 +72,12 @@ function unmount(el, id) {
 .pane {
   display: flex;
   flex-direction: column;
-  // border-bottom: 1px solid var(--vscode-sideBarSectionHeader-border);
-  border-top: 1px solid var(--vs-sideBarSectionHeader-border);
-
-  &:last-of-type {
-    // border-bottom: unset;
-  }
 
   #{&}-header {
     position: relative;
     cursor: pointer;
+    color: var(--vscode-activityBar-foreground, #fff);
+    background: var(--vscode-activityBar-background, #333333);
   }
 
   #{&}-header.expanded {
