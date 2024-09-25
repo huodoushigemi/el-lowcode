@@ -14,6 +14,18 @@
   <script type="module">
     import { createApp, reactive, h, computed, watchEffect } from 'vue'
     import { ConfigProvider, Render } from 'el-lowcode'
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js'
+
+    const supabase = createClient(
+      'https://oxbkrsyagojtbckytbjx.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94Ymtyc3lhZ29qdGJja3l0Ymp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjcyNzQzNTAsImV4cCI6MjA0Mjg1MDM1MH0.M3O3VPvgfaxtMaasBIM-rgPw90l1GAG_m-_RQqMbNMc'
+    )
+
+    supabase.storage.from('lcd').download('/echarts-demo.js').then(async ({ data }) => {
+      console.log(data);
+      const { default: json } = (await import(/* @vite-ignore */ URL.createObjectURL(data)))
+      console.log(json);
+    })
 
     const schema = computed(() => {
       // const undecode = route.query.schema 
