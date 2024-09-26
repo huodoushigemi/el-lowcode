@@ -1,4 +1,4 @@
-import { defineComponent, getCurrentInstance, provide, reactive, ref, renderSlot, toRef, watch } from 'vue'
+import { computed, defineComponent, getCurrentInstance, provide, reactive, ref, renderSlot, toRef, watch } from 'vue'
 
 export const ConfigProvider = defineComponent({
   inheritAttrs: false,
@@ -9,7 +9,7 @@ export const ConfigProvider = defineComponent({
   },
   setup(props, { slots }) {
     provide('pageCtx', reactive({
-      state: toRef(props, 'state')
+      state: computed(() => reactive(JSON.parse(JSON.stringify(props.state))))
     }))
 
     const ins = getCurrentInstance()

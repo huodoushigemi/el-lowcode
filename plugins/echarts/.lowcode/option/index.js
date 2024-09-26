@@ -8,6 +8,8 @@ export * from './series'
 
 const toArr = (arr) => Array.isArray(arr) ? arr : (arr == null ? [] : [arr])
 
+export const form = (opt) => ({ is: 'ElFormRender', size: 'small', labelPosition: 'top', ...opt })
+
 export const grid = (option) => enable2(option, 'Gird', void 0, () => [
   gridView(option)
 ])

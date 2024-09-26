@@ -1,51 +1,44 @@
-import { h, resolveDynamicComponent, createVNode, createTextVNode, toDisplayString, VNode } from 'vue'
-import { isArray, isPlainObject } from '@vue/shared'
-import { unFn, Fnable, Arrable } from '@el-lowcode/utils'
+import { computed, defineComponent, getCurrentInstance, provide, reactive, ref, renderSlot, toRef, watch } from 'vue'
 
-export type Props = {
-  is?: any
-  children?: Fnable<string | number | Arrable<Props>>
-  $?: {
-    condition: any
-    loop: string
-    loopArgs: [string, string]
+export const ConfigProvider = defineComponent({
+  inheritAttrs: false,
+  props: {
+    plugins: Array,
+    state: Object,
+    css: String,
+  },
+  setup(props, { slots }) {
+    provide('pageCtx', reactive({
+      state: computed(() => reactive(JSON.parse(JSON.stringify(props.state))))
+    }))
+
+    const ins = getCurrentInstance()
+    const loading = ref(false)
+    const loaded = {}
+
+    // load plugin
+    watch(() => [...props.plugins], async (urls, old) => {
+      if (JSON.stringify(urls) == JSON.stringify(old)) return
+      if (!urls?.length) return
+      
+      try {
+        loading.value = true
+        await loadPlugins(urls)
+      } finally {
+        loading.value = false
+      }
+    }, { immediate: true })
+    
+    async function loadPlugins(urls) {
+      for (const url of urls || []) {
+        if (loaded[url]) continue
+        loaded[url] = 1
+        const plugin = (await import(/* @vite-ignore */ url + '/index.js')).default
+        await loadPlugins(plugin.plugins)
+        ins.appContext.app.use(plugin)
+      }
+    }
+
+    return () => loading.value || renderSlot(slots, 'default')
   }
-  [k: string]: any
-}
-
-type CreateRender = {
-  /** @default 'div' */
-  defaultIs?: any
-  processProps?: (props: Props) => Props
-}
-
-export function createRender({ defaultIs = 'div', processProps = (props: Props) => props }: CreateRender) {
-  return function Render(props: Props): VNode | null {
-    const { is, $, children, ...attrs } = processProps(props)
-    return (
-      props.$?.condition == null || !!$?.condition
-        ? h(
-            // @ts-ignore
-            resolveDynamicComponent(is || defaultIs),
-            attrs,
-            {
-              default: () => {
-                const childs = unFn(children)
-                return (
-                  // todo
-                  // isArray(childs) ? childs.map(e => isPlainObject(e) ? createVNode(Render, e) : e) :
-                  isArray(childs) ? childs.map(e => isPlainObject(e) ? Render(e) : e) :
-                  // isPlainObject(childs) ? Render(childs) :
-                  childs
-                )
-              }
-            }
-          )
-        : null
-    )
-  }
-}
-
-export const Render = createRender({})
-
-export default Render
+})

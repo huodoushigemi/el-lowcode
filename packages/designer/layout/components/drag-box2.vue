@@ -36,9 +36,8 @@ const Render = createRender({
   processProps: (_props: any) => {
     if (_props[EMPTY]) return _props
     const designer = inject('designerCtx') as DesignerCtx
-    const pageCtx = inject('pageCtx')
     return wm.get(_props)?.value || wm.set(_props, computed(() => {
-      let { children, ...props } = _props
+      let { children, ...props } = designer.keyedCtx[_props._id].$data
 
       const ctx = setup(_props, designer)
 
@@ -54,14 +53,9 @@ const Render = createRender({
         // todo 插槽
       }
 
-      // 移除值为 undefuned 的属性
-      props = JSON.parse(JSON.stringify(props))
-
-      props.children = children
-      props = processProps(props, pageCtx)
       // 合并属性
+      props.children = children
       props = mergeProps(props, { ref: ctx.ref }, ctx.attrs)
-      designer.keyedCtx[props._id].$data = props
 
       return props
     })).get(_props).value

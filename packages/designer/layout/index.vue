@@ -33,24 +33,6 @@
             <div v-if="node.id != designerCtx.activeId" mx4> > </div>
           </div>
         </div>
-
-        <div class="absolute bottom-10 left-35 flex">
-          <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32" flex space-x-10 px6 style="background: var(--vscode-activityBar-background, #333333)">
-            <i-mdi:close data-title="clear" class="vs-ai" @click="root = initial()" />
-            <i-mdi:undo-variant class="vs-ai" :op="!canUndo && '20'" @click="undo()" />
-            <i-mdi:redo-variant class="vs-ai" :op="!canRedo && '20'" @click="redo()" ml4="!" />
-            <i-tdesign:download class="vs-ai" @click="$refs.exportCode.vis = true" />
-            <!-- <slot name="actions"></slot> -->
-          </div>
-  
-          <ElFormRender class="flex aic ml8 px6 text-12 [&>*]:mb0!" style="background: var(--vscode-activityBar-background, #333333)" :model="designerCtx.canvas" size="small" :items="[
-            { prop: 'style.wh', type: 'select', options: [['iPhone SE', '375 × 667'], ['iPhone12 Pro', '390 × 844'], ['iPad Mini', '768 × 1024']], class: 'w110 mr8', get: () => ['width', 'height'].map(k => parseFloat(get(root, `designer.canvas.style.${k}`)) || ' - ').join(' × '), set: v => (['width', 'height'].forEach((k, i) => set(root, `designer.canvas.style.${k}`, v && v.split(' × ')[i] + 'px')), void 0), el: { clearable: true } },
-            { prop: 'style.width', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
-            { is: 'div', class: 'mx4', children: '×' },
-            { prop: 'style.height', class: 'w50', el: { is: 'InputNumber', hideUnit: true } },
-            { prop: 'zoom', class: 'ml8 w55', displayValue: '100%', get: v => parseInt(v * 100) + '%', set: v => parseInt(v) / 100, el: { is: 'InputNumber', units: ['%'], min: 40, max: 250 } }
-          ]" />
-        </div>
       </div>
 
       
@@ -58,10 +40,31 @@
       <aside w256 b-l="1px solid [--el-border-color]" overflow-overlay>
         <setting-panel />
       </aside>
-      <state-drawer />
+      <!-- <state-drawer /> -->
 
       <ExportCode ref="exportCode" />
     </div>
+
+    <Statusbar>
+      <!-- <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32" flex space-x-10 px6 style="background: var(--vscode-activityBar-background, #333333)"> -->
+      <div flex aic bg="#3655b5" class="[&>*]:flex-shrink-0 ml0!">
+        <el-select v-model="viewer.wh.v" class="[&>.el-select\_\_wrapper]:min-h20! [&>.el-select\_\_wrapper]:py0! mr8 w100!" size="small" clearable>
+          <el-option v-for="e in [['iPhone SE', '375 × 667'], ['iPhone12 Pro', '390 × 844'], ['iPad Mini', '768 × 1024']]" :label="e[0]" :value="e[1]" />
+        </el-select>
+        <InputNumber v-model="viewer.w.v" noUnit class="w50 h20" />
+        <div mx4>x</div>
+        <InputNumber v-model="viewer.h.v" noUnit class="w50 h20" />
+      </div>
+      <i-tdesign:close wa @click="root = initial()" />
+      <i-mdi:undo-variant wa mr0="!" :op="!canUndo && '20'" @click="undo()" />
+      <i-mdi:redo-variant wa ml0="!" :op="!canRedo && '20'" @click="redo()" />
+      <i-tdesign:download wa @click="$refs.exportCode.vis = true" />
+      <div flex aic text-nowrap class="[&>*]:flex-shrink-0 ml12!">
+        <i-mdi:magnify-expand wa mr2 h18 />
+        <input type="range" v-model.number="viewer.zoom.v" min="40" max="250" />
+        <InputNumber v-model="viewer.zoom.v" noUnit :min="40" :max="250" class="w50 h20" />
+      </div>
+    </Statusbar>
   </div>
 </template>
 
@@ -81,6 +84,7 @@ import SelectedLayer from './components/selected-layer.vue'
 import SettingPanel from './setting-panel.vue'
 import StateDrawer from './components/state-drawer.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
+import Statusbar from './components/Statusbar.vue'
 // import { vue2esm } from './vue2esm'
 import { createDesignerCtx } from '../utils'
 import { PageCtx } from '../plugins/web/page'
@@ -135,17 +139,6 @@ const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, {
 
 const initCanvas = () => get(root.value, 'designer.canvas') || set(root.value, 'designer.canvas', {})
 
-const viewer = {
-  // x: useTransformer(root, 'designer.canvas.x'),
-  // y: useTransformer(root, 'designer.canvas.y'),
-  // zoom: useTransformer(root, 'designer.canvas.zoom')
-  // get x() { return get(root.value, 'designer.canvas.x') },
-  // set x(v) { toRaw(initCanvas()).x = v },
-  // get y() { return get(root.value, 'designer.canvas.y') },
-  // set y(v) { toRaw(initCanvas()).y = v },
-  // get zoom() { return get(root.value, 'designer.canvas.zoom') },
-  // set zoom(v) { toRaw(initCanvas()).zoom = v },
-}
 const viewport = ref<HTMLElement>()
 
 const designerCtx = createDesignerCtx(root, () => props.extraPlugins)
@@ -153,6 +146,21 @@ const designerCtx = createDesignerCtx(root, () => props.extraPlugins)
 provide(designerCtxKey, designerCtx)
 provide('designerCtx', designerCtx)
 defineExpose(designerCtx)
+
+const viewer = {
+  // x: useTransformer(root, 'designer.canvas.x'),
+  // y: useTransformer(root, 'designer.canvas.y'),
+  zoom: useTransformer(designerCtx, 'canvas.zoom', { get: v => (v * 100).toFixed(), set: v => +(v / 100).toFixed(2) }),
+  wh: useTransformer(root, 'designer.canvas.wh', { get: () => ['width', 'height'].map(k => parseInt(get(root.value, `designer.canvas.style.${k}`)) || ' - ').join(' × '), set: v => (['width', 'height'].forEach((k, i) => set(root.value, `designer.canvas.style.${k}`, v && v.split(' × ')[i] + 'px')), void 0) }),
+  w: useTransformer(root, 'designer.canvas.style.width', { get: v => v || parseInt(v), set: v => v + 'px' }),
+  h: useTransformer(root, 'designer.canvas.style.height', { get: v => v || parseInt(v), set: v => v + 'px' }),
+  // get x() { return get(root.value, 'designer.canvas.x') },
+  // set x(v) { toRaw(initCanvas()).x = v },
+  // get y() { return get(root.value, 'designer.canvas.y') },
+  // set y(v) { toRaw(initCanvas()).y = v },
+  // get zoom() { return get(root.value, 'designer.canvas.zoom') },
+  // set zoom(v) { toRaw(initCanvas()).zoom = v },
+}
 
 console.log(window.designerCtx = designerCtx)
 

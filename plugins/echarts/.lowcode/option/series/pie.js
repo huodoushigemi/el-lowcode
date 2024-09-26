@@ -14,7 +14,7 @@ export const seriePie = (model, i, option, ctx, node) => ({ is: 'ElFormRender', 
     nums(['角度 °', ''], { get: () => [model.startAngle, model.endAngle], set: () => void 0, out: v => ({ startAngle: v[0], endAngle: v[1] }), el: { min: -360 } }),
     num(['间距', 'padAngle']),
     num(['圆角', 'itemStyle.borderRadius']),
-    bool(['玫瑰图', 'rose-type']),
+    bool(['玫瑰图', 'roseType']),
   ] },
 
   { is: 'div', class: 'mb4' },

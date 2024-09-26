@@ -35,8 +35,8 @@ export default {
                   "legend": {
                     "show": false
                   },
-                  "xAxis": {},
-                  "yAxis": {},
+                  "xAxis": [{}],
+                  "yAxis": [{}],
                   "tooltip": {
                     "show": true,
                     "trigger": "axis"
@@ -89,12 +89,12 @@ export default {
                   "legend": {
                     "show": false
                   },
-                  "xAxis": {},
-                  "yAxis": {
+                  "xAxis": [{}],
+                  "yAxis": [{
                     "axisLine": {
                       "show": false
                     }
-                  },
+                  }],
                   "tooltip": {
                     "show": true,
                     "trigger": "axis"
@@ -152,7 +152,7 @@ export default {
                     "source": "{{state.data3}}"
                   },
                   "legend": {},
-                  "xAxis": {
+                  "xAxis": [{
                     "boundaryGap": false,
                     "name": "xxxx",
                     "axisTick": {},
@@ -161,10 +161,10 @@ export default {
                     "axisLine": {
                       "lineStyle": {}
                     }
-                  },
-                  "yAxis": {
+                  }],
+                  "yAxis": [{
                     "splitLine": {}
-                  },
+                  }],
                   "tooltip": {
                     "show": true,
                     "trigger": "axis",
@@ -284,10 +284,10 @@ export default {
                   "dataset": {
                     "source": "{{[\n  { product: 'Latte', 2015: 23.3, 2016: 45.8, 2017: 93.7 },\n  { product: 'Milk', 2015: 33.1, 2016: 63.4, 2017: 85.1 },\n  { product: 'Cheese', 2015: 26.4, 2016: 55.2, 2017: 92.5 },\n  { product: 'Walnut Brownie', 2015: 42.4, 2016: 63.9, 2017: 109.1 }\n]}}"
                   },
-                  "xAxis": {
+                  "xAxis": [{
                     "axisLabel": {}
-                  },
-                  "yAxis": {},
+                  }],
+                  "yAxis": [{}],
                   "tooltip": {
                     "show": false,
                     "trigger": "axis"
@@ -352,13 +352,13 @@ export default {
                     "source": "{{{\r\n  altitude: ['0', '10', '20', '30', '40', '50', '60', '70', '80'],\r\n  temperature: [15, -50, -56.5, -46.5, -22.1, -2.5, -27.7, -55.7, -76.5],\r\n}}}"
                   },
                   "legend": {},
-                  "xAxis": {
+                  "xAxis": [{
                     "axisLabel": {},
                     "axisLine": {},
                     "axisTick": {},
                     "splitLine": {}
-                  },
-                  "yAxis": {
+                  }],
+                  "yAxis": [{
                     "axisLabel": {
                       "formatter": "{value} km"
                     },
@@ -368,7 +368,7 @@ export default {
                     },
                     "axisTick": {},
                     "splitLine": {}
-                  },
+                  }],
                   "tooltip": {
                     "show": true,
                     "trigger": "axis"
@@ -438,8 +438,8 @@ export default {
                   "legend": {
                     "show": false
                   },
-                  "xAxis": {},
-                  "yAxis": {},
+                  "xAxis": [{}],
+                  "yAxis": [{}],
                   "tooltip": {
                     "show": false,
                     "trigger": "axis"
@@ -489,8 +489,8 @@ export default {
                   "legend": {
                     "top": "top"
                   },
-                  "xAxis": {},
-                  "yAxis": {},
+                  "xAxis": [{}],
+                  "yAxis": [{}],
                   "tooltip": {
                     "trigger": "axis",
                     "axisPointer": {}
@@ -547,8 +547,8 @@ export default {
                   "legend": {
                     "show": false
                   },
-                  "xAxis": {},
-                  "yAxis": {},
+                  "xAxis": [{}],
+                  "yAxis": [{}],
                   "tooltip": {
                     "trigger": "axis",
                     "axisPointer": {
@@ -599,8 +599,8 @@ export default {
                   "legend": {
                     "show": false
                   },
-                  "xAxis": {},
-                  "yAxis": {},
+                  "xAxis": [{}],
+                  "yAxis": [{}],
                   "tooltip": {
                     "trigger": "axis",
                     "axisPointer": {
@@ -649,8 +649,8 @@ export default {
                 },
                 "option": {
                   "legend": {},
-                  "xAxis": {},
-                  "yAxis": {},
+                  "xAxis": [{}],
+                  "yAxis": [{}],
                   "tooltip": {
                     "trigger": "axis",
                     "axisPointer": {

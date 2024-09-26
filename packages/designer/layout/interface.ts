@@ -1,8 +1,9 @@
-import { InjectionKey, ref } from 'vue'
+import { computed, InjectionKey, ref } from 'vue'
 import { isArray, isObject, isString, normalizeStyle, remove } from '@vue/shared'
 import { unrefElement } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import { deepClone, Obj, set } from '@el-lowcode/utils'
+import { processProps } from 'el-lowcode'
 import { Node } from './components/Node'
 import { sloveConfig } from '../components/_utils'
 import { parseTransform } from './components/utils'
@@ -50,9 +51,14 @@ export abstract class DisplayNode extends Node<BoxProps> {
     return el?.nodeType == 3 ? el.nextElementSibling : el
   }
 
-  #$data = ref()
+  #$data = computed(() => {
+    let { children, ...props } = this.data
+    // 移除值为 undefuned 的属性
+    props = JSON.parse(JSON.stringify(props))
+    props.children = children
+    return processProps(props, this.designerCtx.pageCtx)
+  })
   get $data() { return this.#$data.value }
-  set $data(v) { this.#$data.value = v }
 
   // 自由拖拽
   get isAbs() { return this.data.style?.position == 'absolute' }
@@ -76,6 +82,8 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
 export interface DesignerCtx {
   DisplayNode: { new (...args: ConstructorParameters<typeof DisplayNode>): DisplayNode }
+  pageCtx: { state: any }
+  
   activeId?: string
   readonly active?: DisplayNode
   readonly activeEl?: HTMLElement | null

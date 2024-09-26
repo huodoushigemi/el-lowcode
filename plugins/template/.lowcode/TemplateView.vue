@@ -16,7 +16,8 @@
 <script setup>
 import { inject } from 'vue'
 import { computedAsync } from '@vueuse/core'
-import { ElImage, ElCard, ElButton } from 'element-plus'
+import { ElImage, ElCard, ElButton, ElLoadingService } from 'element-plus'
+import { createClient } from './supabase'
 
 const designerCtx = inject('designerCtx')
 
@@ -31,33 +32,32 @@ function onEdit(item) {
 }
 
 async function demoUrl({ title, schema }) {
-  const sw = screen.width, sh = screen.height
-  const w = Math.min(parseInt(schema.designer?.canvas?.style?.width || sw), sw)
-  const h = Math.min(parseInt(schema.designer?.canvas?.style?.height || sh), sh)
+  const loading = ElLoadingService()
 
   const text = JSON.stringify(schema)
   const hash = (await import('md5')).default(text)
 
-  const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.45.4')
-  const supabase = createClient(
-    'https://oxbkrsyagojtbckytbjx.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94Ymtyc3lhZ29qdGJja3l0Ymp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjcyNzQzNTAsImV4cCI6MjA0Mjg1MDM1MH0.M3O3VPvgfaxtMaasBIM-rgPw90l1GAG_m-_RQqMbNMc'
-  )
-
-  // await supabase.auth.signUp({ email: '123@qq.com', password: '123456' })
-
+  const supabase = await createClient()
   const storage = supabase.storage.from('lcd')
-
-  try {
-    const file = new File([text], hash, { type: 'text/plain' })
-    await storage.upload(hash, file, { cacheControl: 3600 * 24 * 7 })
-  } catch (e) {
-    console.error(e)
-  }
 
   // eg: https://oxbkrsyagojtbckytbjx.supabase.co/storage/v1/object/public/lcd/echarts-demo.js
   const url = `${storage.url}/object/public/${storage.bucketId}/${hash}`
 
+  if (!await fetch(url, { method: 'HEAD' }).then(e => e.status == 200)) {
+    try {
+      const file = new File([text], hash, { type: 'text/plain' })
+      await storage.upload(hash, file, { cacheControl: 3600 * 24 * 7 })
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  setTimeout(() => loading.close(), 600)
+  
+  const sw = screen.width, sh = screen.height
+  const w = Math.min(parseInt(schema.designer?.canvas?.style?.width || sw), sw)
+  const h = Math.min(parseInt(schema.designer?.canvas?.style?.height || sh), sh)
+  
   const win = window.open(
     `/demo.html?file=${encodeURIComponent(url)}`,
     '_blank',

@@ -48,6 +48,7 @@ export function createDesignerCtx(root: Ref<PageCtx>, builtinPluginUrls?: MaybeR
     // canvas: computed(() => root.value.designer?.canvas || { zoom: 1 }),
     // @ts-ignore
     DisplayNode: class $DisplayNode extends DisplayNode { designerCtx = designerCtx },
+    pageCtx: computed(() => reactive({ state: JSON.parse(JSON.stringify(root.value.state || {})) })),
     canvas: { x: 0, y: 0, zoom: 1, style: useTransformer(root, 'designer.canvas.style') } as any,
     root,
     flated: computed(() => treeUtils.flat([root.value])),

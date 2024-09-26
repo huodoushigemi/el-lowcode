@@ -1,5 +1,5 @@
 import { seriePie } from './.lowcode/option/series'
-import { legend, legendView, toolbox, tooltip } from './.lowcode/option'
+import { form, legend, legendView, toolbox, tooltip } from './.lowcode/option'
 import { enable2, segm2 } from './.lowcode/utils'
 
 export default {
@@ -20,7 +20,7 @@ export default {
         )) },
       ] },
       { is: 'div', label: '图例', class: 'p8 pt0 mt6', children: [
-        legendView(option),
+        form({ model: option, children: [legendView(option)] }),
       ] },
       { is: 'div', label: '其他', class: 'p8 pt0', children: [
         // legend(option),
@@ -48,6 +48,7 @@ export default {
     autoresize: true,
     style: { height: '300px', width: '400px' },
     option: {
+      legend: {},
       tooltip:{ show: true, trigger: 'item' },
       dataset: {
         source: `{{${JSON.stringify([{ x: 'Mon', y: 150 }, { x: 'Tue', y: 230 }, { x: 'Wed', y: 224 }, { x: 'Thu', y: 218 }, { x: 'Fri', y: 135 }, { x: 'Sat', y: 147 }, { x: 'Sun', y: 260 }], undefined, ' ')}}}`
