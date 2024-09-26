@@ -94,9 +94,15 @@ export const contributes = {
       priority: 'default',
     }
   ],
+  statusbar: [
+    { text: 'statusbar-test', onClick: () => alert(11) },
+    { text: 'statusbar-right', align: 'right', onClick: () => alert(11) },
+  ],
+  // todo
   commands: [
 
   ],
+  // todo
   menus: {
     'view/title': [
       {

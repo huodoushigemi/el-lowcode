@@ -2,7 +2,7 @@ import { computed, InjectionKey, ref } from 'vue'
 import { isArray, isObject, isString, normalizeStyle, remove } from '@vue/shared'
 import { unrefElement } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
-import { deepClone, Obj, set } from '@el-lowcode/utils'
+import { deepClone, Fnable, Obj, set } from '@el-lowcode/utils'
 import { processProps } from 'el-lowcode'
 import { Node } from './components/Node'
 import { sloveConfig } from '../components/_utils'
@@ -133,6 +133,20 @@ export interface Contributes {
     id: string
     name: string
   }[]>
+  statusbar?: StatusBarItem[]
+}
+
+export interface StatusBarItem {
+  icon?: Fnable<string>
+  text?: Fnable<string>
+  tooltip?: Fnable<string>
+  hidden?: Fnable<boolean>
+  align: 'left' | 'right'
+  priority?: number
+  class?: any
+  style?: any
+  onClick?: () => void
+  renderer?: Renderer
 }
 
 export interface Renderer {

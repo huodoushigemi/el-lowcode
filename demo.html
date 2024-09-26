@@ -27,7 +27,7 @@
           return JSON.parse(schema)
         }
         else if (file) {
-          return file.endsWith('.js') ? import(file).then(e => e.default) : fetch(file).then(e => e.json())
+          return file.endsWith('.js') ? import(/* @vite-ignore */ file).then(e => e.default) : fetch(file).then(e => e.json())
         }
       }
       catch (e) {

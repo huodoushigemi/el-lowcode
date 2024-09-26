@@ -64,9 +64,8 @@ async function demoUrl({ title, schema }) {
     `popup,width=${w},height=${h},left=${sw - w >> 1},top=${sh - h >> 1}`
   )
 
-  win.addEventListener('DOMContentLoaded', () => {
-    win.document.title = title
-  })
+  win.addEventListener('DOMContentLoaded', () => win.document.title = title, { once: true })
+  window.addEventListener('focus', () => win.close(), { once: true })
 
   return {}
 }

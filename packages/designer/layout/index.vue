@@ -46,14 +46,16 @@
     </div>
 
     <Statusbar>
-      <!-- <div class="[&>*]:p4 [&>*]:w32 [&>*]:h32" flex space-x-10 px6 style="background: var(--vscode-activityBar-background, #333333)"> -->
-      <div flex aic bg="#3655b5" class="[&>*]:flex-shrink-0 ml0!">
-        <el-select v-model="viewer.wh.v" class="[&>.el-select\_\_wrapper]:min-h20! [&>.el-select\_\_wrapper]:py0! mr8 w100!" size="small" clearable>
+      <div flex aic bg="#3655b5" class="[&>*]:flex-shrink-0 ml0! pr8">
+        <i-material-symbols:devices-outline wa mr4 h20 />
+        <!-- iPad Mini -->
+        375 × 667
+        <!-- <el-select v-model="viewer.wh.v" class="[&>.el-select\_\_wrapper]:min-h20! [&>.el-select\_\_wrapper]:py0! mr8 w100!" size="small" clearable>
           <el-option v-for="e in [['iPhone SE', '375 × 667'], ['iPhone12 Pro', '390 × 844'], ['iPad Mini', '768 × 1024']]" :label="e[0]" :value="e[1]" />
         </el-select>
         <InputNumber v-model="viewer.w.v" noUnit class="w50 h20" />
         <div mx4>x</div>
-        <InputNumber v-model="viewer.h.v" noUnit class="w50 h20" />
+        <InputNumber v-model="viewer.h.v" noUnit class="w50 h20" /> -->
       </div>
       <i-tdesign:close wa @click="root = initial()" />
       <i-mdi:undo-variant wa mr0="!" :op="!canUndo && '20'" @click="undo()" />
@@ -61,8 +63,8 @@
       <i-tdesign:download wa @click="$refs.exportCode.vis = true" />
       <div flex aic text-nowrap class="[&>*]:flex-shrink-0 ml12!">
         <i-mdi:magnify-expand wa mr2 h18 />
-        <input type="range" v-model.number="viewer.zoom.v" min="40" max="250" />
-        <InputNumber v-model="viewer.zoom.v" noUnit :min="40" :max="250" class="w50 h20" />
+        <input type="range" v-model.number="viewer.zoom.v" min="60" max="250" />
+        <InputNumber v-model="viewer.zoom.v" noUnit :min="60" :max="250" class="w50 h20" />
       </div>
     </Statusbar>
   </div>

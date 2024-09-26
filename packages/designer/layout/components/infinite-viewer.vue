@@ -53,7 +53,7 @@ onMounted(() => {
     useMouseDrag: true,
     useWheelScroll: true,
     useAutoZoom: true,
-    zoomRange: [0.4, 2.5],
+    zoomRange: [0.6, 2.5],
     preventWheelClick: false,
     maxPinchWheel: 10,
   }).on("dragStart", e => {
