@@ -2,21 +2,23 @@
   <footer class="status">
     <slot />
     <template v-for="e in left.sort(sort)">
-      <div v-if="!unFn(e.hidden)" :class="e.class" :style="e.style" @click="e.onClick">{{ e.text }}</div>
+      <Item v-bind="e" />
     </template>
 
     <div flex-1 style="visibility: hidden;" />
     
     <template v-for="e in right.sort(sort)">
-      <div v-if="!unFn(e.hidden)" :class="e.class" :style="e.style" @click="e.onClick">{{ e.text }}</div>
+      <Item v-bind="e" />
     </template>
   </footer>
 </template>
 
-<script setup lang="ts">
+<script setup lang="tsx">
 import { computed, inject } from 'vue'
 import { unFn } from '@el-lowcode/utils'
-import { DesignerCtx, StatusBarItem } from '../interface'
+import { Render } from '@el-lowcode/render'
+import { DesignerCtx, Renderer, StatusBarItem } from '../interface'
+import { isObject } from '@vue/shared';
 
 const designer = inject<DesignerCtx>('designerCtx')!
 
@@ -24,6 +26,18 @@ const left = computed(() => designer.plugins.flatMap(e => e.contributes.statusba
 const right = computed(() => designer.plugins.flatMap(e => e.contributes.statusbar?.filter(e => e.align == 'right') || []))
 
 const sort = (a: StatusBarItem, b: StatusBarItem) => (b.priority || 0) - (a.priority || 0)
+
+const Item = (e: StatusBarItem) => !unFn(e.hidden) && (
+  <div class={[e.class, 'flex aic space-x-4']} style={e.style} onClick={() => e.onClick?.(designer)} {...renderer(e.renderer)}>
+    {e.icon && (isObject(e.icon) ? Render(e.icon) : <img src={unFn(e.icon)} class='hfull wa' />)}
+    {e.text}
+  </div>
+)
+
+const renderer = (renderer?: Renderer) => ({
+  'onVnodeMounted': ({ el }) => renderer?.mount?.(el, designer),
+  'onVnodeUnmounted': ({ el }) => renderer?.unmount?.(el, designer),
+})
 </script>
 
 <style lang="scss">

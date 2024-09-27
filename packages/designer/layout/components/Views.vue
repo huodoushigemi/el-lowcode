@@ -45,7 +45,7 @@ const expanded = ref({})
 const sizeMap = reactive({})
 
 function mount(el, id) {
-  designer.viewRenderer[id]?.mount(el)
+  designer.viewRenderer[id]?.mount(el, designer)
   sizeMap[id] ??= {}
   const xxx = sizeMap[id]
   xxx.scrollHeight = el.scrollHeight
@@ -61,7 +61,7 @@ function mount(el, id) {
 }
 
 function unmount(el, id) {
-  designer.viewRenderer[id]?.unmount?.(el)
+  designer.viewRenderer[id]?.unmount?.(el, designer)
   sizeMap[id].sizeObs?.stop()
   sizeMap[id].childObs?.stop()
   sizeMap[id] = void 0

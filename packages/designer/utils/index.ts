@@ -4,9 +4,9 @@ import { useTransformer } from 'el-form-render'
 import { keyBy, treeUtils } from '@el-lowcode/utils'
 import { DesignerCtx, DisplayNode } from '../layout/interface'
 import { computedAsync } from '@vueuse/core'
-import { PageCtx } from '../plugins/web/page'
 
 export * as genCode from './genCode'
+export * from './quickPick'
 
 export function objStringify(obj, fn) {
   if (isArray(obj)) {
@@ -21,7 +21,7 @@ export function objStringify(obj, fn) {
   }
 }
 
-export function createDesignerCtx(root: Ref<PageCtx>, builtinPluginUrls?: MaybeRefOrGetter<string[] | undefined>) {
+export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGetter<string[] | undefined>) {
   const allUrls = computed(() => [
     ...toValue(builtinPluginUrls) || [],
     ...root.value.plugins || []

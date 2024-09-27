@@ -145,13 +145,19 @@ export interface StatusBarItem {
   priority?: number
   class?: any
   style?: any
-  onClick?: () => void
+  onClick?: (ctx: DesignerCtx) => void
+  command?: string | Command
   renderer?: Renderer
 }
 
+export interface Command {
+  command: string
+  arguments: any[]
+}
+
 export interface Renderer {
-  mount: (container: HTMLElement) => any
-  unmount?: (container: HTMLElement) => any
+  mount: (container: HTMLElement, ctx: DesignerCtx) => any
+  unmount?: (container: HTMLElement, ctx: DesignerCtx) => any
 }
 
 export interface Activitybar {

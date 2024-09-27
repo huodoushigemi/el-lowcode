@@ -9,3 +9,23 @@ export async function createClient() {
 
   return supabase
 }
+
+export async function uploadLcd(text) {
+  const hash = (await import('md5')).default(text) + '.lcd.json'
+
+  const supabase = await createClient()
+  const storage = supabase.storage.from('lcd')
+
+  const url = `${storage.url}/object/public/${storage.bucketId}/${hash}`
+
+  if (!await fetch(url, { method: 'HEAD' }).then(e => e.status == 200)) {
+    try {
+      const file = new File([text], hash, { type: 'text/plain' })
+      await storage.upload(hash, file, { cacheControl: 3600 * 24 * 7 })
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  return url
+}

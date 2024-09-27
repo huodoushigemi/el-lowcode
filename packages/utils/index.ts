@@ -59,3 +59,5 @@ export const mapValues = (obj: Obj, fn: AnyFn) => Object.fromEntries(Object.entr
 export const prefixedObject = <T extends object, P extends string>(prefix: P, obj: T) => Object.fromEntries(Object.entries(obj).map(([k, v]) => [prefix + k, v])) as AddPrefixToKeys<T, P>
 
 export const inRange = (v: number, min = 0, max = Infinity) => v >= min && v <= max
+
+export const eq = (a, b) => JSON.stringify(a) == JSON.stringify(b)

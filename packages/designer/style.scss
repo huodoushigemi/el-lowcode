@@ -1,5 +1,6 @@
 :root {
   --vs-c: #ccc;
+  --vs-focus-b-c: #007fd4;
   --vs-sideBarSectionHeader-border: rgba(204, 204, 204, 0.2);
   --vs-scrollbarSlider-background: rgba(121, 121, 121, 0.4);
   --vs-desc-c: rgba(204, 204, 204, 0.7);
@@ -9,14 +10,15 @@
   --vs-li-activeSelectionC: #fff;
   --vs-tree-indentGuidesStroke: #585858;
 
+  --vs-quick-bg: var(--vscode-quickInput-background, #252526);
+  --vs-quick-b-c: var(--vscode-pickerGroup-border, #3f3f46);
+
   --vs-btn-c: #fff;
   --vs-btn-bg: #0e639c;
   --vs-btn-hover-bg: #1177bb;
-
-  --vs-focus-b-c: #007fd4;
 }
 
-.monaco-workbench, .monaco-base {
+.monaco-workbench, .monaco-base, .vs-base {
   @apply text-13 lh-[1.4] select-none c-[--vs-c];
 }
 
@@ -65,16 +67,9 @@
 }
 
 .vs-btn {
-  border: none;
-  display: inline-block;
-  padding: 0 10px;
-  line-height: 26px;
-  font-size: 14px;
+  @apply inline-block py0 px10 b-none lh-26 text-14 c-[--vs-btn-c] bg-[--vs-btn-bg] cursor-pointer;
   outline: 1px solid transparent;
   outline-offset: 2px !important;
-  color: var(--vs-btn-c);
-  background: var(--vs-btn-bg);
-  cursor: pointer;
 
   &:disabled {
     filter: grayscale(1);
@@ -93,6 +88,13 @@
   }
 }
 
+.vs-input {
+  @apply block h26 py6 px6 c-inherit bg-#3c3c3c;
+  &:focus, &.focused {
+    outline: 1px solid var(--vs-focus-b-c);
+  }
+}
+
 .vs-breadcrumb-li {
   display: flex;
   align-items: center;
@@ -101,6 +103,11 @@
   &:hover {
     color: var(--vscode-breadcrumb-focusForeground, #e0e0e0);
   }
+}
+
+.vs-quick {
+  @apply fixed top-36 left-50% translate-x--50% flex flex-col w600 b-1 b-c-[--vs-quick-b-c] bg-[--vs-quick-bg];
+  box-shadow: 0 0 12px #00000050;
 }
 
 ::-webkit-scrollbar {

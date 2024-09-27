@@ -46,16 +46,9 @@
     </div>
 
     <Statusbar>
-      <div flex aic bg="#3655b5" class="[&>*]:flex-shrink-0 ml0! pr8">
+      <div flex aic bg="#3655b5" class="[&>*]:flex-shrink-0 ml0! pr8" @click="async () => viewer.size.v = await quickPick({ items: devices, value: viewer.size.v })">
         <i-material-symbols:devices-outline wa mr4 h20 />
-        <!-- iPad Mini -->
-        375 × 667
-        <!-- <el-select v-model="viewer.wh.v" class="[&>.el-select\_\_wrapper]:min-h20! [&>.el-select\_\_wrapper]:py0! mr8 w100!" size="small" clearable>
-          <el-option v-for="e in [['iPhone SE', '375 × 667'], ['iPhone12 Pro', '390 × 844'], ['iPad Mini', '768 × 1024']]" :label="e[0]" :value="e[1]" />
-        </el-select>
-        <InputNumber v-model="viewer.w.v" noUnit class="w50 h20" />
-        <div mx4>x</div>
-        <InputNumber v-model="viewer.h.v" noUnit class="w50 h20" /> -->
+        {{ devices.find(e => eq(e.value, viewer.size.v))?.label || (`${parseInt(viewer.size.v.width)} × ${parseInt(viewer.size.v.height)}`) }}
       </div>
       <i-tdesign:close wa @click="root = initial()" />
       <i-mdi:undo-variant wa mr0="!" :op="!canUndo && '20'" @click="undo()" />
@@ -76,7 +69,7 @@ import { useDebouncedRefHistory, useEventListener } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import Moveable from 'vue3-moveable'
 
-import { get, set } from '@el-lowcode/utils'
+import { eq, get, pick, set } from '@el-lowcode/utils'
 import { useTransformer } from 'el-form-render'
 import { designerCtxKey, DisplayNode } from './interface'
 import Activitybar from './components/Activitybar.vue'
@@ -88,8 +81,7 @@ import StateDrawer from './components/state-drawer.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import Statusbar from './components/Statusbar.vue'
 // import { vue2esm } from './vue2esm'
-import { createDesignerCtx } from '../utils'
-import { PageCtx } from '../plugins/web/page'
+import { createDesignerCtx, quickPick } from '../utils'
 
 import OptionsInput from '../components/OptionsInput.vue'
 import PairInput from '../components/PairInput.vue'
@@ -113,8 +105,14 @@ app.component('Tabs', Tabs)
 
 const log = (...arg) => console.log(...arg)
 
+const devices = [['iPhone SE', '375,667'], ['iPhone12 Pro', '390,844'], ['iPad Mini', '768,1024']].map(e => ({
+  label: e[0],
+  description: e[1].replace(',', ' × '),
+  value: { width: `${e[1].split(',')[0]}px`, height: `${e[1].split(',')[1]}px` },
+}))
+
 const props = defineProps({
-  json: Object as PropType<PageCtx>,
+  json: Object,
   extraPlugins: Array as PropType<string[]>,
 })
 
@@ -154,6 +152,7 @@ const viewer = {
   // y: useTransformer(root, 'designer.canvas.y'),
   zoom: useTransformer(designerCtx, 'canvas.zoom', { get: v => (v * 100).toFixed(), set: v => +(v / 100).toFixed(2) }),
   wh: useTransformer(root, 'designer.canvas.wh', { get: () => ['width', 'height'].map(k => parseInt(get(root.value, `designer.canvas.style.${k}`)) || ' - ').join(' × '), set: v => (['width', 'height'].forEach((k, i) => set(root.value, `designer.canvas.style.${k}`, v && v.split(' × ')[i] + 'px')), void 0) }),
+  size: useTransformer(root, 'designer.canvas.style', { get: v => pick(v, ['width', 'height']), set: v => JSON.parse(JSON.stringify(v)) }),
   w: useTransformer(root, 'designer.canvas.style.width', { get: v => v || parseInt(v), set: v => v + 'px' }),
   h: useTransformer(root, 'designer.canvas.style.height', { get: v => v || parseInt(v), set: v => v + 'px' }),
   // get x() { return get(root.value, 'designer.canvas.x') },
