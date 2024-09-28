@@ -50,7 +50,7 @@ export const keyBy = <T>(arr: T[], path: string) => arr.reduce((o, e) => (o[get(
 
 export const groupBy = <T>(arr: T[], path: string) => arr.reduce((o, e) => ((o[get(e, path)] ??= []).push(e), o), {}) as Record<string, T[]>
 
-export const pick = <T extends object, KS extends (keyof T)[]>(obj: T, arr: KS) => arr.reduce((o, k) => (o[k] = obj[k], o), {} as Pick<T, KS[number]>)
+export const pick = <T extends object, KS extends (keyof T)[]>(obj: T, arr: KS) => arr.reduce((o, k) => (o[k] = obj?.[k], o), {} as Pick<T, KS[number]>)
 
 export const omit = <T extends object, KS extends (keyof T)[]>(obj: T, arr: KS) => pick(obj, Object.keys(obj).filter((e: any) => !arr.includes(e)) as any) as Omit<T, KS[number]>
 

@@ -151,7 +151,6 @@ const viewer = {
   // x: useTransformer(root, 'designer.canvas.x'),
   // y: useTransformer(root, 'designer.canvas.y'),
   zoom: useTransformer(designerCtx, 'canvas.zoom', { get: v => (v * 100).toFixed(), set: v => +(v / 100).toFixed(2) }),
-  wh: useTransformer(root, 'designer.canvas.wh', { get: () => ['width', 'height'].map(k => parseInt(get(root.value, `designer.canvas.style.${k}`)) || ' - ').join(' × '), set: v => (['width', 'height'].forEach((k, i) => set(root.value, `designer.canvas.style.${k}`, v && v.split(' × ')[i] + 'px')), void 0) }),
   size: useTransformer(root, 'designer.canvas.style', { get: v => pick(v, ['width', 'height']), set: v => JSON.parse(JSON.stringify(v)) }),
   w: useTransformer(root, 'designer.canvas.style.width', { get: v => v || parseInt(v), set: v => v + 'px' }),
   h: useTransformer(root, 'designer.canvas.style.height', { get: v => v || parseInt(v), set: v => v + 'px' }),

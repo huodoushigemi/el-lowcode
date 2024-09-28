@@ -2,13 +2,13 @@
   <footer class="status">
     <slot />
     <template v-for="e in left.sort(sort)">
-      <Item v-bind="e" />
+      <Item :e="e" />
     </template>
 
     <div flex-1 style="visibility: hidden;" />
     
     <template v-for="e in right.sort(sort)">
-      <Item v-bind="e" />
+      <Item :e="e" />
     </template>
   </footer>
 </template>
@@ -27,7 +27,7 @@ const right = computed(() => designer.plugins.flatMap(e => e.contributes.statusb
 
 const sort = (a: StatusBarItem, b: StatusBarItem) => (b.priority || 0) - (a.priority || 0)
 
-const Item = (e: StatusBarItem) => !unFn(e.hidden) && (
+const Item = ({ e }: { e: StatusBarItem}) => !unFn(e.hidden) && (
   <div class={[e.class, 'flex aic space-x-4']} style={e.style} onClick={() => e.onClick?.(designer)} {...renderer(e.renderer)}>
     {e.icon && (isObject(e.icon) ? Render(e.icon) : <img src={unFn(e.icon)} class='hfull wa' />)}
     {e.text}

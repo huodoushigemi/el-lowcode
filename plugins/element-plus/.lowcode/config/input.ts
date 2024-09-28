@@ -1,34 +1,29 @@
-import { formItemPropsConfig } from '../../utils'
-
-let count = 0
+import { ENUM_SIZE, formItemPropsConfig } from '../../utils'
 
 export default {
   is: 'ElInput',
   label: 'input',
   category: '数据输入',
   props: [
-    ...formItemPropsConfig(),
-    { lp: ['autofocus', 'el.autofocus'], type: 'switch' },
-    { lp: ['type', 'el.type'], type: 'select', options: ['text', 'textarea', 'password'] },
-    { lp: ['show-word-limit', 'el.showWordLimit'], type: 'switch' },
-    { lp: ['minlength', 'el.minlength'], type: 'input-number', el: { placeholder: '' } },
-    { lp: ['maxlength', 'el.maxlength'], type: 'input-number', el: { placeholder: '' } },
-    { lp: 'default-value' },
+    // { lp: ['value', 'modelValue'] },
+    { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
+      { lp: 'disabled', type: 'switch' },
+      { lp: 'readonly', type: 'switch' },
+      { lp: 'clearable', type: 'switch' },
+      { lp: 'autofocus', type: 'switch' },
+      { lp: 'type', options: ['text', 'textarea', 'password'] },
+      { lp: 'placeholder' },
+      { lp: 'minlength', type: 'input-number', el: { placeholder: '' } },
+      { lp: 'maxlength', type: 'input-number', el: { placeholder: '' } },
+    ] },
+    { lp: 'size', type: 'radio-group', options: ENUM_SIZE },
+    { lp: 'show-word-limit', type: 'switch' },
   ],
   defaultProps: () => ({
-    is: 'ElFormItemRender',
-    label: 'input',
-    prop: `input${++count}`,
-    defaultValue: '',
-    el: { is: 'ElInput' }
+    
   }),
   JSONSchemaOutput: (props) => ({
-    type: 'string',
-    title: props.label,
-    description: props.description,
-    default: props.defaultValue,
-    minLength: props.el.minlength,
-    maxLength: props.el.maxlength,
-    pattern: props.rules?.pattern,
+    minLength: props.minlength,
+    maxLength: props.maxlength,
   })
 }

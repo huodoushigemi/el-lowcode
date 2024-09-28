@@ -16,8 +16,8 @@
 <script setup>
 import { inject } from 'vue'
 import { computedAsync } from '@vueuse/core'
-import { ElImage, ElCard, ElButton, ElLoadingService } from 'element-plus'
-import { createClient } from './supabase'
+import { ElImage, ElCard, ElButton } from 'element-plus'
+import { previewLcd } from './utils'
 
 const designerCtx = inject('designerCtx')
 
@@ -32,47 +32,7 @@ function onEdit(item) {
 }
 
 async function demoUrl({ title, schema }) {
-  const loading = ElLoadingService()
-
-  const text = JSON.stringify(schema)
-  const hash = (await import('md5')).default(text)
-
-  const supabase = await createClient()
-  const storage = supabase.storage.from('lcd')
-
-  // eg: https://oxbkrsyagojtbckytbjx.supabase.co/storage/v1/object/public/lcd/echarts-demo.js
-  const url = `${storage.url}/object/public/${storage.bucketId}/${hash}`
-
-  if (!await fetch(url, { method: 'HEAD' }).then(e => e.status == 200)) {
-    try {
-      const file = new File([text], hash, { type: 'text/plain' })
-      await storage.upload(hash, file, { cacheControl: 3600 * 24 * 7 })
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  setTimeout(() => loading.close(), 600)
-  
-  const sw = screen.width, sh = screen.height
-  const w = Math.min(parseInt(schema.designer?.canvas?.style?.width || sw), sw)
-  const h = Math.min(parseInt(schema.designer?.canvas?.style?.height || sh), sh)
-  
-  const win = window.open(
-    `/demo.html?file=${encodeURIComponent(url)}`,
-    '_blank',
-    `popup,width=${w},height=${h},left=${sw - w >> 1},top=${sh - h >> 1}`
-  )
-
+  const win = await previewLcd(schema)
   win.addEventListener('DOMContentLoaded', () => win.document.title = title, { once: true })
-  window.addEventListener('focus', () => win.close(), { once: true })
-
-  return {}
-}
-
-async function checkFileExists(storage, path) {
-  const { data, error } = await storage.getPublicUrl(path)
-  if (error?.message?.includes('not found')) return
-  return data.publicUrl
 }
 </script>

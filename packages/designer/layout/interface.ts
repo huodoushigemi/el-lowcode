@@ -14,9 +14,9 @@ export interface Widget {
   drag?: boolean
   sortablePut?: boolean
   cover?: string
-  props?: any[]
-  defaultProps?(): Obj
-  JSONSchemaOutput?(props: Obj): Obj
+  props?: any[] | ((props: any, ctx: DesignerCtx, arg: { node: DisplayNode }) => any[])
+  defaultProps?(ctx: DesignerCtx): Obj
+  JSONSchemaOutput?(props: Obj, ctx: DesignerCtx): Obj
   purify?(props: Obj): Obj
 }
 

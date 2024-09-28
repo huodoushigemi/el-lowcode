@@ -9,7 +9,7 @@ import Input from '../.lowcode/config/input'
 export default {
   is: 'ElForm-c',
   label: 'form',
-  category: '数据输入',
+  category: '表单',
   props: [
     // todo
     // { is: JsonSchemaDialog },

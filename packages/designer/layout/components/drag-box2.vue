@@ -225,7 +225,7 @@ function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>, designer: Designer
 
     const el = e.currentTarget as HTMLElement
     const doc = el.ownerDocument
-    const dragNode = _id ? designer.keyedCtx[_id] : new designer.DisplayNode(parseAttrs(designer.widgets[is!]!))
+    const dragNode = _id ? designer.keyedCtx[_id] : new designer.DisplayNode(parseAttrs(designer.widgets[is!]!, designer))
     
     // 自由布局
     if (node.isAbsLayout) {

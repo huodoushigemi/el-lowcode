@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, watchSyncEffect } from 'vue'
+import { onMounted, ref, watch, watchEffect, watchSyncEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { watchDebounced } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
@@ -8,11 +8,11 @@ import Designer, { DesignerCtx } from '@el-lowcode/designer'
 
 const designer = ref<DesignerCtx>()
 
-const initial = () => ({
+const initial = (children: any = []) => ({
   _id: uuid(),
   is: 'Page',
   state: { count: 0 },
-  children: [],
+  children,
   plugins: ['/plugins/web'],
   designer: {
     canvas: { style: { width: '768px', height: '1024px' } }
@@ -34,13 +34,13 @@ onMounted(() => {
     "/plugins/mdui",
     "/plugins/threejs",
 
-    "/plugins/threejs",
-    "/plugins/threejs",
-    "/plugins/threejs",
-    "/plugins/threejs",
-    "/plugins/threejs",
-    "/plugins/threejs",
-    "/plugins/threejs",
+    // "/plugins/threejs",
+    // "/plugins/threejs",
+    // "/plugins/threejs",
+    // "/plugins/threejs",
+    // "/plugins/threejs",
+    // "/plugins/threejs",
+    // "/plugins/threejs",
   ])
 })
 
@@ -68,12 +68,25 @@ if (vscode) {
 
 // query.schema
 const schema = useRouteQuery<string | undefined>('schema')
-watch([schema, designer], ([val, designer]) => {
-  if (!val || !designer) return
-  const json = JSON.parse(val)
-  designer.root = json
-  schema.value = undefined
-}, { immediate: true, flush: 'post' })
+const file = useRouteQuery<string | undefined>('file')
+// watch([schema, designer], ([val, designer]) => {
+//   if (!val || !designer) return
+//   const json = JSON.parse(val)
+//   designer.root = json
+//   schema.value = undefined
+// }, { immediate: true, flush: 'post' })
+watchEffect(async () => {
+  console.log(111, file.value, 111);
+  if (!designer.value) return
+  if (schema.value) {
+    designer.value.root = JSON.parse(schema.value)
+    schema.value = undefined
+  }
+  else if (file.value) {
+    designer.value.root = await fetch(file.value).then(e => e.status == 200 ? e.json() : Promise.reject()).catch(() => initial([{ _id: uuid(), is: 'h1', children: '404' }]))
+    file.value = undefined
+  }
+})
 </script>
 
 <template>

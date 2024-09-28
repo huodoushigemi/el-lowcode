@@ -1,5 +1,5 @@
 import { serieBar, serieLine } from './.lowcode/option/series'
-import { axiss, gridView, legend, legendView, toolbox, tooltip } from './.lowcode/option'
+import { axiss, form, gridView, legend, legendView, toolbox, tooltip } from './.lowcode/option'
 import { bool, enable2, segm2 } from './.lowcode/utils'
 
 export default {
@@ -34,7 +34,7 @@ export default {
           )) },
         ] },
         { is: 'div', label: '图例', class: 'p8 pt0 mt6', children: [
-          legendView(option),
+          form({ model: option, children: [legendView(option)] }),
         ] },
         { is: 'div', label: '其他', class: 'p8 pt0', children: [
           toolbox(option),
