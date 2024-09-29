@@ -7,19 +7,19 @@
   <el-tabs v-if="config" class="tabs">
     <el-tab-pane label="attrs">
       <el-form-render :model="model" label-width="auto" size="small" label-position="top" @submit.prevent>
-        <Render v-for="item in _items" v-bind="item" />
+         <RenderItems :items="_items" />
       </el-form-render>
     </el-tab-pane>
 
     <el-tab-pane label="style" lazy>
       <el-form-render :model="model" label-width="auto" size="small" label-position="top" @submit.prevent>
-        <Render v-for="item in styles" v-bind="item" />
+        <RenderItems :items="styles" />
       </el-form-render>
     </el-tab-pane>
 
     <el-tab-pane label="common" lazy>
       <el-form-render :model="model" label-width="auto" size="small" label-position="top" @submit.prevent>
-        <Render v-for="item in commons" v-bind="item" />
+        <RenderItems :items="commons" />
       </el-form-render>
     </el-tab-pane>
   </el-tabs>
@@ -32,9 +32,9 @@
 
 <script setup>
 import { computed, inject, ref } from 'vue'
-import { isArray, parseStringStyle, stringifyStyle, isOn } from '@vue/shared'
-import Render2, { createRender } from '@el-lowcode/render'
-import { mapValues, pick, set, unFn } from '@el-lowcode/utils'
+import { isArray, parseStringStyle, stringifyStyle, isOn, isPlainObject } from '@vue/shared'
+import { createRender } from '@el-lowcode/render'
+import { mapValues, pick, unFn } from '@el-lowcode/utils'
 import { ElFormRender, normalizeItem } from 'el-form-render'
 import { designerCtxKey } from './interface'
 import Scriptable from './components/scriptable.vue'
@@ -72,6 +72,8 @@ const Render = createRender({
     return props
   }
 })
+
+const RenderItems = ({ items }) => items.map(e => isPlainObject(e) && Render(e))
 
 const designerCtx = inject(designerCtxKey)
 

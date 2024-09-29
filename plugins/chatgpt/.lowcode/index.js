@@ -13,8 +13,6 @@ function create(AsyncComp) {
 }
 
 export function activate(designerCtx) {
-  console.log('111');
-  
   // designerCtx.viewRenderer['template'] = create(defineAsyncComponent(() => import('./TemplateView.vue')))
   const div = document.createElement('div')
   const app = createApp({ provide: { designerCtx }, render: () => 

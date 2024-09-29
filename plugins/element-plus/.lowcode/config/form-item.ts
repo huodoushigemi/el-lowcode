@@ -1,6 +1,7 @@
 import { unFn } from '@el-lowcode/utils'
 
 const types = ['ElInput', 'ElInputNumber', 'ElRate', 'ElSlider', 'ElSwitch', 'ElSelect', 'ElRadioGroup', 'ElCheckboxGroup', 'ElTimePicker', 'ElDatePicker', 'ElColorPicker', 'ElDateTime-lcd']
+const hasOpts = ['ElSelect', 'ElRadioGroup', 'ElCheckboxGroup', 'ElSegmented']
 
 export default {
   is: 'ElFormItemRender',
@@ -26,15 +27,13 @@ export default {
     { is: 'ElFormRender', model: props.el, labelPosition: 'top', size: 'small', children: [
       { prop: 'is', options: types, el: { clearable: false, onChange: v => props.el = createInput(v, ctx) } },
       ...unFn(ctx.widgets[props.el.is].props, props.el, ctx) || [],
-    ] }
+    ] },
+    hasOpts.includes(props.el.is) && { lp: 'options', el: { is: 'OptionsInput' }, defaultValue: () => [{ label: 'opt 1', value: '1' }, { label: 'opt 2', value: '2' }, { label: 'opt 3', value: '3' }] },
   ]),
   defaultProps: (ctx) => ({
     is: 'ElFormItemRender',
     label: 'field',
     prop: `input`,
-    // children: [
-    //   createInput('ElInput', ctx)
-    // ],
     el: createInput('ElInput', ctx)
   }),
   JSONSchemaOutput: (props, ctx) => ({
@@ -42,6 +41,8 @@ export default {
     description: props.description,
     pattern: props.rules?.pattern,
     default: props.el.defaultValue,
+    enum: props.options?.map(e => e.value),
+    enumNames: props.options?.map(e => e.label),
     ...ctx.widgets[props.el.is].JSONSchemaOutput?.(props.el, ctx)
   })
 }

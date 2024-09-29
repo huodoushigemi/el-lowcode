@@ -76,7 +76,6 @@ const file = useRouteQuery<string | undefined>('file')
 //   schema.value = undefined
 // }, { immediate: true, flush: 'post' })
 watchEffect(async () => {
-  console.log(111, file.value, 111);
   if (!designer.value) return
   if (schema.value) {
     designer.value.root = JSON.parse(schema.value)

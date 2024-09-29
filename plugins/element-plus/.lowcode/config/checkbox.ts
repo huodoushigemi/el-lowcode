@@ -10,15 +10,9 @@ export default {
       { lp: 'max', type: 'input-number', el: { min: 0 } },
       { lp: 'fill', type: 'color-picker' },
     ] },
-    { lp: 'options', el: { is: 'OptionsInput' } },
   ],
   defaultProps: () => ({
     defaultValue: [],
-    options: [
-      { label: 'check 1', value: '1' },
-      { label: 'check 2', value: '2' },
-      { label: 'check 3', value: '3' },
-    ],
   }),
   JSONSchemaOutput: (props) => ({
     type: 'array',
@@ -27,9 +21,6 @@ export default {
     uniqueItems: true,
     items: {
       type: 'string',
-      // todo
-      enum: props.options.map(e => e.value),
-      enumNames: props.options.map(e => e.label),
     },
   })
 }

@@ -2,7 +2,6 @@ import { mapValues, keyBy } from '@el-lowcode/utils'
 import { treeUtils } from '@el-lowcode/utils'
 import { ENUM_SIZE } from '../utils'
 // import JsonSchemaDialog from './json-schema-dialog.vue'
-import { FormItemProps } from 'element-plus'
 
 export default {
   is: 'ElForm-c',
@@ -13,18 +12,21 @@ export default {
     // { is: JsonSchemaDialog },
     { lp: 'model', required: true, script: true },
     { lp: 'size', type: 'radio-group', options: ENUM_SIZE },
-    { lp: 'label-width', type: 'slider', el: { max: 200 } },
     { lp: 'label-position', type: 'radio-group', options: ['left', 'right', 'top'] },
-    { lp: 'disabled', type: 'switch' },
-    { lp: 'inline', type: 'switch' },
-    { lp: 'label-suffix' },
-    { lp: 'status-icon', type: 'switch' },
-    { lp: 'scroll-to-error', type: 'switch' },
+    { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
+      { lp: 'label-width', type: 'input-number', el: { max: 200 } },
+      { lp: 'label-suffix' },
+      { lp: 'disabled', type: 'switch' },
+      { lp: 'inline', type: 'switch' },
+      { lp: 'status-icon', type: 'switch' },
+      { lp: 'scroll-to-error', type: 'switch' },
+    ] },
     { is: 'ElDivider' },
     { is: 'h1', children: 'Event' },
     { lp: 'onSubmit', script: true }
   ],
   defaultProps: (ctx) => ({
+    model: '{{(state.formData ??= {}, state.formData)}}',
     labelWidth: 80,
     style: { overflow: 'hidden' },
     children: [
@@ -32,7 +34,7 @@ export default {
     ]
   }),
   JSONSchemaOutput: (props) => {
-    const flatted = treeUtils.flat(props.children as FormItemProps[]).filter(e => e.prop)
+    const flatted = treeUtils.flat(props.children).filter(e => e.prop)
     return {
       type: 'object',
       required: flatted.filter(e => e.required).map(e => e.prop),
