@@ -1,4 +1,4 @@
-import { ENUM_SIZE, formItemPropsConfig } from '../../utils'
+import { ENUM_SIZE } from '../../utils'
 
 export default {
   is: 'ElInput',
@@ -13,14 +13,14 @@ export default {
       { lp: 'autofocus', type: 'switch' },
       { lp: 'type', options: ['text', 'textarea', 'password'] },
       { lp: 'placeholder' },
-      { lp: 'minlength', type: 'input-number', el: { placeholder: '' } },
-      { lp: 'maxlength', type: 'input-number', el: { placeholder: '' } },
+      { lp: 'minlength', type: 'input-number' },
+      { lp: 'maxlength', type: 'input-number' },
     ] },
     { lp: 'size', type: 'radio-group', options: ENUM_SIZE },
     { lp: 'show-word-limit', type: 'switch' },
   ],
   defaultProps: () => ({
-    
+    defaultValue: '',
   }),
   JSONSchemaOutput: (props) => ({
     minLength: props.minlength,

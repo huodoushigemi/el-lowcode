@@ -1,6 +1,6 @@
 import { unFn } from '@el-lowcode/utils'
 
-const types = ['ElInput', 'ElSelect', 'ElRadioGroup', 'ElCheckboxGroup']
+const types = ['ElInput', 'ElInputNumber', 'ElRate', 'ElSlider', 'ElSwitch', 'ElSelect', 'ElRadioGroup', 'ElCheckboxGroup', 'ElTimePicker', 'ElDatePicker', 'ElColorPicker', 'ElDateTime-lcd']
 
 export default {
   is: 'ElFormItemRender',
@@ -32,7 +32,6 @@ export default {
     is: 'ElFormItemRender',
     label: 'field',
     prop: `input`,
-    defaultValue: '',
     // children: [
     //   createInput('ElInput', ctx)
     // ],
@@ -41,8 +40,8 @@ export default {
   JSONSchemaOutput: (props, ctx) => ({
     title: props.label,
     description: props.description,
-    default: props.defaultValue,
     pattern: props.rules?.pattern,
+    default: props.el.defaultValue,
     ...ctx.widgets[props.el.is].JSONSchemaOutput?.(props.el, ctx)
   })
 }
@@ -50,8 +49,6 @@ export default {
 function createInput(is, ctx) {
   return {
     is,
-    'lcd-drag': false,
-    'lcd-active': false,
     ...ctx.widgets[is].defaultProps?.(ctx),
   }
 }

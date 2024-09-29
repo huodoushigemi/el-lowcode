@@ -4,8 +4,6 @@ import { ENUM_SIZE } from '../utils'
 // import JsonSchemaDialog from './json-schema-dialog.vue'
 import { FormItemProps } from 'element-plus'
 
-import Input from '../.lowcode/config/input'
-
 export default {
   is: 'ElForm-c',
   label: 'form',
@@ -26,11 +24,11 @@ export default {
     { is: 'h1', children: 'Event' },
     { lp: 'onSubmit', script: true }
   ],
-  defaultProps: () => ({
+  defaultProps: (ctx) => ({
     labelWidth: 80,
     style: { overflow: 'hidden' },
     children: [
-      Input.defaultProps()
+      ctx.widgets.ElFormItemRender.defaultProps(ctx)
     ]
   }),
   JSONSchemaOutput: (props) => {

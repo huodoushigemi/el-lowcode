@@ -1,30 +1,23 @@
-import { formItemPropsConfig } from '../../utils'
-
-let count = 0
-
 export default {
   is: 'ElDatePicker',
   label: 'date',
   category: '数据输入',
   props: [
-    ...formItemPropsConfig(),
-    { lp: ['type', 'el.type'], type: 'select', options: ['year', 'month', 'date', 'datetime', 'week'] },
-    { lp: ['show-format', 'el.format'], type: 'select', options: [{ label: 'YYYY-MM-DD', value: undefined }, 'YYYY/MM/DD'] },
-    { lp: 'default-value' },
+    { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
+      { lp: 'disabled', type: 'switch' },
+      { lp: 'readonly', type: 'switch' },
+      { lp: 'clearable', type: 'switch' },
+      { lp: 'type', options: ['year', 'month', 'date', 'datetime', 'week'], style: 'grid-column: 1 / 2' },
+      { lp: ['show-format', 'format'], options: ['YYYY-MM-DD', 'YYYY/MM/DD'], displayValue: 'YYYY-MM-DD' },
+      { lp: 'placeholder' },
+    ] },
   ],
   defaultProps: () => ({
-    is: 'ElFormItemRender',
-    label: 'date',
-    prop: `date${++count}`,
     defaultValue: '',
-    el: { is: 'ElDatePicker', valueFormat: 'YYYY-MM-DD' }
+    valueFormat: 'YYYY-MM-DD',
   }),
   JSONSchemaOutput: (props) => ({
     type: 'string',
-    title: props.label,
-    description: props.description,
     format: 'date',
-    default: props.defaultValue,
-    pattern: props.rules?.pattern,
   })
 }

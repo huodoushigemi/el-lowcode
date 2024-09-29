@@ -6,7 +6,7 @@
 import { ElDatePicker, datePickerProps } from 'element-plus'
 
 defineOptions({
-  name: 'ElDateTime$$'
+  name: 'ElDateTime-lcd'
 })
 
 defineProps(datePickerProps)

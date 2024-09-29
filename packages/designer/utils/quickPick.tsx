@@ -1,6 +1,5 @@
 import { createApp, ref, nextTick } from 'vue'
 import { onClickOutside } from '@vueuse/core'
-import { ElOption, ElSelect } from 'element-plus'
 import { eq } from '@el-lowcode/utils'
 
 interface QuickPickOptions {

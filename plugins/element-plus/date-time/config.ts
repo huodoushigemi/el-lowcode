@@ -1,27 +1,23 @@
-import { formItemPropsConfig } from '../utils'
-
-let count = 0
-
 export default {
-  is: 'ElDateTime$$',
+  is: 'ElDateTime-lcd',
   label: 'datetime',
   category: '数据输入',
   props: [
-    ...formItemPropsConfig(),
-    { lp: ['show-format', 'el.format'], type: 'select', defaultValue: 'YYYY/MM/DD HH:mm:ss', options: ['YYYY/MM/DD HH:mm:ss', 'YYYY-MM-DDTHH:mm:ss.SSSZ'] },
-    { lp: 'defaultValue' },
+    { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
+      { lp: 'disabled', type: 'switch' },
+      { lp: 'readonly', type: 'switch' },
+      { lp: 'clearable', type: 'switch' },
+      { lp: 'type', options: ['year', 'month', 'date', 'datetime', 'week'], style: 'grid-column: 1 / 2' },
+      { lp: ['show-format', 'format'], defaultValue: 'YYYY/MM/DD HH:mm:ss', options: ['YYYY/MM/DD HH:mm:ss', 'YYYY-MM-DDTHH:mm:ss.SSSZ'] },
+      { lp: 'placeholder' },
+    ] },
   ],
   defaultProps: () => ({
-    is: 'ElFormItemRender',
-    label: 'date-time',
-    prop: `datetime${++count}`,
-    el: { is: 'ElDateTime$$' }
+    defaultValue: '',
+    format: 'YYYY/MM/DD HH:mm:ss'
   }),
   JSONSchemaOutput: (props) => ({
     type: 'string',
-    title: props.label,
-    description: props.description,
     format: 'date-time',
-    pattern: props.rules?.pattern,
   })
 }

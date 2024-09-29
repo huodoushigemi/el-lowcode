@@ -53,7 +53,6 @@ const editModel = computed({
 })
 
 const Render = createRender({
-  defaultIs: 'ElFormItemRender',
   defaultIs: Scriptable,
   processProps(props) {
     if (!props.is) {
