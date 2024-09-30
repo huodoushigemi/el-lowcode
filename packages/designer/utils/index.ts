@@ -2,7 +2,7 @@ import { computed, MaybeRefOrGetter, reactive, Ref, ref, toValue, watch, watchEf
 import { isArray, isObject } from '@vue/shared'
 import { useTransformer } from 'el-form-render'
 import { keyBy, treeUtils } from '@el-lowcode/utils'
-import { DesignerCtx, DisplayNode } from '../layout/interface'
+import { DesignerCtx, DisplayNode, UserWidget, Widget } from '../layout/interface'
 import { computedAsync } from '@vueuse/core'
 
 export * as genCode from './genCode'
@@ -62,7 +62,7 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     dragged: computed(() => designerCtx.draggedId ? designerCtx.keyedCtx[designerCtx.draggedId] : void 0),
     plugins: [],
     pluginsLoading: computed(() => allUrls.value.every(url => !!xxx[url].value)),
-    widgets: computed(() => keyBy(designerCtx.plugins.flatMap(e => e.widgets || []), 'is')),
+    widgets: computed(() => keyBy(designerCtx.plugins.flatMap(e => e.widgets?.map(normalWidget) || []), 'is')),
     // widgets: {},
     viewRenderer: {},
     dict: {
@@ -80,6 +80,13 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
   })()
 
   return designerCtx
+}
+
+function normalWidget(widget: UserWidget): Widget {
+  return {
+    ...widget,
+    drag: typeof widget.drag == 'boolean' ? { disabled: !widget.drag } : widget.drag || {},
+  }
 }
 
 export async function createPluginCtx(module, designerCtx: DesignerCtx) {

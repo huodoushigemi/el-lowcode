@@ -2,7 +2,7 @@ import { computed, InjectionKey, ref } from 'vue'
 import { isArray, isObject, isString, normalizeStyle, remove } from '@vue/shared'
 import { unrefElement } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
-import { deepClone, Fnable, Obj, set } from '@el-lowcode/utils'
+import { Arrable, Assign, deepClone, Fnable, Obj, set } from '@el-lowcode/utils'
 import { processProps } from 'el-lowcode'
 import { Node } from './components/Node'
 import { sloveConfig } from '../components/_utils'
@@ -11,13 +11,22 @@ import { parseTransform } from './components/utils'
 export interface Widget {
   is: string
   label?: string
-  drag?: boolean
-  sortablePut?: boolean
-  cover?: string
+  drag: WidgetDrag
+  hidden?: boolean
+  sortablePut?: boolean // todo
+  cover?: string // todo
   props?: any[] | ((props: any, ctx: DesignerCtx, arg: { node: DisplayNode }) => any[])
   defaultProps?(ctx: DesignerCtx): Obj
   JSONSchemaOutput?(props: Obj, ctx: DesignerCtx): Obj
   purify?(props: Obj): Obj
+}
+
+export type UserWidget = Assign<Widget, { drag?: boolean | WidgetDrag }>
+
+export interface WidgetDrag {
+  to?: Arrable<string>
+  from?: Arrable<string>
+  disabled?: boolean
 }
 
 export interface BoxProps {
@@ -39,6 +48,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   abstract designerCtx: DesignerCtx
 
   get id () { return this.data._id }
+  get is() { return this.data.is }
   get label () { return this.data['data-layer'] || (isString(this.data.children) && this.data.children) || this.config?.label || this.data.is }
   get data_children () { return isObject(this.data.children) ? this.data.children : void 0 }
   get dir() { return isArray(this.data_children) }
@@ -72,6 +82,14 @@ export abstract class DisplayNode extends Node<BoxProps> {
   set isAbsLayout(bool) { this.data['data-absolute-layout'] = bool }
 
   get isRoot() { return !this.parent }
+
+  get drag(): WidgetDrag { return this.data['lcd-drag'] || this.config?.drag || {} }
+
+  get lock() { return this.data['lcd-lock'] }
+  set lock(bool) { this.data['lcd-lock'] = bool }
+
+  get hidden() { return this.data['lcd-hidden'] }
+  set hidden(bool) { this.data['lcd-hidden'] = bool }
 
   clone() {
     const data = deepClone(this.data, (v, k) => k == '_id' ? uuid() : v)

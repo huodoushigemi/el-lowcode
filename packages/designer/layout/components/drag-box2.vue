@@ -7,7 +7,7 @@ import { createRender } from '@el-lowcode/render'
 import { processProps } from 'el-lowcode'
 import { parseAttrs } from '../../components/_utils'
 import { type DesignerCtx } from '../interface'
-import type { BoxProps } from '../..'
+import type { BoxProps, DisplayNode } from '../..'
 
 defineOptions({
   inheritAttrs: false
@@ -124,7 +124,13 @@ function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>, designer: Designer
   const target = () => isArray(props.children) ? firstEl()?.parentElement : void 0
   let x = 0, y = 0
   useEventListener(target, 'dragover', e => {
+    if (!dragIs) return
+    const drag = dragNode?.drag || designer.widgets[dragIs]!.drag
+    if (node.drag.from && !node.drag.from.includes(dragIs)) return
+    if (drag.to && !drag.to.includes(node.is)) return
+    if (node.lock) return
     if (dragEl?.contains(e.currentTarget as Node)) return
+
     e.preventDefault()
     e.stopPropagation()
 
@@ -255,15 +261,16 @@ function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>, designer: Designer
 
 function useDrag(props: BoxProps, designer: DesignerCtx) {
   const node = designer.keyedCtx[props._id]
-  const draggable = () => !node.isRoot && !node.isAbs
+  const draggable = () => !node.isAbs && !node.drag.disabled
   const target = () => draggable() ? node.el : void 0
   useEventListener(target, 'dragstart', e => {
     e.stopPropagation()
     dragStart(e)
+    dragNode = node
+    dragIs = node.is
     e.dataTransfer!.setDragImage(new Image(), 0, 0)
   })
   watchEffect(() => {
-    // el 可能是 TEXT_NODE
     const el = node.el
     if (!el) return
     el.setAttribute?.('draggable', draggable() + '')
@@ -276,20 +283,25 @@ useEventListener('dragstart', dragStart)
 useEventListener('dragend', dragEnd)
 if (frameElement) {
   const doc = frameElement.ownerDocument
-  // useEventListener(doc, 'dragstart', dragStart)
+  useEventListener(doc, 'dragstart', dragStart)
   useEventListener(doc, 'dragend', dragEnd)
 }
 
 let dragEl: HTMLElement | undefined
+let dragIs: string | undefined
+let dragNode: DisplayNode | undefined
 let dragRelated: HTMLElement | undefined
 let dragRelatedDir: 'L' | 'R' | 'T' | 'B' | undefined
 
 function dragStart(e: DragEvent) {
   dragEl = e.target as any
+  dragIs = dragEl!.getAttribute('lcd-is') || dragEl!.getAttribute('data-is') || void 0
 }
 
 function dragEnd() {
   dragEl = void 0
+  dragIs = void 0
+  dragNode = void 0 
   dragRelated = void 0
   dragRelatedDir = void 0
   dragLineStyle.width = ''

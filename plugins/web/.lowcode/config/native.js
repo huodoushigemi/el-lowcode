@@ -115,7 +115,8 @@ export default [
   {
     is: 'summary',
     label: 'summary',
-    drag: false,
+    hidden: true,
+    drag: { to: 'details' },
     props: [
       { lp: ['title', 'children'] }
     ]
@@ -124,7 +125,7 @@ export default [
   {
     is: 'ul',
     label: 'ul',
-    sortablePut: false,
+    drag: { from: 'li' },
     props: [
       // todo
       { lp: ['title', 'children'], el: { is: 'OptionsInput', new: () => ({ is: 'li', _id: v4(), children: [] }) } },
@@ -141,6 +142,7 @@ export default [
   {
     is: 'li',
     label: 'li',
+    drag: { to: ['ol', 'ul'] },
     props: [
 
     ]

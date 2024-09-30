@@ -92,7 +92,7 @@ export default [
   {
     is: 'mdui-segmented-button-group',
     label: 'segmented',
-    sortablePut: false,
+    drag: { from: 'mdui-segmented-button' },
     props: props => [
       kv,
       fullWidth,
@@ -113,7 +113,7 @@ export default [
   {
     is: 'mdui-segmented-button',
     label: 'segmented-button',
-    drag: false,
+    hidden: true,
     props: props => [
       value,
       icon,
@@ -179,7 +179,7 @@ export default [
   {
     is: 'mdui-radio-group',
     label: 'radio-group',
-    sortablePut: false,
+    drag: { from: 'mdui-radio' },
     props: [
       kv,
       required,
@@ -198,7 +198,8 @@ export default [
   {
     is: 'mdui-radio',
     label: 'radio',
-    drag: false,
+    hidden: true,
+    drag: { to: 'mdui-radio-group' },
     props: [
       kv,
       boolean('checked'),
@@ -246,7 +247,7 @@ export default [
   {
     is: 'mdui-collapse',
     label: 'collapse',
-    sortablePut: false,
+    drag: { from: 'mdui-collapse-item' },
     props: [
       boolean('accordion'),
       disabled,
@@ -263,7 +264,8 @@ export default [
   {
     is: 'mdui-collapse-item',
     label: 'collapse-item',
-    drag: false,
+    hidden: true,
+    drag: { to: 'mdui-collapse' },
     props: [
       value,
       disabled,
@@ -276,7 +278,7 @@ export default [
   {
     is: 'MdUiTabs2',
     label: 'tabs',
-    sortablePut: false,
+    drag: { to: 'mdui-tab-panel' },
     props: [
       value,
       variant(['primary', 'secondary'], 'primary'),
@@ -296,18 +298,8 @@ export default [
   {
     is: 'mdui-tab-panel',
     label: 'tab-panel',
-    drag: false,
-    props: [
-      value,
-      icon,
-      boolean('inline'),
-    ]
-  },
-
-  {
-    is: 'mdui-tab-panel',
-    label: 'tab-panel',
-    drag: false,
+    hidden: true,
+    drag: { to: 'MdUiTabs2' },
     props: [
       value,
       icon,
@@ -318,7 +310,7 @@ export default [
   {
     is: 'mdui-select',
     label: 'select',
-    sortablePut: false,
+    drag: { from: 'mdui-menu-item' },
     props: [
       variant(['filled', 'outlined']),
       kv,
@@ -375,7 +367,7 @@ export default [
   {
     is: 'mdui-top-app-bar',
     label: 'app-bar',
-    sortablePut: false,
+    drag: { from: [] },
     props: [
       { lp: ['title', 'children.1.children'] },
       options(['icon', 'children.0.icon'], ICONS),

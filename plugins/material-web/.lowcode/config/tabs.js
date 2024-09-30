@@ -3,7 +3,9 @@ import { v4 } from 'uuid'
 const tabWgt = (is) => ({
   is,
   label: 'tab',
-  drag: false,
+  hidden: true,
+  drag: { to: 'md-tabs' },
+  hidden: true,
   props: props => [
     { lp: ['tag', 'is'], type: 'select', options: ['md-primary-tab', 'md-secondary-tab'] },
     { lp: 'inline-icon', type: 'switch', displayValue: false, $: { condition: props.is == 'md-primary-tab' } },
@@ -20,7 +22,7 @@ const tabWgt = (is) => ({
 export const tabs = {
   is: 'md-tabs',
   label: 'tabs',
-  sortablePut: false,
+  drag: { from: [] },
   props: [
     { lp: 'auto-activate', type: 'switch', displayValue: false },
     { lp: ['tabs', 'children'], el: { is: 'OptionsInput', new: () => ({ is: 'md-primary-tab', _id: v4(), children: [] }) } }

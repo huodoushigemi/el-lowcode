@@ -85,15 +85,18 @@
   
     <!-- 渲染 JSON -->
     <script type="module">
-      import { createApp, h } from 'vue'
-      import { useMagicKeys } from '@vueuse/core'
+      import { h, createRenderer } from 'vue'
+      // import { useMagicKeys } from '@vueuse/core'
       import ElLowcode, { ConfigProvider } from 'el-lowcode'
       import Moveable from 'vue3-moveable'
       import DragBox from './drag-box2.vue'
+      import { rendererOptions } from './rendererOptions'
 
-      const { control } = useMagicKeys()
+      // const { control } = useMagicKeys()
 
-      const app = createApp({
+      const renderer = createRenderer(rendererOptions)
+
+      const app = renderer.createApp({
         provide: {
           designerCtx
         },
