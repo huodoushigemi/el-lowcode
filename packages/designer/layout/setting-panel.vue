@@ -73,7 +73,7 @@ const Render = createRender({
   }
 })
 
-const RenderItems = ({ items }) => items.map(e => isPlainObject(e) && Render(e))
+const RenderItems = ({ items }) => items?.map(e => isPlainObject(e) && Render(e))
 
 const designerCtx = inject(designerCtxKey)
 
@@ -113,7 +113,7 @@ const styles = computed(() => [
   { is: 'div', class: 'mx--8 b-b-1' },
   { is: 'h4', class: 'my12', children: 'Other' },
   { lp: ['opacity', 'style.opacity'], type: 'slider', displayValue: 1, el: { min: 0, max: 1, step: .01, formatTooltip: val => (val * 100).toFixed(2) } },
-  { lp: ['overflow', 'style.overflow'], type: 'radio-group', options: ['visible', 'auto', 'hidden'], displayValue: 'visible' },
+  { lp: ['overflow', 'style.overflow'], type: 'segmented', options: ['visible', ['scroll', 'auto'], 'hidden'], displayValue: 'visible' },
   { lp: 'style', get: val => stringifyStyle(val).replace(/;/g, ';\n'), set: val => parseStringStyle(val), el: { is: Input, type: 'textarea', placeholder: 'font-size: inherit;\ncolor: inherit;', autosize: { minRows: 4, maxRows: 12 } } },
 ])
 

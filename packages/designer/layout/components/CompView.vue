@@ -4,7 +4,7 @@
       <h4 mt4 mb10>{{ category == 'undefined' ? '其他' : category }}</h4>
       <div grid="~ cols-2" gap-8>
         <template v-for="wgt in arr" >
-          <div v-if="!wgt.hidden" class="comp-li vs-ai" :data-is="wgt.is" draggable="true" text-14 truncate tabindex="0">{{ wgt.label }}</div>
+          <div v-if="!wgt.hidden" class="comp-li vs-ai" :lcd-is="wgt.is" draggable="true" truncate tabindex="0">{{ wgt.label }}</div>
         </template>
       </div>
     </div>

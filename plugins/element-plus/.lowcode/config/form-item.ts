@@ -40,8 +40,8 @@ export default {
     description: props.description,
     pattern: props.rules?.pattern,
     default: props.el.defaultValue,
-    enum: props.el.children?.map(e => e.value),
-    enumNames: props.el.children?.map(e => e.label),
+    enum: (props.el.options || props.el.children)?.map(e => e.value),
+    enumNames: (props.el.options || props.el.children)?.map(e => e.label),
     ...ctx.widgets[props.el.is].JSONSchemaOutput?.(props.el, ctx)
   })
 }

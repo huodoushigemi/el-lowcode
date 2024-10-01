@@ -17,6 +17,7 @@ const props = defineProps({
   el: Object
 })
 
+
 onBeforeUnmount(() => {
   for (const k in propsCtx) propsCtx[k] = void 0
 })
@@ -24,9 +25,12 @@ onBeforeUnmount(() => {
 defineRender(() => {
   return [
     h(DragLine),
+    h(DragGuidMask),
     Render(props.el!),
   ]
 })
+
+const designer = inject('designerCtx') as DesignerCtx
 
 const wm = new WeakMap()
 const EMPTY = Symbol()
@@ -35,11 +39,10 @@ const Render = createRender({
   defaultIs: 'div',
   processProps: (_props: any) => {
     if (_props[EMPTY]) return _props
-    const designer = inject('designerCtx') as DesignerCtx
     return wm.get(_props)?.value || wm.set(_props, computed(() => {
       let { children, ...props } = designer.keyedCtx[_props._id].$data
 
-      const ctx = setup(_props, designer)
+      const ctx = setup(_props)
 
       if (isArray(children)) {
         if (!children.length) {
@@ -66,13 +69,13 @@ const Render = createRender({
 
 const propsCtx = new WeakMap()
 
-function setup(props: BoxProps, designer: DesignerCtx) {
+function setup(props: BoxProps) {
   if (propsCtx.has(props)) propsCtx.get(props)
   
   const elRef = designer.keyedCtx[props._id].ref, boxRef = ref(), nillRef = ref()
   
-  useDrop(props, boxRef, designer)
-  useDrag(props, designer)
+  useDrop(props, boxRef)
+  useDrag(props)
   
   useEventListener(elRef, 'mousedown', e => {
     if (e.button != 0) return
@@ -118,18 +121,17 @@ function sortAbsolute(arr: BoxProps[]) {
   }
 }
 
-function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>, designer: DesignerCtx) {
+function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>) {
   const node = designer.keyedCtx[props._id]
   const firstEl = () => node.children![0]?.el ?? emptyRef.value
   const target = () => isArray(props.children) ? firstEl()?.parentElement : void 0
   let x = 0, y = 0
   useEventListener(target, 'dragover', e => {
-    if (!dragIs) return
-    const drag = dragNode?.drag || designer.widgets[dragIs]!.drag
-    if (node.drag.from && !node.drag.from.includes(dragIs)) return
-    if (drag.to && !drag.to.includes(node.is)) return
+    if (!dragNode) return
+    if (node.drag.from && !node.drag.from.includes(dragNode.is)) return
+    if (dragNode.drag.to && !dragNode.drag.to.includes(node.is)) return
     if (node.lock) return
-    if (dragEl?.contains(e.currentTarget as Node)) return
+    if (dragNode.el?.contains(e.currentTarget as Node)) return
 
     e.preventDefault()
     e.stopPropagation()
@@ -138,8 +140,8 @@ function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>, designer: Designer
     x = e.x
     y = e.y
     
-    dragRelated = void 0
     dragRelatedDir = void 0
+    dragRelatedNode = void 0
 
     const el = e.currentTarget as HTMLElement
     
@@ -165,8 +167,8 @@ function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>, designer: Designer
         x = rect.x; y = rect.y + rect.height / 2
         d = Math.sqrt(Math.pow(x - e.x, 2) + Math.pow(y - e.y, 2))
         if (d < closestDistance) {
-          dragRelated = draggables[i]
           dragRelatedDir = 'L'
+          dragRelatedNode = resolveNode(draggables[i])
           closestDistance = d
           style = { left: rect.x - 3, top: rect.y, width: 6, height: rect.height }
         }
@@ -174,8 +176,8 @@ function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>, designer: Designer
         x = rect.x + rect.width; y = rect.y + rect.height / 2
         d = Math.sqrt(Math.pow(x - e.x, 2) + Math.pow(y - e.y, 2))
         if (d < closestDistance) {
-          dragRelated = draggables[i]
           dragRelatedDir = 'R'
+          dragRelatedNode = resolveNode(draggables[i])
           closestDistance = d
           style = { left: x - 3, top: rect.y, width: 6, height: rect.height }
         }
@@ -183,8 +185,8 @@ function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>, designer: Designer
         x = rect.x + rect.width / 2; y = rect.y
         d = Math.sqrt(Math.pow(x - e.x, 2) + Math.pow(y - e.y, 2))
         if (d < closestDistance) {
-          dragRelated = draggables[i]
           dragRelatedDir = 'T'
+          dragRelatedNode = resolveNode(draggables[i])
           closestDistance = d
           style = { left: rect.x, top: rect.top - 3, width: rect.width, height: 6 }
         }
@@ -192,8 +194,8 @@ function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>, designer: Designer
         x = rect.x + rect.width / 2; y = rect.y + rect.height
         d = Math.sqrt(Math.pow(x - e.x, 2) + Math.pow(y - e.y, 2))
         if (d < closestDistance) {
-          dragRelated = draggables[i]
           dragRelatedDir = 'B'
+          dragRelatedNode = resolveNode(draggables[i])
           closestDistance = d
           style = { left: rect.x, top: y - 3, width: rect.width, height: 6 }
         }
@@ -221,17 +223,13 @@ function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>, designer: Designer
   })
 
   useEventListener(target, 'drop', async (e) => {
-    if (dragEl?.contains(e.currentTarget as Node)) return dragEnd()
-    if (dragEl && dragEl == dragRelated) return dragEnd()
-
-    const is = dragEl?.getAttribute('data-is') ?? e.dataTransfer?.getData('data-is')
-    const _id = dragEl?.getAttribute('_id')
-    if (!is && !_id) return dragEnd()
+    if (dragNode && dragNode == dragRelatedNode) return dragEnd()
+    if (!dragNode) return
     e.stopPropagation()
 
     const el = e.currentTarget as HTMLElement
     const doc = el.ownerDocument
-    const dragNode = _id ? designer.keyedCtx[_id] : new designer.DisplayNode(parseAttrs(designer.widgets[is!]!, designer))
+    // const dragNode = _id ? designer.keyedCtx[_id] : new designer.DisplayNode(parseAttrs(designer.widgets[is!]!, designer))
     
     // 自由布局
     if (node.isAbsLayout) {
@@ -248,26 +246,24 @@ function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>, designer: Designer
     // 排序布局
     else {
       const before = dragRelatedDir == 'L' || dragRelatedDir == 'T'
-      dragRelated
-        ? designer.keyedCtx[dragRelated!.getAttribute('_id')!][before ? 'before' : 'after'](dragNode)
+      dragRelatedNode
+        ? dragRelatedNode![before ? 'before' : 'after'](dragNode)
         : node.insertBefore(dragNode)
     }
 
-    nextTick(() => designer.activeId = dragNode.id)
+    designer.activeId = dragNode.id
 
     dragEnd()
   })
 }
 
-function useDrag(props: BoxProps, designer: DesignerCtx) {
+function useDrag(props: BoxProps) {
   const node = designer.keyedCtx[props._id]
   const draggable = () => !node.isAbs && !node.drag.disabled
   const target = () => draggable() ? node.el : void 0
   useEventListener(target, 'dragstart', e => {
     e.stopPropagation()
     dragStart(e)
-    dragNode = node
-    dragIs = node.is
     e.dataTransfer!.setDragImage(new Image(), 0, 0)
   })
   watchEffect(() => {
@@ -283,35 +279,64 @@ useEventListener('dragstart', dragStart)
 useEventListener('dragend', dragEnd)
 if (frameElement) {
   const doc = frameElement.ownerDocument
-  useEventListener(doc, 'dragstart', dragStart)
   useEventListener(doc, 'dragend', dragEnd)
+  useEventListener(doc, 'dragstart', dragStart)
 }
 
-let dragEl: HTMLElement | undefined
-let dragIs: string | undefined
 let dragNode: DisplayNode | undefined
-let dragRelated: HTMLElement | undefined
 let dragRelatedDir: 'L' | 'R' | 'T' | 'B' | undefined
+let dragRelatedNode: DisplayNode | undefined
 
 function dragStart(e: DragEvent) {
-  dragEl = e.target as any
-  dragIs = dragEl!.getAttribute('lcd-is') || dragEl!.getAttribute('data-is') || void 0
+  dragNode = resolveNode(e.target as HTMLElement)
+  if (!dragNode) return
+  designer.draggedId = dragNode?.id
+  const { to } = dragNode.drag
+  if (to) {
+    const putable = Object.values(designer.keyedCtx).filter(e => to.includes(e.is) )
+    dragMask.rects = putable.map(e => e.el!.getBoundingClientRect()).map(e => ({ x: e.x, y: e.y, w: e.width, h: e.height }))
+  }
 }
 
 function dragEnd() {
-  dragEl = void 0
-  dragIs = void 0
   dragNode = void 0 
-  dragRelated = void 0
+  designer.draggedId = void 0
   dragRelatedDir = void 0
   dragLineStyle.width = ''
   dragLineStyle.height = ''
+  dragMask.rects = void 0
+}
+
+function resolveNode(el: HTMLElement) {
+  if (el.nodeType != 1) return
+  const is = el.getAttribute('lcd-is')
+  const id = el.getAttribute('_id')
+  if (!is && !id) return
+  return designer.keyedCtx[el.getAttribute('_id')!] || new designer.DisplayNode(parseAttrs(designer.widgets[is!]!, designer))
 }
 
 const dragLineStyle = reactive({ transform: '',  width: '', height: '' })
 const DragLine = defineComponent({
   setup() {
-    return () => h('div', { style: { ...dragLineStyle, position: 'absolute', zIndex: 99, pointerEvents: 'none', background: '#e6a23c66' } })
+    return () => h('div', { style: { ...dragLineStyle, position: 'fixed', zIndex: 100, pointerEvents: 'none', background: '#e6a23c66' } })
+  }
+})
+
+const dragMask = reactive({
+  rects: void 0 as { x: number; y: number; w: number; h: number }[] | undefined
+})
+const DragGuidMask = defineComponent({
+  setup() {
+    const root = document.scrollingElement!
+    return () => dragMask.rects && h('div', { style: `position: fixed; inset: 0; pointer-events: none; line-height: 0; z-index: 99` }, h('svg', { style: 'width: 100%; height: 100%' }, h('path', {
+      style: 'pointer-events: auto;',
+      fill: 'rgba(0,0,0)',
+      d: `
+        M${root.scrollWidth},0 L0,0 L0,${root.scrollHeight} L${root.scrollWidth},${root.scrollHeight} L${root.scrollWidth},0 Z
+        ${dragMask.rects.map(e => ` M${e.x},${e.y} h${e.w} v${e.h} H${e.x} Z`).join('')}
+        `
+        // ${dragMask.rects.map(e => ` M${e.x - 3},${e.y - 3} h${e.w + 6} v${e.h + 6} H${e.x - 3} Z`).join('')}
+    })))
   }
 })
 </script>

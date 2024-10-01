@@ -1,32 +1,22 @@
 <template>
   <div class="selected-layer" absolute inset-0 pointer-events-none select-none z-9>
-    <div v-if="!designerCtx.draggedId" absolute outline="1 dashed [--el-color-primary]" outline-offset--1 :style="calcStyle(designerCtx.hoverEl)">
-      <div class="absolute bottom-[100%] px8 text-12 c-white bg-[--el-color-primary]">
+    <div v-if="!designerCtx.dragged" absolute outline="1 dashed [--vs-focus-b-c]" op75 outline-offset--1 :style="calcStyle(designerCtx.hoverEl)">
+      <div class="absolute bottom-full px8 text-12 c-white bg-[--vs-focus-b-c]">
         {{ designerCtx.hover?.label }}
       </div>
     </div>
-    <!-- <selected-rect :el="designerCtx.active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(activeEl())" /> -->
-    <div v-if="active" absolute outline="1.5 solid [--el-color-primary]" outline-offset--1.5 :style="calcStyle(designerCtx.activeEl)">
-      <div v-if="active.parent && !active.isAbs && designerCtx.draggedId == null" class="actions absolute bottom-[100%] flex text-14 text-nowrap pointer-events-auto c-white bg-[--el-color-primary]">  
+    
+    <div v-if="active" absolute outline="1.5 solid [--vs-focus-b-c]" outline-offset--1.5 :style="calcStyle(designerCtx.activeEl)">
+      <div v-if="active.parent && !active.isAbs && !designerCtx.dragged" class="actions absolute bottom-[100%] flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]">  
         <div flex aic px12 bg="#17d57e">{{ active.label }}</div>
         <i-solar:arrow-to-top-right-bold class="icon" @click="active2parent" />
         <i-solar:arrow-up-linear class="icon" @click="moveUp" />
         <i-solar:arrow-down-linear class="icon" @click="moveDown" />
         <i-solar:copy-line-duotone class="icon" @click="copy" />
         <i-solar:trash-bin-minimalistic-linear class="icon" hover="c-red" @click="remove" />
-
-        <!-- <template v-if="isString(active!.children)">
-          <div mx12 w1 bg="#000/20" />
-          <i-solar:align-left-bold class="icon" :bg="active!.style?.textAlign == 'left' && active!.style?.textAlign == null ? '#000/10' : ''" />
-          <i-solar:align-horizontal-center-bold class="icon" :bg="active!.style?.textAlign == 'center' ? '#000/10' : ''" />
-          <i-solar:align-right-bold class="icon" :bg="active!.style?.textAlign == 'right' ? '#000/10' : ''" />
-          <i-solar:text-bold-bold class="icon" :bg="active!.style?.fontWeight == 'bold' ? '#000/10' : ''" />
-          <i-solar:text-italic-bold class="icon" :bg="active!.style?.fontStyle == 'italic' ? '#000/10' : ''" />
-          <i-solar:text-underline-bold class="icon" :bg="active!.style?.textDecoration == 'underline' ? '#000/10' : ''" />
-          <el-color-picker show-alpha size="small" self-center />
-        </template> -->
       </div>
-      <div v-if="active.parent && active.isAbs" class="actions absolute bottom-[100%] flex text-14 text-nowrap pointer-events-auto c-white bg-[--el-color-primary]" :op="designerCtx.draggedId ? 0 : 100" @mouseenter="designerCtx.hoverId = active.id" @mouseover="designerCtx.hoverId = active.id">
+
+      <div v-if="active.parent && active.isAbs" class="actions absolute bottom-full flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]" :op="designerCtx.dragged ? 0 : 100" @mouseenter="designerCtx.hoverId = active.id" @mouseover="designerCtx.hoverId = active.id">
         <div flex aic px12 bg="#17d57e">{{ active.label }}</div>
         <i-solar:arrow-to-top-right-bold class="icon" @click="active2parent" />
         <i-bi:arrows-move ref="moveHandle" class="icon" text-16="!" cursor-move />

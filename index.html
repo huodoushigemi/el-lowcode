@@ -15,14 +15,6 @@
     <!-- <script src="/lib/vue.runtime.global.prod.js"></script> -->
     <script src="/lib/vue.runtime.global.js"></script>
     <script src="/lib/moveable.min.js"></script>
-
-    <script>
-      document.addEventListener('dragstart', e => {
-        const is = e.target.getAttribute('data-is')
-        if (!is) return
-        e.dataTransfer.setData('data-is', is)
-      })
-    </script>
   </head>
   <body>
     <div id="app"></div>

@@ -127,8 +127,6 @@ export default [
     label: 'ul',
     drag: { from: 'li' },
     props: [
-      // todo
-      { lp: ['title', 'children'], el: { is: 'OptionsInput', new: () => ({ is: 'li', _id: v4(), children: [] }) } },
       { lp: ['list-style', 'style.listStyle'], type: 'select', options: ['simp-chinese-informal', 'decimal', 'disc', 'circle' ,'square'], displayValue: 'disc' },
     ],
     defaultProps: () => ({
@@ -145,6 +143,9 @@ export default [
     drag: { to: ['ol', 'ul'] },
     props: [
 
-    ]
+    ],
+    defaultProps: () => ({
+      children: []
+    })
   }
 ]
