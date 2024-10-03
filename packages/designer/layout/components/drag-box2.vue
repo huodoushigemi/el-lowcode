@@ -25,7 +25,7 @@ defineRender(() => {
   return [
     h(DragLine),
     h(DragGuidMask),
-    cloneVNode(Render(props.el!)!, { 'lcd-root': '' }),
+    cloneVNode(Render(props.el!) || h('div'), { 'lcd-root': '' }),
   ]
 })
 
