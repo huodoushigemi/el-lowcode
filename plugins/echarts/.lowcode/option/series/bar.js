@@ -7,7 +7,7 @@ import { parseEncode, parseXYs } from '../../../normalizeOption'
 export const serieBar = (model, i, option, ctx, node) => ({ is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children: [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
     segm('type', ['line', 'bar'], { defaultValue: 'bar' }),
-    { lp: ['key', '$key'], options: parseXYs(node.$data), displayValue: parseEncode(node.$data, i).y, el: { allowCreate: true, filterable: true, defaultFirstOption: true } },
+    { lp: ['key', '$key'], options: parseXYs(node.$data), defaultValue: parseEncode(node.$data, i).y, el: { allowCreate: true, filterable: true, defaultFirstOption: true } },
   ] },
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', children: [
     { is: 'div', class: 'flex aic gap-4 my8 col-span-3 [&>*]:mb0', children: [

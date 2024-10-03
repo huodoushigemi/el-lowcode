@@ -11,12 +11,13 @@
         <!-- Canvas Viewport -->
          <!-- v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y"  -->
         <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
-          <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.draggedId || (designerCtx.hoverId = undefined)">
+          <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.dragged || (designerCtx.hoverId = undefined)">
             <!-- @vue-ignore -->
             <iframe
-              :key="CanvasIframe1"
+              :key="srcurl + srcdoc"
               class="wfull hfull"
-              :src="CanvasIframe1"
+              :src="srcurl"
+              :srcdoc="srcdoc"
               @load="e => designerCtx.canvas.doc = e.target.contentDocument"
               @vue:mounted="({ el }) => el.contentWindow.designerCtx = designerCtx"
             />
@@ -65,7 +66,7 @@
 
 <script setup lang="ts">
 import { computed, provide, ref, getCurrentInstance, PropType } from 'vue'
-import { useDebouncedRefHistory, useEventListener } from '@vueuse/core'
+import { computedAsync, useDebouncedRefHistory, useEventListener } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import Moveable from 'vue3-moveable'
 
@@ -77,7 +78,6 @@ import Views from './components/Views.vue'
 import ExportCode from './components/ExportCode.vue'
 import SelectedLayer from './components/selected-layer.vue'
 import SettingPanel from './setting-panel.vue'
-import StateDrawer from './components/state-drawer.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import Statusbar from './components/Statusbar.vue'
 // import { vue2esm } from './vue2esm'
@@ -91,8 +91,8 @@ import Collapse from '../components/Collapse.vue'
 import EditTable from '../components/EditTable.vue'
 import Tabs from '../components/Tabs.vue'
 
-// import CanvasIframe1 from './components/iframe-temp.html?transform'
-import CanvasIframe1 from './components/iframe-temp.html?url'
+const srcdoc = computedAsync(() => import.meta.env.PROD ? import('./components/iframe-temp.html?transform').then(e => e.default) : void 0)
+const srcurl = computedAsync(() => import.meta.env.DEV ? import('./components/iframe-temp.html?url').then(e => e.default) : void 0)
 
 const app = getCurrentInstance()!.appContext.app
 app.component('OptionsInput', OptionsInput)

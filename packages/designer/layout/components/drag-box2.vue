@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { computed, defineComponent, h, inject, mergeProps, nextTick, onBeforeUnmount, reactive, ref, watchEffect } from 'vue'
+import { cloneVNode, computed, defineComponent, h, inject, mergeProps, onBeforeUnmount, reactive, ref, shallowRef, watchEffect } from 'vue'
 import type { Ref } from 'vue'
-import { isArray, isObject, normalizeStyle } from '@vue/shared'
-import { unrefElement, useEventListener } from '@vueuse/core'
+import { isArray, isObject } from '@vue/shared'
+import { useEventListener } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
-import { processProps } from 'el-lowcode'
+import { mapValues } from '@el-lowcode/utils'
 import { parseAttrs } from '../../components/_utils'
-import { type DesignerCtx } from '../interface'
-import type { BoxProps, DisplayNode } from '../..'
+import type { DesignerCtx, BoxProps, DisplayNode } from '../interface'
 
 defineOptions({
   inheritAttrs: false
@@ -26,7 +25,7 @@ defineRender(() => {
   return [
     h(DragLine),
     h(DragGuidMask),
-    Render(props.el!),
+    cloneVNode(Render(props.el!)!, { 'lcd-root': '' }),
   ]
 })
 
@@ -80,13 +79,13 @@ function setup(props: BoxProps) {
   useEventListener(elRef, 'mousedown', e => {
     if (e.button != 0) return
     e.stopPropagation()
-    if (designer.draggedId) return
+    if (designer.dragged) return
     designer.activeId = props._id
   })
 
   useEventListener(elRef, 'mouseover', e => {
     e.stopPropagation()
-    if (designer.draggedId) return
+    if (designer.dragged) return
     designer.hoverId = props._id
   })
 
@@ -213,6 +212,7 @@ function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>) {
           style = { left: x, top: y, width, height }
         }
       }
+      
 
       Object.assign(dragLineStyle, {
         transform: `translate(${style.left}px, ${style.top}px)`,
@@ -247,7 +247,7 @@ function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>) {
     else {
       const before = dragRelatedDir == 'L' || dragRelatedDir == 'T'
       dragRelatedNode
-        ? dragRelatedNode![before ? 'before' : 'after'](dragNode)
+        ? dragRelatedNode[before ? 'before' : 'after'](dragNode)
         : node.insertBefore(dragNode)
     }
 
@@ -277,34 +277,37 @@ function useDrag(props: BoxProps) {
 // 
 useEventListener('dragstart', dragStart)
 useEventListener('dragend', dragEnd)
+useEventListener('dragover', dragover)
 if (frameElement) {
   const doc = frameElement.ownerDocument
   useEventListener(doc, 'dragend', dragEnd)
   useEventListener(doc, 'dragstart', dragStart)
+  useEventListener( doc, 'dragover', dragover)
 }
 
-let dragNode: DisplayNode | undefined
+let dragNode: DisplayNode | undefined, dragged = shallowRef<DisplayNode>()
 let dragRelatedDir: 'L' | 'R' | 'T' | 'B' | undefined
 let dragRelatedNode: DisplayNode | undefined
 
 function dragStart(e: DragEvent) {
   dragNode = resolveNode(e.target as HTMLElement)
+  dragged.value = dragNode
   if (!dragNode) return
   designer.draggedId = dragNode?.id
-  const { to } = dragNode.drag
-  if (to) {
-    const putable = Object.values(designer.keyedCtx).filter(e => to.includes(e.is) )
-    dragMask.rects = putable.map(e => e.el!.getBoundingClientRect()).map(e => ({ x: e.x, y: e.y, w: e.width, h: e.height }))
-  }
 }
 
 function dragEnd() {
   dragNode = void 0 
+  dragged.value = void 0
   designer.draggedId = void 0
+  designer.hoverId = void 0
   dragRelatedDir = void 0
   dragLineStyle.width = ''
   dragLineStyle.height = ''
-  dragMask.rects = void 0
+}
+
+function dragover() {
+  Object.assign(dragLineStyle, mapValues(dragLineStyle, () => void 0))
 }
 
 function resolveNode(el: HTMLElement) {
@@ -312,7 +315,7 @@ function resolveNode(el: HTMLElement) {
   const is = el.getAttribute('lcd-is')
   const id = el.getAttribute('_id')
   if (!is && !id) return
-  return designer.keyedCtx[el.getAttribute('_id')!] || new designer.DisplayNode(parseAttrs(designer.widgets[is!]!, designer))
+  return designer.keyedCtx[id!] || new designer.DisplayNode(parseAttrs(designer.widgets[is!]!, designer))
 }
 
 const dragLineStyle = reactive({ transform: '',  width: '', height: '' })
@@ -322,20 +325,23 @@ const DragLine = defineComponent({
   }
 })
 
-const dragMask = reactive({
-  rects: void 0 as { x: number; y: number; w: number; h: number }[] | undefined
+const dragMaskRects = computed(() => {
+  const { to } = dragged.value?.drag || {}
+  if (to) {
+    const putable = Object.values(designer.keyedCtx).filter(e => to.includes(e.is) )
+    return putable.map(e => e.el!.getBoundingClientRect()).map(e => ({ x: e.x, y: e.y, w: e.width, h: e.height }))
+  }
 })
 const DragGuidMask = defineComponent({
   setup() {
     const root = document.scrollingElement!
-    return () => dragMask.rects && h('div', { style: `position: fixed; inset: 0; pointer-events: none; line-height: 0; z-index: 99` }, h('svg', { style: 'width: 100%; height: 100%' }, h('path', {
+    return () => dragMaskRects.value && h('div', { style: `position: fixed; inset: 0; pointer-events: none; line-height: 0; z-index: 99` }, h('svg', { style: 'width: 100%; height: 100%' }, h('path', {
       style: 'pointer-events: auto;',
       fill: 'rgba(0,0,0)',
       d: `
         M${root.scrollWidth},0 L0,0 L0,${root.scrollHeight} L${root.scrollWidth},${root.scrollHeight} L${root.scrollWidth},0 Z
-        ${dragMask.rects.map(e => ` M${e.x},${e.y} h${e.w} v${e.h} H${e.x} Z`).join('')}
+        ${dragMaskRects.value.map(e => ` M${e.x},${e.y} h${e.w} v${e.h} H${e.x} Z`).join('')}
         `
-        // ${dragMask.rects.map(e => ` M${e.x - 3},${e.y - 3} h${e.w + 6} v${e.h + 6} H${e.x - 3} Z`).join('')}
     })))
   }
 })
@@ -356,5 +362,10 @@ const DragGuidMask = defineComponent({
     left: 50%;
     transform: translate(-50%, -50%);
   }
+}
+
+[lcd-root] > .empty-placeholder {
+  position: absolute;
+  inset: 0;
 }
 </style>

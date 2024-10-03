@@ -8,7 +8,7 @@ const _options = (arr) => (arr.map(e => ({ label: e[0], value: e[1] })))
 export const serieLine = (model, i, option, ctx, node) => ({ is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children: [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
     segm('type', ['line', 'bar'], { defaultValue: 'line' }),
-    { lp: ['key', '$key'], options: parseXYs(node.$data), displayValue: parseEncode(node.$data, i).y, el: { allowCreate: true, filterable: true, defaultFirstOption: true } },
+    { lp: ['key', '$key'], options: parseXYs(node.$data), defaultValue: parseEncode(node.$data, i).y, el: { allowCreate: true, filterable: true, defaultFirstOption: true } },
   ] },
   { is: StyleLine, class: 'my8', model, prefix: 'lineStyle', displayValue: { width: 2 } },
   { is: 'div', class: 'grid grid-cols-3 gap-x-8 [&>*]:mb8', size: 'small', children: [

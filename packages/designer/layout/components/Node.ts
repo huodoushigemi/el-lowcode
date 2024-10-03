@@ -49,6 +49,7 @@ export abstract class Node<T = any> {
   }
 
   insertBefore(node: Node, refer?: Node) {
+    if (node == refer) return
     node.remove()
     node.parent = this
     this.data_children!.splice(refer ? refer.index : this.data_children!.length, 0, node.data)

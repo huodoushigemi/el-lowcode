@@ -4,17 +4,18 @@
     <style>
       html, body { width: 100%; height: 100%; }
       body { margin: 0; }
-      .Page { min-height: 100%; overflow: hidden; }
+      [lcd-root] { min-height: 100%; }
       * { box-sizing: border-box; }
 
       /* element-plus */
       .el-card, .el-button { transition: none !important; }
     </style>
 
-    <!-- 共享 Vue 内存，以便实现数据响应 -->
+    <!-- 共享 Vue 内存，以便实现数据响应 --> 
     <script>
       if (window.parent) {
         window.Vue = window.parent.Vue
+        window.VueDemi = window.parent.VueDemi
         window.Moveable = window.parent.Moveable
       }
     </script>
@@ -87,8 +88,8 @@
     <script type="module">
       import { h, createRenderer } from 'vue'
       // import { useMagicKeys } from '@vueuse/core'
-      import ElLowcode, { ConfigProvider } from 'el-lowcode'
       import Moveable from 'vue3-moveable'
+      import ElLowcode, { ConfigProvider } from 'el-lowcode'
       import DragBox from './drag-box2.vue'
       import { rendererOptions } from './rendererOptions'
 

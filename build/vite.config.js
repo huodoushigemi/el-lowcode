@@ -20,7 +20,7 @@ async function build1(input, outDir) {
         formats: ['es'],
         fileName: '[name]',
       },
-      minify: false,
+      // minify: false,
       copyPublicDir: false,
       rollupOptions: {
         treeshake: {

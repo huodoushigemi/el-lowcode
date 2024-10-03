@@ -4,6 +4,11 @@ pages:
     - mkdir .public
     - cp -r * .public
     - mv .public public
+    # 压缩文件
+    - echo "Compressing files with gzip..."
+    - find public -type f -name '*.html' -exec gzip -9 -k {} \;
+    - find public -type f -name '*.css' -exec gzip -9 -k {} \;
+    - find public -type f -name '*.js' -exec gzip -9 -k {} \;
   artifacts:
     paths:
       - public

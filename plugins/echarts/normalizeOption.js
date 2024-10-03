@@ -10,7 +10,7 @@ const is2D = data => Array.isArray(data) && Array.isArray(data[0])
 
 export function normalizeLineOption({ option, vertical, seriesLayoutBy, category  }, type = 'line') {
   const data = option.dataset.source
-  const tKey = e => is2D(data) ? +e : e
+  const tKey = e => is2D(data) ? e : e
   
   return merge({
     [vertical ? 'yAxis' : 'xAxis']: option.xAxis?.map(e => ({ ...e, type: 'category' })),
@@ -19,7 +19,7 @@ export function normalizeLineOption({ option, vertical, seriesLayoutBy, category
       type,
       seriesLayoutBy,
       [vertical ? 'xAxisIndex' : 'yAxisIndex']: e.$axis || 0,
-      encode: !e.$key && !category ? void 0 :{
+      encode: !e.$key && !category ? void 0 : {
         x: vertical ? tKey(e.$key) : category,
         y: vertical ? category : tKey(e.$key)
       }
@@ -32,8 +32,6 @@ export function normalizeLineOption({ option, vertical, seriesLayoutBy, category
 }
 
 export function normalizeBarOption(props) {
-  console.log(normalizeLineOption(props, 'bar'));
-  
   return normalizeLineOption(props, 'bar')
 }
 

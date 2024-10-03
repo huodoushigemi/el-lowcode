@@ -35,8 +35,12 @@ export default {
                   "legend": {
                     "show": false
                   },
-                  "xAxis": [{}],
-                  "yAxis": [{}],
+                  "xAxis": [
+                    {}
+                  ],
+                  "yAxis": [
+                    {}
+                  ],
                   "tooltip": {
                     "show": true,
                     "trigger": "axis"
@@ -89,12 +93,16 @@ export default {
                   "legend": {
                     "show": false
                   },
-                  "xAxis": [{}],
-                  "yAxis": [{
-                    "axisLine": {
-                      "show": false
+                  "xAxis": [
+                    {}
+                  ],
+                  "yAxis": [
+                    {
+                      "axisLine": {
+                        "show": false
+                      }
                     }
-                  }],
+                  ],
                   "tooltip": {
                     "show": true,
                     "trigger": "axis"
@@ -116,7 +124,8 @@ export default {
                       },
                       "areaStyle": {},
                       "name": "data",
-                      "smooth": false
+                      "smooth": false,
+                      "$key": "y"
                     }
                   ],
                   "grid": {},
@@ -152,19 +161,23 @@ export default {
                     "source": "{{state.data3}}"
                   },
                   "legend": {},
-                  "xAxis": [{
-                    "boundaryGap": false,
-                    "name": "xxxx",
-                    "axisTick": {},
-                    "splitLine": {},
-                    "axisLabel": {},
-                    "axisLine": {
-                      "lineStyle": {}
+                  "xAxis": [
+                    {
+                      "boundaryGap": false,
+                      "name": "xxxx",
+                      "axisTick": {},
+                      "splitLine": {},
+                      "axisLabel": {},
+                      "axisLine": {
+                        "lineStyle": {}
+                      }
                     }
-                  }],
-                  "yAxis": [{
-                    "splitLine": {}
-                  }],
+                  ],
+                  "yAxis": [
+                    {
+                      "splitLine": {}
+                    }
+                  ],
                   "tooltip": {
                     "show": true,
                     "trigger": "axis",
@@ -284,10 +297,14 @@ export default {
                   "dataset": {
                     "source": "{{[\n  { product: 'Latte', 2015: 23.3, 2016: 45.8, 2017: 93.7 },\n  { product: 'Milk', 2015: 33.1, 2016: 63.4, 2017: 85.1 },\n  { product: 'Cheese', 2015: 26.4, 2016: 55.2, 2017: 92.5 },\n  { product: 'Walnut Brownie', 2015: 42.4, 2016: 63.9, 2017: 109.1 }\n]}}"
                   },
-                  "xAxis": [{
-                    "axisLabel": {}
-                  }],
-                  "yAxis": [{}],
+                  "xAxis": [
+                    {
+                      "axisLabel": {}
+                    }
+                  ],
+                  "yAxis": [
+                    {}
+                  ],
                   "tooltip": {
                     "show": false,
                     "trigger": "axis"
@@ -349,26 +366,30 @@ export default {
                 },
                 "option": {
                   "dataset": {
-                    "source": "{{{\r\n  altitude: ['0', '10', '20', '30', '40', '50', '60', '70', '80'],\r\n  temperature: [15, -50, -56.5, -46.5, -22.1, -2.5, -27.7, -55.7, -76.5],\r\n}}}"
+                    "source": "{{[\r\n  ['altitude', 0, 10, 20, 30, 40, 50, 60, 70, 80],\r\n  ['temperature', 15, -50, -56.5, -46.5, -22.1, -2.5, -27.7, -55.7, -76.5],\r\n]}}"
                   },
                   "legend": {},
-                  "xAxis": [{
-                    "axisLabel": {},
-                    "axisLine": {},
-                    "axisTick": {},
-                    "splitLine": {}
-                  }],
-                  "yAxis": [{
-                    "axisLabel": {
-                      "formatter": "{value} km"
-                    },
-                    "boundaryGap": false,
-                    "axisLine": {
-                      "onZero": false
-                    },
-                    "axisTick": {},
-                    "splitLine": {}
-                  }],
+                  "xAxis": [
+                    {
+                      "axisLabel": {
+                        "formatter": "{value} km"
+                      },
+                      "axisLine": {},
+                      "axisTick": {},
+                      "splitLine": {}
+                    }
+                  ],
+                  "yAxis": [
+                    {
+                      "axisLabel": {},
+                      "boundaryGap": false,
+                      "axisLine": {
+                        "onZero": false
+                      },
+                      "axisTick": {},
+                      "splitLine": {}
+                    }
+                  ],
                   "tooltip": {
                     "show": true,
                     "trigger": "axis"
@@ -397,8 +418,9 @@ export default {
                 "initOptions": {
                   "renderer": "svg"
                 },
-                "vertical": true,
-                "category": "altitude"
+                "category": "",
+                "seriesLayoutBy": "row",
+                "vertical": true
               }
             ],
             "_id": "fb8e308b-5f62-4c97-8b78-caaf7b446408"
@@ -438,8 +460,12 @@ export default {
                   "legend": {
                     "show": false
                   },
-                  "xAxis": [{}],
-                  "yAxis": [{}],
+                  "xAxis": [
+                    {}
+                  ],
+                  "yAxis": [
+                    {}
+                  ],
                   "tooltip": {
                     "show": false,
                     "trigger": "axis"
@@ -455,7 +481,8 @@ export default {
                       },
                       "name": "data",
                       "backgroundStyle": {},
-                      "$key": "y"
+                      "$key": "y",
+                      "type": "bar"
                     }
                   ],
                   "backgroundColor": "#000"
@@ -489,8 +516,12 @@ export default {
                   "legend": {
                     "top": "top"
                   },
-                  "xAxis": [{}],
-                  "yAxis": [{}],
+                  "xAxis": [
+                    {}
+                  ],
+                  "yAxis": [
+                    {}
+                  ],
                   "tooltip": {
                     "trigger": "axis",
                     "axisPointer": {}
@@ -505,11 +536,13 @@ export default {
                     {
                       "label": {},
                       "name": "2011",
-                      "$key": "2011"
+                      "$key": "2011",
+                      "type": "bar"
                     },
                     {
                       "name": "2012",
-                      "$key": "2012"
+                      "$key": "2012",
+                      "type": "bar"
                     }
                   ],
                   "backgroundColor": "#000",
@@ -547,8 +580,12 @@ export default {
                   "legend": {
                     "show": false
                   },
-                  "xAxis": [{}],
-                  "yAxis": [{}],
+                  "xAxis": [
+                    {}
+                  ],
+                  "yAxis": [
+                    {}
+                  ],
                   "tooltip": {
                     "trigger": "axis",
                     "axisPointer": {
@@ -566,7 +603,9 @@ export default {
                       "label": {
                         "show": true
                       },
-                      "name": "data"
+                      "name": "data",
+                      "type": "bar",
+                      "$key": "y"
                     }
                   ],
                   "backgroundColor": "#000"
@@ -599,8 +638,12 @@ export default {
                   "legend": {
                     "show": false
                   },
-                  "xAxis": [{}],
-                  "yAxis": [{}],
+                  "xAxis": [
+                    {}
+                  ],
+                  "yAxis": [
+                    {}
+                  ],
                   "tooltip": {
                     "trigger": "axis",
                     "axisPointer": {
@@ -618,7 +661,9 @@ export default {
                       "label": {
                         "show": true
                       },
-                      "name": "data"
+                      "name": "data",
+                      "type": "bar",
+                      "$key": "y"
                     }
                   ],
                   "backgroundColor": "#000"
@@ -649,8 +694,12 @@ export default {
                 },
                 "option": {
                   "legend": {},
-                  "xAxis": [{}],
-                  "yAxis": [{}],
+                  "xAxis": [
+                    {}
+                  ],
+                  "yAxis": [
+                    {}
+                  ],
                   "tooltip": {
                     "trigger": "axis",
                     "axisPointer": {
@@ -668,50 +717,51 @@ export default {
                       "label": {},
                       "name": "Direct",
                       "stack": "",
-                      "$key": "1"
+                      "$key": "Direct",
+                      "type": "bar"
                     },
                     {
                       "type": "bar",
                       "name": "Email",
                       "stack": "Ad",
-                      "$key": "2"
+                      "$key": "Email"
                     },
                     {
                       "type": "bar",
                       "name": "Union Ads",
                       "stack": "Ad",
-                      "$key": "3"
+                      "$key": "Union Ads"
                     },
                     {
                       "type": "bar",
                       "name": "Video Ads",
                       "stack": "Ad",
-                      "$key": "4"
+                      "$key": "Video Ads"
                     },
                     {
                       "type": "bar",
                       "name": "Baidu",
                       "stack": "Search Engine",
                       "barWidth": 5,
-                      "$key": "5"
+                      "$key": "Baidu"
                     },
                     {
                       "type": "bar",
                       "name": "Google",
                       "stack": "Search Engine",
-                      "$key": "6"
+                      "$key": "Google"
                     },
                     {
                       "type": "bar",
                       "name": "Bing",
                       "stack": "Search Engine",
-                      "$key": "7"
+                      "$key": "Bing"
                     },
                     {
                       "type": "bar",
                       "name": "Others",
                       "stack": "Search Engine",
-                      "$key": "8"
+                      "$key": "Others"
                     }
                   ],
                   "backgroundColor": "#000",
@@ -882,5 +932,5 @@ export default {
       "paddingRight": "32px",
       "paddingLeft": "32px"
     }
-  },
+  }
 }
