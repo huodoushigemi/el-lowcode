@@ -21,7 +21,6 @@ const tabWgt = (is) => ({
 export const tabs = {
   is: 'md-tabs',
   label: 'tabs',
-  sortablePut: false,
   drag: { from: ['md-primary-tab', 'md-secondary-tab'] },
   props: [
     { lp: 'auto-activate', type: 'switch', displayValue: false },

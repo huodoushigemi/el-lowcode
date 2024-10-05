@@ -37,8 +37,6 @@ const button = (is, sortablePull = false) => ({
 const iconButton = (is, sortablePull = false) => ({
   is,
   label: 'icon-button',
-  sortablePut: false,
-  // sortablePull,
   props: props => [
     { is: 'div', class: 'flex', children: [
       { lp: ['icon', 'children.0'], class: 'flex-1', type: 'select', options: icons, get: v => props.children[0]?.children, set: v => ({ is: 'md-icon', _id: v4(), ...props.children[0], children: v }) },

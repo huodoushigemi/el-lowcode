@@ -4,7 +4,7 @@
     <style>
       html, body { width: 100%; height: 100%; }
       body { margin: 0; }
-      [lcd-root] { min-height: 100%; }
+      [lcd-root] { min-height: 100%; overflow: hidden; }
       * { box-sizing: border-box; }
 
       /* element-plus */
@@ -29,6 +29,7 @@
 
       if (window.parent) {
         document.addEventListener('wheel', e => {
+          if (e.altKey) return
           e.preventDefault()
           e.stopPropagation()
           
@@ -57,6 +58,7 @@
             e.preventDefault()
             e.stopPropagation()
           }
+          const z = designerCtx.canvas.zoom
           const rect = frameElement.getBoundingClientRect()
           frameElement.dispatchEvent(new MouseEvent(e.type, {
             ...pick(e, [
@@ -65,7 +67,8 @@
               'detail', 'which',
               'bubbles', 'cancelable', 'composed'
             ]),
-            clientX: e.x + rect.x, clientY: e.y + rect.y,
+            clientX: e.x * z + rect.x, clientY: e.y * z + rect.y,
+            bubbles: true
           }))
         })
 
@@ -87,13 +90,10 @@
     <!-- 渲染 JSON -->
     <script type="module">
       import { h, createRenderer } from 'vue'
-      // import { useMagicKeys } from '@vueuse/core'
       import Moveable from 'vue3-moveable'
       import ElLowcode, { ConfigProvider } from 'el-lowcode'
       import DragBox from './drag-box2.vue'
       import { rendererOptions } from './rendererOptions'
-
-      // const { control } = useMagicKeys()
 
       const renderer = createRenderer(rendererOptions)
 
@@ -106,10 +106,7 @@
             h(DragBox, { el: designerCtx.root })
           ]),
           h(Moveable, {
-            // key: control.value + '',
-            target: !designerCtx.hover?.isRoot && designerCtx.hover?.isAbs ? designerCtx.hoverEl : undefined,
-            // target: designerCtx.hoverEl,
-            // draggable: control.value,
+            target: !designerCtx.hover?.isRoot && designerCtx.hover?.isAbs ? designerCtx.hover.el : undefined,
             draggable: true,
             origin: false,
             hideDefaultLines: true,
@@ -121,7 +118,7 @@
               style.transform = e.target.style.getPropertyValue('transform')
               designerCtx.draggedId = undefined
             }
-          })
+          }),
         ]
       })
 

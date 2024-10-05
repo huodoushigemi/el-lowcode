@@ -13,7 +13,6 @@ export interface Widget {
   label?: string
   drag: WidgetDrag
   hidden?: boolean
-  sortablePut?: boolean // todo
   cover?: string // todo
   props?: any[] | ((props: any, ctx: DesignerCtx, arg: { node: DisplayNode }) => any[])
   defaultProps?(ctx: DesignerCtx): Obj
@@ -104,11 +103,9 @@ export interface DesignerCtx {
   
   activeId?: string
   readonly active?: DisplayNode
-  readonly activeEl?: HTMLElement | null
 
   hoverId?: string
   readonly hover?: DisplayNode
-  readonly hoverEl?: HTMLElement | null
 
   draggedId?: string
   readonly dragged?: DisplayNode
@@ -126,7 +123,6 @@ export interface DesignerCtx {
     y: number
     zoom: number
     style?: Record<string, any>
-    doc: Document
   }
   widgets: Record<string, Widget | undefined>
 

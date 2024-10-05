@@ -1,12 +1,12 @@
 <template>
   <div class="selected-layer" absolute inset-0 pointer-events-none select-none z-9>
-    <div v-if="!designerCtx.dragged" absolute outline="1 dashed [--vs-focus-b-c]" op75 outline-offset--1 :style="calcStyle(designerCtx.hoverEl)">
+    <div v-if="!designerCtx.dragged" absolute outline="1 dashed [--vs-focus-b-c]" op75 outline-offset--1 :style="calcStyle(designerCtx.hover?.el)">
       <div class="absolute bottom-full px8 text-12 c-white bg-[--vs-focus-b-c]">
         {{ designerCtx.hover?.label }}
       </div>
     </div>
     
-    <div v-if="active" absolute outline="1.5 solid [--vs-focus-b-c]" outline-offset--1.5 :style="calcStyle(designerCtx.activeEl)">
+    <div v-if="active" absolute outline="1.5 solid [--vs-focus-b-c]" outline-offset--1.5 :style="calcStyle(designerCtx.active?.el)">
       <div v-if="active.parent && !active.isAbs && !designerCtx.dragged" class="actions absolute bottom-[100%] flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]">  
         <div flex aic px12 bg="#17d57e">{{ active.label }}</div>
         <i-solar:arrow-to-top-right-bold class="icon" @click="active2parent" />
@@ -22,7 +22,7 @@
         <i-bi:arrows-move ref="moveHandle" class="icon" text-16="!" cursor-move />
         <i-solar:copy-line-duotone class="icon" @click="copy" />
 
-        <Moveable :target="active.isRoot ? undefined : designerCtx.activeEl" :dragTarget="unrefElement(moveHandle)" :draggable="true" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
+        <Moveable :target="active.isRoot ? undefined : designerCtx.active?.el" :dragTarget="unrefElement(moveHandle)" :draggable="true" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
       </div>
     </div>
 
@@ -70,7 +70,7 @@ function onDragEnd(e) {
 const ins = getCurrentInstance()!
 const fu = () => ins.proxy!.$forceUpdate()
 
-const rootEl = () => designerCtx.canvas.doc?.body
+const rootEl = () => designerCtx.rootCtx.el?.ownerDocument.body
 
 useMutationObserver(rootEl, fu, { subtree: true, childList: true, attributes: true, characterData: true })
 useResizeObserver(rootEl, fu)

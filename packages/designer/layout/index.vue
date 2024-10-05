@@ -10,21 +10,19 @@
       <div relative flex-1 w0 hfull>
         <!-- Canvas Viewport -->
          <!-- v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y"  -->
-        <infinite-viewer wfull hfull overflow-hidden :cursor="middlePressed && 'grab'" style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
-          <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @mousedown.left.stop @click.stop @mouseleave="designerCtx.dragged || (designerCtx.hoverId = undefined)">
-            <!-- @vue-ignore -->
+        <infinite-viewer wfull hfull overflow-hidden style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
+          <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @click.stop @mouseleave="designerCtx.dragged || (designerCtx.hoverId = undefined)">
             <iframe
               :key="srcurl + srcdoc"
               class="wfull hfull"
               :src="srcurl"
               :srcdoc="srcdoc"
-              @load="e => designerCtx.canvas.doc = e.target.contentDocument"
               @vue:mounted="({ el }) => el.contentWindow.designerCtx = designerCtx"
             />
-            
+
             <selected-layer />
             <!-- resize -->
-            <Moveable :target="designerCtx.active?.isRoot ? undefined : designerCtx.activeEl" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
+            <Moveable :style="`margin-top: ${-iframeScroll.y}px; margin-left: ${-iframeScroll.x}px`" :target="designerCtx.active?.isRoot ? undefined : designerCtx.active?.el" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
           </div>
         </infinite-viewer>
 
@@ -65,8 +63,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, ref, getCurrentInstance, PropType } from 'vue'
-import { computedAsync, useDebouncedRefHistory, useEventListener } from '@vueuse/core'
+import { computed, provide, ref, getCurrentInstance, PropType, reactive } from 'vue'
+import { computedAsync, useDebouncedRefHistory, useEventListener, unrefElement, useWindowScroll } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import Moveable from 'vue3-moveable'
 
@@ -131,16 +129,6 @@ const initial = () => ({
 
 const root = ref(props.json ?? initial())
 
-const activitybars = computed(() => designerCtx.plugins.flatMap(e => e.contributes.activitybar || []))
-const activeView = ref()
-
-// 时间旅行
-const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500, capacity: 20 })
-
-const initCanvas = () => get(root.value, 'designer.canvas') || set(root.value, 'designer.canvas', {})
-
-const viewport = ref<HTMLElement>()
-
 const designerCtx = createDesignerCtx(root, () => props.extraPlugins)
 
 provide(designerCtxKey, designerCtx)
@@ -163,6 +151,18 @@ const viewer = {
 }
 
 console.log(window.designerCtx = designerCtx)
+
+// 时间旅行
+const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500, capacity: 20 })
+
+const initCanvas = () => get(root.value, 'designer.canvas') || set(root.value, 'designer.canvas', {})
+
+const viewport = ref<HTMLElement>()
+
+const iframeScroll = computed(() => reactive(useWindowScroll({ window: designerCtx.rootCtx.el?.ownerDocument.defaultView })))
+
+const activitybars = computed(() => designerCtx.plugins.flatMap(e => e.contributes.activitybar || []))
+const activeView = ref()
 
 // moveable
 function onDragStart(e) {
@@ -195,9 +195,6 @@ function resizeDir(node?: DisplayNode) {
   if (node.data.is == 'Page') return []
   return node.isAbs ? undefined : ['e', 'se', 's']
 }
-
-// 中建按下
-const middlePressed = ref(false)
 
 // 按 Delete 删除当前选中元素
 useEventListener('keydown', (e) => {
