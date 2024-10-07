@@ -5,7 +5,7 @@
       <div py8 px12>
         <div font-bold>{{ item.title }}</div>
         <div text-right>
-          <ElButton size="default" type="primary" title="预览" plain text bg tag="a" target="_blank" p8 decoration-none @click="demoUrl(item)"><i-mdi:eye-outline text-1.2em /></ElButton>
+          <ElButton size="default" type="primary" title="预览" plain text bg p8 decoration-none @click="demoUrl(item)"><i-mdi:eye-outline text-1.2em /></ElButton>
           <ElButton size="default" type="primary" title="导入" plain text bg p8 @click="onEdit(item)"><i-mdi:application-import text-1.2em /></ElButton>
         </div>
       </div>

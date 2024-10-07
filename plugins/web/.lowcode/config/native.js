@@ -1,9 +1,10 @@
 import { v4 } from 'uuid'
 
-const createH = (is, hide = true) => ({
+const createH = (is, hidden = true) => ({
   is,
   label: is,
-  hide,
+  hidden,
+  icon: 'https://api.iconify.design/mdi:format-header-1.svg',
   props: [
     { lp: ['text', 'children'] },
     { lp: ['level', 'is'], type: 'radio-group', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }
@@ -18,6 +19,7 @@ export default [
     is: 'div',
     label: 'div',
     category: '容器',
+    icon: 'https://api.iconify.design/mdi:border-all-variant.svg',
     defaultProps: () => ({
       children: []
     })
@@ -34,6 +36,7 @@ export default [
     is: 'a',
     label: 'a',
     category: '基础组件',
+    icon: 'https://api.iconify.design/mdi:link-variant.svg',
     props: [
       { lp: ['text', 'children'] },
       { lp: 'href' },
@@ -50,6 +53,7 @@ export default [
     is: 'p',
     label: 'p',
     category: '基础组件',
+    icon: 'https://api.iconify.design/material-symbols:format-paragraph.svg',
     props: [
       { lp: ['text', 'children'] },
     ],
@@ -62,6 +66,7 @@ export default [
     is: 'img',
     label: 'img',
     category: '基础组件',
+    icon: 'https://api.iconify.design/mdi:image-outline.svg',
     props: [
       { lp: 'src', el: { autofocus: true } },
       { lp: ['fit', 'style.objectFit'], type: 'radio-group', options: ['fill', 'contain', 'cover'] },
@@ -78,6 +83,7 @@ export default [
     is: 'span',
     label: 'span',
     category: '基础组件',
+    icon: 'https://api.iconify.design/mdi:format-text.svg',
     props: [
       { lp: ['text', 'children'] },
     ],
@@ -126,6 +132,7 @@ export default [
     is: 'ul',
     label: 'ul',
     drag: { from: 'li' },
+    icon: 'https://api.iconify.design/mdi:format-list-bulleted.svg',
     props: [
       { lp: ['list-style', 'style.listStyle'], type: 'select', options: ['simp-chinese-informal', 'decimal', 'disc', 'circle' ,'square'], displayValue: 'disc' },
     ],
@@ -141,6 +148,7 @@ export default [
     is: 'li',
     label: 'li',
     drag: { to: ['ol', 'ul'] },
+    icon: 'https://api.iconify.design/ph:dot-fill.svg',
     props: [
 
     ],

@@ -67,7 +67,7 @@
 }
 
 .vs-btn {
-  @apply inline-block py0 px10 b-none lh-26 text-14 c-[--vs-btn-c] bg-[--vs-btn-bg] cursor-pointer;
+  @apply inline-flex aic py0 px10 b-none lh-26 text-14 align-middle c-[--vs-btn-c] bg-[--vs-btn-bg] cursor-pointer;
   outline: 1px solid transparent;
   outline-offset: 2px !important;
 
@@ -133,4 +133,16 @@
 // element-plus
 .no-suffix {
   &.el-select > .el-select__wrapper > .el-select__suffix { display: none; }
+}
+
+.mask-icon {
+  background-color: currentColor;
+  cursor: pointer;
+  user-select: none;
+  mask-position: 50% 50%;
+  -webkit-mask-position: 50% 50%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-size: contain;
 }

@@ -11,6 +11,7 @@ import { parseTransform } from './components/utils'
 export interface Widget {
   is: string
   label?: string
+  icon?: string
   drag: WidgetDrag
   hidden?: boolean
   cover?: string // todo
@@ -75,6 +76,10 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   get xy() { return parseTransform(this.data.style?.transform) }
   set xy([x, y]) { set(this.data, 'style.transform', `translate(${x}px, ${y}px)`) }
+  get x() { return parseTransform(this.data.style?.transform)[0] }
+  set x(v) { set(this.data, 'style.transform', `translate(${v}px, ${this.y}px)`) }
+  get y() { return parseTransform(this.data.style?.transform)[1] }
+  set y(v) { set(this.data, 'style.transform', `translate(${this.x}px, ${v}px)`) }
 
   // 自由布局
   get isAbsLayout() { return !!this.data['data-absolute-layout'] }
@@ -94,6 +99,14 @@ export abstract class DisplayNode extends Node<BoxProps> {
     const data = deepClone(this.data, (v, k) => k == '_id' ? uuid() : v)
     // @ts-ignore
     return new this.constructor(data)
+  }
+
+  override insertable(node: DisplayNode) {
+    if (!isArray(this.data_children)) return false
+    if (this.drag.from && !this.drag.from.includes(node.is)) return false
+    if (node.drag.to && !node.drag.to.includes(this.is)) return false
+    if (this.lock) return false
+    return super.insertable(node)
   }
 }
 

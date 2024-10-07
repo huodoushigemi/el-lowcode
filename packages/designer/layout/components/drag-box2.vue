@@ -127,10 +127,7 @@ function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>) {
   let x = 0, y = 0
   useEventListener(target, 'dragover', e => {
     if (!dragNode) return
-    if (node.drag.from && !node.drag.from.includes(dragNode.is)) return
-    if (dragNode.drag.to && !dragNode.drag.to.includes(node.is)) return
-    if (node.lock) return
-    if (dragNode.el?.contains(e.currentTarget as Node)) return
+    if (!node.insertable(dragNode)) return
 
     e.preventDefault()
     e.stopPropagation()

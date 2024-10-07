@@ -1,10 +1,10 @@
 <template>
-  <div :class="['vs-tree vs-ul hfull', selected && 'element-selection']" tabindex="0" @dragstart="onDragstart" @dragover="onDragover" @drop="onDrop" @dragend="onDragend" @click="onClick">
+  <div :class="['vs-tree vs-ul hfull', selected && 'element-selection']" tabindex="0" @dragstart="onDragstart" @dragover="onDragover" @drop="onDrop" @dragend="onDragend" @click="onClick" @pointerover="onHover" @pointerleave="onHover">
     <div class="drag-guide" :style="dragGuideStyle" />
     
     <template v-for="(node, i) in expandTree" :key="node.id">
       <div
-        :class="['vs-li relative flex aic h22 lh-22', node.selected && 'selected']"
+        :class="['vs-li group relative flex aic h22 lh-22', node.selected && 'selected']"
         :style="`padding-left: ${4 + (indent * node.deep)}px`"
         :data-index="i"
         :data-id="node.id"
@@ -53,6 +53,8 @@ const props = withDefaults(defineProps<Props>(), {
   dropable: true
 })
 
+const emit = defineEmits(['node-click', 'node-hover'])
+
 class $_Node extends props.Node {
   get dir() { return isArray(this.data_children) }
   get expand() { return props.expandKeys[this.id] }
@@ -86,9 +88,16 @@ function onClick(e: MouseEvent) {
   if (node) {
     if (node.dir) props.expandKeys[node.id] = !node.expand
     selected.value = node
+    emit('node-click', node)
   } else {
     selected.value = void 0
+    emit('node-click', void 0)
   }
+}
+
+function onHover(e: MouseEvent) {
+  const node = getNode(e)
+  emit('node-hover', node)
 }
 
 let dragLi: $_Node | undefined

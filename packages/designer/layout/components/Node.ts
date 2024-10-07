@@ -49,24 +49,26 @@ export abstract class Node<T = any> {
   }
 
   insertBefore(node: Node, refer?: Node) {
-    if (node == refer) return
+    if (!this.insertable(node)) throw ''
     node.remove()
     node.parent = this
     this.data_children!.splice(refer ? refer.index : this.data_children!.length, 0, node.data)
   }
 
   before(node: Node) {
-    if (node.contains(this)) throw ''
     this.parent!.insertBefore(node, this)
   }
 
   after(node: Node) {
-    if (node.contains(this)) throw ''
     this.parent!.insertBefore(node, this.nextSibling)
   }
 
   contains(node: Node) {
     do { if (node == this) return true } while(node = node.parent!)
     return false
+  }
+
+  insertable(node: Node) {
+    return !node.contains(this)
   }
 }
