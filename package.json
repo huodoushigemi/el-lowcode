@@ -39,6 +39,7 @@
     "vue": "^3.3.4",
     "vue-draggable-plus": "^0.2.6",
     "vue-echarts": "^7.0.3",
+    "vue-request": "^2.0.4",
     "vue-router": "^4.2.5",
     "wc-appbar": "^0.0.8",
     "wc-fill-remain": "^0.0.7",

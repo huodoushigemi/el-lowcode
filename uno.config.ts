@@ -1,7 +1,7 @@
 import { defineConfig, presetAttributify, presetUno, presetIcons, transformerVariantGroup, transformerDirectives } from 'unocss'
 import presetRemToPx from '@unocss/preset-rem-to-px'
 
-const gaps = [-4, -2, -1, 0, 1, 2, 4, 6, 8, 10, 12, 'a']
+const gaps = [-4, -2, -1, 0, 1, 2, 4, 6, 8, 10, 12, 'a'].flatMap(e => [e, e + '!'])
 
 export default defineConfig({
   content: {
@@ -20,6 +20,7 @@ export default defineConfig({
     transformerDirectives()
   ],
   safelist: [
+    'block',
     'inline-block',
     'flex!',
     'flex-wrap',
@@ -59,7 +60,10 @@ export default defineConfig({
     '[&>*]:mb8',
     '[&>*]:mb8!',
     '[&>*]:flex-1',
-    'cursor-cell'
+    'text-32',
+    'font-bold',
+    'cursor-cell',
+    'animate-spin',
   ],
   shortcuts: {
     'bg-hover': 'hover:bg-[--el-fill-color-light] active:bg-[--el-fill-color-dark]! rd-6 [&.is-active]:bg-[--el-fill-color-light]',

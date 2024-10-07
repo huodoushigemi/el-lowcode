@@ -1,7 +1,7 @@
 <template>
   <div flex aic px8 py12 text-22 b-b="1 solid [--el-border-color]">
     <!-- 插件市场 -->
-    <ElTooltip content="远程插件" placement="right"><i-ep:plus mla p6 text-24 bg-hover cursor-pointer @click="addRemotePlugin()" /></ElTooltip>
+    <ElTooltip content="远程插件" placement="right"><i-ep:plus class="vs-ai" mla p6 text-24 rd-6 @click="addRemotePlugin()" /></ElTooltip>
      <!-- <button class="vs-btn" flex aic mla @click="addRemotePlugin()">+ 远程插件</button> -->
   </div>
   <div :class="['vs-ul', drawer.url && 'element-selection']" tabindex="0">

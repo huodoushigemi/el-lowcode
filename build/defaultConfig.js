@@ -36,6 +36,7 @@ export const mergeConfig = (config) => defineConfig({
       ...Globals(id => (
         id == 'vue' ? 'Vue' :
         id == 'vue-demi' ? 'VueDemi' :
+        // id == 'vue-request' ? 'VueRequest' :
         id == 'moveable' ? 'Moveable' :
         // id == '@vueuse/core' ? 'VueuseCore' :
         // id.includes('monaco-editor') ? 'MonacoEditor' :
