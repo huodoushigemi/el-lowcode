@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cloneVNode, computed, defineComponent, h, inject, mergeProps, onBeforeUnmount, reactive, ref, shallowRef, watchEffect } from 'vue'
+import { cloneVNode, computed, defineComponent, h, inject, mergeProps, nextTick, onBeforeUnmount, reactive, ref, shallowRef, watchEffect } from 'vue'
 import type { Ref } from 'vue'
 import { isArray, isObject } from '@vue/shared'
 import { useEventListener } from '@vueuse/core'
@@ -14,11 +14,6 @@ defineOptions({
 
 const props = defineProps({
   el: Object
-})
-
-
-onBeforeUnmount(() => {
-  for (const k in propsCtx) propsCtx[k] = void 0
 })
 
 defineRender(() => {
@@ -57,7 +52,7 @@ const Render = createRender({
 
       // 合并属性
       props.children = children
-      props = mergeProps(props, { ref: ctx.ref }, ctx.attrs)
+      props = mergeProps(props, ctx.attrs)
 
       return props
     })).get(_props).value
@@ -69,7 +64,7 @@ const Render = createRender({
 const propsCtx = new WeakMap()
 
 function setup(props: BoxProps) {
-  if (propsCtx.has(props)) propsCtx.get(props)
+  if (propsCtx.has(props)) return propsCtx.get(props)
   
   const elRef = designer.keyedCtx[props._id].ref, boxRef = ref(), nillRef = ref()
   
@@ -89,15 +84,24 @@ function setup(props: BoxProps) {
     designer.hoverId = props._id
   })
 
+  let mounted = true
+
   const ret = {
-    ref: elRef,
     boxRef,
     nillRef,
-    attrs: reactive({
-      key: props._id,
-      onVnodeBeforeUnmount: () => propsCtx.delete(props)
-    }),
+    attrs: {
+      // ref: el => elRef.value = mounted ? el : void 0,
+      ref: elRef,
+      get key() { return props._id },
+      onVnodeMounted: (vnode) => (nextTick().then(() => elRef.value = vnode.el)),
+      // onVnodeBeforeUnmount: () => propsCtx.delete(props),
+      // onVnodeUnmounted: () => (console.log('unmounted')),
+    },
   }
+
+  watchEffect(() => {
+    console.log(props.is, elRef.value, designer.keyedCtx[props._id].ref.value)
+  })
   
   propsCtx.set(props, ret)
   

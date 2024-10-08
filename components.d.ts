@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     'IBi:arrowsMove': typeof import('~icons/bi/arrows-move')['default']
     'IEp:arrowUp': typeof import('~icons/ep/arrow-up')['default']
+    'IEp:plus': typeof import('~icons/ep/plus')['default']
     'IMaterialSymbols:devicesOutline': typeof import('~icons/material-symbols/devices-outline')['default']
     'IMaterialSymbolsLight:alignHorizontalCenter': typeof import('~icons/material-symbols-light/align-horizontal-center')['default']
     'IMaterialSymbolsLight:alignHorizontalLeft': typeof import('~icons/material-symbols-light/align-horizontal-left')['default']
@@ -30,9 +31,13 @@ declare module 'vue' {
     'ISolar:arrowUpLinear': typeof import('~icons/solar/arrow-up-linear')['default']
     'ISolar:copyLineDuotone': typeof import('~icons/solar/copy-line-duotone')['default']
     'ISolar:trashBinMinimalisticLinear': typeof import('~icons/solar/trash-bin-minimalistic-linear')['default']
+    'ITdesign:browse': typeof import('~icons/tdesign/browse')['default']
+    'ITdesign:browseOff': typeof import('~icons/tdesign/browse-off')['default']
     'ITdesign:chevronRight': typeof import('~icons/tdesign/chevron-right')['default']
     'ITdesign:close': typeof import('~icons/tdesign/close')['default']
     'ITdesign:download': typeof import('~icons/tdesign/download')['default']
+    'ITdesign:lockOff': typeof import('~icons/tdesign/lock-off')['default']
+    'ITdesign:lockOnFilled': typeof import('~icons/tdesign/lock-on-filled')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
