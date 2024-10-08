@@ -22,7 +22,22 @@
 
             <selected-layer />
             <!-- resize -->
-            <Moveable :style="`margin-top: ${-iframeScroll.y}px; margin-left: ${-iframeScroll.x}px`" :target="designerCtx.active?.isRoot ? undefined : designerCtx.active?.el" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
+            <Moveable
+              :style="`margin-top: ${-iframeScroll.y}px; margin-left: ${-iframeScroll.x}px`"
+              :target="designerCtx.active?.isRoot ? undefined : designerCtx.active?.el"
+              :resizable="true"
+              :rotatable="false"
+              :origin="false"
+              :renderDirections="resizeDir(designerCtx.active)"
+              :hideDefaultLines="true"
+              :snappable="true"
+              :snapGap="false"
+              :snapElement="true"
+              :elementGuidelines="[designerCtx.active?.parent, ...designerCtx.active?.siblings || []].map(e => e?.el)"
+              :useResizeObserver="true"
+              :useMutationObserver="true"
+              @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd"
+              @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
           </div>
         </infinite-viewer>
 

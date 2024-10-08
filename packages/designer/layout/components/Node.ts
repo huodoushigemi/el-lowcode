@@ -46,6 +46,7 @@ export abstract class Node<T = any> {
 
   get previousSibling(): typeof this | undefined { return this.parent?.children![this.index - 1] }
   get nextSibling(): typeof this | undefined { return this.parent?.children![this.index + 1] }
+  get siblings(): typeof this[] { return this.parent?.children?.filter(e => this != e) || [] }
 
   remove() {
     return this.parent ? (remove(this.parent.data_children!, this.data), this.parent = void 0, this) : this

@@ -111,6 +111,10 @@
             origin: false,
             hideDefaultLines: true,
             throttleDrag: 1,
+            snappable: true,
+            elementGuidelines: [designerCtx.active?.parent, ...designerCtx.active?.siblings || []]?.map(e => e?.el),
+            snapDirections: Object.fromEntries(['top', 'left', 'bottom', 'right', 'center', 'middle'].map(e => [e, true])),
+            elementSnapDirections: Object.fromEntries(['top', 'left', 'bottom', 'right', 'center', 'middle'].map(e => [e, true])),
             onDragStart: e => designerCtx.draggedId = designerCtx.active?.id,
             onDrag: e => e.target.style.transform = e.transform,
             onDragEnd: e => {
