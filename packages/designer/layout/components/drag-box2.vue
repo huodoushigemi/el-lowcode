@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cloneVNode, computed, defineComponent, h, inject, mergeProps, nextTick, onBeforeUnmount, reactive, ref, shallowRef, watchEffect } from 'vue'
+import { cloneVNode, computed, defineComponent, h, inject, mergeProps, reactive, ref, shallowRef, watchEffect } from 'vue'
 import type { Ref } from 'vue'
 import { isArray, isObject } from '@vue/shared'
 import { useEventListener } from '@vueuse/core'
@@ -66,10 +66,11 @@ const propsCtx = new WeakMap()
 function setup(props: BoxProps) {
   if (propsCtx.has(props)) return propsCtx.get(props)
   
+  const node = designer.keyedCtx[props._id]
   const elRef = designer.keyedCtx[props._id].ref, boxRef = ref(), nillRef = ref()
   
-  useDrop(props, boxRef)
-  useDrag(props)
+  useDrop(node, boxRef)
+  useDrag(node)
   
   useEventListener(elRef, 'mousedown', e => {
     if (e.button != 0) return
@@ -84,25 +85,15 @@ function setup(props: BoxProps) {
     designer.hoverId = props._id
   })
 
-  let mounted = true
-
   const ret = {
     boxRef,
     nillRef,
     attrs: {
-      // ref: el => elRef.value = mounted ? el : void 0,
       ref: elRef,
       get key() { return props._id },
-      onVnodeMounted: (vnode) => (nextTick().then(() => elRef.value = vnode.el)),
-      // onVnodeBeforeUnmount: () => propsCtx.delete(props),
-      // onVnodeUnmounted: () => (console.log('unmounted')),
     },
   }
 
-  watchEffect(() => {
-    console.log(props.is, elRef.value, designer.keyedCtx[props._id].ref.value)
-  })
-  
   propsCtx.set(props, ret)
   
   return ret
@@ -124,10 +115,9 @@ function sortAbsolute(arr: BoxProps[]) {
   }
 }
 
-function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>) {
-  const node = designer.keyedCtx[props._id]
+function useDrop(node: DisplayNode, emptyRef: Ref<HTMLElement>) {
   const firstEl = () => node.children![0]?.el ?? emptyRef.value
-  const target = () => isArray(props.children) ? firstEl()?.parentElement : void 0
+  const target = () => isArray(node.children) ? firstEl()?.parentElement : void 0
   let x = 0, y = 0
   useEventListener(target, 'dragover', e => {
     if (!dragNode) return
@@ -258,8 +248,7 @@ function useDrop(props: BoxProps, emptyRef: Ref<HTMLElement>) {
   })
 }
 
-function useDrag(props: BoxProps) {
-  const node = designer.keyedCtx[props._id]
+function useDrag(node: DisplayNode) {
   const draggable = () => !node.isAbs && !node.drag.disabled
   const target = () => draggable() ? node.el : void 0
   useEventListener(target, 'dragstart', e => {
@@ -271,7 +260,7 @@ function useDrag(props: BoxProps) {
     const el = node.el
     if (!el) return
     el.setAttribute?.('draggable', draggable() + '')
-    el.setAttribute?.('_id', props._id)
+    el.setAttribute?.('_id', node.id)
   })
 }
 

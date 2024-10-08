@@ -33,12 +33,15 @@ export abstract class Node<T = any> {
 
   #wm = new WeakMap<any, typeof this>()
   
-  #children = computed(() => this.data_children?.map(e => {
-    // @ts-ignore
-    const node = this.#wm.get(e) ?? this.#wm.set(e, new this.constructor(e)).get(e)!
-    node.parent = this
-    return node
-  }))
+  #children = computed(() => {
+    const wm = this.root.#wm
+    return this.data_children?.map(e => {
+      // @ts-ignore
+      const node = wm.get(e) ?? wm.set(e, new this.constructor(e)).get(e)!
+      node.parent = this
+      return node
+    })
+  })
   get children() { return this.#children.value }
 
   get previousSibling(): typeof this | undefined { return this.parent?.children![this.index - 1] }
