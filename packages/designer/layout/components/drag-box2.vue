@@ -317,17 +317,16 @@ const DragLine = defineComponent({
 
 const dragMaskRects = computed(() => {
   const { to } = dragged.value?.drag || {}
-  if (to) {
-    const putable = Object.values(designer.keyedCtx).filter(e => to.includes(e.is) )
-    return putable.map(e => e.el!.getBoundingClientRect()).map(e => ({ x: e.x, y: e.y, w: e.width, h: e.height }))
-  }
+  const putable = to ? Object.values(designer.keyedCtx).filter(e => to.includes(e.is)) : void 0
+  // const putable = dragged.value ? Object.values(designer.keyedCtx).sort((a, b) => a.deep - b.deep).filter(e => e.insertable(dragged.value!)) : void 0
+  return putable?.map(e => e.el!.getBoundingClientRect()).map(e => ({ x: e.x, y: e.y, w: e.width, h: e.height }))
 })
 const DragGuidMask = defineComponent({
   setup() {
     const root = document.scrollingElement!
     return () => dragMaskRects.value && h('div', { style: `position: fixed; inset: 0; pointer-events: none; line-height: 0; z-index: 99` }, h('svg', { style: 'width: 100%; height: 100%' }, h('path', {
       style: 'pointer-events: auto;',
-      fill: 'rgba(0,0,0)',
+      fill: 'rgba(0,0,0,.4)',
       d: `
         M${root.scrollWidth},0 L0,0 L0,${root.scrollHeight} L${root.scrollWidth},${root.scrollHeight} L${root.scrollWidth},0 Z
         ${dragMaskRects.value.map(e => ` M${e.x},${e.y} h${e.w} v${e.h} H${e.x} Z`).join('')}
@@ -357,5 +356,11 @@ const DragGuidMask = defineComponent({
 [lcd-root] > .empty-placeholder {
   position: absolute;
   inset: 0;
+}
+[lcd-lock] > * {
+  pointer-events: none;
+}
+[lcd-hidden] {
+  display: none !important;
 }
 </style>

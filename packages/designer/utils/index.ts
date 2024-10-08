@@ -1,7 +1,7 @@
 import { computed, MaybeRefOrGetter, reactive, Ref, ref, toValue, watch, watchEffect, watchSyncEffect } from 'vue'
 import { isArray, isObject } from '@vue/shared'
 import { useTransformer } from 'el-form-render'
-import { keyBy, treeUtils } from '@el-lowcode/utils'
+import { keyBy, toArr, treeUtils } from '@el-lowcode/utils'
 import { DesignerCtx, DisplayNode, UserWidget, Widget } from '../layout/interface'
 import { computedAsync } from '@vueuse/core'
 
@@ -83,7 +83,9 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
 function normalWidget(widget: UserWidget): Widget {
   return {
     ...widget,
-    drag: typeof widget.drag == 'boolean' ? { disabled: !widget.drag } : widget.drag || {},
+    drag: typeof widget.drag == 'boolean'
+      ? { disabled: !widget.drag }
+      : { ...widget.drag, from: widget.drag?.from ? toArr(widget.drag?.from) : void 0, to: widget.drag?.to ? toArr(widget.drag?.to) : void 0 },
   }
 }
 

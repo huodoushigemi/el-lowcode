@@ -52,6 +52,7 @@ export abstract class Node<T = any> {
   }
 
   insertBefore(node: Node, refer?: Node) {
+    if (node == refer) return
     if (!this.insertable(node)) throw ''
     node.remove()
     node.parent = this

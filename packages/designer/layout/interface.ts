@@ -21,11 +21,16 @@ export interface Widget {
   purify?(props: Obj): Obj
 }
 
-export type UserWidget = Assign<Widget, { drag?: boolean | WidgetDrag }>
+export type UserWidget = Assign<Widget, {
+  drag?: boolean | Assign<WidgetDrag, {
+    to?: Arrable<string>
+    from?: Arrable<string>
+  }>
+}>
 
 export interface WidgetDrag {
-  to?: Arrable<string>
-  from?: Arrable<string>
+  to?: string[]
+  from?: string[]
   disabled?: boolean
 }
 
@@ -90,10 +95,10 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get drag(): WidgetDrag { return this.data['lcd-drag'] || this.config?.drag || {} }
 
   get lock() { return this.data['lcd-lock'] }
-  set lock(bool) { this.data['lcd-lock'] = bool }
+  set lock(bool) { this.data['lcd-lock'] = bool || void 0 }
 
   get hidden() { return this.data['lcd-hidden'] }
-  set hidden(bool) { this.data['lcd-hidden'] = bool }
+  set hidden(bool) { this.data['lcd-hidden'] = bool || void 0 }
 
   clone() {
     const data = deepClone(this.data, (v, k) => k == '_id' ? uuid() : v)
