@@ -1,6 +1,6 @@
 import { computed, InjectionKey, ref } from 'vue'
-import { isArray, isObject, isString, normalizeStyle, remove } from '@vue/shared'
-import { unrefElement } from '@vueuse/core'
+import { isArray, isObject, isString, normalizeStyle } from '@vue/shared'
+import { Fn, unrefElement, useEventListener } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import { Arrable, Assign, deepClone, Fnable, Obj, set } from '@el-lowcode/utils'
 import { processProps } from 'el-lowcode'
@@ -21,16 +21,11 @@ export interface Widget {
   purify?(props: Obj): Obj
 }
 
-export type UserWidget = Assign<Widget, {
-  drag?: boolean | Assign<WidgetDrag, {
-    to?: Arrable<string>
-    from?: Arrable<string>
-  }>
-}>
+export type UserWidget = Assign<Widget, { drag?: boolean | WidgetDrag }>
 
 export interface WidgetDrag {
-  to?: string[]
-  from?: string[]
+  to?: Arrable<string>
+  from?: Arrable<string>
   disabled?: boolean
 }
 
@@ -95,10 +90,10 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get drag(): WidgetDrag { return this.data['lcd-drag'] || this.config?.drag || {} }
 
   get lock() { return this.data['lcd-lock'] }
-  set lock(bool) { this.data['lcd-lock'] = bool || void 0 }
+  set lock(bool) { this.data['lcd-lock'] = bool }
 
   get hidden() { return this.data['lcd-hidden'] }
-  set hidden(bool) { this.data['lcd-hidden'] = bool || void 0 }
+  set hidden(bool) { this.data['lcd-hidden'] = bool }
 
   clone() {
     const data = deepClone(this.data, (v, k) => k == '_id' ? uuid() : v)
@@ -129,8 +124,6 @@ export interface DesignerCtx {
   readonly dragged?: DisplayNode
 
   root: BoxProps
-  flated: BoxProps[]
-  keyed: Record<string, BoxProps>
   rootCtx: DisplayNode
   keyedCtx: Record<string, DisplayNode>
 
@@ -156,6 +149,12 @@ export interface DesignerCtx {
 
   viewRenderer: Record<string, Renderer>
 
+  commands: {
+    on(command: string, cb: (...args: any[]) => any): Fn
+    off(command: string, cb: (...args: any[]) => any): void
+    emit(command: string | CallCommand, ...args: any[]): Promise<any>
+  }
+
   dict: Record<string, any> & { plugins: string[] }
 }
 
@@ -166,6 +165,7 @@ export interface Contributes {
     name: string
   }[]>
   statusbar?: StatusBarItem[]
+  commands?: Command[]
 }
 
 export interface StatusBarItem {
@@ -178,14 +178,27 @@ export interface StatusBarItem {
   class?: any
   style?: any
   onClick?: (ctx: DesignerCtx) => void
-  command?: string | Command
+  command?: string | CallCommand
   renderer?: Renderer
+}
+
+export interface CallCommand {
+  command: string
+  arguments?: any[]
 }
 
 export interface Command {
   command: string
-  arguments: any[]
+  title: string
+  icon?: string
+  cb?: (ctx: DesignerCtx) => void | Promise<void>
 }
+
+export interface ExtensionContext {
+  subscriptions: Disposable[]
+}
+
+type Disposable = Fn | { dispose() }
 
 export interface Renderer {
   mount: (container: HTMLElement, ctx: DesignerCtx) => any

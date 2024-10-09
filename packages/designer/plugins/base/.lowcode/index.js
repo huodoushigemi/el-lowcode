@@ -26,7 +26,7 @@ export function deactivate(designer) {
 
 }
 
-export const contributes = {
+export const contributes = (designerCtx) => ({
   activitybar: [
     {
       id: 'widgets',
@@ -60,6 +60,7 @@ export const contributes = {
       { id: 'plugin-market.views.installed', name: 'Installed' },
     ],
   },
+  // todo
   customEditors: [
     {
       id: 'schema.json.editor',
@@ -95,12 +96,15 @@ export const contributes = {
     }
   ],
   statusbar: [
-    { text: 'statusbar-test', onClick: () => alert(11) },
+    { text: 'statusbar-test', command: 'lcd.toggleDevice' },
     { text: 'statusbar-right', align: 'right', onClick: () => alert(11) },
   ],
-  // todo
   commands: [
-
+    { command: 'lcd.toggleDevice', title: 'Toggle Device' },
+    { command: 'lcd.clear', title: 'Clear' },
+    { command: 'lcd.undo', title: 'Undo' },
+    { command: 'lcd.redo', title: 'Redo' },
+    { command: 'lcd.download', title: 'Download' },
   ],
   // todo
   menus: {
@@ -128,4 +132,4 @@ export const contributes = {
       
     ],
   }
-}
+})

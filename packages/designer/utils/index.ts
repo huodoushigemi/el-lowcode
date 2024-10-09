@@ -1,9 +1,9 @@
 import { computed, MaybeRefOrGetter, reactive, Ref, ref, toValue, watch, watchEffect, watchSyncEffect } from 'vue'
-import { isArray, isObject } from '@vue/shared'
+import { isArray, isObject, remove } from '@vue/shared'
+import { Awaitable, computedAsync, Fn } from '@vueuse/core'
 import { useTransformer } from 'el-form-render'
-import { keyBy, toArr, treeUtils } from '@el-lowcode/utils'
-import { DesignerCtx, DisplayNode, UserWidget, Widget } from '../layout/interface'
-import { computedAsync } from '@vueuse/core'
+import { keyBy, treeUtils, unFn } from '@el-lowcode/utils'
+import { Contributes, DesignerCtx, DisplayNode, ExtensionContext, UserWidget, Widget } from '../layout/interface'
 
 export * as genCode from './genCode'
 export * from './quickPick'
@@ -42,17 +42,15 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     }, void 0, { onError: e => console.error(e) })))
   }, { immediate: true })
 
-  const designerCtx = reactive({
+  const designerCtx: DesignerCtx = reactive({
     currentState: {},
     // viewport,
     // canvas: computed(() => root.value.designer?.canvas || { zoom: 1 }),
     // @ts-ignore
     DisplayNode: class $DisplayNode extends DisplayNode { designerCtx = designerCtx },
     pageCtx: computed(() => reactive({ state: JSON.parse(JSON.stringify(root.value.state || {})) })),
-    canvas: { x: 0, y: 0, zoom: 1, style: useTransformer(root, 'designer.canvas.style') } as any,
+    canvas: { x: 0, y: 0, zoom: 1, style: useTransformer(root, 'designer.canvas.style') },
     root,
-    flated: computed(() => treeUtils.flat([root.value])),
-    keyed: computed(() => keyBy(designerCtx.flated, '_id')),
     rootCtx: computed(() => new designerCtx.DisplayNode(designerCtx.root)),
     keyedCtx: computed(() => keyBy(treeUtils.flat([designerCtx.rootCtx]), 'id')),
     active: computed(() => designerCtx.activeId ? designerCtx.keyedCtx[designerCtx.activeId] : void 0),
@@ -63,10 +61,11 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     widgets: computed(() => keyBy(designerCtx.plugins.flatMap(e => e.widgets?.map(normalWidget) || []), 'is')),
     // widgets: {},
     viewRenderer: {},
+    commands: createEvents(),
     dict: {
       plugins: [],
     },
-  }) as DesignerCtx
+  })
 
   ;(async () => {
     designerCtx.plugins.unshift(reactive({
@@ -83,22 +82,55 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
 function normalWidget(widget: UserWidget): Widget {
   return {
     ...widget,
-    drag: typeof widget.drag == 'boolean'
-      ? { disabled: !widget.drag }
-      : { ...widget.drag, from: widget.drag?.from ? toArr(widget.drag?.from) : void 0, to: widget.drag?.to ? toArr(widget.drag?.to) : void 0 },
+    drag: typeof widget.drag == 'boolean' ? { disabled: !widget.drag } : widget.drag || {},
   }
 }
 
 export async function createPluginCtx(module, designerCtx: DesignerCtx) {
+  const extCtx: ExtensionContext = {
+    subscriptions: []
+  }
   const isActive = ref(false)
-  const activate = async () => { await module.activate?.(designerCtx); isActive.value = true }
-  const deactivate = async () => { await module.deactivate?.(designerCtx); isActive.value = false }
+  const contributes = computed<Contributes>(() => unFn(module.contributes, designerCtx) || {})
+  const activate = async () => {
+    await module.activate?.(designerCtx, extCtx)
+    isActive.value = true
+  }
+  const deactivate = async () => {
+    await module.deactivate?.(designerCtx)
+    isActive.value = false
+    extCtx.subscriptions.forEach(fn => typeof fn == 'function' ? fn() : fn.dispose())
+  }
   await activate()
+
+  // process commands.cb
+  let commandCbs = [] as Fn[]
+  extCtx.subscriptions.push(() => commandCbs.forEach(cb => cb()))
+  watch(contributes, (val, old) => {
+    old?.commands?.forEach(e => e.cb && designerCtx.commands.off(e.command, e.cb))
+    commandCbs = val.commands?.flatMap(e => e.cb ? designerCtx.commands.on(e.command, e.cb) : []) || []
+  }, { immediate: true })
+
   return {
-    contributes: module.contributes || {},
+    contributes,
     widgets: module.widgets || [],
     activate,
     deactivate,
     isActive,
   }
+}
+
+function createEvents() {
+  const e = {}
+  function on(k: string, cb: (...args: any[]) => void) {
+    (e[k] ??= []).push(cb)
+    return () => off(k, cb)
+  }
+  function off(k: string, cb: (...args: any[]) => void) {
+    remove(e[k] || [], cb)
+  }
+  function emit(k: string, ...args: any[]) {
+    return Promise.all(e[k]?.map(fn => fn(...args)))
+  }
+  return { on, off, emit }
 }

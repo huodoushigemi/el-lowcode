@@ -11,7 +11,7 @@
   --vs-tree-indentGuidesStroke: #585858;
 
   --vs-quick-bg: var(--vscode-quickInput-background, #252526);
-  --vs-quick-b-c: var(--vscode-pickerGroup-border, #3f3f46);
+  --vs-quick-b-c: var(--vscode-pickerGroup-border, #303031);
 
   --vs-btn-c: #fff;
   --vs-btn-bg: #0e639c;
@@ -106,8 +106,8 @@
 }
 
 .vs-quick {
-  @apply fixed top-36 left-50% translate-x--50% flex flex-col w600 b-1 b-c-[--vs-quick-b-c] bg-[--vs-quick-bg];
-  box-shadow: 0 0 12px #00000050;
+  @apply fixed top-36 left-50% translate-x--50% flex flex-col w600 b-1 b-[--vs-quick-b-c] bg-[--vs-quick-bg];
+  box-shadow: 0 0 12px #00000080;
 }
 
 ::-webkit-scrollbar {

@@ -13,7 +13,7 @@
         <infinite-viewer wfull hfull overflow-hidden style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
           <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @click.stop @mouseleave="designerCtx.dragged || (designerCtx.hoverId = undefined)">
             <iframe
-              :key="srcurl + srcdoc"
+              :key="srcurl + srcdoc + root._id"
               class="wfull hfull"
               :src="srcurl"
               :srcdoc="srcdoc"
@@ -22,22 +22,7 @@
 
             <selected-layer />
             <!-- resize -->
-            <Moveable
-              :style="`margin-top: ${-iframeScroll.y}px; margin-left: ${-iframeScroll.x}px`"
-              :target="designerCtx.active?.isRoot ? undefined : designerCtx.active?.el"
-              :resizable="true"
-              :rotatable="false"
-              :origin="false"
-              :renderDirections="resizeDir(designerCtx.active)"
-              :hideDefaultLines="true"
-              :snappable="true"
-              :snapGap="false"
-              :snapElement="true"
-              :elementGuidelines="[designerCtx.active?.parent, ...designerCtx.active?.siblings || []].map(e => e?.el)"
-              :useResizeObserver="true"
-              :useMutationObserver="true"
-              @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd"
-              @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
+            <Moveable :style="`margin-top: ${-iframeScroll.y}px; margin-left: ${-iframeScroll.x}px`" :target="designerCtx.active?.isRoot ? undefined : designerCtx.active?.el" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
           </div>
         </infinite-viewer>
 
@@ -60,14 +45,14 @@
     </div>
 
     <Statusbar>
-      <div flex aic bg="#3655b5" class="[&>*]:flex-shrink-0 ml0! pr8" @click="async () => viewer.size.v = await quickPick({ items: devices, value: viewer.size.v })">
+      <div flex aic bg="#3655b5" class="[&>*]:flex-shrink-0 ml0! pr8" @click="designerCtx.commands.emit('lcd.toggleDevice')">
         <i-material-symbols:devices-outline wa mr4 h20 />
         {{ devices.find(e => eq(e.value, viewer.size.v))?.label || (`${parseInt(viewer.size.v.width)} × ${parseInt(viewer.size.v.height)}`) }}
       </div>
-      <i-tdesign:close wa @click="root = initial()" />
-      <i-mdi:undo-variant wa mr0="!" :op="!canUndo && '20'" @click="undo()" />
-      <i-mdi:redo-variant wa ml0="!" :op="!canRedo && '20'" @click="redo()" />
-      <i-tdesign:download wa @click="$refs.exportCode.vis = true" />
+      <i-tdesign:close wa @click="designerCtx.commands.emit('lcd.clear')" />
+      <i-mdi:undo-variant wa mr0="!" :op="!canUndo && '20'" @click="designerCtx.commands.emit('lcd.undo')" />
+      <i-mdi:redo-variant wa ml0="!" :op="!canRedo && '20'" @click="designerCtx.commands.emit('lcd.redo')" />
+      <i-tdesign:download wa @click="designerCtx.commands.emit('lcd.download')" />
       <div flex aic text-nowrap class="[&>*]:flex-shrink-0 ml12!">
         <i-mdi:magnify-expand wa mr2 h18 />
         <input type="range" v-model.number="viewer.zoom.v" min="60" max="250" />
@@ -78,8 +63,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, ref, getCurrentInstance, PropType, reactive } from 'vue'
-import { computedAsync, useDebouncedRefHistory, useEventListener, unrefElement, useWindowScroll } from '@vueuse/core'
+import { computed, provide, ref, getCurrentInstance, PropType, reactive, onUnmounted } from 'vue'
+import { computedAsync, useDebouncedRefHistory, useEventListener, unrefElement, useWindowScroll, refDebounced } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import Moveable from 'vue3-moveable'
 
@@ -170,9 +155,19 @@ console.log(window.designerCtx = designerCtx)
 // 时间旅行
 const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500, capacity: 20 })
 
+const disposes = [
+  designerCtx.commands.on('lcd.toggleDevice', async () => viewer.size.v = await quickPick({ items: devices, value: viewer.size.v })),
+  designerCtx.commands.on('lcd.clear', () => root.value = initial()),
+  designerCtx.commands.on('lcd.undo', undo),
+  designerCtx.commands.on('lcd.redo', redo),
+  designerCtx.commands.on('lcd.download', () => exportCode.value.vis = true),
+]
+onUnmounted(() => disposes.forEach(cb => cb()))
+
 const initCanvas = () => get(root.value, 'designer.canvas') || set(root.value, 'designer.canvas', {})
 
 const viewport = ref<HTMLElement>()
+const exportCode = ref()
 
 const iframeScroll = computed(() => reactive(useWindowScroll({ window: designerCtx.rootCtx.el?.ownerDocument.defaultView })))
 

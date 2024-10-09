@@ -28,7 +28,7 @@ const right = computed(() => designer.plugins.flatMap(e => e.contributes.statusb
 const sort = (a: StatusBarItem, b: StatusBarItem) => (b.priority || 0) - (a.priority || 0)
 
 const Item = ({ e }: { e: StatusBarItem}) => !unFn(e.hidden) && (
-  <div class={[e.class, 'flex aic space-x-4']} style={e.style} onClick={() => e.onClick?.(designer)} {...renderer(e.renderer)}>
+  <div class={[e.class, 'flex aic space-x-4']} style={e.style} onClick={() => (designer.commands.emit(e.command!), e.onClick?.(designer))} {...renderer(e.renderer)}>
     {e.icon && (isObject(e.icon) ? Render(e.icon) : <img src={unFn(e.icon)} class='hfull wa' />)}
     {e.text}
   </div>
