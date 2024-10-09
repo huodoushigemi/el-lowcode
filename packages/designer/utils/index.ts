@@ -7,6 +7,7 @@ import { Contributes, DesignerCtx, DisplayNode, ExtensionContext, UserWidget, Wi
 
 export * as genCode from './genCode'
 export * from './quickPick'
+export * from './useKeyDIr'
 
 export function objStringify(obj, fn) {
   if (isArray(obj)) {

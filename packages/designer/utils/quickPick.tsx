@@ -1,6 +1,7 @@
 import { createApp, ref, nextTick } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { eq } from '@el-lowcode/utils'
+import { useKeyDir } from './useKeyDIr'
 
 interface QuickPickOptions {
   title?: string
@@ -21,12 +22,13 @@ export function quickPick({ title, placeholder = '请选择', items, value }: Qu
     const elRef = ref()
     const inputRef = ref()
     const stop = onClickOutside(elRef, close, { detectIframe: true })
+    useKeyDir(elRef)
 
-    const app = createApp(() => <div ref={elRef} class='vs-base vs-quick'>
+    const app = createApp(() => <div ref={elRef} class='vs-base vs-ul vs-quick focus element-focused' tabindex='0' onKeydown={e => e.key == 'Escape' && close()}>
       <input class='vs-input sticky top-0 my8 mx6' ref={inputRef} placeholder={placeholder} />
-      <div class='vs-ul element-selection px6 pb8 max-h360 overflow-auto outline-none' tabindex={1}>
-        {items.map(e => (
-          <div class={['vs-li flex aic h22 px12', eq(e.value, val.value) && 'selected']} onClick={() => select(e.value)}>
+      <div class='px6 pb8 max-h360 overflow-auto outline-none'>
+        {items.map((e, i) => (
+          <div class={['vs-li flex aic h22 px12', eq(e.value, val.value) && 'selected']} data-index={i} onClick={() => select(e.value)}>
             {e.label}
             {e.description && <div class='mx4 op40'>{e.description}</div>}
           </div>
