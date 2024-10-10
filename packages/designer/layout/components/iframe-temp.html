@@ -73,7 +73,7 @@
         })
 
         useEventListener(['keypress', 'keydown', 'keyup'], e => {
-          // e.preventDefault()
+          if (['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(e.key)) e.preventDefault()
           e.stopPropagation()
           frameElement.dispatchEvent(new KeyboardEvent(e.type, pick(e, [
             'code', 'isComposing', 'key', 'location', 'repeat',

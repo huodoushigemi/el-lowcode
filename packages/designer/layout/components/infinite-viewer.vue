@@ -7,7 +7,8 @@
       class="infinite-viewer-wrapper left-20! top-20! outline-0"
       style="width: calc(100% - 20px); height: calc(100% - 20px)"
       tabindex="-1"
-      @keydown.space.prevent
+      @keydown.space.prevent="space = true"
+      @keyup.space.prevent="space = false"
       @mousedown="e => e.currentTarget.focus()"
     >
       <div :class="['infinite-viewer-scroll-area', grab && 'cursor-grab z-1']"></div>
@@ -24,7 +25,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeMount, watchEffect, computed } from 'vue'
-import { useMagicKeys, useElementHover, useResizeObserver } from '@vueuse/core'
+import { useElementHover, useResizeObserver } from '@vueuse/core'
 import Guides from '@scena/guides'
 import InfiniteViewer, { EVENTS, OPTIONS, METHODS } from 'infinite-viewer'
 import { pick } from '@el-lowcode/utils'
@@ -36,7 +37,7 @@ const emit = defineEmits([...EVENTS, 'update:zoom', 'update:x', 'update:y'])
 const el = ref()
 
 const middlePressed = ref(false)
-const { space } = useMagicKeys(), hover = useElementHover(el)
+const space = ref(false), hover = useElementHover(el)
 const grab = computed(() => middlePressed.value || (space.value && hover.value))
 
 let viewer

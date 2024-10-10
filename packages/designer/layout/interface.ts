@@ -112,6 +112,12 @@ export abstract class DisplayNode extends Node<BoxProps> {
     return new this.constructor(data)
   }
 
+  override remove() {
+    this.designerCtx.activeId = void 0
+    this.designerCtx.hoverId = void 0
+    return super.remove()
+  }
+
   override insertable(node: DisplayNode) {
     if (!isArray(this.data_children)) return false
     if (this.drag.from && !this.drag.from.includes(node.is)) return false

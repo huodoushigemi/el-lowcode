@@ -264,7 +264,10 @@ importers:
       '@vue/shared': 3.4.30
 
   packages/utils:
-    specifiers: {}
+    specifiers:
+      pretty-bytes: ^6.1.1
+    dependencies:
+      pretty-bytes: 6.1.1
 
 packages:
 
@@ -7216,6 +7219,11 @@ packages:
   /preact/10.22.0:
     resolution: {integrity: sha512-RRurnSjJPj4rp5K6XoP45Ui33ncb7e4H7WiOHVpjbkvqvA3U+N8Z6Qbo0AE6leGYBV66n8EhEaFixvIu3SkxFw==}
     dev: true
+
+  /pretty-bytes/6.1.1:
+    resolution: {integrity: sha512-mQUvGU6aUFQ+rNvTIAcZuWGRT9a6f6Yrg9bHs4ImKF+HZCEK+plBvnAZYSIQztknZF2qnzNtr6F8s0+IuptdlQ==}
+    engines: {node: ^14.13.1 || >=16.0.0}
+    dev: false
 
   /private/0.1.8:
     resolution: {integrity: sha512-VvivMrbvd2nKkiG38qjULzlc+4Vx4wm/whI9pQD35YrARNnhxeiRktSOhSukRLFNlzg6Br/cJPet5J/u19r/mg==}

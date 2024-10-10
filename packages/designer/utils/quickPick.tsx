@@ -24,7 +24,7 @@ export function quickPick({ title, placeholder = '请选择', items, value }: Qu
     const stop = onClickOutside(elRef, close, { detectIframe: true })
     useKeyDir(elRef)
 
-    const app = createApp(() => <div ref={elRef} class='vs-base vs-ul vs-quick focus element-focused' tabindex='0' onKeydown={e => e.key == 'Escape' && close()}>
+    const app = createApp(() => <div ref={elRef} class='vs-base vs-ul vs-quick focus element-selection' onKeydown={e => e.key == 'Escape' && close()}>
       <input class='vs-input sticky top-0 my8 mx6' ref={inputRef} placeholder={placeholder} />
       <div class='px6 pb8 max-h360 overflow-auto outline-none'>
         {items.map((e, i) => (

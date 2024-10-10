@@ -37,7 +37,7 @@ export function get(obj: any, path: string | ((...args) => any)) {
 }
 
 export function set<T>(obj: any, path: string, val: T) {
-  return path.split('.').reduce((o, k, i, ks) => o[k] = i == ks.length - 1 ? val : (o[k] ?? (numReg.test(ks[i + 1]) ? [] : {})), obj)
+  return path.split('.').reduce((o, k, i, ks) => i == ks.length - 1 ? (o[k] = val) : (o[k] ??= numReg.test(ks[i + 1]) ? [] : {}), obj)
 }
 
 export function deepClone(obj?: Record<string | number, any>, iteratee = (val, key) => val) {

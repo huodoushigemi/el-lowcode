@@ -11,6 +11,7 @@ export abstract class Node<T = any> {
   abstract get data_children(): any[] | undefined
 
   get root() { let node = this; while(node.parent) node = node.parent; return node }
+  get isRoot() { return !this.parent }
 
   #parent = shallowRef<typeof this>()
   get parent() { return this.#parent.value }

@@ -1,5 +1,5 @@
 <template>
-  <div class="designer" flex="~ col">
+  <div class="designer" flex="~ col" @keydown="onKeydown" v-key-dir="{ source: 'target' }">
     <div flex flex-1 h0>
       <Activitybar v-model="activeView" :list="activitybars" @update:modelValue="log" />
 
@@ -96,7 +96,7 @@ import SettingPanel from './setting-panel.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import Statusbar from './components/Statusbar.vue'
 // import { vue2esm } from './vue2esm'
-import { createDesignerCtx, quickPick } from '../utils'
+import { createDesignerCtx, quickPick, vKeyDir } from '../utils'
 
 import OptionsInput from '../components/OptionsInput.vue'
 import PairInput from '../components/PairInput.vue'
@@ -153,18 +153,10 @@ provide('designerCtx', designerCtx)
 defineExpose(designerCtx)
 
 const viewer = {
-  // x: useTransformer(root, 'designer.canvas.x'),
-  // y: useTransformer(root, 'designer.canvas.y'),
   zoom: useTransformer(designerCtx, 'canvas.zoom', { get: v => (v * 100).toFixed(), set: v => +(v / 100).toFixed(2) }),
   size: useTransformer(root, 'designer.canvas.style', { get: v => pick(v, ['width', 'height']), set: v => JSON.parse(JSON.stringify(v)) }),
   w: useTransformer(root, 'designer.canvas.style.width', { get: v => v || parseInt(v), set: v => v + 'px' }),
   h: useTransformer(root, 'designer.canvas.style.height', { get: v => v || parseInt(v), set: v => v + 'px' }),
-  // get x() { return get(root.value, 'designer.canvas.x') },
-  // set x(v) { toRaw(initCanvas()).x = v },
-  // get y() { return get(root.value, 'designer.canvas.y') },
-  // set y(v) { toRaw(initCanvas()).y = v },
-  // get zoom() { return get(root.value, 'designer.canvas.zoom') },
-  // set zoom(v) { toRaw(initCanvas()).zoom = v },
 }
 
 console.log(window.designerCtx = designerCtx)
@@ -223,63 +215,56 @@ function resizeDir(node?: DisplayNode) {
   return node.isAbs ? undefined : ['e', 'se', 's']
 }
 
-// 按 Delete 删除当前选中元素
-useEventListener('keydown', (e) => {
-  if (e.key !== 'Delete') return
-  if (!designerCtx.activeId) return
-  if (designerCtx.active!.parent) {
-    designerCtx.active!.remove()
-    designerCtx.activeId = undefined
-    designerCtx.hoverId = undefined
-  } else {
-    root.value.children = []
-  }
-})
-
-// ↑ → ↓ ←
-useEventListener('keydown', e => {
+// 快捷键
+function onKeydown(e: KeyboardEvent) {
   if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return
-  if (!['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(e.key)) return
-  
-  const node = designerCtx.active
-  if (!node) return
-  e.preventDefault()
-  e.stopPropagation()
-  if (node == designerCtx.rootCtx) return
-  const offset = e.shiftKey ? 10 : 1
-  if (node.isAbs) {
-    const plus = (i, v) => {
-      const xy = node.xy
-      xy[i] += v
-      node.xy = xy
-    }
-    if (e.key == 'ArrowUp') plus(1, -offset)
-    if (e.key == 'ArrowLeft') plus(0, -offset)
-    if (e.key == 'ArrowDown') plus(1, offset)
-    if (e.key == 'ArrowRight') plus(0, offset)
-  }
-  else {
-    const plus = (prop, v) => set(node, `style.${prop}`, parseInt(get(node, `style.${prop}`) || 0) + v + 'px')
-    if (e.key == 'ArrowUp') plus('marginTop', -offset)
-    if (e.key == 'ArrowLeft') plus('marginLeft', -offset)
-    if (e.key == 'ArrowDown') plus('marginTop', offset)
-    if (e.key == 'ArrowRight') plus('marginLeft', offset)
-  }
-})
-
-// ctrl z / y
-useEventListener('keydown', e => {
-  if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return
-  if (!e.ctrlKey) return
   const key = e.key.toLocaleLowerCase()
-  if (!['z', 'y'].includes(key)) return
-  e.preventDefault()
-  e.stopPropagation()
-  switch (key) {
-    case 'z': return undo()
-    case 'y': return redo()
+
+  const kb = [
+    // 按 Delete 删除当前选中元素
+    [() => key == 'delete', () => {
+      if (!designerCtx.active) return
+      if (designerCtx.active.isRoot) {
+        designerCtx.root.children = []
+      } else {
+        designerCtx.active.remove()
+      }
+    }],
+    // ↑ → ↓ ←
+    [() => ['arrowup', 'arrowleft', 'arrowdown', 'arrowright'].includes(key), () => {
+      const node = designerCtx.active
+      if (!node || node.isRoot) return
+      const offset = e.shiftKey ? 10 : 1
+      if (node.isAbs) {
+        if (key == 'arrowup') node.y += -offset
+        if (key == 'arrowleft') node.x += -offset
+        if (key == 'arrowdown') node.y += offset
+        if (key == 'arrowright') node.x += offset
+      }
+      else {
+        const plus = (prop, v) => set(node, `data.style.${prop}`, parseInt(get(node, `data.style.${prop}`) || 0) + v + 'px')
+        if (key == 'arrowup') plus('marginTop', -offset)
+        if (key == 'arrowleft') plus('marginLeft', -offset)
+        if (key == 'arrowdown') plus('marginTop', offset)
+        if (key == 'arrowright') plus('marginLeft', offset)
+      }
+    }],
+    // ctrl z / y
+    [() => e.ctrlKey && ['z', 'y'].includes(key), () => {
+      switch (key) {
+        case 'z': return undo()
+        case 'y': return redo()
+      }
+    }]
+  ]
+
+  const cb = kb.find(e => e[0]())?.[1]
+  if (cb) {
+    cb()
+    e.stopPropagation()
+    e.preventDefault()
   }
-})
+}
 </script>
 
 <style lang="scss">
