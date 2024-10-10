@@ -2,7 +2,7 @@
   <div px20>
     <div v-for="(arr, category) in groupBy((list || []), 'category')" my12>
       <h4 mt4 mb10>{{ category == 'undefined' ? '其他' : category }}</h4>
-      <div grid="~ cols-2" gap-8>
+      <div grid="~ cols-3" gap-8>
         <template v-for="wgt in arr" >
           <div v-if="!wgt.hidden" class="comp-li vs-ai" :lcd-is="wgt.is" draggable="true" truncate tabindex="0">{{ wgt.label }}</div>
         </template>

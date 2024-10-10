@@ -1,4 +1,3 @@
-import { v4 } from 'uuid'
 import Tabs from './config/tabs'
 
 const buttons = [
@@ -39,8 +38,8 @@ const iconButton = (is, sortablePull = false) => ({
   label: 'icon-button',
   props: props => [
     { is: 'div', class: 'flex', children: [
-      { lp: ['icon', 'children.0'], class: 'flex-1', type: 'select', options: icons, get: v => props.children[0]?.children, set: v => ({ is: 'md-icon', _id: v4(), ...props.children[0], children: v }) },
-      props.toggle && { lp: ['icon', 'children.1'], type: 'select', options: icons, get: v => props.children[1]?.children, set: v => ({ is: 'md-icon', _id: v4(), ...props.children[1], children: v, slot: 'selected' }) },
+      { lp: ['icon', 'children.0'], class: 'flex-1', type: 'select', options: icons, get: v => props.children[0]?.children, set: v => ({ is: 'md-icon', ...props.children[0], children: v }) },
+      props.toggle && { lp: ['icon', 'children.1'], type: 'select', options: icons, get: v => props.children[1]?.children, set: v => ({ is: 'md-icon', ...props.children[1], children: v, slot: 'selected' }) },
     ] },
     { lp: ['type', 'is'], type: 'select', options: iconButtons },
     { lp: 'toggle', type: 'switch', displayValue: false },

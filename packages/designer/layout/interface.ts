@@ -1,6 +1,6 @@
-import { computed, InjectionKey, ref } from 'vue'
+import { computed, InjectionKey, ref, toRaw } from 'vue'
 import { isArray, isObject, isString, normalizeStyle } from '@vue/shared'
-import { Fn, unrefElement, useEventListener } from '@vueuse/core'
+import { Fn, unrefElement } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import { Arrable, Assign, deepClone, Fnable, Obj, set } from '@el-lowcode/utils'
 import { processProps } from 'el-lowcode'
@@ -21,11 +21,16 @@ export interface Widget {
   purify?(props: Obj): Obj
 }
 
-export type UserWidget = Assign<Widget, { drag?: boolean | WidgetDrag }>
+export type UserWidget = Assign<Widget, {
+  drag?: boolean | Assign<WidgetDrag, {
+    to?: Arrable<string>
+    from?: Arrable<string>
+  }>
+}>
 
 export interface WidgetDrag {
-  to?: Arrable<string>
-  from?: Arrable<string>
+  to?: string[]
+  from?: string[]
   disabled?: boolean
 }
 
@@ -46,6 +51,12 @@ export interface BoxProps {
 
 export abstract class DisplayNode extends Node<BoxProps> {
   abstract designerCtx: DesignerCtx
+
+  constructor(data) {
+    const raw = toRaw(data)
+    raw._id ??= uuid()
+    super(data)
+  }
 
   get id () { return this.data._id }
   get is() { return this.data.is }
@@ -90,10 +101,10 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get drag(): WidgetDrag { return this.data['lcd-drag'] || this.config?.drag || {} }
 
   get lock() { return this.data['lcd-lock'] }
-  set lock(bool) { this.data['lcd-lock'] = bool }
+  set lock(bool) { this.data['lcd-lock'] = bool || void 0 }
 
   get hidden() { return this.data['lcd-hidden'] }
-  set hidden(bool) { this.data['lcd-hidden'] = bool }
+  set hidden(bool) { this.data['lcd-hidden'] = bool || void 0 }
 
   clone() {
     const data = deepClone(this.data, (v, k) => k == '_id' ? uuid() : v)

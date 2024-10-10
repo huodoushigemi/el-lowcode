@@ -1,5 +1,3 @@
-import { v4 } from 'uuid'
-
 const tabWgt = (is) => ({
   is,
   label: 'tab',
@@ -25,7 +23,7 @@ export const tabs = {
   drag: { from: [] },
   props: [
     { lp: 'auto-activate', type: 'switch', displayValue: false },
-    { lp: ['tabs', 'children'], el: { is: 'OptionsInput', new: () => ({ is: 'md-primary-tab', _id: v4(), children: [] }) } }
+    { lp: ['tabs', 'children'], el: { is: 'OptionsInput', new: () => ({ is: 'md-primary-tab', children: [] }) } }
   ],
   defaultProps: () => ({
     children: [

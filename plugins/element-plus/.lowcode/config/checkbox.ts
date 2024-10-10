@@ -1,6 +1,4 @@
-import { v4 } from 'uuid'
-
-const item = i => ({ _id: v4(), is: 'ElCheckbox', label: `opt ${i + 1}`, value: `${i + 1}` })
+const item = i => ({ is: 'ElCheckbox', label: `opt ${i + 1}`, value: `${i + 1}` })
 
 export default [
   {

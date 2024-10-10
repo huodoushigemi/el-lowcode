@@ -72,6 +72,11 @@
   @apply inline-flex aic py0 px10 b-none lh-26 text-14 align-middle c-[--vs-btn-c] bg-[--vs-btn-bg] cursor-pointer;
   outline: 1px solid transparent;
   outline-offset: 2px !important;
+  
+  &::after {
+    content: ' ';
+    @apply: w0;
+  }
 
   &:disabled {
     filter: grayscale(1);

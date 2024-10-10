@@ -22,10 +22,27 @@
 
             <selected-layer />
             <!-- resize -->
-            <Moveable :style="`margin-top: ${-iframeScroll.y}px; margin-left: ${-iframeScroll.x}px`" :target="designerCtx.active?.isRoot ? undefined : designerCtx.active?.el" :resizable="true" :rotatable="false" :renderDirections="resizeDir(designerCtx.active)" :origin="false" :useResizeObserver="true" :useMutationObserver="true" :hideDefaultLines="true" @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd" @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd" />
+            <Moveable
+              :style="`margin-top: ${-iframeScroll.y}px; margin-left: ${-iframeScroll.x}px`"
+              :target="designerCtx.active?.isRoot ? undefined : designerCtx.active?.el"
+              :resizable="true"
+              :rotatable="false"
+              :origin="false"
+              :renderDirections="resizeDir(designerCtx.active)"
+              :hideDefaultLines="true"
+              :snappable="true"
+              :snapGap="false"
+              :snapElement="true"
+              :elementGuidelines="[designerCtx.active?.parent, ...designerCtx.active?.siblings || []].map(e => e?.el)"
+              :useResizeObserver="true"
+              :useMutationObserver="true"
+              @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd"
+              @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd"
+            />
           </div>
         </infinite-viewer>
 
+        <!-- Breadcrumb -->
         <div class="absolute top-20 left-35 flex aic text-13 lh-32" @mouseleave="designerCtx.hoverId = void 0">
           <div v-for="(node, i, len) in designerCtx.keyedCtx[designerCtx.activeId!]?.path" class="vs-breadcrumb-li" @click="designerCtx.activeId = node.id" @mouseenter="designerCtx.hoverId = node.id">
             <div class="max-w150 truncate">{{ node.label }}</div>

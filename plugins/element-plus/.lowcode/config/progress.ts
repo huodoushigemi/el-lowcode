@@ -10,6 +10,7 @@ export default {
     { lp: 'color', type: 'color-picker' },
   ],
   defaultProps: () => ({
-    percentage: 50
+    percentage: 50,
+    format: '{{v => `${v}%`}}'
   })
 }

@@ -1,5 +1,3 @@
-import { v4 } from 'uuid'
-
 const ICONS = ['search', 'arrow_forward', 'downloading', 'attach_file']
 const SIZES = ['normal', 'small', 'large']
 
@@ -34,7 +32,7 @@ const min = { lp: 'min', type: 'input-number', displayValue: 0 }
 const max = { lp: 'max', type: 'input-number', displayValue: 100 }
 const step = { lp: 'step', type: 'input-number', displayValue: 1, el: { min: 1 } }
 
-const OptionsInput = (lp, props, child, fn) => ({ lp, el: { is: 'OptionsInput', props, new: (i) => ({ is: child, _id: v4(), ...fn?.(i) }) } })
+const OptionsInput = (lp, props, child, fn) => ({ lp, el: { is: 'OptionsInput', props, new: (i) => ({ is: child, ...fn?.(i) }) } })
 
 export default [
   {

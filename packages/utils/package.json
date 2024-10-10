@@ -16,7 +16,7 @@
     }
   },
   "dependencies": {
-    
+    "pretty-bytes": "^6.1.1"
   },
   "peerDependencies": {
     "element-plus": "^2.3.8",
