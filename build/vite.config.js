@@ -53,7 +53,7 @@ async function build1(input, outDir) {
 }
 
 async function buildPlugin(name) {
-  // await build1(`plugins/${name}/index.js`, `dist/plugins/${name}`)
+  await build1(`plugins/${name}/index.js`, `dist/plugins/${name}`)
   await build1(`plugins/${name}/.lowcode/index.js`, `dist/plugins/${name}/.lowcode`)
 }
 
