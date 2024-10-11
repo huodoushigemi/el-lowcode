@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 /components.d.ts
+/stats.html
 *.local
 */.vitepress/cache
 .vitepress/cache

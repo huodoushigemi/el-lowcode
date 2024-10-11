@@ -12,7 +12,7 @@ export default mergeConfig({
   },
   build: {
     // outDir: 'docs/dest/designer',
-    emptyOutDir: false,
+    // emptyOutDir: false,
     rollupOptions: {
       input: {
         index: '/index.html',
