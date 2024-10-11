@@ -19,6 +19,7 @@ type CreateRender = {
   processProps?: (props: Props) => Props
 }
 
+/*#__NO_SIDE_EFFECTS__*/
 export function createRender({ defaultIs = 'div', processProps = (props: Props) => props }: CreateRender) {
   return function Render(props: Props): VNode | null {
     const { is, $, children, ...attrs } = processProps(props)

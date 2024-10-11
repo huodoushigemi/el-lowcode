@@ -70,7 +70,7 @@ export default [
     props: props => [
       { lp: 'src', el: { autofocus: true } },
       { is: 'button', class: 'vs-btn mb18', onClick: async () => props.src = (await chooseImg({ base64: true, maxSize: 1024 * 200 }))[0], children: [
-        { is: 'div', class: 'mask-icon mr4 w24 h18', style: 'mask-image: url(https://api.iconify.design/tdesign:cloud-upload.svg)' }, 'upload'
+        { is: 'div', class: 'mask-icon mr4 w24 h18', style: '--mask-image: url(https://api.iconify.design/tdesign:cloud-upload.svg)' }, 'upload'
       ] },
       { lp: ['fit', 'style.objectFit'], type: 'radio-group', options: ['fill', 'contain', 'cover'] },
       { lp: ['lazy', 'loading'], type: 'switch', el: { activeValue: 'lazy', inactiveValue: 'eager' } },

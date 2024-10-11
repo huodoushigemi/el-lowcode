@@ -1,9 +1,9 @@
 import Tabs from './tabs'
 
-import 'https://unpkg.com/mdui@2/mdui.global.js'
+import 'https://unpkg.com/mdui@2.1.2/mdui.global.js'
 
 const list = [
-  Object.assign(document.createElement('link'), { href: 'https://unpkg.com/mdui@2/mdui.css', rel: 'stylesheet' }),
+  Object.assign(document.createElement('link'), { href: 'https://unpkg.com/mdui@2.1.2/mdui.css', rel: 'stylesheet' }),
   // icon
   Object.assign(document.createElement('link'), { href: 'https://fonts.googleapis.com/icon?family=Material+Icons', rel: 'stylesheet' }),
   Object.assign(document.createElement('link'), { href: 'https://fonts.googleapis.com/icon?family=Material+Icons+Outlined' }),

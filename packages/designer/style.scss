@@ -113,7 +113,7 @@
 }
 
 .vs-quick {
-  @apply fixed top-36 left-50% translate-x--50% flex flex-col w600 b-1 b-[--vs-quick-b-c] bg-[--vs-quick-bg];
+  @apply fixed top-36 left-50% translate-x--50% flex flex-col w600 b-1 b-[--vs-quick-b-c] bg-[--vs-quick-bg] z-99;
   box-shadow: 0 0 12px #00000080;
 }
 
@@ -152,4 +152,6 @@
   -webkit-mask-repeat: no-repeat;
   mask-size: contain;
   -webkit-mask-size: contain;
+  mask-image: var(--mask-image);
+  -webkit-mask-image: var(--mask-image);
 }

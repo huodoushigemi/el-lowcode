@@ -1,10 +1,9 @@
 import { computed, ref, Ref, watch, watchEffect } from 'vue'
 import { MaybeElementRef, useEventListener, useMagicKeys, useElementHover, useMousePressed, unrefElement } from '@vueuse/core'
 
-const { control } = useMagicKeys()
+const { control } = /*#__PURE__*/ useMagicKeys()
 
-const count = ref(0)
-watchEffect(() => document.body.style.cursor = count.value ? 'w-resize' : '')
+const count = /*#__PURE__*/ ref(0)
 
 interface UseSlideOption {
   min: number
@@ -13,11 +12,12 @@ interface UseSlideOption {
 } 
 
 export function useSlide(el: MaybeElementRef, val: Ref<number>, props: UseSlideOption) {
-  const { pressed } = useMousePressed(el)
+  const { pressed } = useMousePressed({ target: el })
   const hover = useElementHover(el)
 
   watch(() => control.value && pressed.value, v => count.value += v ? 1 : -1)
   watch(() => control.value && hover.value, v => unrefElement(el)!.style.cursor = v ? 'w-resize' : '')
+  watchEffect(() => document.body.style.cursor = count.value ? 'w-resize' : '')
 
   useEventListener(el, 'mousedown', mousedown)
 

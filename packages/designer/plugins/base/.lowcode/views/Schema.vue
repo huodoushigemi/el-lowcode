@@ -1,5 +1,5 @@
 <template>
-  <div flex="~ col" hfull>
+  <div relative flex="~ col" hfull>
     <monaco-editor v-model:value="schema" flex-1 @save="ok" />
     <div p8 text-right>
       <ElButton size="small" @click="onCancel">Cancel</ElButton>

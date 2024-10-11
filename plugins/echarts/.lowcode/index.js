@@ -1,5 +1,4 @@
 import { createApp, h } from 'vue'
-// import { CompView } from '@el-lowcode/designer'
 import widgets from './config'
 
 function create(AsyncComp) {
@@ -14,7 +13,7 @@ function create(AsyncComp) {
 }
 
 export function activate(designerCtx) {
-  // designerCtx.viewRenderer['echarts'] = create(CompView)
+  
 }
 
 export { default as widgets } from './config'

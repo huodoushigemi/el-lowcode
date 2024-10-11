@@ -23,6 +23,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useDark } from '@vueuse/core'
+import { vLoading } from 'element-plus'
 import { refWithWatch } from '../../components/hooks'
 
 const props = defineProps({

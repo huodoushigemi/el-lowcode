@@ -35,6 +35,7 @@ const defaultFields = {
   inputSlot: 'default'
 }
 
+/*#__NO_SIDE_EFFECTS__*/
 export function createFormRender<F extends Obj, FI extends Obj>({ Form, formName, formProps, FormItem, formItemName, formItemProps, Input, fields }: CreateFormRenderOptions<F, FI>) {
   const _fields = { ...defaultFields, ...fields }
   const formItemKs = ks(formItemProps) as any[]

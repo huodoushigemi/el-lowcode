@@ -5,6 +5,9 @@ import fse from 'fs-extra/esm'
 import { ALL_DEPS, ALL_PKGS } from './all-pkgs.js'
 import { mergeConfig } from './defaultConfig.js'
 
+import * as esbuild from 'esbuild'
+const minify = code => esbuild.transformSync(code, { loader: 'ts', minifyWhitespace: true }).code
+
 async function build1(input, outDir) {
   await build(mergeConfig({
     configFile: false,
@@ -36,6 +39,10 @@ async function build1(input, outDir) {
     plugins: [
       (await import('vite-plugin-css-injected-by-js')).default(),
       // (await import('rollup-plugin-visualizer')).visualizer(),
+      {
+        name: 'esbuild-minify',
+        generateBundle: (_, bundle) => Object.values(bundle).forEach(e => e.type == 'chunk' && (e.code = minify(e.code)))
+      }
     ]
   }))
 
@@ -46,7 +53,7 @@ async function build1(input, outDir) {
 }
 
 async function buildPlugin(name) {
-  await build1(`plugins/${name}/index.js`, `dist/plugins/${name}`)
+  // await build1(`plugins/${name}/index.js`, `dist/plugins/${name}`)
   await build1(`plugins/${name}/.lowcode/index.js`, `dist/plugins/${name}/.lowcode`)
 }
 
