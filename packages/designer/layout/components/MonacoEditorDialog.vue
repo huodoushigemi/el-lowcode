@@ -1,6 +1,6 @@
 <template>
   <component :modelValue="visible" :is="dialog.is" @update:modelValue="emit('update:visible', $event)" destroy-on-close v-bind="dialog">
-    <MonacoEditor v-model:value="value" @save="ok" />
+    <MonacoEditor v-model="value" @save="ok" />
     <template #footer>
       <el-button @click="cancel">Cancel</el-button>
       <el-button type="primary" @click="ok">Crtl+S</el-button>

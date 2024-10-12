@@ -1,5 +1,5 @@
 <template>
-  <div class="monaco-base" flex="~ col">
+  <div class="vs-base vs-sidebar" flex="~ col">
     <div pl20 pr8 text-11 lh-35 font-400 c="#bbb" truncate uppercase flex-shrink-0>
       {{ activitybar?.title }}
     </div>

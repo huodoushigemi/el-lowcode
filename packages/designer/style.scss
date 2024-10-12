@@ -9,6 +9,11 @@
   --vs-li-inactiveSelectionBg: #37373d;
   --vs-li-activeSelectionC: #fff;
   --vs-tree-indentGuidesStroke: #585858;
+  --vs-sidebar-bg: #252526;
+  --vs-panel-bg: #202020;
+  --vs-statusbar-bg: #505050;
+  --vs-statusbar-hover-bg: #ffffff1f;
+  // #252526
 
   --vs-quick-bg: var(--vscode-quickInput-background, #252526);
   --vs-quick-b-c: var(--vscode-pickerGroup-border, #303031);
@@ -20,6 +25,10 @@
 
 .monaco-workbench, .monaco-base, .vs-base {
   @apply text-13 lh-[1.4] select-none c-[--vs-c];
+}
+
+.vs-sidebar {
+  @apply bg-[--vs-sidebar-bg];
 }
 
 .vs-ul {

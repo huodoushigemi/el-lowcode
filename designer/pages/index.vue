@@ -3,6 +3,7 @@ import { onMounted, ref, watch, watchEffect, watchSyncEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { watchDebounced } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
+import { ElLoadingService } from 'element-plus'
 import { v4 as uuid } from 'uuid'
 import Designer, { DesignerCtx } from '@el-lowcode/designer'
 
@@ -82,7 +83,9 @@ watchEffect(async () => {
     schema.value = undefined
   }
   else if (file.value) {
-    designer.value.root = await fetch(file.value).then(e => e.status == 200 ? e.json() : Promise.reject()).catch(() => initial([{ _id: uuid(), is: 'h1', children: '404' }]))
+    const loading = ElLoadingService()
+    designer.value.root = await fetch(file.value).then(e => e.status == 200 ? e.json() : Promise.reject()).catch(() => initial([{ is: 'h1', children: '404' }]))
+    loading.close()
     file.value = undefined
   }
 })

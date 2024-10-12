@@ -4,13 +4,13 @@
       <Activitybar v-model="activeView" :list="activitybars" @update:modelValue="log" />
 
       <KeepAlive>
-        <Views v-if="activeView" :activitybar="activitybars.find(e => e.id == activeView)" :key="activeView" w300 bg="#252526" />
+        <Views v-if="activeView" :activitybar="activitybars.find(e => e.id == activeView)" :key="activeView" w300 />
       </KeepAlive>
 
       <div relative flex-1 w0 hfull>
         <!-- Canvas Viewport -->
          <!-- v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y"  -->
-        <infinite-viewer wfull hfull overflow-hidden style="background: var(--el-fill-color-light)" @click="designerCtx.activeId = undefined" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
+        <infinite-viewer wfull hfull overflow-hidden style="background: var(--vs-panel-bg)" @click="designerCtx.activeId = undefined" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
           <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @click.stop @mouseleave="designerCtx.dragged || (designerCtx.hoverId = undefined)">
             <iframe
               :key="srcurl + srcdoc + root._id"
@@ -18,6 +18,7 @@
               :src="srcurl"
               :srcdoc="srcdoc"
               @vue:mounted="({ el }) => el.contentWindow.designerCtx = designerCtx"
+              @vue:beforeUnmount="({ el }) => el.contentWindow.app?.unmount()"
             />
 
             <selected-layer />
@@ -62,15 +63,15 @@
     </div>
 
     <Statusbar>
-      <div flex aic bg="#3655b5" class="[&>*]:flex-shrink-0 ml0! pr8" @click="designerCtx.commands.emit('lcd.toggleDevice')">
+      <div flex aic bg="#3655b5" class="li ml0! pr8" @click="designerCtx.commands.emit('lcd.toggleDevice')">
         <i-material-symbols:devices-outline wa mr4 h20 />
         {{ devices.find(e => eq(e.value, viewer.size.v))?.label || (`${parseInt(viewer.size.v.width)} × ${parseInt(viewer.size.v.height)}`) }}
       </div>
-      <i-tdesign:close wa @click="designerCtx.commands.emit('lcd.clear')" />
-      <i-mdi:undo-variant wa mr0="!" :op="!canUndo && '20'" @click="designerCtx.commands.emit('lcd.undo')" />
-      <i-mdi:redo-variant wa ml0="!" :op="!canRedo && '20'" @click="designerCtx.commands.emit('lcd.redo')" />
-      <i-tdesign:download wa @click="designerCtx.commands.emit('lcd.download')" />
-      <div flex aic text-nowrap class="[&>*]:flex-shrink-0 ml12!">
+      <i-tdesign:close class="li wa" @click="designerCtx.commands.emit('lcd.clear')" />
+      <i-mdi:undo-variant class="li  wa mr0!" :op="!canUndo && '20'" @click="designerCtx.commands.emit('lcd.undo')" />
+      <i-mdi:redo-variant class="li  wa ml0!" :op="!canRedo && '20'" @click="designerCtx.commands.emit('lcd.redo')" />
+      <i-tdesign:download class="li wa" @click="designerCtx.commands.emit('lcd.download')" />
+      <div flex aic text-nowrap class="li ml12!">
         <i-mdi:magnify-expand wa mr2 h18 />
         <input type="range" v-model.number="viewer.zoom.v" min="60" max="250" />
         <InputNumber v-model="viewer.zoom.v" noUnit :min="60" :max="250" class="w50 h20" />
@@ -105,6 +106,7 @@ import InputNumbers from '../components/InputNumbers.vue'
 import Collapse from '../components/Collapse.vue'
 import EditTable from '../components/EditTable.vue'
 import Tabs from '../components/Tabs.vue'
+import MonacoEditor from './components/monaco-editor.vue'
 
 const srcdoc = computedAsync(() => import.meta.env.PROD ? import('./components/iframe-temp.html?transform').then(e => e.default) : void 0)
 const srcurl = computedAsync(() => import.meta.env.DEV ? import('./components/iframe-temp.html?url').then(e => e.default) : void 0)
@@ -117,6 +119,7 @@ app.component('InputNumbers', InputNumbers)
 app.component('Collapse', Collapse)
 app.component('EditTable', EditTable)
 app.component('Tabs', Tabs)
+app.component('MonacoEditor', MonacoEditor)
 
 const log = (...arg) => console.log(...arg)
 

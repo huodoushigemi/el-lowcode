@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, getCurrentInstance, inject, provide, toRef, reactive, watch, watchEffect, Plugin, ref, PropType, nextTick } from 'vue'
-import { useWindowSize, useParentElement, useElementSize } from '@vueuse/core'
+import { getCurrentInstance, toRef, PropType } from 'vue'
+import { useParentElement, useElementSize } from '@vueuse/core'
 // import { importJs } from '../../../components/_utils'
 import { useFit } from './hooks'
 

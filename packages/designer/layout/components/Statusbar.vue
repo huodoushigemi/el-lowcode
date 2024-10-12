@@ -1,5 +1,5 @@
 <template>
-  <footer class="status">
+  <footer class="vs-status">
     <slot />
     <template v-for="e in left.sort(sort)">
       <Item :e="e" />
@@ -15,10 +15,10 @@
 
 <script setup lang="tsx">
 import { computed, inject } from 'vue'
+import { isObject } from '@vue/shared'
 import { unFn } from '@el-lowcode/utils'
 import { Render } from '@el-lowcode/render'
 import { DesignerCtx, Renderer, StatusBarItem } from '../interface'
-import { isObject } from '@vue/shared';
 
 const designer = inject<DesignerCtx>('designerCtx')!
 
@@ -28,7 +28,7 @@ const right = computed(() => designer.plugins.flatMap(e => e.contributes.statusb
 const sort = (a: StatusBarItem, b: StatusBarItem) => (b.priority || 0) - (a.priority || 0)
 
 const Item = ({ e }: { e: StatusBarItem}) => !unFn(e.hidden) && (
-  <div class={[e.class, 'flex aic space-x-4']} style={e.style} onClick={() => (designer.commands.emit(e.command!), e.onClick?.(designer))} {...renderer(e.renderer)}>
+  <div class={[e.class, 'li flex aic space-x-4']} style={e.style} onClick={() => (designer.commands.emit(e.command!), e.onClick?.(designer))} {...renderer(e.renderer)}>
     {e.icon && (isObject(e.icon) ? Render(e.icon) : <img src={unFn(e.icon)} class='hfull wa' />)}
     {e.text}
   </div>
@@ -41,15 +41,15 @@ const renderer = (renderer?: Renderer) => ({
 </script>
 
 <style lang="scss">
-.status {
+.vs-status {
   display: flex;
   height: 22px;
-  color: var(--vscode-statusBar-foreground, #fff);
-  background-color: var(----vscode-statusBar-background, #505050);
+  // color: var(--vscode-statusBar-foreground, #fff);
+  background-color: var(--vs-statusbar-bg);
   line-height: 0;
   // #007acc
 
-  > .statusbar-item, > * {
+  > .li {
     margin: 0 3px;
     padding: 0 5px;
     font-size: 12px;
@@ -59,7 +59,7 @@ const renderer = (renderer?: Renderer) => ({
     box-sizing: content-box;
 
     &:hover {
-      background-color: var(--vscode-statusBarItem-hoverBackground, #ffffff1f);
+      background-color: var(--vs-statusbar-hover-bg);
     }
   }
 }

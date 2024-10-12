@@ -54,7 +54,7 @@ import './style.css'
 import 'virtual:uno.css'
 // import 'uno.css'
 
-useDark({ storageKey: 'vitepress-theme-appearance' })
+// useDark({ storageKey: 'vitepress-theme-appearance' })
 
 createApp(() => h(RouterView))
   .use(ElementPlus)

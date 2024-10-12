@@ -29,16 +29,16 @@ export const ConfigProvider = defineComponent({
       }
     }, { immediate: true })
     
-    async function loadPlugins(urls) {
-      for (const url of urls || []) {
-        if (loaded[url]) continue
+    async function loadPlugins(urls = []) {
+      return await Promise.all(urls.map(async url => {
+        if (loaded[url]) return
         loaded[url] = 1
         const plugin = (await import(/* @vite-ignore */ url + '/index.js')).default
         await loadPlugins(plugin.plugins)
         ins.appContext.app.use(plugin)
-      }
+      }))
     }
 
-    return () => loading.value || renderSlot(slots, 'default')
+    return () => renderSlot(slots, loading.value ? 'loading' : 'default')
   }
 })

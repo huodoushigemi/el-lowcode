@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="sl-theme-dark mdui-theme-auto dark">
+<html class="sl-theme-dark mdui-theme-auto dark" style="color-scheme: dark;">
   <head>
     <style>
       html, body { width: 100%; height: 100%; }
@@ -102,9 +102,10 @@
           designerCtx
         },
         render: () => [
-          h(ConfigProvider, designerCtx.root, () => [
-            h(DragBox, { el: designerCtx.root })
-          ]),
+          h(ConfigProvider, designerCtx.root, {
+            default: () => h(DragBox, { el: designerCtx.root }),
+            loading: () => h('h1', { style: 'margin: 0; text-align: center; transform: translate(0, 45vh);' }, 'Loading……')
+          }),
           h(Moveable, {
             target: !designerCtx.hover?.isRoot && designerCtx.hover?.isAbs ? designerCtx.hover.el : undefined,
             draggable: true,
@@ -128,6 +129,8 @@
 
       app.use(ElLowcode)
       app.mount(document.body)
+
+      window.app = app
     </script>
   </head>
   <body>
