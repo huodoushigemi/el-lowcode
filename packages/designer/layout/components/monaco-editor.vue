@@ -49,7 +49,6 @@ const isDark = useDark({ storageKey: 'vitepress-theme-appearance' })
 
 async function onMount(_editor, monaco) {
   isMount.value = true
-  console.log('customClass');
   
   editorIns = _editor
   setTimeout(() => {
@@ -77,7 +76,7 @@ function onKeydown(e) {
 import { defineAsyncComponent } from 'vue'
 
 const VueMonacoEditor = defineAsyncComponent(async () => {
-  const vs = 'https://unpkg.com/monaco-editor@0.51.0/min/vs'
+  const vs = 'https://unpkg.com/monaco-editor@0.52.0/min/vs'
 
   const { VueMonacoEditor, loader } = await import('@guolao/vue-monaco-editor')
   // loader.config({ monaco })

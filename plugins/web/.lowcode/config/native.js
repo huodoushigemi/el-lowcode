@@ -1,3 +1,4 @@
+import { toRaw } from 'vue'
 import { chooseImg } from '@el-lowcode/utils'
 
 const createH = (is, hidden = true) => ({
@@ -111,11 +112,12 @@ export default [
     is: 'details',
     label: 'details',
     props: [
-      { lp: ['summary', 'children.0.children'] }
+      { lp: ['default-open', 'open'], type: 'switch' }
+      // { lp: ['summary', 'children.0.children'] }
     ],
     defaultProps: () => ({
       children: [
-        { is: 'summary', children: 'title' },
+        { is: 'summary', children: [{ is: 'span', children: 'title' }] },
         { is: 'div', children: [] }
       ]
     })
@@ -125,9 +127,9 @@ export default [
     is: 'summary',
     label: 'summary',
     hidden: true,
-    drag: { to: 'details' },
+    drag: { to: 'details', disabled: true },
     props: [
-      { lp: ['title', 'children'] }
+      // { lp: ['title', 'children'] }
     ]
   },
 
@@ -157,6 +159,103 @@ export default [
     ],
     defaultProps: () => ({
       children: []
+    })
+  },
+
+  {
+    is: 'blockquote',
+    label: 'blockquote',
+    icon: 'https://api.iconify.design/tabler:blockquote.svg',
+    props: [
+
+    ],
+    defaultProps: () => ({
+      children: [{ is: 'p', children: 'TIP' }, { is: 'p', children: 'HTML <blockquote> 元素（或者 HTML 块级引用元素），代表其中的文字是引用内容。' }]
+    })
+  },
+
+  {
+    is: 'button',
+    label: 'button',
+    icon: 'https://api.iconify.design/material-symbols:radio-button-unchecked.svg',
+    props: [
+
+    ],
+    defaultProps: () => ({
+      children: [{ is: 'span', children: 'button' }]
+    })
+  },
+
+  {
+    is: 'input',
+    label: 'input',
+    icon: 'https://api.iconify.design/ri:input-field.svg',
+    props: props => [
+      { lp: 'value' },
+      { lp: 'name' },
+      { lp: 'disabled', type: 'switch' },
+      { lp: 'readonly', type: 'switch' },
+      { lp: 'required', type: 'switch' },
+      { lp: 'type', displayValue: 'text', options: ['text', 'number', 'range', 'password', 'radio', 'checkbox', 'color', 'date', 'datetime-local', 'month', 'time', 'reset', 'submit'] },
+      ...[
+        [{ lp: 'min', type: 'input-number' }, ['number', 'range']],
+        [{ lp: 'max', type: 'input-number' }, ['number', 'range']],
+        [{ lp: 'step', type: 'input-number' }, ['number', 'range']],
+        [{ lp: 'minlength', type: 'input-number' }, [void 0, 'password']],
+        [{ lp: 'maxlength', type: 'input-number' }, [void 0, 'password']],
+        [{ lp: 'pattern' }, ['text', 'password']],
+        [{ lp: 'placeholder' }, ['text', 'password']],
+      ].flatMap(e => e[1].includes(props.type) ? e[0] : []),
+    ],
+    defaultProps: () => ({
+
+    })
+  },
+
+  {
+    is: 'VHtml',
+    label: 'v-html',
+    icon: 'https://api.iconify.design/mdi:language-html5.svg',
+    props: [
+      { lp: ['v-html', 'innerHTML'], el: { type: 'textarea', autosize: { maxRows: 6 } } }
+    ],
+    defaultProps: () => ({
+      innerHTML: '这里的内容可以直接编辑'
+    }),
+    devProps: props => ({
+      is: 'wangeditor',
+      innerHTML: void 0,
+      style: { '--w-e-textarea-color': 'initial', '--w-e-textarea-bg-color': 'transparent', height: 'auto' },
+      toolbar: { show: false },
+      scroll: false,
+      modelValue: props.innerHTML,
+      'onUpdate:modelValue': v => toRaw(props).innerHTML = v
+    })
+  },
+
+  {
+    is: 'wangeditor',
+    label: 'wang-editor',
+    icon: 'https://api.iconify.design/mdi:language-html5.svg',
+    props: [
+      { lp: ['toolbar', 'toolbar.show'], type: 'switch', displayValue: true },
+      { lp: 'disabled', type: 'switch' },
+      { lp: 'autoFocus', type: 'switch' },
+      // { lp: 'scroll', type: 'switch', displayValue: true },
+      { lp: ['simple', 'mode'], type: 'switch', displayValue: 'default', el: { activeValue: 'simple', inactiveValue: 'default' } },
+      { lp: 'max-length', type: 'input-number' },
+      { lp: 'placeholder' },
+      { is: 'el-divider' },
+      { is: 'h2', class: 'my12', children: 'Event' },
+      { lp: ['onInput', 'onUpdate:modelValue'] }
+    ],
+    defaultProps: () => ({
+      modelValue: '',
+      placeholder: '请输入内容...',
+      style: { border: '1px solid #ccc' }
+    }),
+    devProps: props => ({
+      // 'onUpdate:modelValue': e => toRaw(props).innerHTML = e.currentTarget.innerHTML
     })
   }
 ]

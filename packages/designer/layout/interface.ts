@@ -1,4 +1,4 @@
-import { computed, InjectionKey, ref, toRaw } from 'vue'
+import { computed, InjectionKey, mergeProps, ref, toRaw } from 'vue'
 import { isArray, isObject, isString, normalizeStyle } from '@vue/shared'
 import { Fn, unrefElement } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
@@ -15,10 +15,11 @@ export interface Widget {
   drag: WidgetDrag
   hidden?: boolean
   cover?: string // todo
-  props?: any[] | ((props: any, ctx: DesignerCtx, arg: { node: DisplayNode }) => any[])
+  props?: any[] | ((props: Obj, ctx: DesignerCtx, arg: { node: DisplayNode }) => any[])
   defaultProps?(ctx: DesignerCtx): Obj
-  JSONSchemaOutput?(props: Obj, ctx: DesignerCtx): Obj
+  devProps: (props: Obj, ctx: DesignerCtx) => Obj
   purify?(props: Obj): Obj
+  JSONSchemaOutput?(props: Obj, ctx: DesignerCtx): Obj
 }
 
 export type UserWidget = Assign<Widget, {
@@ -77,7 +78,10 @@ export abstract class DisplayNode extends Node<BoxProps> {
     // 移除值为 undefuned 的属性
     props = JSON.parse(JSON.stringify(props))
     props.children = children
-    return processProps(props, this.designerCtx.pageCtx)
+    props = processProps(props, this.designerCtx.pageCtx)
+    // props = this.config?.devProps ? this.config?.devProps(this.data, this.designerCtx) : props
+    if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(this.data, this.designerCtx)) as any
+    return props
   })
   get $data() { return this.#$data.value }
 
@@ -110,12 +114,6 @@ export abstract class DisplayNode extends Node<BoxProps> {
     const data = deepClone(this.data, (v, k) => k == '_id' ? uuid() : v)
     // @ts-ignore
     return new this.constructor(data)
-  }
-
-  override remove() {
-    this.designerCtx.activeId = void 0
-    this.designerCtx.hoverId = void 0
-    return super.remove()
   }
 
   override insertable(node: DisplayNode) {

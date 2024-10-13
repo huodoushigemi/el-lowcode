@@ -1,4 +1,4 @@
-import { h } from 'vue'
+import { defineAsyncComponent, h } from 'vue'
 import Page from './page'
 import Grid from './grid'
 import Code from './code'
@@ -13,5 +13,8 @@ export default {
     app.use(Code)
     
     app.component('AbsoluteLayout', (props, { slots }) => h('div', props, slots))
+    app.component('VHtml', (props) => h('div', { ...props }))
+    
+    app.component('wangeditor', defineAsyncComponent(() => import('./wangeditor.vue')))
   }
 }

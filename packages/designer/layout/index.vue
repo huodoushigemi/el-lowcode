@@ -1,7 +1,7 @@
 <template>
   <div class="designer" flex="~ col" @keydown="onKeydown" v-key-dir="{ source: 'target' }">
     <div flex flex-1 h0>
-      <Activitybar v-model="activeView" :list="activitybars" @update:modelValue="log" />
+      <Activitybar v-model="activeView" :list="activitybars" />
 
       <KeepAlive>
         <Views v-if="activeView" :activitybar="activitybars.find(e => e.id == activeView)" :key="activeView" w300 />
@@ -45,9 +45,9 @@
 
         <!-- Breadcrumb -->
         <div class="absolute top-20 left-35 flex aic text-13 lh-32" @mouseleave="designerCtx.hoverId = void 0">
-          <div v-for="(node, i, len) in designerCtx.keyedCtx[designerCtx.activeId!]?.path" class="vs-breadcrumb-li" @click="designerCtx.activeId = node.id" @mouseenter="designerCtx.hoverId = node.id">
+          <div v-for="(node, i, len) in designerCtx.active?.path" class="vs-breadcrumb-li" @click="designerCtx.activeId = node.id" @mouseenter="designerCtx.hoverId = node.id">
             <div class="max-w150 truncate">{{ node.label }}</div>
-            <div v-if="node.id != designerCtx.activeId" mx4> > </div>
+            <div v-if="node != designerCtx.active" mx4> > </div>
           </div>
         </div>
       </div>

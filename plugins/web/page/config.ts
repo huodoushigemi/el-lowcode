@@ -18,7 +18,7 @@ const State = defineComponent({
     }
     return () => h('div', { class: 'wfull', flex: '~ col' }, [
       h(resolveComponent('MonacoEditor'), { modelValue: val.value, 'onUpdate:modelValue': v => val.value = v, onSave, style: 'height: 300px' }),
-      h('button', { class: 'vs-btn', style: 'margin: -26px 0px 0 auto; z-index: 9', onClick: onSave }, 'save')
+      h('button', { class: 'vs-btn', style: 'margin: -26px 0px 0 auto; z-index: 11', onClick: onSave }, 'save')
     ])
   }
 })

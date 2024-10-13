@@ -7,7 +7,7 @@
     </div>
     
     <div v-if="active" absolute outline="1.5 solid [--vs-focus-b-c]" outline-offset--1.5 :style="calcStyle(designerCtx.active?.el)">
-      <div v-if="active.parent && !active.isAbs && !designerCtx.dragged" class="actions absolute bottom-[100%] flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]">  
+      <div v-if="active.parent && !active.isAbs && !designerCtx.dragged" class="actions absolute bottom-full flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]" @mousedown.stop>
         <div flex aic px12 bg="#17d57e">{{ active.label }}</div>
         <i-solar:arrow-to-top-right-bold class="icon" @click="active2parent" />
         <i-solar:arrow-up-linear class="icon" @click="moveUp" />
@@ -43,7 +43,7 @@ const moveUp = () => designerCtx.active!.previousSibling ? designerCtx.active!.p
 const moveDown = () => designerCtx.active!.nextSibling ? designerCtx.active!.nextSibling!.after(designerCtx.active!) : void 0
 const active2parent = () => designerCtx.activeId = designerCtx.active!.parent!.id
 const remove = () => designerCtx.active!.remove()
-const copy = () => designerCtx.active!.after(designerCtx.active?.clone())
+const copy = () => designerCtx.active!.after(designerCtx.active!.clone())
 
 
 const calcStyle = (el?: HTMLElement | null) => {
