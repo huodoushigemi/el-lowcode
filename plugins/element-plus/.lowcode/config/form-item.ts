@@ -6,7 +6,7 @@ export default {
   is: 'ElFormItemRender',
   label: 'field',
   category: '表单',
-  drag: { to: ['ElForm', 'ElForm-c', 'ElForm-lcd'] },
+  drag: { from: [], to: ['ElForm', 'ElForm-c', 'ElForm-lcd'] },
   props: (props, ctx) => ([
     { is: 'div', class: 'grid grid-cols-3 gap-x-8', children: [
       { lp: ['标签', 'label'] },
@@ -24,16 +24,16 @@ export default {
     
     { is: 'div', class: 'mx--8 b-b-1' },
     { is: 'h4', class: 'my12', children: '组件' },
-    { is: 'ElFormRender', model: props.el, labelPosition: 'top', size: 'small', children: [
-      { prop: 'is', options: types, el: { clearable: false, onChange: v => props.el = createInput(v, ctx) } },
-      ...unFn(ctx.widgets[props.el.is].props, props.el, ctx) || [],
+    { is: 'ElFormRender', model: props.children?.[0] ?? props.el, labelPosition: 'top', size: 'small', children: [
+      { prop: 'is', options: types, el: { clearable: false, onChange: v => props.children[0] = createInput(v, ctx) } },
+      ...unFn(ctx.widgets[props.children?.[0]?.is ?? props.el.is].props, props.el, ctx) || [],
     ] },
   ]),
   defaultProps: (ctx) => ({
     is: 'ElFormItemRender',
     label: 'field',
     prop: `input`,
-    el: createInput('ElInput', ctx)
+    children: [createInput('ElInput', ctx)],
   }),
   JSONSchemaOutput: (props, ctx) => ({
     title: props.label,
@@ -50,5 +50,6 @@ function createInput(is, ctx) {
   return {
     is,
     ...ctx.widgets[is].defaultProps?.(ctx),
+    'lcd-drag': { disabled: true }
   }
 }

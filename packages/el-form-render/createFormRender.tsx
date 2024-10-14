@@ -86,8 +86,12 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formName
               {{
                 ...slots,
                 default: undefined,
-                // [_fields.inputSlot]: () => (console.log(slots.default?.()), slots.default?.() || <Input {...props} el={elProps} />)
-                [_fields.inputSlot]: () => renderSlot(slots, 'default', undefined, () => [<Input {...props} el={elProps} />])
+                [_fields.inputSlot]: () => {
+                  const vnode = renderSlot(slots, 'default')
+                  if (vnode.children![0]) vnode.children![0].props = Object.assign(elProps, vnode.children![0].props)
+                  else vnode.children![0] ??= Input({ ...props, el: elProps })
+                  return vnode
+                }
               }}
             </FormItem>
           )
