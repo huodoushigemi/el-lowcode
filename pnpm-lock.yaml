@@ -51,6 +51,7 @@ importers:
       jsdom: ^24.1.1
       lodash-es: ^4.17.21
       magic-string: ^0.30.4
+      markdown-it: ^14.1.0
       md5: ^2.3.0
       micromatch: ^4.0.5
       msw: ^1.2.3
@@ -114,6 +115,7 @@ importers:
       element-plus: 2.8.1_vue@3.4.30
       infinite-viewer: 0.29.1
       lodash-es: 4.17.21
+      markdown-it: 14.1.0
       md5: 2.3.0
       postcss: 8.4.41
       qs: 6.12.1

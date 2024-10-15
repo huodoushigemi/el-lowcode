@@ -1,9 +1,7 @@
-import cover from './pattern.png'
-
 export default {
   id: 'pattern',
   title: '表单校验',
-  cover,
+  cover: () => import('./pattern.png').then(e => e.default),
   schema: {
     is: 'Page',
     _id: 'a0246183-b618-4a98-b353-207896342181',

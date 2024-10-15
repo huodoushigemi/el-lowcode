@@ -1,9 +1,7 @@
-import cover from './choice-question.png?url'
-
 export default {
   id: 'choice-question',
   title: '选择填空',
-  cover,
+  cover: () => import('./choice-question.png?url').then(e => e.default),
   schema: {
     children: [
       {

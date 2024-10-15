@@ -3,7 +3,7 @@
     <i-mingcute:loading-line v-if="loading" class="hfull block mxa text-32 animate-spin" style="margin-top: 64px" />
 
     <ElCard v-else v-for="item in templates" shadow="hover" body-class="p0!" my12>
-      <ElImage v-if="item.cover" :src="item.cover" :preview-src-list="[item.cover]" />
+      <ElImage v-if="item.cover" :src="fnAsync(item.cover)" :preview-src-list="[fnAsync(item.cover)]" />
       <div class="py8 px12">
         <div class="font-bold">{{ item.title }}</div>
         <div class="text-right">
@@ -16,9 +16,11 @@
 </template>
 
 <script setup>
-import { inject } from 'vue'
+import { computed, inject } from 'vue'
+import { computedAsync } from '@vueuse/core'
 import { useRequest } from 'vue-request'
 import { ElImage, ElCard, ElButton } from 'element-plus'
+import { unFn } from '@el-lowcode/utils'
 import { previewLcd } from './utils'
 
 const designerCtx = inject('designerCtx')
@@ -28,6 +30,11 @@ const { data: templates, loading } = useRequest(() => Promise.all(templateModule
 
 function onEdit(item) {
   designerCtx.root = JSON.parse(JSON.stringify(item.schema))
+}
+
+const cache = new WeakMap()
+function fnAsync(fn) {
+  return (cache.get(fn) ?? cache.set(fn, computedAsync(() => unFn(fn))).get(fn)).value
 }
 
 async function demoUrl({ title, schema }) {

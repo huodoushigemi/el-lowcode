@@ -1,9 +1,7 @@
-import cover from './waterfall.png'
-
 export default {
   id: 'waterfall',
   title: '瀑布流',
-  cover,
+  cover: () => import('./waterfall.png').then(e => e.default),
   schema: {
     is: 'Page',
     _id: 'fa0c45d7-55f3-4d1a-a1dc-e8ad6b5e1026',

@@ -1,9 +1,7 @@
-import cover from './home.png'
-
 export default {
   id: 'home',
   title: '首页',
-  cover,
+  cover: () => import('./home.png').then(e => e.default),
   schema: {
     is: 'Page',
     _id: '276a574a-a57c-40b9-a70c-e30caea01039',

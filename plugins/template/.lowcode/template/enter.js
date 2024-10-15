@@ -1,9 +1,7 @@
-import cover from './enter.png'
-
 export default {
   id: 'enter',
   title: '用户信息录入',
-  cover,
+  cover: () => import('./enter.png').then(e => e.default),
   schema: {
     is: 'Page',
     _id: '710ca988-63f7-47bd-837f-4e45f6c0b59e',
