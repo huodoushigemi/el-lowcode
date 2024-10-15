@@ -20,69 +20,91 @@ export default {
             children: [
               {
                 is: 'ElFormItemRender',
-                _id: '70392eb3-506c-4ebb-b246-2bf1d3b1a1b6',
                 label: '姓名',
                 prop: 'name',
-                defaultValue: '',
-                el: {
-                  is: 'ElInput',
-                },
-                required: true,
-              },
-              {
-                is: 'ElFormItemRender',
-                _id: '01b6a07d-b97c-4508-bcab-abbe07216779',
-                label: '性别',
-                prop: 'sex',
-                defaultValue: '',
-                options: [
+                children: [
                   {
-                    label: '男',
-                    value: '1',
-                  },
-                  {
-                    label: '女',
-                    value: '2',
+                    is: 'ElInput',
+                    defaultValue: '',
+                    'lcd-drag': {
+                      disabled: true,
+                    },
+                    _id: '7e9346b1-58c7-4396-8039-e1202af4baf2',
                   },
                 ],
-                el: {
-                  is: 'ElRadioGroup',
-                },
+                _id: 'cff10199-ae9a-4b83-a901-2b7495357288',
                 required: true,
               },
               {
                 is: 'ElFormItemRender',
-                _id: 'e0b163bb-d4fb-43da-a2fd-191ae12145d4',
-                label: '电话',
-                prop: 'phone',
-                defaultValue: '',
-                el: {
-                  is: 'ElInput',
-                  placeholder: '为女时必填',
-                },
-                required: "{{state.formData.sex == '2'}}",
-                rules: {
-                  pattern: '^1[3456789]\\d{9}$',
-                  message: '格式错误',
-                },
+                label: '性别',
+                prop: 'sex',
+                children: [
+                  {
+                    is: 'ElRadioGroup',
+                    defaultValue: '',
+                    children: [
+                      {
+                        is: 'ElRadio',
+                        label: '男',
+                        value: '1',
+                        _id: '79839133-e28e-4303-a4e6-7933f4e70923',
+                      },
+                      {
+                        is: 'ElRadio',
+                        label: '女',
+                        value: '2',
+                        _id: 'bea0d404-9e19-47e7-bf2c-c6836f5dd5e2',
+                      },
+                    ],
+                    'lcd-drag': {
+                      disabled: true,
+                    },
+                    _id: '34de3191-c356-4d4b-81b2-1467c8facdbb',
+                  },
+                ],
+                _id: '8f7ca6a7-2efc-48c0-a6b9-d20dc5366439',
+                required: true,
               },
               {
                 is: 'ElFormItemRender',
-                _id: '83d294fb-ed7c-44e3-b64f-0924ba2c477b',
+                label: '电话',
+                prop: 'phone',
+                children: [
+                  {
+                    is: 'ElInput',
+                    defaultValue: '',
+                    'lcd-drag': {
+                      disabled: true,
+                    },
+                    _id: '3c0d9ce4-e497-49b4-827f-26762bbe800d',
+                    placeholder: '为女时必填',
+                  },
+                ],
+                _id: '21d4a708-c427-4159-aa7f-824ebd1e8e6a',
+                required: "{{state.formData.sex == '2'}}",
+              },
+              {
+                is: 'ElFormItemRender',
                 label: '备注',
                 prop: 'remark',
-                defaultValue: '',
-                el: {
-                  is: 'ElInput',
-                  minlength: 10,
-                  maxlength: 128,
-                  type: 'textarea',
-                  showWordLimit: true,
-                  placeholder: '为男时隐藏',
-                },
-                $: {
-                  condition: "{{state.formData.sex != '1'}}",
-                },
+                children: [
+                  {
+                    is: 'ElInput',
+                    defaultValue: '',
+                    'lcd-drag': {
+                      disabled: true,
+                    },
+                    _id: '9a8fa22c-bdba-4cd6-9c54-5b344e4068f0',
+                    placeholder: '为男时隐藏',
+                    type: 'textarea',
+                    $: {
+                      condition: "{{state.formData.sex != '1'}}",
+                    },
+                    showWordLimit: false,
+                  },
+                ],
+                _id: '2909a517-012e-44c3-9a46-16312debb1f7',
               },
               {
                 is: 'ElDivider',
@@ -117,9 +139,6 @@ export default {
     style: {
       'padding-top': '100px',
     },
-    plugins: [
-      '/plugins/web',
-      '/plugins/element-plus',
-    ],
+    plugins: ['/plugins/web', '/plugins/element-plus'],
   },
 }

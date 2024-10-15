@@ -16,5 +16,6 @@ export default {
     app.component('VHtml', (props) => h('div', { ...props }))
     
     app.component('wangeditor', defineAsyncComponent(() => import('./wangeditor.vue')))
+    app.component('markdown-it', defineAsyncComponent(() => import('./markdown-it.vue')))
   }
 }

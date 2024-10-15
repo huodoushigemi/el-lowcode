@@ -1,3 +1,4 @@
+import { reactive } from 'vue'
 import { unFn } from '@el-lowcode/utils'
 
 const types = ['ElInput', 'ElInputNumber', 'ElRate', 'ElSlider', 'ElSwitch', 'ElSelect', 'ElRadioGroup', 'ElCheckboxGroup', 'ElTimePicker', 'ElDatePicker', 'ElColorPicker', 'ElDateTime-lcd']
@@ -24,9 +25,9 @@ export default {
     
     { is: 'div', class: 'mx--8 b-b-1' },
     { is: 'h4', class: 'my12', children: '组件' },
-    { is: 'ElFormRender', model: props.children?.[0] ?? props.el, labelPosition: 'top', size: 'small', children: [
-      { prop: 'is', options: types, el: { clearable: false, onChange: v => props.children[0] = createInput(v, ctx) } },
-      ...unFn(ctx.widgets[props.children?.[0]?.is ?? props.el.is].props, props.el, ctx) || [],
+    { is: 'ElFormRender', model: props.children?.[0] || {}, labelPosition: 'top', size: 'small', children: [
+      { prop: 'is', options: types, el: { clearable: false, onChange: v => props.children = [createInput(v, ctx)] } },
+      ...unFn(ctx.widgets[props.children?.[0]?.is]?.props, props.children?.[0], ctx) || [],
     ] },
   ]),
   defaultProps: (ctx) => ({
@@ -35,21 +36,32 @@ export default {
     prop: `input`,
     children: [createInput('ElInput', ctx)],
   }),
-  JSONSchemaOutput: (props, ctx) => ({
-    title: props.label,
-    description: props.description,
-    pattern: props.rules?.pattern,
-    default: props.el.defaultValue,
-    enum: (props.el.options || props.el.children)?.map(e => e.value),
-    enumNames: (props.el.options || props.el.children)?.map(e => e.label),
-    ...ctx.widgets[props.el.is].JSONSchemaOutput?.(props.el, ctx)
-  })
+  devProps: props => ({
+    ...props,
+    children: props.children?.length ? reactive([{ ...props.children[0], 'lcd-drag': { disabled: true } }]) : props.children
+  }),
+  purify: props => ({
+    ...props,
+    // defaultValue: void 0,
+    children: [{ ...props.children[0], defaultValue: void 0 }]
+  }),
+  JSONSchemaOutput: (props, ctx) => {
+    const el = props.children[0] || {}
+    return {
+      title: props.label,
+      description: props.description,
+      pattern: props.rules?.pattern,
+      default: el.defaultValue,
+      enum: el.children?.map(e => e.value),
+      enumNames: el.children?.map(e => e.label),
+      ...ctx.widgets[el.is].JSONSchemaOutput?.(el, ctx)
+    }
+  }
 }
 
 function createInput(is, ctx) {
   return {
     is,
     ...ctx.widgets[is].defaultProps?.(ctx),
-    'lcd-drag': { disabled: true }
   }
 }

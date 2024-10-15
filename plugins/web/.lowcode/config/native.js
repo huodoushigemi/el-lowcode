@@ -215,6 +215,7 @@ export default [
   {
     is: 'VHtml',
     label: 'v-html',
+    category: '额外扩展',
     icon: 'https://api.iconify.design/mdi:language-html5.svg',
     props: [
       { lp: ['v-html', 'innerHTML'], el: { type: 'textarea', autosize: { maxRows: 6 } } }
@@ -236,6 +237,7 @@ export default [
   {
     is: 'wangeditor',
     label: 'wang-editor',
+    category: '额外扩展',
     icon: 'https://api.iconify.design/mdi:language-html5.svg',
     props: [
       { lp: ['toolbar', 'toolbar.show'], type: 'switch', displayValue: true },
@@ -257,5 +259,28 @@ export default [
     devProps: props => ({
       // 'onUpdate:modelValue': e => toRaw(props).innerHTML = e.currentTarget.innerHTML
     })
-  }
+  },
+
+  {
+    is: 'markdown-it',
+    label: 'markdown-it',
+    category: '额外扩展',
+    icon: 'https://api.iconify.design/mdi:language-markdown-outline.svg',
+    props: [
+      { lp: 'content', el: { is: 'MonacoEditor', language: 'markdown', style: 'height: 400px' } },
+      { is: 'div', class: 'grid grid-cols-2', children: [
+        { lp: ['html', 'options.html'], type: 'switch' },
+        { lp: ['breaks', 'options.breaks'], type: 'switch' },
+        { lp: ['linkify', 'options.linkify'], type: 'switch' },
+        { lp: ['typographer', 'options.typographer'], type: 'switch' },
+      ] }
+    ],
+    defaultProps: () => ({
+      content: `# Markdown-It\n\n---\n\nI really laike using Markdown.\n\nI just love **bold text**.\n\n> #### The quarterly results look great!\n>\n> - Revenue was off the chart.\n> - Profits were higher than ever.\n>\n>  *Everything* is going according to **plan**.\n\n[🔗 百度一下 👈](https://www.baidu.com/)\n\n![excel](https://api.iconify.design/vscode-icons:file-type-excel.svg)\n![word](https://api.iconify.design/vscode-icons:file-type-word.svg)\n![ppt](https://api.iconify.design/vscode-icons:file-type-powerpoint.svg)\n![vscode](https://api.iconify.design/vscode-icons:file-type-vscode.svg)`,
+      options: {
+        breaks: true,
+        linkify: true
+      }
+    })
+  },
 ]

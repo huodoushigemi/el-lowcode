@@ -62,7 +62,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get id () { return this.data._id }
   get is() { return this.data.is }
   get label () { return this.data['data-layer'] || (isString(this.data.children) && this.data.children) || this.config?.label || this.data.is }
-  get data_children () { return isObject(this.data.children) ? this.data.children : void 0 }
+  get data_children () { return isObject(this.$data.children) ? this.$data.children : void 0 }
   get dir() { return isArray(this.data_children) }
   get config() { return sloveConfig(this.data, this.designerCtx.widgets) }
 
@@ -83,10 +83,10 @@ export abstract class DisplayNode extends Node<BoxProps> {
     if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(this.data, this.designerCtx)) as any
     return props
   })
-  get $data() { return this.#$data.value }
+  get $data() { return this.#$data.value as BoxProps }
 
   // 自由拖拽
-  get isAbs() { return this.data.style?.position == 'absolute' }
+  get isAbs() { return this.$data.style?.position == 'absolute' }
   set isAbs(bool) { this.data.style = bool ? normalizeStyle([this.data.style, { position: 'absolute', margin: 0 }]) : normalizeStyle([this.data.style, { position: void 0, transform: void 0, margin: void 0 }]) }
 
   get xy() { return parseTransform(this.data.style?.transform) }
@@ -97,17 +97,17 @@ export abstract class DisplayNode extends Node<BoxProps> {
   set y(v) { set(this.data, 'style.transform', `translate(${this.x}px, ${v}px)`) }
 
   // 自由布局
-  get isAbsLayout() { return !!this.data['data-absolute-layout'] }
-  set isAbsLayout(bool) { this.data['data-absolute-layout'] = bool }
+  get isAbsLayout() { return !!this.$data['data-absolute-layout'] }
+  set isAbsLayout(bool) { this.data['data-absolute-layout'] = bool || void 0 }
 
   get isRoot() { return !this.parent }
 
-  get drag(): WidgetDrag { return this.data['lcd-drag'] || this.config?.drag || {} }
+  get drag(): WidgetDrag { return this.$data['lcd-drag'] || this.config?.drag || {} }
 
-  get lock() { return this.data['lcd-lock'] }
+  get lock() { return this.$data['lcd-lock'] }
   set lock(bool) { this.data['lcd-lock'] = bool || void 0 }
 
-  get hidden() { return this.data['lcd-hidden'] }
+  get hidden() { return this.$data['lcd-hidden'] }
   set hidden(bool) { this.data['lcd-hidden'] = bool || void 0 }
 
   clone() {

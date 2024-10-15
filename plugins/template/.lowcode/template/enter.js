@@ -25,10 +25,13 @@ export default {
             label: '姓名',
             prop: 'name',
             defaultValue: '',
-            el: {
-              is: 'ElInput',
-            },
             required: true,
+            children: [
+              {
+                is: 'ElInput',
+                _id: '69aa5700-fa45-4dc5-a6f4-1e154b826466',
+              },
+            ],
           },
           {
             is: 'ElFormItemRender',
@@ -36,14 +39,17 @@ export default {
             label: '电话',
             prop: 'phone',
             defaultValue: '',
-            el: {
-              is: 'ElInput',
-            },
             required: true,
             rules: {
               pattern: '^1[3456789]\\d{9}$',
               message: '格式错误',
             },
+            children: [
+              {
+                is: 'ElInput',
+                _id: '44517841-6bee-480f-bcd7-40ae8af78070',
+              },
+            ],
           },
           {
             is: 'ElFormItemRender',
@@ -51,11 +57,14 @@ export default {
             label: '年龄',
             prop: 'age',
             defaultValue: 0,
-            el: {
-              is: 'ElInputNumber',
-              controlsPosition: 'right',
-              controls: true,
-            },
+            children: [
+              {
+                is: 'ElInputNumber',
+                controlsPosition: 'right',
+                controls: true,
+                _id: 'a2a48257-131b-4b12-889a-6aaa123dc54f',
+              },
+            ],
           },
           {
             is: 'ElFormItemRender',
@@ -63,19 +72,26 @@ export default {
             label: '性别',
             prop: 'sex',
             defaultValue: '',
-            options: [
+            children: [
               {
-                label: '男',
-                value: '1',
-              },
-              {
-                label: '女',
-                value: '2',
+                is: 'ElRadioGroup',
+                children: [
+                  {
+                    label: '男',
+                    value: '1',
+                    is: 'ElRadio',
+                    _id: 'b29d91e8-3cd6-49d8-accd-e2040757d76c',
+                  },
+                  {
+                    label: '女',
+                    value: '2',
+                    is: 'ElRadio',
+                    _id: '347216ed-d31b-4659-872e-a1b3e4c8c148',
+                  },
+                ],
+                _id: 'c36df156-4027-48cc-8ac6-f726cd40110d',
               },
             ],
-            el: {
-              is: 'ElRadioGroup',
-            },
           },
           {
             is: 'ElFormItemRender',
@@ -83,10 +99,13 @@ export default {
             label: '生日',
             prop: 'time',
             defaultValue: '',
-            el: {
-              is: 'ElDatePicker',
-              valueFormat: 'YYYY-MM-DD',
-            },
+            children: [
+              {
+                is: 'ElDatePicker',
+                valueFormat: 'YYYY-MM-DD',
+                _id: '73e0c43b-436e-4609-abc9-55c4e131a185',
+              },
+            ],
           },
           {
             is: 'ElFormItemRender',
@@ -94,9 +113,12 @@ export default {
             label: '地址',
             prop: 'address',
             defaultValue: '',
-            el: {
-              is: 'ElInput',
-            },
+            children: [
+              {
+                is: 'ElInput',
+                _id: '939ca3f7-64e0-4397-87be-f52a4e6c2f06',
+              },
+            ],
           },
           {
             is: 'ElFormItemRender',
@@ -104,13 +126,16 @@ export default {
             label: '备注',
             prop: 'remark',
             defaultValue: '',
-            el: {
-              is: 'ElInput',
-              minlength: 10,
-              maxlength: 128,
-              type: 'textarea',
-              showWordLimit: true,
-            },
+            children: [
+              {
+                is: 'ElInput',
+                minlength: 10,
+                maxlength: 128,
+                type: 'textarea',
+                showWordLimit: true,
+                _id: '9865a95e-e2f8-4a8e-aa2f-eda3f90150d8',
+              },
+            ],
           },
           {
             is: 'ElDescriptions',
@@ -151,11 +176,13 @@ export default {
                 is: 'ElDescriptionsItem',
                 label: 'Address',
                 children: '{{state.formData.address}}',
+                _id: 'b0063bba-0972-4dc9-aa3b-6ec5219eb7a9',
               },
               {
                 is: 'ElDescriptionsItem',
                 label: 'Remark',
                 children: '{{state.formData.remark}}',
+                _id: '0107f5f5-2838-40aa-a791-ecea6163df94',
               },
             ],
             _id: 'e94a1c1a-0eda-417c-a5c5-e6a411be0484',
@@ -190,10 +217,7 @@ export default {
         remark: 'ewrgetgw',
       },
     },
-    plugins: [
-      '/plugins/web',
-      '/plugins/element-plus',
-    ],
+    plugins: ['/plugins/web', '/plugins/element-plus'],
     designer: {
       canvas: {
         style: {

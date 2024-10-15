@@ -27,6 +27,7 @@ export default [
   {
     is: 'wc-appbar',
     label: 'appbar',
+    category: '额外扩展',
     props: [
       { lp: 'pinned', type: 'switch' },
       { lp: 'floating', type: 'switch' },

@@ -1,15 +1,13 @@
 import { mapValues, keyBy } from '@el-lowcode/utils'
 import { treeUtils } from '@el-lowcode/utils'
 import { ENUM_SIZE } from '../utils'
-// import JsonSchemaDialog from './json-schema-dialog.vue'
+import JsonSchemaDialog from './json-schema-dialog.vue'
 
 export default {
   is: 'ElForm-c',
   label: 'form',
   category: '表单',
   props: [
-    // todo
-    // { is: JsonSchemaDialog },
     { lp: 'model', required: true, script: true },
     { lp: 'size', type: 'radio-group', options: ENUM_SIZE },
     { lp: 'label-position', type: 'radio-group', options: ['left', 'right', 'top'] },
@@ -22,6 +20,8 @@ export default {
       { lp: 'scroll-to-error', type: 'switch' },
     ] },
     { is: 'ElDivider' },
+    { is: JsonSchemaDialog },
+    { is: 'ElDivider' },
     { is: 'h1', children: 'Event' },
     { lp: 'onSubmit', script: true }
   ],
@@ -33,13 +33,12 @@ export default {
       ctx.widgets.ElFormItemRender.defaultProps(ctx)
     ]
   }),
-  JSONSchemaOutput: (props) => {
+  JSONSchemaOutput: (props, ctx) => {
     const flatted = treeUtils.flat(props.children).filter(e => e.prop)
     return {
       type: 'object',
       required: flatted.filter(e => e.required).map(e => e.prop),
-      // todo
-      // properties: mapValues(keyBy(flatted, 'prop'), e => el_lowcode_widgets[e.el?.is]?.JSONSchemaOutput?.(e))
+      properties: mapValues(keyBy(flatted, 'prop'), e => ctx.widgets[e.is]?.JSONSchemaOutput?.(e, ctx))
     }
   }
 }

@@ -16,12 +16,14 @@ export default {
       {
         is: 'p',
         _id: '1b765f3e-edbd-4276-86a8-6f1e0756266c',
-        children: '这个例子中展示了如何使用自定义验证规则来完成密码的二次验证。',
+        children:
+          '这个例子中展示了如何使用自定义验证规则来完成密码的二次验证。',
       },
       {
         is: 'p',
         _id: '6c774ef3-9e5a-455f-993a-f65766e90cfe',
-        children: '本例还使用 status-icon 属性为输入框添加了表示校验结果的反馈图标。',
+        children:
+          '本例还使用 status-icon 属性为输入框添加了表示校验结果的反馈图标。',
       },
       {
         is: 'ElCard',
@@ -44,11 +46,14 @@ export default {
                 label: 'Password',
                 prop: 'pass',
                 defaultValue: '',
-                el: {
-                  is: 'ElInput',
-                },
                 required: true,
                 description: '',
+                children: [
+                  {
+                    is: 'ElInput',
+                    _id: 'fe9b1123-4d65-40ec-a754-0525b066a22e',
+                  },
+                ],
               },
               {
                 is: 'ElFormItemRender',
@@ -56,14 +61,18 @@ export default {
                 label: 'Confirm',
                 prop: 'checkPass',
                 defaultValue: '',
-                el: {
-                  is: 'ElInput',
-                  type: 'password',
-                },
                 required: true,
                 rules: {
-                  validator: "{{(rule, val, cb) => {\r\n  if (state.formData.pass != state.formData.checkPass) {\r\n    return new Error(`Two inputs don't match!`)\r\n  } else {\r\n    cb()\r\n  }\r\n}}}",
+                  validator:
+                    "{{(rule, val, cb) => {\r\n  if (state.formData.pass != state.formData.checkPass) {\r\n    return new Error(`Two inputs don't match!`)\r\n  } else {\r\n    cb()\r\n  }\r\n}}}",
                 },
+                children: [
+                  {
+                    is: 'ElInput',
+                    type: 'password',
+                    _id: '269256ef-523e-41b2-9654-d309e78f7964',
+                  },
+                ],
               },
               {
                 is: 'ElFormItemRender',
@@ -71,14 +80,17 @@ export default {
                 label: 'Age',
                 prop: 'age',
                 defaultValue: '',
-                el: {
-                  is: 'ElInput',
-                },
                 required: true,
                 rules: {
                   pattern: '^\\d+$',
                   message: 'Please input the digits',
                 },
+                children: [
+                  {
+                    is: 'ElInput',
+                    _id: 'f0c591c5-1ea4-4325-92e3-788466c75e8c',
+                  },
+                ],
               },
             ],
             model: '{{state.formData}}',
@@ -95,10 +107,7 @@ export default {
     style: {
       padding: '20px',
     },
-    plugins: [
-      "/plugins/web",
-      "/plugins/element-plus"
-    ],
+    plugins: ['/plugins/web', '/plugins/element-plus'],
     designer: {
       canvas: {
         style: {

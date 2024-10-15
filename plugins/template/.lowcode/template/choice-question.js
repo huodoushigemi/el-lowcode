@@ -9,7 +9,7 @@ export default {
       {
         is: 'ElForm-c',
         _id: '15870304-528c-4f18-b4c2-7529dcb30837',
-        labelWidth: '20',
+        labelWidth: 20,
         style: {
           overflow: 'hidden',
         },
@@ -27,7 +27,8 @@ export default {
           {
             is: 'Code',
             _id: 'c63abc01-0ace-492e-8215-f35828d04e87',
-            children: "const bird = {\n  size: 'small'\n}\n\nconst mouse = {\n  name: 'Mickey',\n  small: true\n}",
+            children:
+              "const bird = {\n  size: 'small'\n}\n\nconst mouse = {\n  name: 'Mickey',\n  small: true\n}",
             style: {
               'margin-left': '20px',
             },
@@ -38,30 +39,41 @@ export default {
             label: '',
             prop: 'radio1',
             defaultValue: '',
-            options: [
+            children: [
               {
-                label: 'A. mouse.bird.size 是无效的',
-                value: 'a',
-              },
-              {
-                label: 'B. mouse[bird.size] 是无效的',
-                value: 'b',
-              },
-              {
-                label: 'C. mouse[bird["size"]] 是无效的',
-                value: 'c',
-              },
-              {
-                label: 'D. 以上三个选项都是有效的',
-                value: 'd',
+                is: 'ElRadioGroup',
+                _id: '926bd712-0d10-476f-9dac-7bec3b29bbbx',
+                type: false,
+                size: 'default',
+                disabled: false,
+                children: [
+                  {
+                    is: 'ElRadio',
+                    _id: '926bd712-0d10-476f-9dac-7bec3b29bbbx-1',
+                    label: 'A. mouse.bird.size 是无效的',
+                    value: 'a',
+                  },
+                  {
+                    is: 'ElRadio',
+                    _id: '926bd712-0d10-476f-9dac-7bec3b29bbbx-2',
+                    label: 'B. mouse[bird.size] 是无效的',
+                    value: 'b',
+                  },
+                  {
+                    is: 'ElRadio',
+                    _id: '926bd712-0d10-476f-9dac-7bec3b29bbbx-3',
+                    label: 'C. mouse[bird["size"]] 是无效的',
+                    value: 'c',
+                  },
+                  {
+                    is: 'ElRadio',
+                    _id: '926bd712-0d10-476f-9dac-7bec3b29bbbx-4',
+                    label: 'D. 以上三个选项都是有效的',
+                    value: 'd',
+                  },
+                ],
               },
             ],
-            el: {
-              is: 'ElRadioGroup',
-              type: false,
-              size: 'default',
-              disabled: false,
-            },
           },
           {
             is: 'p',
@@ -78,32 +90,45 @@ export default {
           },
           {
             is: 'ElFormItemRender',
-            _id: 'd0223601-ea5f-4126-bbf6-c44f127f12a7',
             label: '',
             prop: 'radio2',
-            defaultValue: '',
-            options: [
+            children: [
               {
-                label: 'A. true',
-                value: 'a',
-              },
-              {
-                label: 'B. false',
-                value: 'b',
-              },
-              {
-                label: 'C. 报错',
-                value: 'c',
-              },
-              {
-                label: 'D. undefined',
-                value: 'd',
+                is: 'ElRadioGroup',
+                defaultValue: '',
+                children: [
+                  {
+                    is: 'ElRadio',
+                    label: 'A. true',
+                    value: 'a',
+                    _id: '76f470a0-c992-46f5-a882-097891b2b3f5',
+                  },
+                  {
+                    is: 'ElRadio',
+                    label: 'B. false',
+                    value: 'b',
+                    _id: '9b5b134f-0106-4c61-8431-fd6f66cdd9f6',
+                  },
+                  {
+                    is: 'ElRadio',
+                    label: 'C. 报错',
+                    value: 'c',
+                    _id: '41745aa9-bb84-422d-a9ff-e6e9a6d76705',
+                  },
+                  {
+                    is: 'ElRadio',
+                    label: 'D. undefined',
+                    value: 'd',
+                    _id: '55d4b0c5-d8d8-4833-a60e-2d57cd2810d4',
+                  },
+                ],
+                'lcd-drag': {
+                  disabled: true,
+                },
+                _id: 'e558488f-5b7d-4f55-9b3b-693fc8354d4a',
               },
             ],
-            el: {
-              is: 'ElRadioGroup',
-              type: false,
-            },
+            _id: '929d0c2c-6a75-47d0-b2ae-c078e341baee',
           },
           {
             is: 'p',
@@ -113,39 +138,53 @@ export default {
           {
             is: 'Code',
             _id: '8544bf64-b2a9-4f4d-a452-a0f50f274730',
-            children: "var f = function () { console.log('1'); } \nfunction f() { console.log('2'); } \nf()",
+            children:
+              "var f = function () { console.log('1'); } \nfunction f() { console.log('2'); } \nf()",
             style: {
               'margin-left': '20px',
             },
           },
           {
             is: 'ElFormItemRender',
-            _id: '9cf4adc2-e749-4e7b-815b-ea2cbb028f70',
             label: '',
             prop: 'radio3',
-            defaultValue: '',
-            options: [
+            children: [
               {
-                label: 'A. 1',
-                value: 'a',
-              },
-              {
-                label: 'B. 2',
-                value: 'b',
-              },
-              {
-                label: 'C. 报错',
-                value: 'c',
-              },
-              {
-                label: 'D. undefined',
-                value: 'd',
+                is: 'ElRadioGroup',
+                defaultValue: '',
+                children: [
+                  {
+                    is: 'ElRadio',
+                    label: 'A. 1',
+                    value: 'a',
+                    _id: 'd3c4690e-9ea5-403e-be62-738357eaa740',
+                  },
+                  {
+                    is: 'ElRadio',
+                    label: 'B. 2',
+                    value: 'b',
+                    _id: 'cada806b-b675-4ca5-8f82-f5cabe7bf5fc',
+                  },
+                  {
+                    is: 'ElRadio',
+                    label: 'C. 报错',
+                    value: 'c',
+                    _id: 'a5cabb1c-e394-4e31-97ce-207440b5159c',
+                  },
+                  {
+                    is: 'ElRadio',
+                    label: 'D. undefined',
+                    value: 'd',
+                    _id: 'fa2fbac0-4a4a-45ff-b935-e67b263d0551',
+                  },
+                ],
+                'lcd-drag': {
+                  disabled: true,
+                },
+                _id: 'e1c1ca0d-9ede-4d0e-8a8c-08e80b420fa4',
               },
             ],
-            el: {
-              is: 'ElRadioGroup',
-              type: false,
-            },
+            _id: 'e531f778-10f5-4afa-ad24-334171fa586d',
           },
           {
             is: 'h2',
@@ -160,21 +199,28 @@ export default {
           {
             is: 'Code',
             _id: '97d169a7-6bec-4786-a324-34c2514caa95',
-            children: 'var name = "jimmy";\nvar a = {\n    name: "chimmy",\n    fn : function () {\n        console.log(this.name); \n    }\n}\na.fn();',
+            children:
+              'var name = "jimmy";\nvar a = {\n    name: "chimmy",\n    fn : function () {\n        console.log(this.name); \n    }\n}\na.fn();',
             style: {
               'margin-left': '20px',
             },
           },
           {
             is: 'ElFormItemRender',
-            _id: '55b8615d-c60e-4ae3-a631-e160c405f59c',
             label: '',
             prop: 'input1',
-            defaultValue: '',
-            el: {
-              is: 'ElInput',
-              placeholder: '答',
-            },
+            children: [
+              {
+                is: 'ElInput',
+                defaultValue: '',
+                'lcd-drag': {
+                  disabled: true,
+                },
+                _id: '2b480b38-6605-476b-baa1-998b2ecf8e5a',
+                placeholder: '答',
+              },
+            ],
+            _id: '5b8113e7-73eb-49ab-9cff-a234f39b56e1',
           },
         ],
         model: '{{state.formData}}',
@@ -189,10 +235,7 @@ export default {
     style: {
       padding: '12px',
     },
-    plugins: [
-      "/plugins/web",
-      "/plugins/element-plus"
-    ],
+    plugins: ['/plugins/web', '/plugins/element-plus'],
     designer: {
       canvas: {
         style: {
