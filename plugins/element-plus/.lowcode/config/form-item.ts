@@ -7,7 +7,7 @@ export default {
   is: 'ElFormItemRender',
   label: 'field',
   category: '表单',
-  drag: { from: [], to: ['ElForm', 'ElForm-c', 'ElForm-lcd'] },
+  drag: { from: [], ancestor: ['ElForm', 'ElForm-c', 'ElForm-lcd'] },
   props: (props, ctx) => ([
     { is: 'div', class: 'grid grid-cols-3 gap-x-8', children: [
       { lp: ['标签', 'label'] },

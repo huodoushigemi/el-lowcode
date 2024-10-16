@@ -95,7 +95,8 @@ export default [
       contenteditable: true,
       style: 'outline: 0',
       onInput: e => (e.stopPropagation(), toRaw(props).children = e.currentTarget.innerText),
-      onKeydown: e => e.stopPropagation()
+      onKeydown: e => e.stopPropagation(),
+      onClick: e => e.currentTarget.focus(),
     }),
     defaultProps: () => ({
       children: '文本'

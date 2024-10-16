@@ -1,14 +1,14 @@
 <template>
   <div class="selected-layer" absolute inset-0 pointer-events-none select-none z-9>
     <div v-if="!designerCtx.dragged" absolute outline="1 dashed [--vs-focus-b-c]" op75 outline-offset--1 :style="calcStyle(designerCtx.hover?.el)">
-      <div class="absolute bottom-full px8 text-12 c-white bg-[--vs-focus-b-c]">
+      <div class="absolute bottom-full px8 max-w8em text-12 truncate c-white bg-[--vs-focus-b-c]">
         {{ designerCtx.hover?.label }}
       </div>
     </div>
     
     <div v-if="active" absolute outline="1.5 solid [--vs-focus-b-c]" outline-offset--1.5 :style="calcStyle(designerCtx.active?.el)" @mousedown.stop>
       <div v-if="active.parent && !active.isAbs" class="actions absolute bottom-full flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]" :op="designerCtx.dragged && 0" @mousedown.stop draggable="true" @dragstart="dispatchDrag">
-        <div flex aic px12 bg="#17d57e">{{ active.label }}</div>
+        <div px12 max-w12em truncate bg="#17d57e">{{ active.label }}</div>
         <i-solar:arrow-to-top-right-bold class="icon" @click="active2parent" />
         <i-solar:arrow-up-linear class="icon" @click="moveUp" />
         <i-solar:arrow-down-linear class="icon" @click="moveDown" />
@@ -17,7 +17,7 @@
       </div>
 
       <div v-if="active.parent && active.isAbs" class="actions absolute bottom-full flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]" :op="designerCtx.dragged && 0" @mouseenter="designerCtx.hoverId = active.id" @mouseover="designerCtx.hoverId = active.id">
-        <div flex aic px12 bg="#17d57e">{{ active.label }}</div>
+        <div px12 max-w12em truncate bg="#17d57e">{{ active.label }}</div>
         <i-solar:arrow-to-top-right-bold class="icon" @click="active2parent" />
         <i-bi:arrows-move ref="moveHandle" class="icon" text-16="!" cursor-move />
         <i-solar:copy-line-duotone class="icon" @click="copy" />
@@ -85,6 +85,7 @@ useResizeObserver(rootEl, fu)
 .selected-layer {
   .actions {
     height: 26px;
+    line-height: 26px;
     > .icon {
       padding: 0 6px;
       box-sizing: content-box;

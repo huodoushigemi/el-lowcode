@@ -26,12 +26,14 @@ export type UserWidget = Assign<Widget, {
   drag?: boolean | Assign<WidgetDrag, {
     to?: Arrable<string>
     from?: Arrable<string>
+    ancestor?: Arrable<string>
   }>
 }>
 
 export interface WidgetDrag {
   to?: string[]
   from?: string[]
+  ancestor?: string[]
   disabled?: boolean
 }
 
@@ -102,7 +104,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   get isRoot() { return !this.parent }
 
-  get drag(): WidgetDrag { return this.$data['lcd-drag'] || this.data['lcd-drag'] || this.config?.drag || {} }
+  get drag(): WidgetDrag { return { ...this.config?.drag, ...this.data['lcd-drag'], ...this.$data['lcd-drag'] } }
   get selectable() { return (this.$data['lcd-selectable'] || this.data['lcd-selectable']) !== false }
 
   get lock() { return this.$data['lcd-lock'] }
@@ -119,8 +121,9 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   override insertable(node: DisplayNode) {
     if (!isArray(this.data_children)) return false
-    if (this.drag.from && !this.drag.from.includes(node.is)) return false
     if (node.drag.to && !node.drag.to.includes(this.is)) return false
+    if (this.drag.from && !this.drag.from.includes(node.is)) return false
+    if (node.drag.ancestor && !this.path.some(e => node.drag.ancestor!.includes(e.is))) return false
     if (this.lock) return false
     return super.insertable(node)
   }

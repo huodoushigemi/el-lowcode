@@ -328,7 +328,7 @@ const DragGuidMask = defineComponent({
     const root = document.scrollingElement!
     return () => dragMaskRects.value && h('div', { style: `position: fixed; inset: 0; pointer-events: none; line-height: 0; z-index: 99` }, h('svg', { style: 'width: 100%; height: 100%' }, h('path', {
       style: 'pointer-events: auto;',
-      fill: 'rgba(0,0,0,.4)',
+      fill: 'rgba(0,0,0,.6)',
       d: `
         M${root.scrollWidth},0 L0,0 L0,${root.scrollHeight} L${root.scrollWidth},${root.scrollHeight} L${root.scrollWidth},0 Z
         ${dragMaskRects.value.map(e => ` M${e.x},${e.y} h${e.w} v${e.h} H${e.x} Z`).join('')}

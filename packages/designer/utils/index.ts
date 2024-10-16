@@ -85,7 +85,12 @@ function normalWidget(widget: UserWidget): Widget {
     ...widget,
     drag: typeof widget.drag == 'boolean'
       ? { disabled: !widget.drag }
-      : { ...widget.drag, from: widget.drag?.from ? toArr(widget.drag?.from) : void 0, to: widget.drag?.to ? toArr(widget.drag?.to) : void 0 },
+      : {
+        ...widget.drag,
+        to: widget.drag?.to ? toArr(widget.drag!.to) : void 0,
+        from: widget.drag?.from ? toArr(widget.drag!.from) : void 0,
+        ancestor: widget.drag?.ancestor ? toArr(widget.drag!.ancestor) : void 0,
+      },
   }
 }
 
