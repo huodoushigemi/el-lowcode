@@ -91,6 +91,12 @@ export default [
     props: [
       { lp: ['text', 'children'] },
     ],
+    devProps: props => ({
+      contenteditable: true,
+      style: 'outline: 0',
+      onInput: e => (e.stopPropagation(), toRaw(props).children = e.currentTarget.innerText),
+      onKeydown: e => e.stopPropagation()
+    }),
     defaultProps: () => ({
       children: '文本'
     })
@@ -268,7 +274,7 @@ export default [
     icon: 'https://api.iconify.design/mdi:language-markdown-outline.svg',
     props: [
       { lp: 'content', el: { is: 'MonacoEditor', language: 'markdown', style: 'height: 400px' } },
-      { is: 'div', class: 'grid grid-cols-2', children: [
+      { is: 'div', class: 'grid grid-cols-2', style: 'margin-top: 48px', children: [
         { lp: ['html', 'options.html'], type: 'switch' },
         { lp: ['breaks', 'options.breaks'], type: 'switch' },
         { lp: ['linkify', 'options.linkify'], type: 'switch' },
@@ -281,6 +287,27 @@ export default [
         breaks: true,
         linkify: true
       }
+    })
+  },
+
+  {
+    is: 'qrcode',
+    label: 'qrcode',
+    category: '额外扩展',
+    icon: 'https://api.iconify.design/mdi:qrcode.svg',
+    props: [
+      { lp: 'text' },
+      { lp: ['type', 'options.type'], type: 'radio-group', options: ['svg', ['png', 'image/png']] },
+      { lp: ['margin', 'options.margin'], type: 'input-number', displayValue: 4 },
+      { lp: ['color', 'options.color.dark'], type: 'color-picker', displayValue: '#000000ff', el: { colorFormat: 'hex' } },
+      { lp: ['bg-color', 'options.color.light'], type: 'color-picker', displayValue: '#ffffffff', el: { colorFormat: 'hex' } },
+    ],
+    defaultProps: () => ({
+      text: 'https://www.baidu.com',
+      options: {
+        type: 'svg'
+      },
+      style: { width: '128px', height: '128px' }
     })
   },
 ]

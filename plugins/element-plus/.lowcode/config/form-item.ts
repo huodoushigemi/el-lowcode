@@ -1,4 +1,4 @@
-import { reactive } from 'vue'
+import { reactive, toRaw } from 'vue'
 import { unFn } from '@el-lowcode/utils'
 
 const types = ['ElInput', 'ElInputNumber', 'ElRate', 'ElSlider', 'ElSwitch', 'ElSelect', 'ElRadioGroup', 'ElCheckboxGroup', 'ElTimePicker', 'ElDatePicker', 'ElColorPicker', 'ElDateTime-lcd']
@@ -36,10 +36,7 @@ export default {
     prop: `input`,
     children: [createInput('ElInput', ctx)],
   }),
-  devProps: props => ({
-    ...props,
-    children: props.children?.length ? reactive([{ ...props.children[0], 'lcd-drag': { disabled: true } }]) : props.children
-  }),
+  devProps: props => xxx(props),
   purify: props => ({
     ...props,
     // defaultValue: void 0,
@@ -64,4 +61,14 @@ function createInput(is, ctx) {
     is,
     ...ctx.widgets[is].defaultProps?.(ctx),
   }
+}
+
+function xxx(props) {
+  if (props.children?.length) {
+    if (!props.children[0]['lcd-drag']) {
+      Object.defineProperty(toRaw(props.children[0]), 'lcd-drag', { value: { disabled: true }, writable: true })
+      Object.defineProperty(toRaw(props.children[0]), 'lcd-selectable', { value: false, writable: true })
+    }
+  }
+  return props
 }

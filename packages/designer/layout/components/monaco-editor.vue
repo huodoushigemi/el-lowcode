@@ -27,8 +27,6 @@ import { useDark } from '@vueuse/core'
 import { vLoading } from 'element-plus'
 import { refWithWatch } from '../../components/hooks'
 
-defineOptions({ inheritAttrs: false })
-
 const props = defineProps({
   // ...VueMonacoEditor.props as { [k in keyof EditorProps]: any },
   value: String,
@@ -36,7 +34,8 @@ const props = defineProps({
   language: String,
   options: Object,
   // autoFormat: { type: Boolean, default: true },
-  tsExtraLibs: Object
+  tsExtraLibs: Object,
+  autofocus: Boolean
 })
 
 let editorIns
@@ -53,7 +52,7 @@ async function onMount(_editor, monaco) {
   editorIns = _editor
   setTimeout(() => {
     // if (props.autoFormat) editor.getAction('editor.action.formatDocument').run()
-    editorIns.focus()
+    if (props.autofocus) editorIns.focus()
   }, 100);
   const { languages } = monaco
   if (props.tsExtraLibs) {

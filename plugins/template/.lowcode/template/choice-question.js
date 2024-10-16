@@ -120,9 +120,6 @@ export default {
                     _id: '55d4b0c5-d8d8-4833-a60e-2d57cd2810d4',
                   },
                 ],
-                'lcd-drag': {
-                  disabled: true,
-                },
                 _id: 'e558488f-5b7d-4f55-9b3b-693fc8354d4a',
               },
             ],
@@ -176,9 +173,6 @@ export default {
                     _id: 'fa2fbac0-4a4a-45ff-b935-e67b263d0551',
                   },
                 ],
-                'lcd-drag': {
-                  disabled: true,
-                },
                 _id: 'e1c1ca0d-9ede-4d0e-8a8c-08e80b420fa4',
               },
             ],
@@ -211,9 +205,6 @@ export default {
               {
                 is: 'ElInput',
                 defaultValue: '',
-                'lcd-drag': {
-                  disabled: true,
-                },
                 _id: '2b480b38-6605-476b-baa1-998b2ecf8e5a',
                 placeholder: '答',
               },

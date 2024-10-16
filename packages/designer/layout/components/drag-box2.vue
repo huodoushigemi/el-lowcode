@@ -73,6 +73,7 @@ function setup(props: BoxProps) {
   useDrag(node)
   
   useEventListener(elRef, 'mousedown', e => {
+    if (!node.selectable) return
     if (e.button != 0) return
     e.stopPropagation()
     if (designer.dragged) return
@@ -80,6 +81,7 @@ function setup(props: BoxProps) {
   })
 
   useEventListener(elRef, 'mouseover', e => {
+    if (!node.selectable) return
     e.stopPropagation()
     if (designer.dragged) return
     designer.hoverId = props._id

@@ -17,5 +17,6 @@ export default {
     
     app.component('wangeditor', defineAsyncComponent(() => import('./wangeditor.vue')))
     app.component('markdown-it', defineAsyncComponent(() => import('./markdown-it.vue')))
+    app.component('qrcode', defineAsyncComponent(() => import('./qrcode.vue')))
   }
 }

@@ -17,7 +17,7 @@
 
   <template v-if="script === true || isScript || visible">
     <el-dialog v-model="visible" title="JS Expression" destroy-on-close>
-      <monaco-editor v-model:value="code" @save="onSave" :tsExtraLibs="tsExtraLibs" language="typescript" height="500px" />
+      <monaco-editor v-model:value="code" @save="onSave" :tsExtraLibs="tsExtraLibs" language="typescript" height="500px" autofocus />
       <template #footer>
         <el-button size="default" @click="visible = false">Cancel</el-button>
         <el-button size="default" type="primary" @click="onSave">Crtl+S</el-button>

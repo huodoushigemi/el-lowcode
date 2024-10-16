@@ -26,9 +26,6 @@ export default {
                   {
                     is: 'ElInput',
                     defaultValue: '',
-                    'lcd-drag': {
-                      disabled: true,
-                    },
                     _id: '7e9346b1-58c7-4396-8039-e1202af4baf2',
                   },
                 ],
@@ -57,9 +54,6 @@ export default {
                         _id: 'bea0d404-9e19-47e7-bf2c-c6836f5dd5e2',
                       },
                     ],
-                    'lcd-drag': {
-                      disabled: true,
-                    },
                     _id: '34de3191-c356-4d4b-81b2-1467c8facdbb',
                   },
                 ],
@@ -74,9 +68,6 @@ export default {
                   {
                     is: 'ElInput',
                     defaultValue: '',
-                    'lcd-drag': {
-                      disabled: true,
-                    },
                     _id: '3c0d9ce4-e497-49b4-827f-26762bbe800d',
                     placeholder: '为女时必填',
                   },
@@ -92,9 +83,6 @@ export default {
                   {
                     is: 'ElInput',
                     defaultValue: '',
-                    'lcd-drag': {
-                      disabled: true,
-                    },
                     _id: '9a8fa22c-bdba-4cd6-9c54-5b344e4068f0',
                     placeholder: '为男时隐藏',
                     type: 'textarea',
