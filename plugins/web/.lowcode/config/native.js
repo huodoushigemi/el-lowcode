@@ -311,4 +311,19 @@ export default [
       style: { width: '128px', height: '128px' }
     })
   },
+
+  {
+    is: 'hljs',
+    label: 'hl-js',
+    category: '额外扩展',
+    icon: 'https://api.iconify.design/mdi:code-braces.svg',
+    props: props => [
+      { lp: 'language', options: [['JSON', 'json'], ['JS', 'javascript'], ['Java', 'java'], ['Python', 'python'], ['Go', 'go'], ['SQL', 'sql'], ['Diff', 'diff'], ['Bash', 'bash']] },
+      { lp: 'code', el: { is: 'MonacoEditor', language: props.language, autofocus: true, style: { height: '400px' } } },
+    ],
+    defaultProps: () => ({
+      language: 'json',
+      code: '{\n  "name": "Jack"\n}'
+    })
+  },
 ]
