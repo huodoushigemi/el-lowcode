@@ -40,7 +40,7 @@ export const showOpt = (opt?: NormalizedOpt) => opt?.label ?? opt?.value
 const normalizeOpt = (opt: Opt): NormalizedOpt => isString(opt) ? ({ label: opt, value: opt }) : isArray(opt) ? { label: opt[0], value: opt[1] } : opt
 
 export const useTransformer = (_model, _prop, opt: Pick<Item0, 'defaultValue' | 'displayValue' | 'get' | 'set' | 'out'> = {}) => {
-  return {
+  const ret = {
     get() {
       const model = toValue(_model), prop = toValue(_prop)
       let v = get(model, prop)
@@ -64,4 +64,5 @@ export const useTransformer = (_model, _prop, opt: Pick<Item0, 'defaultValue' | 
     set value(v) { this.set(v) },
     __v_isRef: true,
   }
+  return ret as typeof ret & Ref<any>
 }

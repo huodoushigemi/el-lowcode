@@ -102,7 +102,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   get isRoot() { return !this.parent }
 
-  get drag(): WidgetDrag { return this.$data['lcd-drag'] || this.config?.drag || {} }
+  get drag(): WidgetDrag { return this.$data['lcd-drag'] || this.data['lcd-drag'] || this.config?.drag || {} }
   get selectable() { return (this.$data['lcd-selectable'] || this.data['lcd-selectable']) !== false }
 
   get lock() { return this.$data['lcd-lock'] }
