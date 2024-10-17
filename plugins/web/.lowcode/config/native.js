@@ -314,15 +314,17 @@ export default [
 
   {
     is: 'hljs',
-    label: 'hl-js',
+    label: 'highlight',
     category: '额外扩展',
     icon: 'https://api.iconify.design/mdi:code-braces.svg',
     props: props => [
-      { lp: 'language', options: [['JSON', 'json'], ['JS', 'javascript'], ['Java', 'java'], ['Python', 'python'], ['Go', 'go'], ['SQL', 'sql'], ['Diff', 'diff'], ['Bash', 'bash']] },
-      { lp: 'code', el: { is: 'MonacoEditor', language: props.language, autofocus: true, style: { height: '400px' } } },
+      { lp: 'lang', options: [['JSON', 'json'], ['Html', 'html'], ['Css', 'css'], ['JS', 'javascript'], ['Java', 'java'], ['Python', 'python'], ['Go', 'go'], ['SQL', 'sql'], ['Diff', 'diff'], ['Bash', 'bash']] },
+      { lp: 'theme', options: ['a11y-light', 'a11y-dark', 'atom-one-light', 'atom-one-dark', 'github', 'github-dark', 'vs', 'vs2015'] },
+      { lp: 'code', el: { is: 'MonacoEditor', language: props.lang, autofocus: true, style: { height: '400px' } } },
     ],
     defaultProps: () => ({
-      language: 'json',
+      lang: 'json',
+      theme: 'vs2015',
       code: '{\n  "name": "Jack"\n}'
     })
   },

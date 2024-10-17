@@ -23,10 +23,11 @@ export default {
             children: '1. 哪一个是正确的？',
           },
           {
-            is: 'Code',
+            is: 'hljs',
             _id: 'c63abc01-0ace-492e-8215-f35828d04e87',
-            children:
-              "const bird = {\n  size: 'small'\n}\n\nconst mouse = {\n  name: 'Mickey',\n  small: true\n}",
+            theme: 'a11y-dark',
+            lang: 'javascript',
+            code: "const bird = {\n  size: 'small'\n}\n\nconst mouse = {\n  name: 'Mickey',\n  small: true\n}",
             style: {
               'margin-left': '20px',
             },
@@ -72,6 +73,9 @@ export default {
                 ],
               },
             ],
+            style: {
+              marginTop: '10px',
+            },
           },
           {
             is: 'p',
@@ -79,9 +83,11 @@ export default {
             children: '2. 下面打印正确的是',
           },
           {
-            is: 'Code',
+            is: 'hljs',
             _id: '6b90872c-62a1-4aa3-a0f7-6bbffbcf5c5f',
-            children: 'var obj = {}; \nconsole.log(delete obj.p)',
+            theme: 'a11y-dark',
+            lang: 'javascript',
+            code: 'var obj = {}; \nconsole.log(delete obj.p)',
             style: {
               'margin-left': '20px',
             },
@@ -124,6 +130,9 @@ export default {
               },
             ],
             _id: '929d0c2c-6a75-47d0-b2ae-c078e341baee',
+            style: {
+              marginTop: '10px',
+            },
           },
           {
             is: 'p',
@@ -131,10 +140,11 @@ export default {
             children: '3. 下面打印正确的是',
           },
           {
-            is: 'Code',
+            is: 'hljs',
             _id: '8544bf64-b2a9-4f4d-a452-a0f50f274730',
-            children:
-              "var f = function () { console.log('1'); } \nfunction f() { console.log('2'); } \nf()",
+            theme: 'a11y-dark',
+            lang: 'javascript',
+            code: "var f = function () { console.log('1'); } \nfunction f() { console.log('2'); } \nf()",
             style: {
               'margin-left': '20px',
             },
@@ -177,6 +187,9 @@ export default {
               },
             ],
             _id: 'e531f778-10f5-4afa-ad24-334171fa586d',
+            style: {
+              marginTop: '10px',
+            },
           },
           {
             is: 'h2',
@@ -189,10 +202,11 @@ export default {
             children: '1. 下面打印 name 值是什么',
           },
           {
-            is: 'Code',
+            is: 'hljs',
             _id: '97d169a7-6bec-4786-a324-34c2514caa95',
-            children:
-              'var name = "jimmy";\nvar a = {\n    name: "chimmy",\n    fn : function () {\n        console.log(this.name); \n    }\n}\na.fn();',
+            theme: 'a11y-dark',
+            lang: 'javascript',
+            code: 'var name = "jimmy";\nvar a = {\n    name: "chimmy",\n    fn : function () {\n        console.log(this.name); \n    }\n}\na.fn();',
             style: {
               'margin-left': '20px',
             },
@@ -210,6 +224,9 @@ export default {
               },
             ],
             _id: '5b8113e7-73eb-49ab-9cff-a234f39b56e1',
+            style: {
+              marginTop: '10px',
+            },
           },
         ],
         model: '{{state.formData}}',

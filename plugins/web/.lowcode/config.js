@@ -1,14 +1,12 @@
 import native from './config/native'
 import page from '../page/config'
 import grid from '../grid/config'
-import code from '../code/config'
 
 export default [
   ...native,
 
   page,
   grid,
-  code,
   {
     is: 'wc-waterfall',
     label: 'waterfall',
