@@ -1,49 +1,26 @@
 <template>
-  <iframe ref="elRef" :height="Math.ceil(height)" />
+   <wc-mdit :src="url" .options="{ html: true }" theme="github" body-style="padding: 45px; margin: 0 auto; max-width: 980px; box-sizing: border-box;" min-hfull />
 </template>
 
 <script setup>
-import { ref, watchSyncEffect } from 'vue'
-import { computedAsync, useElementSize } from '@vueuse/core'
-import MarkdownIt from 'markdown-it'
-import css from 'github-markdown-css/github-markdown.css?inline'
+import 'wc-mdit'
 
 const props = defineProps({
   url: String,
-  text: String
 })
 
-const md = new MarkdownIt({ html: true })
-const elRef = ref()
+// import MarkdownIt from 'markdown-it'
 
-// 给链接添加 target="_blank"
-md.renderer.rules.link_open = (tokens, idx, opts, env, slef) => {
-  const aI = tokens[idx].attrIndex('target')
-  if (aI < 0) {
-    tokens[idx].attrPush(['target', '_blank'])
-  } else {
-    tokens[idx].attrs[aI][1] = '_blank'
-  }
-  return slef.renderToken(tokens, idx, opts)
-}
+// const md = new MarkdownIt({ html: true })
 
-const html = computedAsync(async () => {
-  const text = await (props.text || fetch(props.url).then(e => e.text()))
-  let html = md.render(text)
-  html =
-`<body class="markdown-body">
-    ${html}
-  </body>
-`
-  return html
-}, '', { onError: console.error })
-
-watchSyncEffect(() => {
-  const doc = elRef.value?.contentDocument
-  if (!doc) return
-  if (!doc.querySelector('#css')) doc.head.innerHTML = `<style id="css">body { padding: 45px; margin: 0 auto !important; max-width: 980px; box-sizing: border-box; overflow: hidden; }\n ${css}</style>`
-  doc.body.outerHTML = html.value
-})
-
-const { height } = useElementSize(() => (html.value, elRef.value?.contentDocument.body), undefined, { box: 'border-box' })
+// // 给链接添加 target="_blank"
+// md.renderer.rules.link_open = (tokens, idx, opts, env, slef) => {
+//   const i = tokens[idx].attrIndex('target')
+//   if (i < 0) {
+//     tokens[idx].attrPush(['target', '_blank'])
+//   } else {
+//     tokens[idx].attrs[i][1] = '_blank'
+//   }
+//   return slef.renderToken(tokens, idx, opts)
+// }
 </script>

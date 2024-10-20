@@ -56,8 +56,8 @@ export const contributes = (designerCtx) => ({
   ],
   views: {
     'plugin-market': [
-      { id: 'plugin-market.views.all', name: 'All' },
-      { id: 'plugin-market.views.installed', name: 'Installed' },
+      // { id: 'plugin-market.views.all', name: 'All' },
+      // { id: 'plugin-market.views.installed', name: 'Installed' },
     ],
   },
   // todo
@@ -96,8 +96,8 @@ export const contributes = (designerCtx) => ({
     }
   ],
   statusbar: [
-    { text: 'statusbar-test', command: 'lcd.toggleDevice' },
-    { text: 'statusbar-right', align: 'right', onClick: () => alert(11) },
+    // { text: 'statusbar-test', command: 'lcd.toggleDevice' },
+    // { text: 'statusbar-right', align: 'right', onClick: () => alert(11) },
   ],
   commands: [
     { command: 'lcd.toggleDevice', title: 'Toggle Device' },
