@@ -51,6 +51,7 @@
     "wc-appbar": "^0.0.8",
     "wc-fill-remain": "^0.0.7",
     "wc-hljs": "^0.0.0",
+    "wc-mdit": "^0.0.1",
     "wc-waterfall": "^0.0.7"
   },
   "devDependencies": {

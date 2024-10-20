@@ -15,6 +15,12 @@ const createH = (is, hidden = true) => ({
   })
 })
 
+const virtualProp = (props, p1, p2) => (p2 in props) || Object.defineProperty(props, p2, {
+  get() { return this[p1] },
+  set(v) { this[p1] = v },
+  enumerable: false
+})
+
 export default [
   {
     is: 'div',
@@ -274,18 +280,27 @@ export default [
     category: '额外扩展',
     icon: 'https://api.iconify.design/mdi:language-markdown-outline.svg',
     props: [
+      { lp: 'src' },
       { lp: 'content', el: { is: 'MonacoEditor', language: 'markdown', style: 'height: 400px' } },
-      { is: 'div', class: 'grid grid-cols-2', style: 'margin-top: 48px', children: [
-        { lp: ['html', 'options.html'], type: 'switch' },
-        { lp: ['breaks', 'options.breaks'], type: 'switch' },
-        { lp: ['linkify', 'options.linkify'], type: 'switch' },
-        { lp: ['typographer', 'options.typographer'], type: 'switch' },
+      { is: 'div', class: 'grid grid-cols-2 gap-x-8', style: 'margin-top: 32px', children: [
+        { lp: 'theme', options: ['github', 'github-light', 'github-dark', 'juejin', 'juejin-yu', 'juejin-devui-blue', 'vuepress'] },
+        { lp: ['body-style', 'body-style'] },
+        { lp: ['html', 'options.html'], type: 'switch', displayValue: false },
+        { lp: ['breaks', 'options.breaks'], type: 'switch', displayValue: false },
+        { lp: ['linkify', 'options.linkify'], type: 'switch', displayValue: false },
+        { lp: ['typographer', 'options.typographer'], type: 'switch', displayValue: false },
       ] }
     ],
+    devProps(props) {
+      virtualProp(props, '.options', 'options')
+    },
     defaultProps: () => ({
       content: `# Markdown-It\n\n---\n\nI really laike using Markdown.\n\nI just love **bold text**.\n\n> #### The quarterly results look great!\n>\n> - Revenue was off the chart.\n> - Profits were higher than ever.\n>\n>  *Everything* is going according to **plan**.\n\n[🔗 百度一下 👈](https://www.baidu.com/)\n\n![excel](https://api.iconify.design/vscode-icons:file-type-excel.svg)\n![word](https://api.iconify.design/vscode-icons:file-type-word.svg)\n![ppt](https://api.iconify.design/vscode-icons:file-type-powerpoint.svg)\n![vscode](https://api.iconify.design/vscode-icons:file-type-vscode.svg)`,
-      options: {
-        breaks: true,
+      // src: 'https://raw.githubusercontent.com/huodoushigemi/wc-mdit/refs/heads/main/README.md',
+      theme: 'github',
+      'body-style': 'padding: 32px;',
+      '.options': {
+        html: true,
         linkify: true
       }
     })

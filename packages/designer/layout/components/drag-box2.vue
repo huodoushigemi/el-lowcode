@@ -2,7 +2,7 @@
 import { cloneVNode, computed, defineComponent, h, inject, mergeProps, reactive, ref, shallowRef, watchEffect } from 'vue'
 import type { Ref } from 'vue'
 import { isArray, isObject } from '@vue/shared'
-import { useEventListener } from '@vueuse/core'
+import { unrefElement, useEventListener } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
 import { mapValues } from '@el-lowcode/utils'
 import { parseAttrs } from '../../components/_utils'

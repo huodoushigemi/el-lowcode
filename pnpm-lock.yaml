@@ -98,6 +98,7 @@ importers:
       wc-appbar: ^0.0.8
       wc-fill-remain: ^0.0.7
       wc-hljs: ^0.0.0
+      wc-mdit: ^0.0.1
       wc-waterfall: ^0.0.7
     dependencies:
       '@el-lowcode/crud': link:packages/crud
@@ -137,6 +138,7 @@ importers:
       wc-appbar: 0.0.8
       wc-fill-remain: 0.0.7
       wc-hljs: 0.0.0_bgdxiy6ou4glmbzvo4sw27dxb4
+      wc-mdit: 0.0.1
       wc-waterfall: 0.0.7
     devDependencies:
       '@iconify/json': 2.2.223
@@ -8939,6 +8941,14 @@ packages:
       solid-js: '*'
     dependencies:
       highlight.js: 11.10.0
+      solid-element: 1.9.0_solid-js@1.9.2
+      solid-js: 1.9.2
+    dev: false
+
+  /wc-mdit/0.0.1:
+    resolution: {integrity: sha512-gGuBMQN/NDU4dh4SuhSVjwKU9lZjKcz7ueZBCiyon8SbCy9ya8372RrmDBAV6JDzLGD8PzMDSuS7FGZSRYi+bQ==}
+    dependencies:
+      markdown-it: 14.1.0
       solid-element: 1.9.0_solid-js@1.9.2
       solid-js: 1.9.2
     dev: false

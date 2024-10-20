@@ -1,5 +1,5 @@
-import { computed, Ref, ComputedRef, shallowRef } from 'vue'
-import { isString, remove } from '@vue/shared'
+import { computed, Ref, shallowRef } from 'vue'
+import { remove } from '@vue/shared'
 
 export abstract class Node<T = any> {
   #data: Ref<T>

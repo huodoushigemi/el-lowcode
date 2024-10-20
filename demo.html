@@ -41,7 +41,15 @@
       console.log(schema.value)
     })
 
-    createApp(() => schema.value && h(ConfigProvider, schema.value, h(Render, schema.value)))
+    const loading = h('h1', { style: 'margin-top: 45vh; text-align: center;' }, 'Loading……')
+
+    createApp(() => schema.value
+      ? h(ConfigProvider, schema.value, {
+        default: h(Render, schema.value),
+        loading
+      })
+      : loading
+    )
       .mount(document.body)
   </script>
 </head>

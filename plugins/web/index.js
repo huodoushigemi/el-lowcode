@@ -14,8 +14,8 @@ export default {
     app.component('VHtml', (props) => h('div', { ...props }))
     
     app.component('wangeditor', defineAsyncComponent(() => import('./wangeditor.vue')))
-    app.component('markdown-it', defineAsyncComponent(() => import('./markdown-it.vue')))
     app.component('qrcode', defineAsyncComponent(() => import('./qrcode.vue')))
+    app.component('markdown-it', (props) => (import('wc-mdit'), h('wc-mdit', props)))
     app.component('hljs', (props) => (import('wc-hljs'), import('highlight.js/lib/common'), h('wc-hljs', props)))
   }
 }
