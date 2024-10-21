@@ -1,5 +1,7 @@
 import { toRaw } from 'vue'
 import { chooseImg } from '@el-lowcode/utils'
+import Tiptap from '../Tiptap.vue'
+import TiptapProps from '../TiptapProps.vue'
 
 const createH = (is, hidden = true) => ({
   is,
@@ -230,18 +232,23 @@ export default [
     label: 'v-html',
     category: '额外扩展',
     icon: 'https://api.iconify.design/mdi:language-html5.svg',
-    props: [
-      { lp: ['v-html', 'innerHTML'], el: { type: 'textarea', autosize: { maxRows: 6 } } }
+    props: (props, lcd) => [
+      // { lp: ['v-html', 'innerHTML'], el: { type: 'textarea', autosize: { maxRows: 6 } } }
+      { is: TiptapProps, el: lcd.keyedCtx[props._id].el }
     ],
     defaultProps: () => ({
       innerHTML: '这里的内容可以直接编辑'
     }),
-    devProps: props => ({
-      is: 'wangeditor',
+    devProps: (props, lcd) => ({
+      // is: 'wangeditor',
+      // innerHTML: void 0,
+      // style: { '--w-e-textarea-color': 'initial', '--w-e-textarea-bg-color': 'transparent', height: 'auto' },
+      // toolbar: { show: false },
+      // scroll: false,
+      // modelValue: props.innerHTML,
+      // 'onUpdate:modelValue': v => toRaw(props).innerHTML = v
+      is: Tiptap,
       innerHTML: void 0,
-      style: { '--w-e-textarea-color': 'initial', '--w-e-textarea-bg-color': 'transparent', height: 'auto' },
-      toolbar: { show: false },
-      scroll: false,
       modelValue: props.innerHTML,
       'onUpdate:modelValue': v => toRaw(props).innerHTML = v
     })
