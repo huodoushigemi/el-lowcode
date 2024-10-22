@@ -1,16 +1,21 @@
 <template>
-  <EditorContent :editor .editor @keydown.stop @mousedown.stop @dragstart.stop.prevent />
+  <div .editor>
+    <EditorContent :editor @keydown.stop draggable="true" @dragstart.stop.prevent />
+  </div>
 </template>
 
 <script setup>
-import { watchEffect } from 'vue'
+import { defineComponent, h, ref, watchEffect } from 'vue'
 import { useVModel } from '@vueuse/core'
-import { EditorContent, useEditor } from '@tiptap/vue-3'
+import { Node } from '@tiptap/core'
+import { EditorContent, useEditor, nodeViewProps, NodeViewContent, NodeViewWrapper, VueNodeViewRenderer } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import TextAlign from '@tiptap/extension-text-align'
 import TextStyle from '@tiptap/extension-text-style'
 import { Color } from '@tiptap/extension-color'
 import Link from '@tiptap/extension-link'
+import Image from '@tiptap/extension-image'
+// import ImageResize from 'tiptap-extension-resize-image'
 import Table from '@tiptap/extension-table'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
@@ -20,6 +25,29 @@ import TaskList from '@tiptap/extension-task-list'
 
 const props = defineProps(['modelValue'])
 const val = useVModel(props, 'modelValue', void 0, { passive: true })
+
+const vImageResize = defineComponent({
+  props: nodeViewProps,
+  setup(props) {
+    return () => h(NodeViewWrapper, {}, [
+      h('div', { class: 'resize-wrapper' }),
+      // h(NodeViewContent, { class: 'content' })
+      h('img', props.node.attrs)
+    ])
+  }
+})
+
+const ImageResize = Node.create({
+  name: 'image',
+  group: 'block',
+  parseHTML: () => [{ tag: 'div[data-type="img"]' }],
+  renderHTML: ({ node, HTMLAttributes }) => ['div', { 'data-type': 'img' }, ['img', HTMLAttributes]],
+  addNodeView: () => VueNodeViewRenderer(vImageResize),
+  addCommands: () => ({
+    setImage: attrs => ({ commands }) => commands.insertContent({ type: 'image', attrs })
+  }),
+  addAttributes: () => ({ src: { default: null }, style: { default: 'max-width: 100%; height: auto' } })
+})
 
 const editor = useEditor({
   extensions: [
@@ -33,6 +61,31 @@ const editor = useEditor({
       openOnClick: false,
       defaultProtocol: 'https',
     }),
+    // Image.configure({ allowBase64: true, HTMLAttributes: { style: 'display: block' } }),
+    // ImageResize.configure({ allowBase64: true }),
+    ImageResize,
+    // Image.extend({
+    //   addAttributes() {
+    //     return {
+    //       src: { default: null },
+    //       style: { default: 'max-width: 100%; height: auto' }
+    //     }
+    //   },
+    //   addNodeView() {
+    //     return () => {
+    //       const dom = Object.assign(document.createElement('div'), { style: 'width: 100px; height: 100px; background: #ccc' })
+    //       const contentDOM = Object.assign(document.createElement('div'), { style: 'width: 100px; height: 100px; background: #ccc' })
+    //       dom.append(contentDOM)
+    //       return {
+    //         dom,
+    //         contentDOM
+    //       }
+    //     }
+    //   },
+    //   renderHTML({ node, HTMLAttributes }) {
+    //     return ['div', ['img', HTMLAttributes]]
+    //   }
+    // }).configure({ allowBase64: true }),
     Table.configure({
       resizable: true,
     }),
@@ -44,12 +97,13 @@ const editor = useEditor({
       nested: true,
     }),
   ],
-  onUpdate: () => val.value = editor.value.getHTML()
+  onUpdate: () => val.value = editor.value.getHTML(),
 })
 
 watchEffect(() => {
   if (!editor.value) return
   if (editor.value.getHTML() == val.value) return
+  console.log(111)
   editor.value.commands.setContent(val.value, false)
 })
 </script>
@@ -130,6 +184,17 @@ watchEffect(() => {
   &.resize-cursor {
     cursor: ew-resize;
     cursor: col-resize;
+  }
+
+  img {
+    // display: block;
+    // height: auto;
+    margin: 1.5rem 0;
+    max-width: 100%;
+
+    &.ProseMirror-selectednode {
+      outline: 3px solid var(--purple);
+    }
   }
 }
 </style>

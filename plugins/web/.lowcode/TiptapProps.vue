@@ -18,7 +18,7 @@
 
       <div wfull mt2 />
       <!-- <el-color-picker :modelValue="editor?.getAttributes('textStyle').color" @update:modelValue="v => exec().setColor(v).run()" /> -->
-      <input type="color" :value="editor?.getAttributes('textStyle').color" @change="({ target: { value: v } }) => exec().setColor(v).run()" />
+      <input type="color" :value="editor()?.getAttributes('textStyle').color" @change="({ target: { value: v } }) => exec().setColor(v).run()" />
     </div>
 
     <h4>Align</h4>
@@ -30,8 +30,17 @@
 
     <h4>Link</h4>
     <div flex="~ wrap" gap-1>
-      <input class="vs-input" :op="isActive('link')" :value="editor?.getAttributes('link').href" @input="({ target: { value: v } }) => editor!.chain().extendMarkRange('link')[v ? 'setLink' : 'unsetLink']({ href: v }).run()" placeholder="https://xxx" />
+      <input class="vs-input" :value="link?.href" @input="(e) => link = { ...link, href: e.target.value }" placeholder="https://xxx" />
       <!-- <button :class="['vs-btn btn', isActive('strike') && 'is-active']">_blank</button> -->
+    </div>
+
+    <h4>Img</h4>
+    <div flex="~ wrap" gap-1>
+      <input class="vs-input" :value="image?.src" @input="(e) => image = { ...image, src: e.target.value }" placeholder="https://xxx.png" />
+      <button :class="['vs-btn mt4', isActive('strike') && 'is-active']" @click="chooseImg({ base64: true, maxSize: 1024 * 200 }).then(src => image = { ...image, src })">
+        <i-tdesign:cloud-upload mr4 />
+        upload
+      </button>
     </div>
 
     <h4>Table</h4>
@@ -81,14 +90,25 @@
 <script setup lang="ts">
 import { computed, defineComponent, PropType, ref } from 'vue'
 import { Editor } from '@tiptap/vue-3'
+import { chooseImg } from '@el-lowcode/utils'
 
 const props = defineProps({
   el: Object as PropType<{ editor: Editor }>,
 })
 
-const editor = computed(() => props.el?.editor)
+const editor = () => props.el?.editor
 const isActive = (...args) => props.el?.editor?.isActive(...args)
-const exec = () => props.el.editor!.chain().focus()
+const exec = () => editor()!.chain().focus()
+
+const link = computed({
+  get() { return editor()?.getAttributes('link') },
+  set(v) { editor()?.chain().extendMarkRange('link')[v.href ? 'setLink' : 'unsetLink'](v).run() }
+})
+
+const image = computed({
+  get() { return editor()?.getAttributes('image') },
+  set(v) { exec().setImage(v).run() }
+})
 
 const txy = ref([])
 
