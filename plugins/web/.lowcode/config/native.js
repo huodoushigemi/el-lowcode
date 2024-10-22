@@ -237,16 +237,9 @@ export default [
       { is: TiptapProps, el: lcd.keyedCtx[props._id].el }
     ],
     defaultProps: () => ({
-      innerHTML: '这里的内容可以直接编辑'
+      innerHTML: '<p>这里的内容可以直接编辑</p>'
     }),
-    devProps: (props, lcd) => ({
-      // is: 'wangeditor',
-      // innerHTML: void 0,
-      // style: { '--w-e-textarea-color': 'initial', '--w-e-textarea-bg-color': 'transparent', height: 'auto' },
-      // toolbar: { show: false },
-      // scroll: false,
-      // modelValue: props.innerHTML,
-      // 'onUpdate:modelValue': v => toRaw(props).innerHTML = v
+    devProps: props => ({
       is: Tiptap,
       innerHTML: void 0,
       modelValue: props.innerHTML,

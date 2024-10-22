@@ -1,12 +1,16 @@
 <template>
-  <EditorContent class="tiptap" :editor .editor .vIns="ins" @keydown.stop />
+  <EditorContent :editor .editor @keydown.stop @mousedown.stop @dragstart.stop.prevent />
 </template>
 
 <script setup>
-import { getCurrentInstance, watchEffect } from 'vue'
+import { watchEffect } from 'vue'
 import { useVModel } from '@vueuse/core'
 import { EditorContent, useEditor } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
+import TextAlign from '@tiptap/extension-text-align'
+import TextStyle from '@tiptap/extension-text-style'
+import { Color } from '@tiptap/extension-color'
+import Link from '@tiptap/extension-link'
 import Table from '@tiptap/extension-table'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
@@ -17,11 +21,18 @@ import TaskList from '@tiptap/extension-task-list'
 const props = defineProps(['modelValue'])
 const val = useVModel(props, 'modelValue', void 0, { passive: true })
 
-const ins = getCurrentInstance()
-
 const editor = useEditor({
   extensions: [
     StarterKit,
+    TextAlign.configure({
+      types: ['heading', 'paragraph'],
+    }),
+    TextStyle,
+    Color,
+    Link.configure({
+      openOnClick: false,
+      defaultProtocol: 'https',
+    }),
     Table.configure({
       resizable: true,
     }),
@@ -45,9 +56,20 @@ watchEffect(() => {
 
 <style lang="scss">
 .tiptap {
+  --gray-1: rgb(128, 128, 128, .08);
+  --gray-2: rgb(128, 128, 128, .12);
+  --gray-3: rgb(128, 128, 128, .3);
+  --gray-4: rgb(128, 128, 128, .3);
+  --gray-5: rgb(128, 128, 128, .6);
   --purple: #6A00F5;
   --purple-contrast: #5800CC;
   --purple-light: rgba(88, 5, 255, .05);
+  margin: 1em 0;
+  outline: 0;
+
+  .tiptap :first-child {
+    margin-top: 0;
+  }
   
   /* Table-specific styling */
   table {
