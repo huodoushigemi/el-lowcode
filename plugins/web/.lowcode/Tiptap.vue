@@ -33,7 +33,7 @@ const val = useVModel(props, 'modelValue', void 0, { passive: true })
 const vImageResize = defineComponent({
   props: nodeViewProps,
   setup(props) {
-    const focused = ref(false), img = ref()
+    const focused = ref(props.selected), img = ref()
     useEventListener('click', () => focused.value = false)
     return () => {
       const { attrs }  = props.node
@@ -41,16 +41,16 @@ const vImageResize = defineComponent({
       return h(NodeViewWrapper, { onClick: e => e.currentTarget == e.target || (e.stopPropagation(), focused.value = true) }, [
         h('div', { style: `position: relative; text-align: ${attrs.align}` }, [
           h(Moveable, {
-            target: isFocused.value && props.selected ? img.value : void 0,
+            target: focused.value && props.selected ? img.value : void 0,
             draggable: false,
             resizable: true,
             origin: false,
             // hideDefaultLines: true,
             useMutationObserver: true,
             onResize: e => (e.target.style.width = `${e.width}px`, e.target.style.height = `${e.height}px`),
-            onResizeEnd: e => (attrs.style = `${[e.target.style.cssText]}`, props.updateAttributes(attrs))
+            onResizeEnd: e => (attrs.style = `${[e.target.style.cssText]}`, props.updateAttributes(attrs)),
           }),
-          h('img', { ...attrs, style: attrs.style, ref: img, key: attrs.align })
+          h('img', { ...attrs, ref: img, key: attrs.align, align: '' })
         ]),
       ])
     }
@@ -60,22 +60,26 @@ const vImageResize = defineComponent({
 const ImageResize = Node.create({
   name: 'image',
   group: 'block',
-  parseHTML: () => [{ attrs: { 'data-type': 'img' } }],
-  renderHTML: ({ node, HTMLAttributes: { align, ...attrs } }) => ['div', { 'data-type': 'img', style: `text-align: ${align}` }, ['img', attrs]],
+  parseHTML: () => [{ attrs: { 'data-type': 'image' } }],
+  renderHTML: ({ node, HTMLAttributes: { align, ...attrs } }) => ['div', { 'data-type': 'image', style: `text-align: ${align}` }, ['img', attrs]],
   addNodeView: () => VueNodeViewRenderer(vImageResize),
   addCommands: () => ({
     setImage: attrs => ({ commands }) => commands.insertContent({ type: 'image', attrs })
   }),
   addAttributes: () => ({
     src: { default: null, parseHTML: el => el.children[0].src },
-    style: { default: 'max-width: 100%; height: auto', parseHTML: el => el.children[0].style.cssText },
+    style: { default: 'max-width: 100%; height: auto;' },
     align: { default: 'center', parseHTML: el => el.style.textAlign },
   })
 })
 
 const editor = useEditor({
   extensions: [
-    StarterKit,
+    StarterKit.configure({
+      codeBlock: {
+        HTMLAttributes: { style: 'padding: .75rem 1rem; background: #2E2B29' }
+      }
+    }),
     TextAlign.configure({
       types: ['heading', 'paragraph'],
     }),

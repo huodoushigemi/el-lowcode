@@ -9,51 +9,52 @@
     </div>
 
     <h4>Text</h4>
-    <div flex="~ wrap" gap-1>
-      <button :class="['vs-btn btn', isActive('paragraph') && 'is-active']" @click="exec().setParagraph().run()">P</button>
+    <div flex="~ wrap" gap-x-1 gap-y-4>
+      <!-- <button :class="['vs-btn btn', isActive('paragraph') && 'is-active']" @click="exec().setParagraph().run()">P</button> -->
       <button :class="['vs-btn btn', isActive('bold') && 'is-active']" @click="exec().toggleBold().run()">B</button>
       <button :class="['vs-btn btn', isActive('italic') && 'is-active']" @click="exec().toggleItalic().run()">I</button>
       <button :class="['vs-btn btn', isActive('underline') && 'is-active']" @click="exec().toggleUnderline().run()">U</button>
       <button :class="['vs-btn btn', isActive('strike') && 'is-active']" @click="exec().toggleStrike().run()"><s>S</s></button>
 
-      <div wfull mt2 />
-      <!-- <el-color-picker :modelValue="editor?.getAttributes('textStyle').color" @update:modelValue="v => exec().setColor(v).run()" /> -->
-      <input type="color" :value="editor()?.getAttributes('textStyle').color" @change="({ target: { value: v } }) => exec().setColor(v).run()" />
+      <div flex="~ wrap" gap-1 wfull>
+        <button :class="['vs-btn btn', isActive({ textAlign: 'left' }) && 'is-active']" @click="exec().setTextAlign('left').run()"><i-ic:baseline-align-horizontal-left /></button>
+        <button :class="['vs-btn btn', isActive({ textAlign: 'center' }) && 'is-active']" @click="exec().setTextAlign('center').run()"><i-ic:baseline-align-horizontal-center /></button>
+        <button :class="['vs-btn btn', isActive({ textAlign: 'right' }) && 'is-active']" @click="exec().setTextAlign('right').run()"><i-ic:baseline-align-horizontal-right /></button>
+      </div>
+
+      <div wfull>
+        <!-- <input type="color" :value="editor()?.getAttributes('textStyle').color" @change="e => exec().setColor(e.target.value).run()" /> -->
+        <el-color-picker :modelValue="editor()?.getAttributes('textStyle').color" @update:modelValue="v => exec().setColor(v).run()" size="default" show-alpha />
+      </div>
     </div>
 
-    <h4>Align</h4>
-    <div flex="~ wrap" gap-1>
-      <button :class="['vs-btn btn', isActive({ textAlign: 'left' }) && 'is-active']" @click="exec().setTextAlign('left').run()"><i-ic:baseline-align-horizontal-left /></button>
-      <button :class="['vs-btn btn', isActive({ textAlign: 'center' }) && 'is-active']" @click="exec().setTextAlign('center').run()"><i-ic:baseline-align-horizontal-center /></button>
-      <button :class="['vs-btn btn', isActive({ textAlign: 'right' }) && 'is-active']" @click="exec().setTextAlign('right').run()"><i-ic:baseline-align-horizontal-right /></button>
-    </div>
 
     <h4>Link</h4>
     <div flex="~ wrap" gap-1>
       <input class="vs-input" :value="link()?.href" @change="(e) => setLink({ ...link(), href: e.target.value })" placeholder="https://xxx" />
-      <button :class="['vs-btn btn', link()?.target == '_blank' && 'is-active']" title="New Tab" @click="() => setLink({ ...link(), target: link()?.target ? '' : '_blank' })"><i-mdi:dock-window /></button>
+      <button :class="['vs-btn btn', isActive({ target: '_blank' }) && 'is-active']" title="New Tab" @click="() => setLink({ ...link(), target: link()?.target ? '' : '_blank' })"><i-mdi:dock-window /></button>
     </div>
 
     <h4>Img</h4>
     <div flex="~ wrap" gap-1 gap-y-4>
-      <input class="vs-input" :value="image?.src" @input="(e) => image = { ...image, src: e.target.value }" placeholder="https://xxx.png" />
-      <button :class="['vs-btn', isActive('strike') && 'is-active']" @click="chooseImg({ base64: true, maxSize: 1024 * 200 }).then(src => image = { ...image, src })">
+      <input class="vs-input" :value="image().src" @input="(e) => setImage({ ...image(), src: e.target.value })" placeholder="https://xxx.png" />
+      <button :class="['vs-btn']" title="Upload" @click="chooseImg({ base64: true, maxSize: 1024 * 200 }).then(src => setImage({ ...image(), src }))">
         <i-tdesign:cloud-upload />
       </button>
-      <template v-if="image?.src">
-        <button :class="['vs-btn btn', !image.align && 'is-active']" @click="image = { ...image, align: '' }"><i-ic:baseline-align-horizontal-left /></button>
-        <button :class="['vs-btn btn', image.align == 'center' && 'is-active']" @click="image = { ...image, align: 'center' }"><i-ic:baseline-align-horizontal-center /></button>
-        <button :class="['vs-btn btn', image.align == 'right' && 'is-active']" @click="image = { ...image, align: 'right' }"><i-ic:baseline-align-horizontal-right /></button>
+      <template v-if="isActive('image')">
+        <button :class="['vs-btn btn', isActive({ align: '' }) && 'is-active']" @click="setImage({ ...image(), align: '' })"><i-ic:baseline-align-horizontal-left /></button>
+        <button :class="['vs-btn btn', isActive({ align: 'center' }) && 'is-active']" @click="setImage({ ...image(), align: 'center' })"><i-ic:baseline-align-horizontal-center /></button>
+        <button :class="['vs-btn btn', isActive({ align: 'right' }) && 'is-active']" @click="setImage({ ...image(), align: 'right' })"><i-ic:baseline-align-horizontal-right /></button>
         <div class="wfull" />
-        <input class="vs-input" style="width: 60px" type="number" :value="parseInt(image.style.width)" @change="e => (image.style.width = `${e.target.value}px`, image = image)" placeholder="W" />
-        <input class="vs-input" style="width: 60px" type="number" :value="parseInt(image.style.height)" @change="e => (image.style.height = `${e.target.value}px`, image = image)" placeholder="H" />
+        <input class="vs-input" style="width: 60px" type="number" :value="parseInt(image().style.width)" @change="e => setImageW(e.target.value)" placeholder="W" />
+        <input class="vs-input" style="width: 60px" type="number" :value="parseInt(image().style.height)" @change="e => setImageH(e.target.value)" placeholder="H" />
       </template>
     </div>
 
     <h4>Table</h4>
     <div flex="~ wrap" gap-1>
       <Scope>
-        <el-popover trigger="hover" placement="bottom-start" :offset="4" :show-arrow="false" popper-style="padding: 0; width: auto; border: 0" :hide-after="0">
+        <el-popover trigger="hover" placement="bottom-start" :offset="0" :show-arrow="false" popper-style="padding: 0; width: auto; border: 0" :hide-after="0">
           <template #reference>
             <button class="btn vs-btn insert-table">Table</button>
           </template>
@@ -64,9 +65,9 @@
           </div>
         </el-popover>
       </Scope>
-      <el-popover trigger="hover" placement="bottom-start" :offset="4" :show-arrow="false" popper-style="padding: 0; width: auto; border: 0" :hide-after="0">
+      <el-popover trigger="hover" placement="bottom-start" :offset="0" :show-arrow="false" popper-style="padding: 0; width: auto; border: 0" :hide-after="0">
         <template #reference>
-          <button class="btn vs-btn insert-table">row / col</button>
+          <button class="btn vs-btn insert-table"><i-tdesign:add-circle /></button>
         </template>
         <div class="flex flex-col jcc">
           <button class="vs-btn btn" @click="exec().addRowBefore().run()">+</button>
@@ -77,26 +78,37 @@
           <button class="vs-btn btn" @click="exec().addRowAfter().run()">+</button>
         </div>
       </el-popover>
+      <el-popover trigger="hover" placement="bottom-start" :offset="0" :show-arrow="false" popper-style="padding: 0; width: auto; border: 0" :hide-after="0">
+        <template #reference>
+          <button class="btn vs-btn"><i-tdesign:delete /></button>
+        </template>
+        <div class="flex flex-col">
+          <button class="vs-btn btn" @click="exec().deleteRow().run()">Row</button>
+          <button class="vs-btn btn" @click="exec().deleteColumn().run()">Col</button>
+        </div>
+      </el-popover>
+      <button class="vs-btn btn" title="Merge" @click="exec().mergeCells().run()"><i-material-symbols:cell-merge /></button>
+      <button class="vs-btn btn" title="Split" @click="exec().splitCell().run()"><i-ant-design:split-cells-outlined /></button>
     </div>
     <!-- <button class="vs-btn btn" @click="exec().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()"><i-tabler:arrow-bar-right /></button>
     <button class="vs-btn btn" @click="exec().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()"><i-tabler:arrow-bar-left /></button> -->
 
     <h4>List</h4>
     <div flex="~ wrap" gap-1>
-      <button :class="['vs-btn btn', isActive('bulletList') && 'is-active']" @click="exec().toggleBulletList().run()">Bullet list</button>
-      <button :class="['vs-btn btn', isActive('orderedList') && 'is-active']" @click="exec().toggleOrderedList().run()">Ordered list</button>
+      <button :class="['vs-btn btn', isActive('bulletList') && 'is-active']" @click="exec().toggleBulletList().run()"><i-mdi:format-list-bulleted-square /></button>
+      <button :class="['vs-btn btn', isActive('orderedList') && 'is-active']" @click="exec().toggleOrderedList().run()"><i-mdi:order-numeric-ascending /></button>
     </div>
     
     <h4>Task</h4>
     <div flex="~ wrap" gap-1>
-      <button :class="['vs-btn btn', isActive('taskList') && 'is-active']" @click="exec().toggleTaskList().run()">Task</button>
+      <button :class="['vs-btn btn', isActive('taskList') && 'is-active']" @click="exec().toggleTaskList().run()"><i-mdi:format-list-checks /></button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, defineComponent, PropType, ref } from 'vue'
-import { parseStringStyle, stringifyStyle } from '@vue/shared'
+import { computed, defineComponent, PropType, ref, getCurrentInstance } from 'vue'
+import { parseStringStyle, stringifyStyle, normalizeStyle } from '@vue/shared'
 import { useTransform } from 'el-form-render'
 import { Editor } from '@tiptap/vue-3'
 import { chooseImg } from '@el-lowcode/utils'
@@ -105,18 +117,20 @@ const props = defineProps({
   el: Object as PropType<{ editor: Editor }>,
 })
 
+const { proxy } = getCurrentInstance()!
+const fu = () => proxy!.$forceUpdate()
+
 const editor = () => props.el?.editor
-const isActive = (...args) => props.el?.editor?.isActive(...args)
+const isActive = (...args) => editor()?.isActive(...args)
 const exec = () => editor()!.chain().focus()
 
 const link = () => editor()?.getAttributes('link')
-const setLink = v => exec().extendMarkRange('link')[v.href ? 'setLink' : 'unsetLink'](v).run()
-const upLink = v => editor()!.chain().extendMarkRange('link').updateAttributes('link', { ...link(), ...v }).run()
+const setLink = v => (exec().extendMarkRange('link')[v.href ? 'setLink' : 'unsetLink'](v).run(), fu())
 
-const image = computed({
-  get() { return { ...editor()?.getAttributes('image'), style: parseStringStyle(editor()?.getAttributes('image').style || '') } },
-  set(v) { v.src ? editor()!.chain().setImage({ ...v, style: stringifyStyle(v.style) }).run() : exec().deleteSelection().run() }
-})
+const image = () => ({ ...editor()?.getAttributes('image'), style: parseStringStyle(editor()?.getAttributes('image')?.style || '') })
+const setImage = (v) => { v.src ? exec().setImage({ ...v, style: stringifyStyle(v.style) }).run() : exec().deleteSelection().run(); fu() }
+const setImageW = (v) => setImage({ ...image(), style: { ...image().style, width: v ? `${v}px` : void 0 } })
+const setImageH = (v) => setImage({ ...image(), style: { ...image().style, height: v ? `${v}px` : void 0 } })
 
 const txy = ref([])
 
