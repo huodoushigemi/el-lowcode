@@ -55,6 +55,7 @@ export default defineConfig({
     ...Array(4).fill(0).map((e, i) => `row-span-${i + 1}`),
     ...Array(4).fill(0).map((e, i) => `grid-cols-${i + 1}`),
     ...Array(4).fill(0).map((e, i) => `space-x-${i + 1}`),
+    ...Array(4).fill(0).map((e, i) => `space-y-${i + 1}`),
     '[&>*]:mb0',
     '[&>*]:mb0!',
     '[&>*]:mb8',

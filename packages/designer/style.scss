@@ -109,6 +109,11 @@
   &:focus, &.focused {
     outline: 1px solid var(--vs-focus-b-c);
   }
+  &[type=number] {
+    &::-webkit-inner-spin-button, &::-webkit-outer-spin-button {
+      padding: 14px 0;
+    }
+  }
 }
 
 .vs-breadcrumb-li {

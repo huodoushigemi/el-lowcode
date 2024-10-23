@@ -23,41 +23,48 @@
 
     <h4>Align</h4>
     <div flex="~ wrap" gap-1>
-      <button :class="['vs-btn btn', isActive({ textAlign: 'left' }) && 'is-active']" @click="exec().setTextAlign('left').run()">L</button>
-      <button :class="['vs-btn btn', isActive({ textAlign: 'center' }) && 'is-active']" @click="exec().setTextAlign('center').run()">C</button>
-      <button :class="['vs-btn btn', isActive({ textAlign: 'right' }) && 'is-active']" @click="exec().setTextAlign('right').run()">R</button>
+      <button :class="['vs-btn btn', isActive({ textAlign: 'left' }) && 'is-active']" @click="exec().setTextAlign('left').run()"><i-ic:baseline-align-horizontal-left /></button>
+      <button :class="['vs-btn btn', isActive({ textAlign: 'center' }) && 'is-active']" @click="exec().setTextAlign('center').run()"><i-ic:baseline-align-horizontal-center /></button>
+      <button :class="['vs-btn btn', isActive({ textAlign: 'right' }) && 'is-active']" @click="exec().setTextAlign('right').run()"><i-ic:baseline-align-horizontal-right /></button>
     </div>
 
     <h4>Link</h4>
     <div flex="~ wrap" gap-1>
-      <input class="vs-input" :value="link?.href" @input="(e) => link = { ...link, href: e.target.value }" placeholder="https://xxx" />
-      <!-- <button :class="['vs-btn btn', isActive('strike') && 'is-active']">_blank</button> -->
+      <input class="vs-input" :value="link()?.href" @change="(e) => setLink({ ...link(), href: e.target.value })" placeholder="https://xxx" />
+      <button :class="['vs-btn btn', link()?.target == '_blank' && 'is-active']" title="New Tab" @click="() => setLink({ ...link(), target: link()?.target ? '' : '_blank' })"><i-mdi:dock-window /></button>
     </div>
 
     <h4>Img</h4>
-    <div flex="~ wrap" gap-1>
+    <div flex="~ wrap" gap-1 gap-y-4>
       <input class="vs-input" :value="image?.src" @input="(e) => image = { ...image, src: e.target.value }" placeholder="https://xxx.png" />
-      <button :class="['vs-btn mt4', isActive('strike') && 'is-active']" @click="chooseImg({ base64: true, maxSize: 1024 * 200 }).then(src => image = { ...image, src })">
-        <i-tdesign:cloud-upload mr4 />
-        upload
+      <button :class="['vs-btn', isActive('strike') && 'is-active']" @click="chooseImg({ base64: true, maxSize: 1024 * 200 }).then(src => image = { ...image, src })">
+        <i-tdesign:cloud-upload />
       </button>
+      <template v-if="image?.src">
+        <button :class="['vs-btn btn', !image.align && 'is-active']" @click="image = { ...image, align: '' }"><i-ic:baseline-align-horizontal-left /></button>
+        <button :class="['vs-btn btn', image.align == 'center' && 'is-active']" @click="image = { ...image, align: 'center' }"><i-ic:baseline-align-horizontal-center /></button>
+        <button :class="['vs-btn btn', image.align == 'right' && 'is-active']" @click="image = { ...image, align: 'right' }"><i-ic:baseline-align-horizontal-right /></button>
+        <div class="wfull" />
+        <input class="vs-input" style="width: 60px" type="number" :value="parseInt(image.style.width)" @change="e => (image.style.width = `${e.target.value}px`, image = image)" placeholder="W" />
+        <input class="vs-input" style="width: 60px" type="number" :value="parseInt(image.style.height)" @change="e => (image.style.height = `${e.target.value}px`, image = image)" placeholder="H" />
+      </template>
     </div>
 
     <h4>Table</h4>
     <div flex="~ wrap" gap-1>
       <Scope>
-        <el-popover trigger="click" placement="bottom-start" :offset="4" :show-arrow="false" popper-style="padding: 0; width: auto; border: 0" :hide-after="0">
+        <el-popover trigger="hover" placement="bottom-start" :offset="4" :show-arrow="false" popper-style="padding: 0; width: auto; border: 0" :hide-after="0">
           <template #reference>
             <button class="btn vs-btn insert-table">Table</button>
           </template>
-          <div @mousemove="e => txy = (e.target as HTMLElement).getAttribute('xy')?.split(',')" @mouseleave="txy = [0, 0]" @click="txy.includes(0) ? void 0 : exec().insertTable({ rows: txy[1], cols: txy[0], withHeaderRow: true }).run()" grid style="grid-template-columns: repeat(6, minmax(0, 1fr)); border-left: 1px solid #808080; border-top: 1px solid #808080">
+          <div @mousemove="e => txy = (e.target as HTMLElement).getAttribute('xy')?.split(',') || [0, 0]" @mouseleave="txy = [0, 0]" @click="txy.includes(0) ? void 0 : exec().insertTable({ rows: txy[1], cols: txy[0], withHeaderRow: true }).run()" grid style="grid-template-columns: repeat(6, minmax(0, 1fr)); border-left: 1px solid #808080; border-top: 1px solid #808080">
             <template v-for="rowi in 6">
               <div v-for="coli in 6" :class="['cell', rowi <= txy[1] && coli <= txy[0] && 'is-active']" :xy="`${coli},${rowi}`" style="width: 15px; height: 15px; border-right: 1px solid #808080; border-bottom: 1px solid #808080;" />
             </template>
           </div>
         </el-popover>
       </Scope>
-      <el-popover trigger="click" placement="bottom-start" :offset="4" :show-arrow="false" popper-style="padding: 0; width: auto; border: 0" :hide-after="0">
+      <el-popover trigger="hover" placement="bottom-start" :offset="4" :show-arrow="false" popper-style="padding: 0; width: auto; border: 0" :hide-after="0">
         <template #reference>
           <button class="btn vs-btn insert-table">row / col</button>
         </template>
@@ -89,6 +96,8 @@
 
 <script setup lang="ts">
 import { computed, defineComponent, PropType, ref } from 'vue'
+import { parseStringStyle, stringifyStyle } from '@vue/shared'
+import { useTransform } from 'el-form-render'
 import { Editor } from '@tiptap/vue-3'
 import { chooseImg } from '@el-lowcode/utils'
 
@@ -100,14 +109,13 @@ const editor = () => props.el?.editor
 const isActive = (...args) => props.el?.editor?.isActive(...args)
 const exec = () => editor()!.chain().focus()
 
-const link = computed({
-  get() { return editor()?.getAttributes('link') },
-  set(v) { editor()?.chain().extendMarkRange('link')[v.href ? 'setLink' : 'unsetLink'](v).run() }
-})
+const link = () => editor()?.getAttributes('link')
+const setLink = v => exec().extendMarkRange('link')[v.href ? 'setLink' : 'unsetLink'](v).run()
+const upLink = v => editor()!.chain().extendMarkRange('link').updateAttributes('link', { ...link(), ...v }).run()
 
 const image = computed({
-  get() { return editor()?.getAttributes('image') },
-  set(v) { exec().setImage(v).run() }
+  get() { return { ...editor()?.getAttributes('image'), style: parseStringStyle(editor()?.getAttributes('image').style || '') } },
+  set(v) { v.src ? editor()!.chain().setImage({ ...v, style: stringifyStyle(v.style) }).run() : exec().deleteSelection().run() }
 })
 
 const txy = ref([])
@@ -122,11 +130,11 @@ h4 {
   margin: 20px 0 14px 0;
 }
 .btn {
+  margin-left: 0;
   padding: 2px 10px;
   font-size: 16px;
   // background: #808080;
   background-color: revert;
-  cursor: pointer;
   line-height: revert;
 
   &:hover {
@@ -134,10 +142,6 @@ h4 {
   }
   &:active {
     background-color: #808080;
-  }
-
-  & + & {
-    margin-left: 0 !important;
   }
 }
 

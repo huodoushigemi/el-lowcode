@@ -5,8 +5,8 @@
 </template>
 
 <script setup>
-import { defineComponent, h, ref, watchEffect } from 'vue'
-import { useVModel } from '@vueuse/core'
+import { defineComponent, h, onBeforeUnmount, onMounted, onUnmounted, ref, watchEffect } from 'vue'
+import { useEventListener, useVModel } from '@vueuse/core'
 import { Node } from '@tiptap/core'
 import { EditorContent, useEditor, nodeViewProps, NodeViewContent, NodeViewWrapper, VueNodeViewRenderer } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
@@ -23,30 +23,54 @@ import TableRow from '@tiptap/extension-table-row'
 import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
 
+import Moveable from 'vue3-moveable'
+
+
 const props = defineProps(['modelValue'])
+const emit = defineEmits(['change'])
 const val = useVModel(props, 'modelValue', void 0, { passive: true })
 
 const vImageResize = defineComponent({
   props: nodeViewProps,
   setup(props) {
-    return () => h(NodeViewWrapper, {}, [
-      h('div', { class: 'resize-wrapper' }),
-      // h(NodeViewContent, { class: 'content' })
-      h('img', props.node.attrs)
-    ])
+    const focused = ref(false), img = ref()
+    useEventListener('click', () => focused.value = false)
+    return () => {
+      const { attrs }  = props.node
+
+      return h(NodeViewWrapper, { onClick: e => e.currentTarget == e.target || (e.stopPropagation(), focused.value = true) }, [
+        h('div', { style: `position: relative; text-align: ${attrs.align}` }, [
+          h(Moveable, {
+            target: isFocused.value && props.selected ? img.value : void 0,
+            draggable: false,
+            resizable: true,
+            origin: false,
+            // hideDefaultLines: true,
+            useMutationObserver: true,
+            onResize: e => (e.target.style.width = `${e.width}px`, e.target.style.height = `${e.height}px`),
+            onResizeEnd: e => (attrs.style = `${[e.target.style.cssText]}`, props.updateAttributes(attrs))
+          }),
+          h('img', { ...attrs, style: attrs.style, ref: img, key: attrs.align })
+        ]),
+      ])
+    }
   }
 })
 
 const ImageResize = Node.create({
   name: 'image',
   group: 'block',
-  parseHTML: () => [{ tag: 'div[data-type="img"]' }],
-  renderHTML: ({ node, HTMLAttributes }) => ['div', { 'data-type': 'img' }, ['img', HTMLAttributes]],
+  parseHTML: () => [{ attrs: { 'data-type': 'img' } }],
+  renderHTML: ({ node, HTMLAttributes: { align, ...attrs } }) => ['div', { 'data-type': 'img', style: `text-align: ${align}` }, ['img', attrs]],
   addNodeView: () => VueNodeViewRenderer(vImageResize),
   addCommands: () => ({
     setImage: attrs => ({ commands }) => commands.insertContent({ type: 'image', attrs })
   }),
-  addAttributes: () => ({ src: { default: null }, style: { default: 'max-width: 100%; height: auto' } })
+  addAttributes: () => ({
+    src: { default: null, parseHTML: el => el.children[0].src },
+    style: { default: 'max-width: 100%; height: auto', parseHTML: el => el.children[0].style.cssText },
+    align: { default: 'center', parseHTML: el => el.style.textAlign },
+  })
 })
 
 const editor = useEditor({
@@ -64,30 +88,9 @@ const editor = useEditor({
     // Image.configure({ allowBase64: true, HTMLAttributes: { style: 'display: block' } }),
     // ImageResize.configure({ allowBase64: true }),
     ImageResize,
-    // Image.extend({
-    //   addAttributes() {
-    //     return {
-    //       src: { default: null },
-    //       style: { default: 'max-width: 100%; height: auto' }
-    //     }
-    //   },
-    //   addNodeView() {
-    //     return () => {
-    //       const dom = Object.assign(document.createElement('div'), { style: 'width: 100px; height: 100px; background: #ccc' })
-    //       const contentDOM = Object.assign(document.createElement('div'), { style: 'width: 100px; height: 100px; background: #ccc' })
-    //       dom.append(contentDOM)
-    //       return {
-    //         dom,
-    //         contentDOM
-    //       }
-    //     }
-    //   },
-    //   renderHTML({ node, HTMLAttributes }) {
-    //     return ['div', ['img', HTMLAttributes]]
-    //   }
-    // }).configure({ allowBase64: true }),
     Table.configure({
       resizable: true,
+      HTMLAttributes: { style: 'border-collapse: collapse; table-layout: fixed; width: 100%;' },
     }),
     TableRow,
     TableHeader,
@@ -98,12 +101,17 @@ const editor = useEditor({
     }),
   ],
   onUpdate: () => val.value = editor.value.getHTML(),
+  onFocus: () => isFocused.value = true,
+  onBlur: () => (isFocused.value = false, emit('change', val.value))
 })
+
+// is focused
+const isFocused = ref(false)
 
 watchEffect(() => {
   if (!editor.value) return
   if (editor.value.getHTML() == val.value) return
-  console.log(111)
+  console.log('tiptap', 111)
   editor.value.commands.setContent(val.value, false)
 })
 </script>
@@ -121,7 +129,7 @@ watchEffect(() => {
   margin: 1em 0;
   outline: 0;
 
-  .tiptap :first-child {
+  :first-child {
     margin-top: 0;
   }
   
@@ -189,8 +197,8 @@ watchEffect(() => {
   img {
     // display: block;
     // height: auto;
-    margin: 1.5rem 0;
-    max-width: 100%;
+    // margin: 1.5rem 0;
+    // max-width: 100%;
 
     &.ProseMirror-selectednode {
       outline: 3px solid var(--purple);

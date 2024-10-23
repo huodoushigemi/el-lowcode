@@ -220,7 +220,9 @@ function resizeDir(node?: DisplayNode) {
 
 // 快捷键
 function onKeydown(e: KeyboardEvent) {
-  if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return
+  const target = e.target as HTMLElement
+  if (target.tagName == 'INPUT' ) e.key == 'Enter' && target.dispatchEvent(new Event('change'))
+  if (['INPUT', 'TEXTAREA'].includes(target.tagName)) return
   const key = e.key.toLocaleLowerCase()
 
   const kb = [

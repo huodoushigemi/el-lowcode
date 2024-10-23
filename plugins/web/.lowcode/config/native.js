@@ -1,6 +1,5 @@
-import { toRaw } from 'vue'
+import { toRaw, toRef, triggerRef } from 'vue'
 import { chooseImg } from '@el-lowcode/utils'
-import Tiptap from '../Tiptap.vue'
 import TiptapProps from '../TiptapProps.vue'
 
 const createH = (is, hidden = true) => ({
@@ -240,10 +239,11 @@ export default [
       innerHTML: '<p>这里的内容可以直接编辑</p>'
     }),
     devProps: props => ({
-      is: Tiptap,
+      is: 'tiptap',
       innerHTML: void 0,
       modelValue: props.innerHTML,
-      'onUpdate:modelValue': v => toRaw(props).innerHTML = v
+      'onUpdate:modelValue': v => toRaw(props).innerHTML = v,
+      onChange: v => triggerRef(toRef(props, 'innerHTML'))
     })
   },
 
