@@ -33,16 +33,16 @@ export default [
     })
   },
 
-  createH('h1', false),
-  createH('h2'),
-  createH('h3'),
-  createH('h4'),
-  createH('h5'),
-  createH('h6'),
+  // createH('h1', false),
+  // createH('h2'),
+  // createH('h3'),
+  // createH('h4'),
+  // createH('h5'),
+  // createH('h6'),
 
   {
     is: 'a',
-    label: 'a',
+    label: 'link',
     category: '基础组件',
     icon: 'https://api.iconify.design/mdi:link-variant.svg',
     props: [
@@ -92,7 +92,7 @@ export default [
   
   {
     is: 'span',
-    label: 'span',
+    label: 'text',
     category: '基础组件',
     icon: 'https://api.iconify.design/mdi:format-text.svg',
     props: [
@@ -147,50 +147,51 @@ export default [
     ]
   },
 
-  {
-    is: 'ul',
-    label: 'ul',
-    drag: { from: 'li' },
-    icon: 'https://api.iconify.design/mdi:format-list-bulleted.svg',
-    props: [
-      { lp: ['list-style', 'style.listStyle'], type: 'select', options: ['simp-chinese-informal', 'decimal', 'disc', 'circle' ,'square'], displayValue: 'disc' },
-    ],
-    defaultProps: () => ({
-      children: [
-        { is: 'li', children: [] },
-        { is: 'li', children: [] }
-      ]
-    })
-  },
+  // {
+  //   is: 'ul',
+  //   label: 'ul',
+  //   drag: { from: 'li' },
+  //   icon: 'https://api.iconify.design/mdi:format-list-bulleted.svg',
+  //   props: [
+  //     { lp: ['list-style', 'style.listStyle'], type: 'select', options: ['simp-chinese-informal', 'decimal', 'disc', 'circle' ,'square'], displayValue: 'disc' },
+  //   ],
+  //   defaultProps: () => ({
+  //     children: [
+  //       { is: 'li', children: [] },
+  //       { is: 'li', children: [] }
+  //     ]
+  //   })
+  // },
 
-  {
-    is: 'li',
-    label: 'li',
-    drag: { to: ['ol', 'ul'] },
-    icon: 'https://api.iconify.design/ph:dot-fill.svg',
-    props: [
+  // {
+  //   is: 'li',
+  //   label: 'li',
+  //   drag: { to: ['ol', 'ul'] },
+  //   icon: 'https://api.iconify.design/ph:dot-fill.svg',
+  //   props: [
 
-    ],
-    defaultProps: () => ({
-      children: []
-    })
-  },
+  //   ],
+  //   defaultProps: () => ({
+  //     children: []
+  //   })
+  // },
 
-  {
-    is: 'blockquote',
-    label: 'blockquote',
-    icon: 'https://api.iconify.design/tabler:blockquote.svg',
-    props: [
+  // {
+  //   is: 'blockquote',
+  //   label: 'blockquote',
+  //   icon: 'https://api.iconify.design/tabler:blockquote.svg',
+  //   props: [
 
-    ],
-    defaultProps: () => ({
-      children: [{ is: 'p', children: 'TIP' }, { is: 'p', children: 'HTML <blockquote> 元素（或者 HTML 块级引用元素），代表其中的文字是引用内容。' }]
-    })
-  },
+  //   ],
+  //   defaultProps: () => ({
+  //     children: [{ is: 'p', children: 'TIP' }, { is: 'p', children: 'HTML <blockquote> 元素（或者 HTML 块级引用元素），代表其中的文字是引用内容。' }]
+  //   })
+  // },
 
   {
     is: 'button',
     label: 'button',
+    category: '基础组件',
     icon: 'https://api.iconify.design/material-symbols:radio-button-unchecked.svg',
     props: [
 
@@ -203,6 +204,7 @@ export default [
   {
     is: 'input',
     label: 'input',
+    category: '基础组件',
     icon: 'https://api.iconify.design/ri:input-field.svg',
     props: props => [
       { lp: 'value' },
@@ -236,7 +238,7 @@ export default [
       { is: TiptapProps, el: lcd.keyedCtx[props._id].el }
     ],
     defaultProps: () => ({
-      innerHTML: '<p>这里的内容可以直接编辑</p>'
+      innerHTML: '<h1>v-html 用于渲染富文本</h1><p>这里可用直接编辑，采用了 Tiptap 富文本编辑器</p>'
     }),
     devProps: props => ({
       is: 'tiptap',
