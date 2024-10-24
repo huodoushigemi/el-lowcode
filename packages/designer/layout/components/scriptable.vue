@@ -13,6 +13,7 @@
       <span mx12 truncate class="empty:after:content-['JS_Expression']">{{ exp }}</span>
       <span>{{ `}\}` }}</span>
     </div>
+    <slot v-else />
   </el-form-item-render>
 
   <template v-if="script === true || isScript || visible">

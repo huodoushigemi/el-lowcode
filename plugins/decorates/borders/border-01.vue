@@ -59,16 +59,13 @@
 </template>
 
 <script setup>
-import { useCurrentElement, useElementSize, useResizeObserver } from '@vueuse/core'
+import { useSize } from '../utils'
 
 const props = defineProps(['colors', 'bg', 'dur'])
 
 const borders = ['left-top', 'right-top', 'left-bottom', 'right-bottom']
 
-const { width: w, height: h } = useElementSize(useCurrentElement(), void 0, { box: 'border-box' })
-// const w = 0, h = 0
-
-// useResizeObserver(useCurrentElement(), ([e]) => console.log(e))
+const { w, h } = useSize()
 </script>
 
 <style lang="scss">

@@ -5,7 +5,7 @@ export default [
       cover: new URL('./icons/border-01.png', import.meta.url).href,
       category: 'border',
       props: [
-        { lp: 'colors', children: [{ is: 'div', class: 'grid grid-cols-2', children: [
+        { lp: 'colors', children: [{ is: 'div', class: 'flex space-x-8', children: [
           { prop: 'colors.0', type: 'color-picker', defaultValue: '#4FD2DDFF' },
           { prop: 'colors.1', type: 'color-picker', defaultValue: '#235FA7FF' },
         ] }] },

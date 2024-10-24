@@ -50,6 +50,11 @@ export default defineConfig({
     ...gaps.map(e => `gap-${e}`),
     ...gaps.map(e => `gap-x-${e}`),
     ...gaps.map(e => `gap-y-${e}`),
+    ...gaps.map(e => `col-span-${e}`),
+    ...gaps.map(e => `row-span-${e}`),
+    ...gaps.map(e => `grid-cols-${e}`),
+    ...gaps.map(e => `space-x-${e}`),
+    ...gaps.map(e => `space-y-${e}`),
     
     ...Array(4).fill(0).map((e, i) => `col-span-${i + 1}`),
     ...Array(4).fill(0).map((e, i) => `row-span-${i + 1}`),

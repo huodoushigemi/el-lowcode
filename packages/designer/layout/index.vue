@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, ref, getCurrentInstance, PropType, reactive, onUnmounted } from 'vue'
+import { computed, provide, ref, getCurrentInstance, PropType, reactive, onUnmounted, toRaw, triggerRef, toRef } from 'vue'
 import { computedAsync, useDebouncedRefHistory, useEventListener, unrefElement, useWindowScroll, refDebounced } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import Moveable from 'vue3-moveable'
@@ -199,17 +199,16 @@ function onDragEnd(e) {
   designerCtx.draggedId = undefined
 }
 function onResize({ target, width, height, transform, drag }) {
+  const style = designerCtx.dragged!.data!.style ??= {}
   const setw = width != target.offsetWidth
   const seth = height != target.offsetHeight
-  setw && (target.style.width = `${width}px`)
-  seth && (target.style.height = `${height}px`)
-  if (drag.translate[0] != 0 && drag.translate[1] != 0) {
-    target.style.transform = transform
-  }
+  const sett = drag.translate[0] != 0 && drag.translate[1] != 0
+  setw && (toRaw(style).width = target.style.width = `${width}px`)
+  seth && (toRaw(style).height = target.style.height = `${height}px`)
+  sett && (toRaw(style).transform = target.style.transform = transform)
 }
 function onResizeEnd(e) {
-  const style = designerCtx.dragged!.data!.style ??= {}
-  ;['width', 'height', 'transform'].forEach(k => style[k] = e.target.style.getPropertyValue(k) || undefined)
+  triggerRef(toRef(designerCtx.dragged!.data, 'style'))
   designerCtx.draggedId = undefined
 }
 function resizeDir(node?: DisplayNode) {
