@@ -25,7 +25,7 @@
       </defs>
 
       <polygon
-        :fill="backgroundColor"
+        :fill="bg"
         :points="`
         20, 32 ${w * 0.5 - borderTitleWidth / 2}, 32 ${w * 0.5 - borderTitleWidth / 2 + 20}, 53
         ${w * 0.5 + borderTitleWidth / 2 - 20}, 53 ${w * 0.5 + borderTitleWidth / 2}, 32
@@ -35,7 +35,7 @@
       />
 
       <polyline
-        :fill="backgroundColor"
+        :fill="bg"
         :stroke="colors[0]"
         :filter="`url(#${filterId})`"
         :points="`
@@ -223,11 +223,11 @@
 </template>
 
 <script setup>
-import { useCurrentElement, useElementSize } from '@vueuse/core'
 import { v4 } from 'uuid'
+import { useSize } from '../utils'
 
-const props = defineProps(['colors', 'borderTitle', 'borderTitleColor', 'borderTitleSize', 'borderTitleHeight', 'borderTitleWidth', 'backgroundColor'])
+const props = defineProps(['colors', 'borderTitle', 'borderTitleColor', 'borderTitleSize', 'borderTitleHeight', 'borderTitleWidth', 'bg'])
 
 const filterId = v4()
-const { width: w, height: h } = useElementSize(useCurrentElement())
+const { w, h } = useSize()
 </script>

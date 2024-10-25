@@ -43,6 +43,7 @@
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-vue": "^5.1.12",
     "axios": "^1.4.0",
+    "color": "^4.2.3",
     "echarts": "^5.5.1",
     "el-form-render": "workspace:*",
     "el-lowcode": "workspace:*",
