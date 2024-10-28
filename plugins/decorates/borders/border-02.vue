@@ -1,5 +1,5 @@
 <template>
-  <div class="border-02">
+  <div class="border-02" style="position: relative">
     <svg :width="w" :height="h">
       <path
         :fill="bg"

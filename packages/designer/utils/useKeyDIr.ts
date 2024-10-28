@@ -12,7 +12,7 @@ export function useKeyDir(el: MaybeComputedElementRef, props?: UseKeyDirProps) {
   const stop = useEventListener(el as any, 'keydown', e => {
     if (!['ArrowUp', 'ArrowDown', 'Enter'].includes(e.key)) return
     e.stopPropagation()
-    e.preventDefault()
+    if (e.key != 'Enter') e.preventDefault()
     const i = { ArrowUp: -1, ArrowDown: 1 }[e.key] || 0
     const ul = e[opt.source] as HTMLElement
     const li = ul.querySelector('.focused') ?? ul.querySelector('.selected')

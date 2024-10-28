@@ -1,5 +1,5 @@
 <template>
-  <div class="border-03">
+  <div class="border-03" style="position: relative">
     <svg :width="w" :height="h">
       <defs>
         <filter :id="filterId" height="150%" width="150%" x="-25%" y="-25%">

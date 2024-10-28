@@ -1,5 +1,5 @@
 <template>
-  <div class="border-01">
+  <div class="border-01" style="position: relative">
     <svg :width="w" :height="h">
       <polygon :fill="bg" :points="`10, 27 10, ${h - 27} 13, ${h - 24} 13, ${h - 21} 24, ${h - 11}
       38, ${h - 11} 41, ${h - 8} 73, ${h - 8} 75, ${h - 10} 81, ${h - 10}

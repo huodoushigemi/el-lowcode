@@ -5,7 +5,7 @@
     <i-material-symbols-light:code bg-hover w28 h28 p4 @click="visible = true" />
   </div>
   <el-tabs v-if="config" class="tabs">
-    <el-tab-pane label="attrs">
+    <el-tab-pane label="attrs" :key="node.id">
       <el-form-render :model="model" label-width="auto" size="small" label-position="top" @submit.prevent>
          <RenderItems :items="_items" />
       </el-form-render>

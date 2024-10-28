@@ -3,7 +3,7 @@ export default [
     is: 'border-01',
     label: 'border-01',
     cover: new URL('./icons/border-01.png', import.meta.url).href,
-    category: 'border',
+    category: 'Border',
     props: [
       { lp: 'colors', children: [{ is: 'div', class: 'flex space-x-8', children: [
         { prop: 'colors.0', type: 'color-picker', defaultValue: '#4FD2DDFF' },
@@ -24,9 +24,9 @@ export default [
     is: 'border-02',
     label: 'border-02',
     cover: new URL('./icons/border-02.png', import.meta.url).href,
-    category: 'border',
+    category: 'Border',
     props: [
-      { lp: 'colors', children: [{ is: 'div', class: 'grid grid-cols-2', children: [
+      { lp: 'colors', children: [{ is: 'div', class: 'flex space-x-8', children: [
         { prop: 'colors.0', type: 'color-picker', defaultValue: '#6586ECFF' },
         { prop: 'colors.1', type: 'color-picker', defaultValue: '#2CF7FEFF' },
       ] }] },
@@ -43,9 +43,9 @@ export default [
     is: 'border-03',
     label: 'border-03',
     cover: new URL('./icons/border-03.png', import.meta.url).href,
-    category: 'border',
+    category: 'Border',
     props: [
-      { lp: 'colors', children: [{ is: 'div', class: 'grid grid-cols-2', children: [
+      { lp: 'colors', children: [{ is: 'div', class: 'flex space-x-8', children: [
         { prop: 'colors.0', type: 'color-picker', defaultValue: '#6586ECFF' },
         { prop: 'colors.1', type: 'color-picker', defaultValue: '#2CF7FEFF' },
       ] }] },
@@ -63,22 +63,19 @@ export default [
     is: 'border-04',
     label: 'border-04',
     cover: new URL('./icons/border-04.png', import.meta.url).href,
-    category: 'border',
+    category: 'Border',
     props: [
-      { lp: 'colors', children: [{ is: 'div', class: 'grid grid-cols-2', children: [
+      { lp: 'colors', children: [{ is: 'div', class: 'flex space-x-8', children: [
         { prop: 'colors.0', type: 'color-picker', defaultValue: '#8aaafb' },
         { prop: 'colors.1', type: 'color-picker', defaultValue: '#1f33a2' },
       ] }] },
       { lp: 'bg', type: 'color-picker' },
+      { lp: 'title' },
     ],
     defaultProps: () => ({
       colors: ['#8aaafb', '#1f33a2'],
       bg: '#00000000',
-      borderTitle: '边框',
-      borderTitleWidth: 250,
-      borderTitleHeight: 32,
-      borderTitleSize: 18,
-      borderTitleColor: '#fff',
+      title: '边框',
       style: { width: '500px', height: '300px' },
     })
   },
@@ -87,9 +84,9 @@ export default [
     is: 'border-05',
     label: 'border-05',
     cover: new URL('./icons/border-05.png', import.meta.url).href,
-    category: 'border',
+    category: 'Border',
     props: [
-      { lp: 'colors', children: [{ is: 'div', class: 'grid grid-cols-2', children: [
+      { lp: 'colors', children: [{ is: 'div', class: 'flex space-x-8', children: [
         { prop: 'colors.0', type: 'color-picker', defaultValue: '#1D48C4FF' },
         { prop: 'colors.1', type: 'color-picker', defaultValue: '#D3E1F8FF' },
       ] }] },
@@ -106,9 +103,9 @@ export default [
     is: 'border-06',
     label: 'border-06',
     cover: new URL('./icons/border-06.png', import.meta.url).href,
-    category: 'border',
+    category: 'Border',
     props: [
-      { lp: 'colors', children: [{ is: 'div', class: 'grid grid-cols-2', children: [
+      { lp: 'colors', children: [{ is: 'div', class: 'flex space-x-8', children: [
         { prop: 'colors.0', type: 'color-picker', defaultValue: '#3140ADFF' },
         { prop: 'colors.1', type: 'color-picker', defaultValue: '#1089FFFF' },
       ] }] },
@@ -125,9 +122,9 @@ export default [
     is: 'border-07',
     label: 'border-07',
     cover: new URL('./icons/border-07.png', import.meta.url).href,
-    category: 'border',
+    category: 'Border',
     props: [
-      { lp: 'colors', children: [{ is: 'div', class: 'grid grid-cols-2', children: [
+      { lp: 'colors', children: [{ is: 'div', class: 'flex space-x-8', children: [
         { prop: 'colors.0', type: 'color-picker', defaultValue: '#11EEFDFF' },
         { prop: 'colors.1', type: 'color-picker', defaultValue: '#0078D2FF' },
       ] }] },
@@ -144,16 +141,15 @@ export default [
     is: 'border-08',
     label: 'border-08',
     cover: new URL('./icons/border-08.png', import.meta.url).href,
-    category: 'border',
+    category: 'Border',
     props: [
-      { lp: 'colors', children: [{ is: 'div', class: 'grid grid-cols-2', children: [
+      { lp: 'colors', children: [{ is: 'div', class: 'flex space-x-8', children: [
         { prop: 'colors.0', type: 'color-picker', defaultValue: '#235FA7FF' },
         { prop: 'colors.1', type: 'color-picker', defaultValue: '#4FD2DDFF' },
       ] }] },
       { lp: 'bg', type: 'color-picker' },
       { lp: ['duration', 'dur'], type: 'input-number', el: { step: .5, min: .5 } },
-      // todo
-      { lp: 'reverse', type: 'switch' },
+      { lp: 'reverse', type: 'switch', displayValue: false },
     ],
     defaultProps: () => ({
       colors: ['#235FA7FF', '#4FD2DDFF'],
@@ -167,9 +163,9 @@ export default [
     is: 'border-09',
     label: 'border-09',
     cover: new URL('./icons/border-09.png', import.meta.url).href,
-    category: 'border',
+    category: 'Border',
     props: [
-      { lp: 'colors', children: [{ is: 'div', class: 'grid grid-cols-2', children: [
+      { lp: 'colors', children: [{ is: 'div', class: 'flex space-x-8', children: [
         { prop: 'colors.0', type: 'color-picker', defaultValue: '#3140ADFF' },
         { prop: 'colors.1', type: 'color-picker', defaultValue: '#235FA7FF' },
       ] }] },
@@ -186,9 +182,9 @@ export default [
     is: 'border-10',
     label: 'border-10',
     cover: new URL('./icons/border-10.png', import.meta.url).href,
-    category: 'border',
+    category: 'Border',
     props: [
-      { lp: 'colors', children: [{ is: 'div', class: 'grid grid-cols-2', children: [
+      { lp: 'colors', children: [{ is: 'div', class: 'flex space-x-8', children: [
         { prop: 'colors.0', type: 'color-picker', defaultValue: '#1089FFFF' },
         { prop: 'colors.1', type: 'color-picker', defaultValue: '#0000FFFF' },
       ] }] },
@@ -205,9 +201,9 @@ export default [
     is: 'border-11',
     label: 'border-11',
     cover: new URL('./icons/border-11.png', import.meta.url).href,
-    category: 'border',
+    category: 'Border',
     props: [
-      { lp: 'colors', children: [{ is: 'div', class: 'grid grid-cols-2', children: [
+      { lp: 'colors', children: [{ is: 'div', class: 'flex space-x-8', children: [
         { prop: 'colors.0', type: 'color-picker', defaultValue: '#2862B7FF' },
         { prop: 'colors.1', type: 'color-picker', defaultValue: '#2862B7FF' },
       ] }] },
@@ -224,9 +220,9 @@ export default [
     is: 'border-12',
     label: 'border-12',
     cover: new URL('./icons/border-12.png', import.meta.url).href,
-    category: 'border',
+    category: 'Border',
     props: [
-      { lp: 'colors', children: [{ is: 'div', class: 'grid grid-cols-2', children: [
+      { lp: 'colors', children: [{ is: 'div', class: 'flex space-x-8', children: [
         { prop: 'colors.0', type: 'color-picker', defaultValue: '#2862B7FF' },
         { prop: 'colors.1', type: 'color-picker', defaultValue: '#2862B7FF' },
       ] }] },
@@ -243,9 +239,9 @@ export default [
     is: 'border-13',
     label: 'border-13',
     cover: new URL('./icons/border-13.png', import.meta.url).href,
-    category: 'border',
+    category: 'Border',
     props: [
-      { lp: 'colors', children: [{ is: 'div', class: 'grid grid-cols-2', children: [
+      { lp: 'colors', children: [{ is: 'div', class: 'flex space-x-8', children: [
         { prop: 'colors.0', type: 'color-picker', defaultValue: '#2862B7FF' },
         { prop: 'colors.1', type: 'color-picker', defaultValue: '#4B77B7FF' },
       ] }] },

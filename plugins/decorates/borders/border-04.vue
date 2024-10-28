@@ -1,5 +1,5 @@
 <template>
-  <div class="border-04">
+  <div class="border-04" style="position: relative">
     <svg :width="w" :height="h">
       <defs>
         <filter :id="filterId" height="150%" width="150%" x="-25%" y="-25%">
@@ -27,8 +27,8 @@
       <polygon
         :fill="bg"
         :points="`
-        20, 32 ${w * 0.5 - borderTitleWidth / 2}, 32 ${w * 0.5 - borderTitleWidth / 2 + 20}, 53
-        ${w * 0.5 + borderTitleWidth / 2 - 20}, 53 ${w * 0.5 + borderTitleWidth / 2}, 32
+        20, 32 ${w * 0.5 - titleWidth / 2}, 32 ${w * 0.5 - titleWidth / 2 + 20}, 53
+        ${w * 0.5 + titleWidth / 2 - 20}, 53 ${w * 0.5 + titleWidth / 2}, 32
         ${w - 20}, 32 ${w - 8}, 48 ${w - 8}, ${h - 25} ${w - 20}, ${h - 8}
         20, ${h - 8} 8, ${h - 25} 8, 50
       `"
@@ -39,17 +39,17 @@
         :stroke="colors[0]"
         :filter="`url(#${filterId})`"
         :points="`
-          ${(w - borderTitleWidth) / 2}, 30
+          ${(w - titleWidth) / 2}, 30
           20, 30 7, 50 7, ${50 + (h - 167) / 2}
           13, ${55 + (h - 167) / 2} 13, ${135 + (h - 167) / 2}
           7, ${140 + (h - 167) / 2} 7, ${h - 27}
           20, ${h - 7} ${w - 20}, ${h - 7} ${w - 7}, ${h - 27}
           ${w - 7}, ${140 + (h - 167) / 2} ${w - 13}, ${135 + (h - 167) / 2}
           ${w - 13}, ${55 + (h - 167) / 2} ${w - 7}, ${50 + (h - 167) / 2}
-          ${w - 7}, 50 ${w - 20}, 30 ${(w + borderTitleWidth) / 2}, 30
-          ${(w + borderTitleWidth) / 2 - 20}, 7 ${(w - borderTitleWidth) / 2 + 20}, 7
-          ${(w - borderTitleWidth) / 2}, 30 ${(w - borderTitleWidth) / 2 + 20}, 52
-          ${(w + borderTitleWidth) / 2 - 20}, 52 ${(w + borderTitleWidth) / 2}, 30
+          ${w - 7}, 50 ${w - 20}, 30 ${(w + titleWidth) / 2}, 30
+          ${(w + titleWidth) / 2 - 20}, 7 ${(w - titleWidth) / 2 + 20}, 7
+          ${(w - titleWidth) / 2}, 30 ${(w - titleWidth) / 2 + 20}, 52
+          ${(w + titleWidth) / 2 - 20}, 52 ${(w + titleWidth) / 2}, 30
         `"
       />
 
@@ -57,8 +57,8 @@
         :stroke="colors[0]"
         fill="transparent"
         :points="`
-          ${(w + borderTitleWidth) / 2 - 5}, 30 ${(w + borderTitleWidth) / 2 - 21}, 11
-          ${(w + borderTitleWidth) / 2 - 27}, 11 ${(w + borderTitleWidth) / 2 - 8}, 34
+          ${(w + titleWidth) / 2 - 5}, 30 ${(w + titleWidth) / 2 - 21}, 11
+          ${(w + titleWidth) / 2 - 27}, 11 ${(w + titleWidth) / 2 - 8}, 34
         `"
       />
 
@@ -66,8 +66,8 @@
         :stroke="colors[0]"
         fill="transparent"
         :points="`
-          ${(w - borderTitleWidth) / 2 + 5}, 30 ${(w - borderTitleWidth) / 2 + 22}, 49
-          ${(w - borderTitleWidth) / 2 + 28}, 49 ${(w - borderTitleWidth) / 2 + 8}, 26
+          ${(w - titleWidth) / 2 + 5}, 30 ${(w - titleWidth) / 2 + 22}, 49
+          ${(w - titleWidth) / 2 + 28}, 49 ${(w - titleWidth) / 2 + 8}, 26
         `"
       />
 
@@ -76,9 +76,9 @@
         :fill="colors[1]"
         :filter="`url(#${filterId})`"
         :points="`
-          ${(w + borderTitleWidth) / 2 - 11}, 37 ${(w + borderTitleWidth) / 2 - 32}, 11
-          ${(w - borderTitleWidth) / 2 + 23}, 11 ${(w - borderTitleWidth) / 2 + 11}, 23
-          ${(w - borderTitleWidth) / 2 + 33}, 49 ${(w + borderTitleWidth) / 2 - 22}, 49
+          ${(w + titleWidth) / 2 - 11}, 37 ${(w + titleWidth) / 2 - 32}, 11
+          ${(w - titleWidth) / 2 + 23}, 11 ${(w - titleWidth) / 2 + 11}, 23
+          ${(w - titleWidth) / 2 + 33}, 49 ${(w + titleWidth) / 2 - 22}, 49
         `"
       />
 
@@ -87,8 +87,8 @@
         :fill="colors[0]"
         opacity="1"
         :points="`
-          ${(w - borderTitleWidth) / 2 - 10}, 37 ${(w - borderTitleWidth) / 2 - 31}, 37
-          ${(w - borderTitleWidth) / 2 - 25}, 46 ${(w - borderTitleWidth) / 2 - 4}, 46
+          ${(w - titleWidth) / 2 - 10}, 37 ${(w - titleWidth) / 2 - 31}, 37
+          ${(w - titleWidth) / 2 - 25}, 46 ${(w - titleWidth) / 2 - 4}, 46
         `"
       >
         <animate
@@ -105,8 +105,8 @@
         :fill="colors[0]"
         opacity="0.7"
         :points="`
-          ${(w - borderTitleWidth) / 2 - 40}, 37 ${(w - borderTitleWidth) / 2 - 61}, 37
-          ${(w - borderTitleWidth) / 2 - 55}, 46 ${(w - borderTitleWidth) / 2 - 34}, 46
+          ${(w - titleWidth) / 2 - 40}, 37 ${(w - titleWidth) / 2 - 61}, 37
+          ${(w - titleWidth) / 2 - 55}, 46 ${(w - titleWidth) / 2 - 34}, 46
         `"
       >
         <animate
@@ -123,8 +123,8 @@
         :fill="colors[0]"
         opacity="0.5"
         :points="`
-          ${(w - borderTitleWidth) / 2 - 70}, 37 ${(w - borderTitleWidth) / 2 - 91}, 37
-          ${(w - borderTitleWidth) / 2 - 85}, 46 ${(w - borderTitleWidth) / 2 - 64}, 46
+          ${(w - titleWidth) / 2 - 70}, 37 ${(w - titleWidth) / 2 - 91}, 37
+          ${(w - titleWidth) / 2 - 85}, 46 ${(w - titleWidth) / 2 - 64}, 46
         `"
       >
         <animate
@@ -141,8 +141,8 @@
         :fill="colors[0]"
         opacity="1"
         :points="`
-          ${(w + borderTitleWidth) / 2 + 30}, 37 ${(w + borderTitleWidth) / 2 + 9}, 37
-          ${(w + borderTitleWidth) / 2 + 3}, 46 ${(w + borderTitleWidth) / 2 + 24}, 46
+          ${(w + titleWidth) / 2 + 30}, 37 ${(w + titleWidth) / 2 + 9}, 37
+          ${(w + titleWidth) / 2 + 3}, 46 ${(w + titleWidth) / 2 + 24}, 46
         `"
       >
         <animate
@@ -159,8 +159,8 @@
         :fill="colors[0]"
         opacity="0.7"
         :points="`
-          ${(w + borderTitleWidth) / 2 + 60}, 37 ${(w + borderTitleWidth) / 2 + 39}, 37
-          ${(w + borderTitleWidth) / 2 + 33}, 46 ${(w + borderTitleWidth) / 2 + 54}, 46
+          ${(w + titleWidth) / 2 + 60}, 37 ${(w + titleWidth) / 2 + 39}, 37
+          ${(w + titleWidth) / 2 + 33}, 46 ${(w + titleWidth) / 2 + 54}, 46
         `"
       >
         <animate
@@ -177,8 +177,8 @@
         :fill="colors[0]"
         opacity="0.5"
         :points="`
-          ${(w + borderTitleWidth) / 2 + 90}, 37 ${(w + borderTitleWidth) / 2 + 69}, 37
-          ${(w + borderTitleWidth) / 2 + 63}, 46 ${(w + borderTitleWidth) / 2 + 84}, 46
+          ${(w + titleWidth) / 2 + 90}, 37 ${(w + titleWidth) / 2 + 69}, 37
+          ${(w + titleWidth) / 2 + 63}, 46 ${(w + titleWidth) / 2 + 84}, 46
         `"
       >
         <animate
@@ -189,17 +189,6 @@
           repeatCount="indefinite"
         />
       </polygon>
-
-      <text
-        :x="`${w / 2}`"
-        :y="borderTitleHeight"
-        :fill="borderTitleColor"
-        :font-size="borderTitleSize"
-        text-anchor="middle"
-        dominant-baseline="middle"
-      >
-        {{ borderTitle }}
-      </text>
 
       <polygon
         :fill="colors[0]"
@@ -219,15 +208,27 @@
         `"
       />
     </svg>
+
+    <div ref="headerRef" :style="{ position: 'absolute', left: '50%', top: '18px', transform: 'translate(-50%, 0)' }">
+      <slot name="title">
+        <div style="padding: 0 8px">{{ title }}</div>
+      </slot>
+    </div>
   </div>
 </template>
 
 <script setup>
+import { computed, ref } from 'vue'
+import { useElementSize } from '@vueuse/core'
 import { v4 } from 'uuid'
 import { useSize } from '../utils'
 
-const props = defineProps(['colors', 'borderTitle', 'borderTitleColor', 'borderTitleSize', 'borderTitleHeight', 'borderTitleWidth', 'bg'])
+const props = defineProps(['colors', 'title', 'bg'])
 
 const filterId = v4()
 const { w, h } = useSize()
+
+const headerRef = ref()
+const { width } = useElementSize(headerRef)
+const titleWidth = computed(() => Math.max(width.value + 64, 130))
 </script>
