@@ -120,6 +120,7 @@ const styles = computed(() => [
 const commons = [
   { lp: 'id' },
   { lp: 'class' },
+  { lp: 'slot' },
   { lp: ['condition', '$.condition'], type: 'switch', displayValue: true },
   { is: 'ElDivider' },
   { is: 'h1', children: 'Event' },

@@ -1,9 +1,12 @@
+import { v4 } from 'uuid'
+
 const ICONS = ['search', 'arrow_forward', 'downloading', 'attach_file']
 const SIZES = ['normal', 'small', 'large']
 
 const variant = (options, displayValue) => ({ lp: 'variant', type: 'select', options, displayValue })
 const options = (lp, options, displayValue, extra) => ({ lp, type: 'select', options, displayValue, ...extra })
-const boolean = (lp, displayValue = false) => ({ lp, type: 'switch', displayValue })
+const radios = (lp, options, displayValue, extra) => ({ lp, type: 'radio-group', options, displayValue, ...extra, el: { type: 'button', ...extra?.el } })
+const bool = (lp, displayValue = false) => ({ lp, type: 'switch', displayValue })
 const number = (lp, displayValue) => ({ lp, type: 'input-number', displayValue })
 const selectable = (props) => ({ is: 'div', class: 'flex', children: [
   { lp: 'selectable', type: 'switch', displayValue: false },
@@ -12,11 +15,11 @@ const selectable = (props) => ({ is: 'div', class: 'flex', children: [
 ] })
 
 const size = { lp: 'size', type: 'select', options: SIZES, displayValue: 'normal' }
-const fullWidth = boolean('full-width')
-const loading = boolean('loading')
-const disabled = boolean('disabled')
-const required = boolean('required')
-const readonly = boolean('readonly')
+const fullWidth = bool('full-width')
+const loading = bool('loading')
+const disabled = bool('disabled')
+const required = bool('required')
+const readonly = bool('readonly')
 const name = { lp: 'name' }
 const value = { lp: 'value' }
 const kv = { is: 'div', class: 'flex', children: [name, value] }
@@ -39,8 +42,7 @@ export default [
     is: 'mdui-button',
     label: 'button',
     props: props => [
-      { lp: ['text', 'children'] },
-      variant(['elevated', 'filled', 'tonal', 'outlined', 'text'], 'filled'),
+      variant(['elevated', 'filled', 'tonal', 'outlined', 'text']),
       fullWidth,
       icon,
       href(props),
@@ -49,7 +51,7 @@ export default [
       btnType,
     ],
     defaultProps: () => ({
-      children: 'button'
+      children: [{ is: 'span', children: 'button' }]
     })
   },
 
@@ -130,7 +132,7 @@ export default [
     label: 'chip',
     props: props => [
       variant(['assist', 'filter', 'input', 'suggestion'], 'assist'),
-      boolean('elevated'),
+      bool('elevated'),
       icon,
       selectable(props),
       href(props),
@@ -150,7 +152,7 @@ export default [
     label: 'card',
     props: props => [
       variant(['elevated', 'filled', 'outlined'], 'assist'),
-      boolean('clickable'),
+      bool('clickable'),
       href(props),
       disabled,
     ],
@@ -165,7 +167,7 @@ export default [
     props: [
       { lp: ['label', 'children'] },
       name,
-      boolean('checked'),
+      bool('checked'),
       required,
       disabled,
     ],
@@ -200,7 +202,7 @@ export default [
     drag: { to: 'mdui-radio-group' },
     props: [
       kv,
-      boolean('checked'),
+      bool('checked'),
       required,
       disabled,
     ],
@@ -214,7 +216,7 @@ export default [
     label: 'switch',
     props: [
       kv,
-      boolean('checked'),
+      bool('checked'),
       required,
       disabled,
     ],
@@ -231,8 +233,8 @@ export default [
       min,
       max,
       step,
-      boolean('tickmarks'),
-      boolean('nolabel'),
+      bool('tickmarks'),
+      bool('nolabel'),
       { lp: 'label-formatter', script: true, displayValue: '{{v => v}}' },
       required,
       disabled,
@@ -247,14 +249,14 @@ export default [
     label: 'collapse',
     drag: { from: 'mdui-collapse-item' },
     props: [
-      boolean('accordion'),
+      bool('accordion'),
       disabled,
-      OptionsInput(['options', 'children'], { L: 'children.0.children', V: 'value' }, 'mdui-collapse-item', () => ({ children: [{ is: 'mdui-list-item', slot: 'header', icon: 'near_me', children: 'Item' }, { is: 'mdui-list-item', children: 'Content' }] })),
+      // OptionsInput(['options', 'children'], { L: 'children.0.children', V: 'value' }, 'mdui-collapse-item', () => ({ children: [{ is: 'mdui-list-item', slot: 'header', icon: 'near_me', children: 'Item' }, { is: 'mdui-list-item', children: 'Content' }] })),
     ],
     defaultProps: () => ({
       children: [
-        { is: 'mdui-collapse-item', value: '1', children: [{ is: 'mdui-list-item', slot: 'header', icon: 'near_me', children: 'Item 1' }, { is: 'mdui-list-item', children: 'Content 1' }] },
-        { is: 'mdui-collapse-item', value: '2', children: [{ is: 'mdui-list-item', slot: 'header', icon: 'near_me', children: 'Item 2' }, { is: 'mdui-list-item', children: 'Content 2' }] },
+        { is: 'mdui-collapse-item', value: '1', children: [{ is: 'mdui-list-item', slot: 'header', children: [{ is: 'span', children: 'Item 1' }] }, { is: 'div', children: [] }] },
+        { is: 'mdui-collapse-item', value: '2', children: [{ is: 'mdui-list-item', slot: 'header', children: [{ is: 'span', children: 'Item 2' }] }, { is: 'div', children: [] }] },
       ]
     })
   },
@@ -276,7 +278,7 @@ export default [
   {
     is: 'MdUiTabs2',
     label: 'tabs',
-    drag: { to: 'mdui-tab-panel' },
+    drag: { from: 'mdui-tab-panel' },
     props: [
       value,
       variant(['primary', 'secondary'], 'primary'),
@@ -301,7 +303,7 @@ export default [
     props: [
       value,
       icon,
-      boolean('inline'),
+      bool('inline'),
     ]
   },
 
@@ -314,10 +316,10 @@ export default [
       kv,
       { lp: 'label' },
       OptionsInput(['options', 'children'], { L: 'children' }, 'mdui-menu-item', i => ({ value: `item-${i + 1}`, children: `Item ${i + 1}` })),
-      boolean('multiple'),
+      bool('multiple'),
       { lp: 'placeholder' },
       { lp: 'helper' },
-      boolean('clearable'),
+      bool('clearable'),
       icon,
       endIcon,
       readonly,
@@ -336,17 +338,21 @@ export default [
   {
     is: 'mdui-text-field',
     label: 'text-field',
+    slot: ['icon', 'end-icon', 'prefix', 'suffix'],
     props: props => [
-      variant(['filled', 'outlined']),
+      radios('variant', ['filled', 'outlined']),
       kv,
-      { is: 'div', class: 'flex', children: [{ lp: 'label' }, { lp: 'helper' }] },
-      { is: 'div', class: 'flex', children: [boolean('clearable'), boolean('counter')] },
-      { is: 'div', class: 'flex', children: [icon, endIcon] },
+      { is: 'div', class: 'grid grid-cols-2', children: [{ lp: 'label' }, { lp: 'helper' }] },
+      { is: 'div', class: 'grid grid-cols-2', children: [bool('clearable'), bool('counter')] },
+      { is: 'div', class: 'grid grid-cols-2', children: [icon, endIcon] },
+      { is: 'div', class: 'grid grid-cols-2', children: [{ lp: 'prefix' }, { lp: 'suffix' }] },
       options('type', ['text', 'number', 'password', 'url', 'email', 'search', 'tel', 'date', 'datetime-local', 'month', 'time', 'week']),
-      { is: 'div', class: 'flex', children: [number('minlength'), number('maxlength')], $: { condition: ['text', 'password', 'url', 'email', 'search', 'tel'].includes(props.type) } },
-      { is: 'div', class: 'flex', children: [number('min-rows'), number('max-rows')], $: { condition: props.type == 'text' } },
-      { is: 'div', class: 'flex', children: [number('min'), number('max')], $: { condition: props.type == 'number' } },
-      boolean('autosize'),
+      ...[
+        [{ is: 'div', class: 'grid grid-cols-2 gap-x-12', children: [number('minlength'), number('maxlength')] }, ['text', 'password', 'url', 'email', 'search', 'tel']],
+        [{ is: 'div', class: 'grid grid-cols-2 gap-x-12', children: [number('min-rows'), number('max-rows')] }, ['text']],
+        [{ is: 'div', class: 'grid grid-cols-2 gap-x-12', children: [number('min'), number('max')] }, ['number']],
+      ].flatMap(e => e[1].includes(props.type) ? e[0] : []),
+      bool('autosize'),
       { lp: 'pattern' },
       readonly,
       disabled,
@@ -369,22 +375,100 @@ export default [
     props: [
       { lp: ['title', 'children.1.children'] },
       options(['icon', 'children.0.icon'], ICONS),
-      { lp: 'variant', type: 'radio-group', options: [['center', 'center-aligned'], 'small', 'medium', 'large'], el: { type: 'button' } },
-      { lp: 'scroll-behavior', type: 'checkbox-group', options: ['hide', 'shrink', 'elevate'], get: v => v?.split(' '), set: v => v.join(' '), el: { type: 'button' } }
+      radios('variant', [['center', 'center-aligned'], 'small', 'medium', 'large'], 'small'),
+      bool('shrink'),
+      { lp: 'scroll-behavior', type: 'checkbox-group', options: ['hide', 'shrink', 'elevate'], get: v => v?.split(' '), set: v => v.join(' '), el: { type: 'button' } },
+      number('scroll-threshold')
     ],
     defaultProps: () => ({
       children: [
         { is: 'mdui-button-icon', icon: 'menu' },
-        { is: 'mdui-top-app-bar-title', children: 'Title' },
+        { is: 'mdui-top-app-bar-title', 'lcd-selectable': false, children: 'Title' },
       ]
     })
+  },
+
+  {
+    is: 'mdui-top-app-bar-title',
+    hidden: true,
   },
 
   // todo
   {
     is: 'mdui-list-item',
-    label: 'item',
+    label: 'li',
     drag: false,
-    props: [],
+    props: [
+      
+    ],
+    defaultProps: () => ({
+      children: [{ is: 'span', children: 'Headline' }]
+    })
   },
+
+  {
+    is: 'mdui-navigation-bar',
+    label: 'nav-bar',
+    props: [
+      { lp: 'value' },
+    ],
+    defaultProps: () => ({
+      value: 'bar-1',
+      children: [
+        { is: 'mdui-navigation-bar-item', value: 'bar-1', children: [{ is: 'span', children: 'Label 1' }, { is: 'mdui-icon', slot: 'icon', name: 'place--outlined' }, { is: 'mdui-icon', slot: 'active-icon', name: 'place' }] },
+        { is: 'mdui-navigation-bar-item', value: 'bar-2', children: [{ is: 'span', children: 'Label 2' }, { is: 'mdui-icon', slot: 'icon', name: 'place--outlined' }, { is: 'mdui-icon', slot: 'active-icon', name: 'place' }] },
+        { is: 'mdui-navigation-bar-item', value: 'bar-3', children: [{ is: 'span', children: 'Label 3' }, { is: 'mdui-icon', slot: 'icon', name: 'place--outlined' }, { is: 'mdui-icon', slot: 'active-icon', name: 'place' }] },
+      ]
+    })
+  },
+
+  {
+    is: 'mdui-navigation-bar-item',
+    label: 'nav-bar-li',
+    hidden: true,
+    props: [
+      { lp: 'value' }
+    ],
+    defaultProps: () => ({
+      value: v4(),
+      children: [
+        { is: 'span', children: 'Label' },
+        { is: 'mdui-icon',  }
+      ]
+    })
+  },
+
+  {
+    is: 'mdui-icon',
+    label: 'icon',
+    props: [
+      { lp: 'name' },
+      { lp: 'src' }
+    ],
+    defaultProps: () => ({
+      // name: ''
+      src: 'https://api.iconify.design/iconoir:mouse-button-left.svg'
+    })
+  },
+
+  {
+    is: 'mdui-navigation-drawer',
+    label: 'drawer',
+    props: [
+      bool('open'),
+      bool('modal'),
+      bool('closeOnEsc'),
+      bool('closeOnOverlayClick'),
+      radios('placement', ['left', 'right'], 'left'),
+      { is: 'el-divider' },
+      { is: 'h2', class: 'my12', children: 'Event' },
+      { lp: 'onClose' }
+    ],
+    defaultProps: () => ({
+      modal: true,
+      closeOnEsc: true,
+      closeOnOverlayClick: true,
+      children: [],
+    })
+  }
 ]

@@ -313,7 +313,7 @@ function resolveNode(el: HTMLElement) {
 const dragLineStyle = reactive({ transform: '',  width: '', height: '' })
 const DragLine = defineComponent({
   setup() {
-    return () => h('div', { style: { ...dragLineStyle, position: 'fixed', zIndex: 100, pointerEvents: 'none', background: '#e6a23c66' } })
+    return () => h('div', { style: { ...dragLineStyle, position: 'fixed', top: 0, left: 0, zIndex: 100000, pointerEvents: 'none', background: '#e6a23c66' } })
   }
 })
 
@@ -326,7 +326,7 @@ const dragMaskRects = computed(() => {
 const DragGuidMask = defineComponent({
   setup() {
     const root = document.scrollingElement!
-    return () => dragMaskRects.value && h('div', { style: `position: fixed; inset: 0; pointer-events: none; line-height: 0; z-index: 99` }, h('svg', { style: 'width: 100%; height: 100%' }, h('path', {
+    return () => dragMaskRects.value && h('div', { style: `position: fixed; inset: 0; pointer-events: none; line-height: 0; z-index: 99999` }, h('svg', { style: 'width: 100%; height: 100%' }, h('path', {
       style: 'pointer-events: auto;',
       fill: 'rgba(0,0,0,.6)',
       d: `
