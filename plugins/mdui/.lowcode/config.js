@@ -6,6 +6,7 @@ const SIZES = ['normal', 'small', 'large']
 const variant = (options, displayValue) => ({ lp: 'variant', type: 'select', options, displayValue })
 const options = (lp, options, displayValue, extra) => ({ lp, type: 'select', options, displayValue, ...extra })
 const radios = (lp, options, displayValue, extra) => ({ lp, type: 'radio-group', options, displayValue, ...extra, el: { type: 'button', ...extra?.el } })
+const checkboxs = (lp, options, displayValue, extra) => ({ lp, type: 'checkbox-group', options, displayValue, ...extra, el: { type: 'button', ...extra?.el } })
 const bool = (lp, displayValue = false) => ({ lp, type: 'switch', displayValue })
 const number = (lp, displayValue) => ({ lp, type: 'input-number', displayValue })
 const selectable = (props) => ({ is: 'div', class: 'flex', children: [
@@ -13,8 +14,24 @@ const selectable = (props) => ({ is: 'div', class: 'flex', children: [
   { lp: 'selected', type: 'switch', displayValue: false },
   { lp: 'selected-icon', type: 'select', options: ICONS },
 ] })
+const icon = lp => ({ lp, options: ICONS })
+
+const vmodel = (k, evt) => ({
+  lp: 'v-model',
+  get: (v, model) => {
+    const k1 = model[k]?.match(/\{\{(.+)\}\}/)?.[1]
+    return k1 && (model[evt]?.includes(`${k1} = e.target.${k}`)) ? k1 : void 0
+  },
+  set: () => (void 0),
+  out: (v, model) => {
+    return v
+      ? { [k]: `{{${v}}}`, [evt]: `{{(e) => {\n  ${v} = e.target.${k}\n}}}` }
+      : { [k]: void 0, [evt]: void 0 }
+  }
+})
 
 const size = { lp: 'size', type: 'select', options: SIZES, displayValue: 'normal' }
+const grid2 = children => ({ is: 'div', class: 'grid grid-cols-2 gap-x-12', children })
 const fullWidth = bool('full-width')
 const loading = bool('loading')
 const disabled = bool('disabled')
@@ -23,12 +40,12 @@ const readonly = bool('readonly')
 const name = { lp: 'name' }
 const value = { lp: 'value' }
 const kv = { is: 'div', class: 'flex', children: [name, value] }
-const icon = options('icon', ICONS)
-const endIcon = options('end-icon', ICONS)
-const href = props => ({ is: 'div', class: 'flex', children: [
-  { lp: 'href', el: { placeholder: 'http://……' } },
+const _icon = options('icon', ICONS)
+const _endIcon = options('end-icon', ICONS)
+const href = props => grid2([
+  { lp: 'href', displayValue: '', el: { placeholder: 'http://……' } },
   { lp: 'target', type: 'select', options: ['_blank', '_self'], displayValue: '_self', $: { condition: !!props.href } },
-] })
+])
 const btnType = options('type', ['submit', 'reset', 'button'], 'button')
 
 const min = { lp: 'min', type: 'input-number', displayValue: 0 }
@@ -44,7 +61,7 @@ export default [
     props: props => [
       variant(['elevated', 'filled', 'tonal', 'outlined', 'text']),
       fullWidth,
-      icon,
+      _icon,
       href(props),
       disabled,
       loading,
@@ -58,17 +75,24 @@ export default [
   {
     is: 'mdui-button-icon',
     label: 'icon-button',
+    slots: ['selected-icon'],
     props: props => [
       variant(['standard', 'filled', 'tonal', 'outlined'], 'standard'),
-      icon,
-      selectable(props),
+      _icon,
+      // selectable(props),
+      bool('selectable'),
       href(props),
       disabled,
       loading,
       btnType,
     ],
     defaultProps: () => ({
-      icon: 'menu'
+      // icon: 'menu'
+       
+      children: [
+        { is: 'mdui-icon', name: 'favorite_border' },
+        { is: 'mdui-menu', name: 'favorite', slot: 'selected-icon' }
+      ]
     })
   },
 
@@ -78,7 +102,7 @@ export default [
     props: props => [
       variant(['primary', 'surface', 'secondary', 'tertiary'], 'primary'),
       size,
-      icon,
+      _icon,
       href(props),
       disabled,
       loading,
@@ -96,7 +120,7 @@ export default [
     props: props => [
       kv,
       fullWidth,
-      options('selects', ['single', 'multiple']),
+      radios('selects', ['single', 'multiple']),
       disabled,
       required,
       OptionsInput(['', 'children'], { L: 'children', V: 'value' }, 'mdui-segmented-button'),
@@ -116,7 +140,7 @@ export default [
     hidden: true,
     props: props => [
       value,
-      icon,
+      _icon,
       href(props),
       disabled,
       loading,
@@ -133,11 +157,11 @@ export default [
     props: props => [
       variant(['assist', 'filter', 'input', 'suggestion'], 'assist'),
       bool('elevated'),
-      icon,
+      _icon,
       selectable(props),
       href(props),
       value,
-      icon,
+      _icon,
       disabled,
       loading,
       btnType
@@ -165,6 +189,7 @@ export default [
     is: 'mdui-checkbox',
     label: 'checkbox',
     props: [
+      vmodel('checked', 'onChange'),
       { lp: ['label', 'children'] },
       name,
       bool('checked'),
@@ -214,11 +239,13 @@ export default [
   {
     is: 'mdui-switch',
     label: 'switch',
+    slots: ['unchecked-icon', 'checked-icon'],
     props: [
+      vmodel('checked', 'onChange'),
       kv,
       bool('checked'),
-      required,
-      disabled,
+      grid2([icon('unchecked-icon'), icon('checked-icon')]),
+      grid2([required, disabled]),
     ],
     defaultProps: () => ({
 
@@ -230,10 +257,8 @@ export default [
     label: 'slider',
     props: [
       kv,
-      min,
-      max,
-      step,
-      bool('tickmarks'),
+      grid2([min, max]),
+      grid2([step, bool('tickmarks')]),
       bool('nolabel'),
       { lp: 'label-formatter', script: true, displayValue: '{{v => v}}' },
       required,
@@ -302,7 +327,7 @@ export default [
     drag: { to: 'MdUiTabs2' },
     props: [
       value,
-      icon,
+      _icon,
       bool('inline'),
     ]
   },
@@ -312,19 +337,14 @@ export default [
     label: 'select',
     drag: { from: 'mdui-menu-item' },
     props: [
-      variant(['filled', 'outlined']),
+      grid2([radios('variant', ['filled', 'outlined']), required]),
       kv,
-      { lp: 'label' },
+      grid2([{ lp: 'label' }, { lp: 'helper' }]),
+      grid2([bool('multiple'), bool('clearable')]),
+      grid2([_icon, _endIcon]),
+      grid2([{ lp: 'prefix' }, { lp: 'suffix' }]),
+      grid2([disabled, readonly]),
       OptionsInput(['options', 'children'], { L: 'children' }, 'mdui-menu-item', i => ({ value: `item-${i + 1}`, children: `Item ${i + 1}` })),
-      bool('multiple'),
-      { lp: 'placeholder' },
-      { lp: 'helper' },
-      bool('clearable'),
-      icon,
-      endIcon,
-      readonly,
-      disabled,
-      required,
     ],
     defaultProps: () => ({
       label: 'label',
@@ -344,7 +364,7 @@ export default [
       kv,
       { is: 'div', class: 'grid grid-cols-2', children: [{ lp: 'label' }, { lp: 'helper' }] },
       { is: 'div', class: 'grid grid-cols-2', children: [bool('clearable'), bool('counter')] },
-      { is: 'div', class: 'grid grid-cols-2', children: [icon, endIcon] },
+      { is: 'div', class: 'grid grid-cols-2', children: [_icon, _endIcon] },
       { is: 'div', class: 'grid grid-cols-2', children: [{ lp: 'prefix' }, { lp: 'suffix' }] },
       options('type', ['text', 'number', 'password', 'url', 'email', 'search', 'tel', 'date', 'datetime-local', 'month', 'time', 'week']),
       ...[
@@ -393,13 +413,15 @@ export default [
     hidden: true,
   },
 
-  // todo
   {
     is: 'mdui-list-item',
     label: 'li',
     drag: false,
-    props: [
-      
+    slots: ['icon', 'end-icon'],
+    props: props => [
+      bool('rounded'),
+      radios('alignment', ['start', 'center', 'right']),
+      href(props),
     ],
     defaultProps: () => ({
       children: [{ is: 'span', children: 'Headline' }]
@@ -470,5 +492,37 @@ export default [
       closeOnOverlayClick: true,
       children: [],
     })
+  },
+
+  {
+    is: 'mdui-menu',
+    label: 'menu',
+    drag: { from: ['mdui-menu-item', 'mdui-divider'] },
+    props: [
+      { lp: 'value' },
+      bool('dense'),
+      radios('selects', ['single', 'multiple']),
+      checkboxs('submenu-trigger', ['click', 'hover', 'focus', 'manual'], ['click', 'hover'], { get: v => v?.split(' ') || [], set: v => v?.join(' ') || '' }),
+    ],
+    defaultProps: () => ({
+      children: [
+        { is: 'mdui-menu-item', value: 1, children: [{ is: 'span', children: 'Item 1' }, { is: 'mdui-icon', name: 'visibility', slot: 'icon' }] },
+        { is: 'mdui-menu-item', value: 2, children: [{ is: 'span', children: 'Item 2' }, { is: 'mdui-icon', name: 'visibility', slot: 'icon' }] },
+        { is: 'mdui-menu-item', value: 3, children: [{ is: 'span', children: 'Item 3' }, { is: 'mdui-icon', name: 'visibility', slot: 'icon' }] },
+      ]
+    })
+  },
+
+  {
+    is: 'mdui-menu-item',
+    label: 'menu-item',
+    drag: { to: ['mdui-menu', 'mdui-menu-item'] },
+    slots: ['icon', 'end-icon', 'end-text', 'selected-icon', 'submenu'],
+    hidden: true,
+    props: props => [
+      { lp: 'value' },
+      disabled,
+      href(props),
+    ]
   }
 ]

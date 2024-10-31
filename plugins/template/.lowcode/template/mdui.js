@@ -7,6 +7,9 @@ export default {
     state: {
       count: 0,
       drawer: false,
+      segmented: {
+        fullwidth: false,
+      },
     },
     children: [
       {
@@ -29,7 +32,8 @@ export default {
               },
             ],
             _id: '27eedf71-8b0b-480e-ba9b-f4b771d1b31f',
-            scrollBehavior: 'shrink elevate',
+            scrollBehavior: 'elevate shrink',
+            variant: 'medium',
           },
           {
             is: 'mdui-collapse',
@@ -149,6 +153,182 @@ export default {
               },
               {
                 is: 'mdui-collapse-item',
+                value: 'button-icon',
+                children: [
+                  {
+                    is: 'mdui-list-item',
+                    slot: 'header',
+                    children: [
+                      {
+                        is: 'mdui-icon',
+                        src: 'https://api.iconify.design/iconoir:mouse-button-left.svg',
+                        _id: 'be31fc7c-8bde-4065-87ae-80501fb9327a',
+                        class: '',
+                        slot: 'icon',
+                      },
+                      {
+                        is: 'span',
+                        children: 'Button Icon',
+                        _id: '445c4fe5-eec4-482c-a7ea-acad05c286fa',
+                      },
+                    ],
+                    _id: '96116818-27e3-41fe-9035-bad82e11481c',
+                  },
+                  {
+                    is: 'div',
+                    children: [
+                      {
+                        is: 'p',
+                        children: 'variant',
+                        _id: '05c17eec-de7d-46ba-b985-a4e6deb5713f',
+                        style: {
+                          marginBottom: '8px',
+                          marginTop: '8px',
+                        },
+                      },
+                      {
+                        is: 'div',
+                        children: [
+                          {
+                            is: 'mdui-button-icon',
+                            children: [
+                              {
+                                is: 'mdui-icon',
+                                name: 'search',
+                                _id: 'aed0ef13-1130-4b5d-a50b-b2253bc4e458',
+                              },
+                            ],
+                            _id: 'da761480-c5cb-42cb-8d49-edb29219abcf',
+                          },
+                          {
+                            is: 'mdui-button-icon',
+                            children: [
+                              {
+                                is: 'mdui-icon',
+                                name: 'search',
+                                _id: 'd2864fb7-9ca3-4a58-83ac-d5ef683c777e',
+                              },
+                            ],
+                            _id: 'b2191d8c-c350-4e0a-891c-f0186c425250',
+                            variant: 'filled',
+                          },
+                          {
+                            is: 'mdui-button-icon',
+                            children: [
+                              {
+                                is: 'mdui-icon',
+                                name: 'search',
+                                _id: 'c64a76bf-0005-4e0a-8c4b-94a97b28ba63',
+                              },
+                            ],
+                            _id: '2bba04ba-c61f-46d1-8cf3-8ba59309545c',
+                            variant: 'tonal',
+                          },
+                          {
+                            is: 'mdui-button-icon',
+                            children: [
+                              {
+                                is: 'mdui-icon',
+                                src: 'https://api.iconify.design/iconoir:mouse-button-left.svg',
+                                _id: '2508523e-93b4-49d1-8e1d-f09975f1e8bd',
+                              },
+                            ],
+                            _id: 'fa628b4e-b0cf-4dfb-8776-37d3fb7f7e73',
+                            variant: 'outlined',
+                          },
+                        ],
+                        _id: 'dc716c8b-7ec4-45d5-be62-9fcd5adfdac1',
+                        style: {
+                          display: 'flex',
+                          gap: '0px 10px',
+                        },
+                      },
+                      {
+                        is: 'p',
+                        children: 'link',
+                        _id: 'df387e3c-57b4-4127-ac37-a1cdd9dc7e56',
+                        style: {
+                          marginBottom: '8px',
+                          marginTop: '8px',
+                        },
+                      },
+                      {
+                        is: 'mdui-button-icon',
+                        children: [
+                          {
+                            is: 'mdui-icon',
+                            name: 'search',
+                            _id: '71e0b239-d505-4466-a325-122cf1db6253',
+                          },
+                        ],
+                        _id: '0d470c3f-d730-44db-be38-0b079105b8c1',
+                        variant: 'tonal',
+                        href: 'https://www.mdui.org',
+                        target: '_blank',
+                      },
+                      {
+                        is: 'p',
+                        children: 'selectable',
+                        _id: 'aa097034-643e-470f-b766-d1e902c790e0',
+                        style: {
+                          marginBottom: '8px',
+                          marginTop: '8px',
+                        },
+                      },
+                      {
+                        is: 'mdui-button-icon',
+                        children: [
+                          {
+                            is: 'mdui-icon',
+                            name: 'favorite_border',
+                            _id: 'ca51aee7-29c6-47ec-81b3-a3d360d5d3d2',
+                          },
+                          {
+                            is: 'mdui-menu',
+                            name: 'favorite',
+                            slot: 'selected-icon',
+                            _id: '2df6455d-19c7-4bc2-8976-cee9cb5dab5a',
+                          },
+                        ],
+                        _id: 'a88e570f-673b-4f62-8795-56462582747b',
+                        selectable: true,
+                      },
+                      {
+                        is: 'p',
+                        children: 'loading',
+                        _id: 'bfeb75cb-043e-40a3-8e8b-c27ed2540c3a',
+                        style: {
+                          marginBottom: '8px',
+                          marginTop: '8px',
+                        },
+                      },
+                      {
+                        is: 'mdui-button-icon',
+                        children: [
+                          {
+                            is: 'mdui-icon',
+                            name: 'favorite_border',
+                            _id: '45910b4b-3f8f-45e5-bc04-3fc23b082486',
+                          },
+                        ],
+                        _id: '4d16ac4f-d6cb-4b04-bd4c-8be98a2a4203',
+                        variant: 'tonal',
+                        loading: true,
+                      },
+                    ],
+                    _id: '9d481ecc-473a-41b8-88fc-66bd95a8e1b7',
+                    style: {
+                      gap: '10px 10px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                    },
+                  },
+                ],
+                _id: '718d867b-ef68-4acb-abfe-6cda1a46dc34',
+              },
+              {
+                is: 'mdui-collapse-item',
                 value: '2',
                 children: [
                   {
@@ -236,6 +416,383 @@ export default {
                   },
                 ],
                 _id: '6e04d357-dfc2-484f-8757-4a4c27fa692b',
+              },
+              {
+                is: 'mdui-collapse-item',
+                value: '3',
+                children: [
+                  {
+                    is: 'mdui-list-item',
+                    slot: 'header',
+                    children: [
+                      {
+                        is: 'mdui-icon',
+                        src: 'https://api.iconify.design/mdi:form-select.svg',
+                        _id: 'a6690650-4271-4e75-8904-1bbf7c002c7b',
+                        slot: 'icon',
+                      },
+                      {
+                        is: 'span',
+                        children: 'Select\n\n',
+                        _id: '47bb2844-59c0-4bd5-a70a-cc8bdfaeeb25',
+                      },
+                    ],
+                    _id: 'e69c3dc6-3232-4217-a162-39bd4aaddd40',
+                  },
+                  {
+                    is: 'div',
+                    children: [
+                      {
+                        is: 'mdui-select',
+                        label: 'label',
+                        children: [
+                          {
+                            is: 'mdui-menu-item',
+                            value: 'item-1',
+                            children: 'Item 1',
+                            _id: 'e8cd1abb-79fc-4bf3-83e7-d665f889b752',
+                          },
+                          {
+                            is: 'mdui-menu-item',
+                            value: 'item-2',
+                            children: 'Item 2',
+                            _id: '9444c797-7858-4c74-b2a4-1434312b897b',
+                          },
+                        ],
+                        _id: '8e27007d-9f54-47d3-85c6-0a5221d8468f',
+                        icon: 'search',
+                        endIcon: 'downloading',
+                        prefix: '',
+                        suffix: '',
+                        helper: 'Filled',
+                        clearable: true,
+                      },
+                      {
+                        is: 'mdui-select',
+                        label: 'label',
+                        children: [
+                          {
+                            is: 'mdui-menu-item',
+                            value: 'item-1',
+                            children: 'Item 1',
+                            _id: 'd53703bb-f372-4ffe-8d7d-4c8a96cc5e89',
+                          },
+                          {
+                            is: 'mdui-menu-item',
+                            value: 'item-2',
+                            children: 'Item 2',
+                            _id: '659ef91e-0467-4d04-80c8-8e910aab8b23',
+                          },
+                        ],
+                        _id: 'f2310394-64c4-4c8f-ac41-930fbcc5f617',
+                        prefix: '$',
+                        suffix: '￥',
+                        helper: 'Outlined',
+                        variant: 'outlined',
+                        clearable: true,
+                      },
+                    ],
+                    _id: '01fd095d-6c35-43da-b16e-4d2e898f78b2',
+                    style: {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                    },
+                  },
+                ],
+                _id: '5b73b202-10b4-4936-994c-aeef1b54c27d',
+              },
+              {
+                is: 'mdui-collapse-item',
+                value: 'switch',
+                children: [
+                  {
+                    is: 'mdui-list-item',
+                    slot: 'header',
+                    children: [
+                      {
+                        is: 'mdui-icon',
+                        src: 'https://api.iconify.design/mdi:toggle-switch-outline.svg',
+                        _id: 'a86482aa-7f06-463b-b5d2-ebeb007afe03',
+                        slot: 'icon',
+                      },
+                      {
+                        is: 'span',
+                        children: 'Switch',
+                        _id: '4fc2fc76-2484-499b-8d50-b775786dfdfb',
+                      },
+                    ],
+                    _id: '5f74bbb5-eefc-43ca-a58b-e80007078b9a',
+                  },
+                  {
+                    is: 'div',
+                    children: [
+                      {
+                        is: 'mdui-switch',
+                        _id: 'ea629410-1ac5-44e7-ac67-48154641b230',
+                      },
+                      {
+                        is: 'mdui-switch',
+                        _id: 'cdd2eb41-7ab6-4ce7-8aa2-efa075931315',
+                        uncheckedIcon: 'arrow_forward',
+                      },
+                      {
+                        is: 'mdui-switch',
+                        _id: '076c726a-ecb9-4f41-abc6-f3aef95aaeff',
+                        disabled: true,
+                      },
+                    ],
+                    _id: '7477c02f-6db9-4d6d-ae5c-72c217db8bc0',
+                    style: {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      display: 'flex',
+                      gap: '12px 12px',
+                      flexWrap: 'wrap',
+                    },
+                  },
+                ],
+                _id: '4aa3ce1f-628c-45ff-b650-062c04d711e1',
+              },
+              {
+                is: 'mdui-collapse-item',
+                value: 'Slider',
+                children: [
+                  {
+                    is: 'mdui-list-item',
+                    slot: 'header',
+                    children: [
+                      {
+                        is: 'mdui-icon',
+                        src: 'https://api.iconify.design/radix-icons:slider.svg',
+                        _id: '2df6099b-c5a3-417f-a687-8cb6208c3800',
+                        slot: 'icon',
+                      },
+                      {
+                        is: 'span',
+                        children: 'Silder',
+                        _id: 'ad05d953-0f4e-4547-946d-0447da0e441b',
+                      },
+                    ],
+                    _id: '68d5f605-e94d-4b97-9c87-d2fa1716bd53',
+                  },
+                  {
+                    is: 'div',
+                    children: [
+                      {
+                        is: 'mdui-slider',
+                        _id: 'ce49bce1-beda-4a7e-91ef-b621be6e55e4',
+                      },
+                    ],
+                    _id: 'a747306f-f2c5-45e2-816f-e2c7db342730',
+                    style: {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                    },
+                  },
+                ],
+                _id: '5f4503f4-3fb1-4cb6-9ee3-ca8aba91e698',
+              },
+              {
+                is: 'mdui-collapse-item',
+                value: 'radios',
+                children: [
+                  {
+                    is: 'mdui-list-item',
+                    slot: 'header',
+                    children: [
+                      {
+                        is: 'mdui-icon',
+                        src: 'https://api.iconify.design/mdi:radiobox-marked.svg',
+                        _id: '912a53ce-7483-46e3-93a3-5aa6d4c32e01',
+                        slot: 'icon',
+                      },
+                      {
+                        is: 'span',
+                        children: 'Radio Group',
+                        _id: '51c74c5b-9679-4b40-88a9-b3efbed99a97',
+                      },
+                    ],
+                    _id: '7f66cc6b-a77c-4310-9a05-53b51f17106c',
+                  },
+                  {
+                    is: 'div',
+                    children: [
+                      {
+                        is: 'mdui-radio-group',
+                        children: [
+                          {
+                            is: 'mdui-radio',
+                            value: '1',
+                            children: 'Radio-1',
+                            _id: '59b6d631-b32b-4910-9bf5-f51f70f67292',
+                          },
+                          {
+                            is: 'mdui-radio',
+                            value: '2',
+                            children: 'Radio-2',
+                            _id: '838b475b-05c2-42f1-b2db-66a64b1bcf82',
+                          },
+                          {
+                            is: 'mdui-radio',
+                            value: '3',
+                            children: 'Radio-3',
+                            _id: 'e6c7ef76-deb6-4210-9561-4076c066f4fb',
+                          },
+                        ],
+                        _id: '0d5e2bcf-b8ee-4929-8d49-1d3e9799f9d4',
+                      },
+                    ],
+                    _id: '68303f23-a283-44c5-a484-f4fa3577b6d4',
+                    style: {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                    },
+                  },
+                ],
+                _id: '93b349f8-d950-4fde-a64d-2d4dfc1c4cc3',
+              },
+              {
+                is: 'mdui-collapse-item',
+                value: 'checkbox',
+                children: [
+                  {
+                    is: 'mdui-list-item',
+                    slot: 'header',
+                    children: [
+                      {
+                        is: 'mdui-icon',
+                        src: 'https://api.iconify.design/mdi:checkbox-marked-outline.svg',
+                        _id: '515102db-aeaa-43cd-81f3-293efec4690a',
+                        slot: 'icon',
+                      },
+                      {
+                        is: 'span',
+                        children: 'Checkbox',
+                        _id: '0410dc61-d975-4695-8889-d6fd17f96ffd',
+                      },
+                    ],
+                    _id: 'f7fa8fd8-3660-4a63-a248-34643129d5ab',
+                  },
+                  {
+                    is: 'div',
+                    children: [
+                      {
+                        is: 'mdui-checkbox',
+                        children: 'Checkbox',
+                        _id: '9e8526f0-f95d-476f-bb61-551dd823123a',
+                      },
+                      {
+                        is: 'mdui-checkbox',
+                        children: 'Checkbox',
+                        _id: '68586721-8ec5-4fcf-a872-dc71f7b59f69',
+                        checked: true,
+                      },
+                      {
+                        is: 'mdui-checkbox',
+                        children: 'Checkbox',
+                        _id: '23396255-c5c3-4430-9fbb-99220539f5e6',
+                        disabled: true,
+                      },
+                    ],
+                    _id: 'f10e81e1-b99d-4879-b831-29beefd846eb',
+                    style: {
+                      paddingTop: '16px',
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                    },
+                  },
+                ],
+                _id: 'b243b89e-26b6-43ab-9e61-374e4b2e157e',
+              },
+              {
+                is: 'mdui-collapse-item',
+                value: 'segmented',
+                children: [
+                  {
+                    is: 'mdui-list-item',
+                    slot: 'header',
+                    children: [
+                      {
+                        is: 'mdui-icon',
+                        src: 'https://api.iconify.design/bi:segmented-nav.svg',
+                        _id: '7123c3d2-1ebd-4aad-b183-7ae3c072658c',
+                        slot: 'icon',
+                      },
+                      {
+                        is: 'span',
+                        children: 'Segmented Button',
+                        _id: 'bf7c00b2-faaa-4e13-9054-7fd80da4da05',
+                      },
+                    ],
+                    _id: '9268d763-41cc-4362-9b58-82c4b89c72d2',
+                  },
+                  {
+                    is: 'div',
+                    children: [
+                      {
+                        is: 'div',
+                        children: [
+                          {
+                            is: 'mdui-checkbox',
+                            children: 'full-width',
+                            _id: 'fa99ef82-a8e2-4290-8113-4742f849f355',
+                            checked: '{{state.segmented.fullWidth}}',
+                            onChange:
+                              '{{(e) => {\n  state.segmented.fullWidth = e.target.checked\n}}}',
+                          },
+                          {
+                            is: 'mdui-checkbox',
+                            children: 'disabled',
+                            _id: '060cd0f4-cbb3-4c0d-8e49-d8e28247e705',
+                            checked: '{{state.segmented.disabled}}',
+                            onChange:
+                              '{{(e) => {\n  state.segmented.disabled = e.target.checked\n}}}',
+                          },
+                        ],
+                        _id: '81caa7af-5f19-47f7-b62b-dd8435dc5037',
+                      },
+                      {
+                        is: 'mdui-segmented-button-group',
+                        children: [
+                          {
+                            is: 'mdui-segmented-button',
+                            children: 'button-1',
+                            _id: 'a12dcb0d-fcef-4c2d-b973-69b1c6755b0e',
+                          },
+                          {
+                            is: 'mdui-segmented-button',
+                            children: 'button-2',
+                            _id: '013f1105-97a4-4041-b8e0-b71fd0ff04df',
+                          },
+                          {
+                            is: 'mdui-segmented-button',
+                            children: 'button-3',
+                            _id: 'de2255ce-5dca-4f67-84a3-f3cd533e96d6',
+                          },
+                        ],
+                        _id: '353778df-3565-4001-9d89-dd76a975eee1',
+                        fullWidth: '{{state.segmented.fullWidth}}',
+                        disabled: '{{state.segmented.disabled}}',
+                      },
+                    ],
+                    _id: '03ad02e4-4dca-4df9-8a92-41ff82b820fc',
+                    style: {
+                      paddingBottom: '16px',
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                    },
+                  },
+                ],
+                _id: '951dfcfd-c986-4713-9681-75eaf4e1bf79',
               },
             ],
             _id: 'af05cf3d-d4bf-407a-91b3-b9ea5bc86eb3',
