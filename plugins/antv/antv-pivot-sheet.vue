@@ -22,7 +22,7 @@ useResizeObserver(elRef, ([e]) => {
   s2.render(false)
 })
 
-watch(() => JSON.parse(JSON.stringify(props)), update)
+watch(() => JSON.stringify(props), update)
 
 function update() {
   const { dataCfg, options, themeCfg, brandColor } = props

@@ -15,7 +15,24 @@ export const widgets = [
         { lp: ['列维度', 'dataCfg.fields.columns'], options: ks, el: { multiple: true } },
         { lp: ['指标', 'dataCfg.fields.values'], options: ks, set: v => toArr(v), get: v => v?.[0] },
         { lp: ['主题', 'themeCfg.name'], options: [['—', void 0], 'colorful', 'gray', 'dark'], el: { class: 'wfull' } },
-        { lp: ['', 'brandColor'], type: 'color-picker', el: { colorFormat: 'hex' } }
+        { lp: ['', 'brandColor'], type: 'color-picker', el: { colorFormat: 'hex' } },
+        // 小计总计
+        { is: 'details', children: [
+          { is: 'summary', children: '小计总计' },
+          { is: 'Tabs', class: '-mx8 mt8', stretch: true, children: [
+            { is: 'div', label: '行', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8 p8', children: [
+              { lp: ['文本', 'options.totals.row.grandTotalsLabel'], el: { placeholder: '总计' } },
+              { lp: ['显示', 'options.totals.row.showGrandTotals'], type: 'switch', displayValue: false },
+              { lp: ['反转布局', 'options.totals.row.reverseGrandTotalsLayout'], type: 'switch', displayValue: false },
+              { is: 'el-divider', class: 'my0 b-b-1 col-span-2' },
+              { lp: ['文本', 'options.totals.row.subTotalsLabel'], el: { placeholder: '小计' } },
+              { lp: ['显示', 'options.totals.row.showSubTotals'], type: 'switch', displayValue: false },
+              { lp: ['维度', 'options.totals.row.subTotalsDimensions'], options: ks, get: v => v?.[0], set: v => toArr(v) },
+              { lp: ['反转布局', 'options.totals.row.reverseSubTotalsLayout'], type: 'switch', displayValue: false },
+            ] },
+            { is: 'div', label: '列', class: '', children: [] },
+          ] },
+        ] },
       ]
     },
     defaultProps: () => ({
