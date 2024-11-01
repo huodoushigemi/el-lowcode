@@ -1,11 +1,10 @@
-import { v4 as uuidv4 } from 'uuid'
-import { Obj, treeUtils } from '@el-lowcode/utils'
+import { treeUtils, uid } from '@el-lowcode/utils'
 import { BoxProps, DesignerCtx, Widget } from '../'
 
 export const parseAttrs = (config: Widget, ctx: DesignerCtx): BoxProps => {
   const attrs = { is: config.is } as BoxProps
   Object.assign(attrs, config.defaultProps?.(ctx))
-  treeUtils.flat([attrs]).forEach(e => e._id ||= uuidv4())
+  treeUtils.flat([attrs]).forEach(e => e._id ||= uid())
   return attrs
 }
 

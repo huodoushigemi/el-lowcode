@@ -4,13 +4,13 @@ import { useRoute, useRouter } from 'vue-router'
 import { watchDebounced } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
 import { ElLoadingService } from 'element-plus'
-import { v4 as uuid } from 'uuid'
 import Designer, { DesignerCtx } from '@el-lowcode/designer'
+import { uid } from '@el-lowcode/utils'
 
 const designer = ref<DesignerCtx>()
 
 const initial = (children: any = []) => ({
-  _id: uuid(),
+  _id: uid(),
   is: 'Page',
   state: { count: 0 },
   children,

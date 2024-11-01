@@ -1,8 +1,7 @@
 import { computed, InjectionKey, mergeProps, ref, toRaw } from 'vue'
 import { isArray, isObject, isString, normalizeStyle } from '@vue/shared'
 import { Fn, unrefElement } from '@vueuse/core'
-import { v4 as uuid } from 'uuid'
-import { Arrable, Assign, deepClone, Fnable, Obj, set } from '@el-lowcode/utils'
+import { Arrable, Assign, deepClone, Fnable, Obj, set, uid } from '@el-lowcode/utils'
 import { processProps } from 'el-lowcode'
 import { Node } from './components/Node'
 import { sloveConfig } from '../components/_utils'
@@ -57,13 +56,13 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   constructor(data) {
     const raw = toRaw(data)
-    raw._id ??= uuid()
+    raw._id ??= uid()
     super(data)
   }
 
   get id () { return this.data._id }
   get is() { return this.data.is }
-  get label () { return this.data['data-layer'] || (isString(this.data.children) && this.data.children) || this.config?.label || this.data.is }
+  get label () { return this.data['data-layer'] || this.config?.label || this.data.is }
   get data_children () { return isObject(this.$data.children) ? this.$data.children : void 0 }
   get dir() { return isArray(this.data_children) }
   get config() { return sloveConfig(this.data, this.designerCtx.widgets) }
@@ -118,7 +117,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   set hidden(bool) { this.data['lcd-hidden'] = bool || void 0 }
 
   clone() {
-    const data = deepClone(this.data, (v, k) => k == '_id' ? uuid() : v)
+    const data = deepClone(this.data, (v, k) => k == '_id' ? uid() : v)
     // @ts-ignore
     return new this.constructor(data)
   }

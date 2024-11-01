@@ -83,10 +83,9 @@
 <script setup lang="ts">
 import { computed, provide, ref, getCurrentInstance, PropType, reactive, onUnmounted, toRaw, triggerRef, toRef } from 'vue'
 import { computedAsync, useDebouncedRefHistory, useEventListener, unrefElement, useWindowScroll, refDebounced } from '@vueuse/core'
-import { v4 as uuid } from 'uuid'
 import Moveable from 'vue3-moveable'
 
-import { eq, get, pick, set } from '@el-lowcode/utils'
+import { eq, get, pick, set, uid } from '@el-lowcode/utils'
 import { useTransformer } from 'el-form-render'
 import { designerCtxKey, DisplayNode } from './interface'
 import Activitybar from './components/Activitybar.vue'
@@ -135,7 +134,7 @@ const props = defineProps({
 })
 
 const initial = () => ({
-  _id: uuid(), is: 'Page', children: [],
+  _id: uid(), is: 'Page', children: [],
   state: { count: 0 }, plugins: [],
   // designer: { canvas: { style: { width: '100%', height: '100%' } } }
 })

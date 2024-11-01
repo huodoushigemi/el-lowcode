@@ -9,7 +9,7 @@ const radios = (lp, options, displayValue, extra) => ({ lp, type: 'radio-group',
 const checkboxs = (lp, options, displayValue, extra) => ({ lp, type: 'checkbox-group', options, displayValue, ...extra, el: { type: 'button', ...extra?.el } })
 const bool = (lp, displayValue = false) => ({ lp, type: 'switch', displayValue })
 const number = (lp, displayValue) => ({ lp, type: 'input-number', displayValue })
-const selectable = (props) => ({ is: 'div', class: 'flex', children: [
+const selectable = (props) => ({ is: 'div', class: 'grid grid-cols-3 gap-x-8', children: [
   { lp: 'selectable', type: 'switch', displayValue: false },
   { lp: 'selected', type: 'switch', displayValue: false },
   { lp: 'selected-icon', type: 'select', options: ICONS },
@@ -29,6 +29,7 @@ const vmodel = (k, evt) => ({
       : { [k]: void 0, [evt]: void 0 }
   }
 })
+const text = s => ({ is: 'span', children: s })
 
 const size = { lp: 'size', type: 'select', options: SIZES, displayValue: 'normal' }
 const grid2 = children => ({ is: 'div', class: 'grid grid-cols-2 gap-x-12', children })
@@ -58,6 +59,7 @@ export default [
   {
     is: 'mdui-button',
     label: 'button',
+    slots: ['icon', 'end-icon'],
     props: props => [
       variant(['elevated', 'filled', 'tonal', 'outlined', 'text']),
       fullWidth,
@@ -68,7 +70,7 @@ export default [
       btnType,
     ],
     defaultProps: () => ({
-      children: [{ is: 'span', children: 'button' }]
+      children: [text('button')]
     })
   },
 
@@ -99,6 +101,7 @@ export default [
   {
     is: 'mdui-fab',
     label: 'fab',
+    slots: ['icon'],
     props: props => [
       variant(['primary', 'surface', 'secondary', 'tertiary'], 'primary'),
       size,
@@ -117,6 +120,7 @@ export default [
     is: 'mdui-segmented-button-group',
     label: 'segmented',
     drag: { from: 'mdui-segmented-button' },
+    slots: ['icon', 'selected-icon', 'end-icon'],
     props: props => [
       kv,
       fullWidth,
@@ -127,9 +131,9 @@ export default [
     ],
     defaultProps: () => ({
       children: [
-        { is: 'mdui-segmented-button', children: 'button-1' },
-        { is: 'mdui-segmented-button', children: 'button-2' },
-        { is: 'mdui-segmented-button', children: 'button-3' },
+        { is: 'mdui-segmented-button', children: [text('button-1')] },
+        { is: 'mdui-segmented-button', children: [text('button-2')] },
+        { is: 'mdui-segmented-button', children: [text('button-3')] },
       ]
     })
   },
@@ -138,6 +142,7 @@ export default [
     is: 'mdui-segmented-button',
     label: 'segmented-button',
     hidden: true,
+    slots: ['icon', 'selected-icon', 'end-icon'],
     props: props => [
       value,
       _icon,
@@ -154,10 +159,10 @@ export default [
   {
     is: 'mdui-chip',
     label: 'chip',
+    slots: ['icon', 'end-icon', 'selected-icon', 'delete-icon'],
     props: props => [
       variant(['assist', 'filter', 'input', 'suggestion'], 'assist'),
       bool('elevated'),
-      _icon,
       selectable(props),
       href(props),
       value,
@@ -167,13 +172,14 @@ export default [
       btnType
     ],
     defaultProps: () => ({
-      children: 'chip'
+      children: [text('chip')]
     })
   },
 
   {
     is: 'mdui-card',
     label: 'card',
+    slots: [],
     props: props => [
       variant(['elevated', 'filled', 'outlined'], 'assist'),
       bool('clickable'),
@@ -188,16 +194,16 @@ export default [
   {
     is: 'mdui-checkbox',
     label: 'checkbox',
+    slots: ['unchecked-icon', 'checked-icon', 'indeterminate-icon'],
     props: [
       vmodel('checked', 'onChange'),
-      { lp: ['label', 'children'] },
       name,
       bool('checked'),
       required,
       disabled,
     ],
     defaultProps: () => ({
-      children: 'Checkbox'
+      children: [text('Checkbox')]
     })
   },
 
@@ -213,9 +219,9 @@ export default [
     ],
     defaultProps: () => ({
       children: [
-        { is: 'mdui-radio', value: '1', children: 'Radio-1' },
-        { is: 'mdui-radio', value: '2', children: 'Radio-2' },
-        { is: 'mdui-radio', value: '3', children: 'Radio-3' },
+        { is: 'mdui-radio', value: '1', children: [text('Radio-1')] },
+        { is: 'mdui-radio', value: '2', children: [text('Radio-2')] },
+        { is: 'mdui-radio', value: '3', children: [text('Radio-3')] },
       ]
     })
   },
@@ -224,7 +230,8 @@ export default [
     is: 'mdui-radio',
     label: 'radio',
     hidden: true,
-    drag: { to: 'mdui-radio-group' },
+    drag: { to: ['mdui-radio-group'] },
+    slots: ['unchecked-icon', 'checked-icon'],
     props: [
       kv,
       bool('checked'),
@@ -280,8 +287,8 @@ export default [
     ],
     defaultProps: () => ({
       children: [
-        { is: 'mdui-collapse-item', value: '1', children: [{ is: 'mdui-list-item', slot: 'header', children: [{ is: 'span', children: 'Item 1' }] }, { is: 'div', children: [] }] },
-        { is: 'mdui-collapse-item', value: '2', children: [{ is: 'mdui-list-item', slot: 'header', children: [{ is: 'span', children: 'Item 2' }] }, { is: 'div', children: [] }] },
+        { is: 'mdui-collapse-item', value: '1', children: [{ is: 'mdui-list-item', slot: 'header', children: [text('Item 1')] }, { is: 'div', children: [] }] },
+        { is: 'mdui-collapse-item', value: '2', children: [{ is: 'mdui-list-item', slot: 'header', children: [text('Item 2')] }, { is: 'div', children: [] }] },
       ]
     })
   },
@@ -290,7 +297,8 @@ export default [
     is: 'mdui-collapse-item',
     label: 'collapse-item',
     hidden: true,
-    drag: { to: 'mdui-collapse' },
+    drag: { to: ['mdui-collapse'] },
+    slots: ['header'],
     props: [
       value,
       disabled,
@@ -324,7 +332,7 @@ export default [
     is: 'mdui-tab-panel',
     label: 'tab-panel',
     hidden: true,
-    drag: { to: 'MdUiTabs2' },
+    drag: { to: ['MdUiTabs2'] },
     props: [
       value,
       _icon,
@@ -336,6 +344,7 @@ export default [
     is: 'mdui-select',
     label: 'select',
     drag: { from: 'mdui-menu-item' },
+    slots: ['icon', 'end-icon', 'error-icon', 'prefix', 'suffix', 'clear-button', 'clear-icon', 'helper'],
     props: [
       grid2([radios('variant', ['filled', 'outlined']), required]),
       kv,
@@ -349,8 +358,8 @@ export default [
     defaultProps: () => ({
       label: 'label',
       children: [
-        { is: 'mdui-menu-item', value: 'item-1', children: 'Item 1' },
-        { is: 'mdui-menu-item', value: 'item-2', children: 'Item 2' },
+        { is: 'mdui-menu-item', value: 'item-1', children: [text('Item 1')] },
+        { is: 'mdui-menu-item', value: 'item-2', children: [text('Item 2')] },
       ]
     })
   },
@@ -358,7 +367,7 @@ export default [
   {
     is: 'mdui-text-field',
     label: 'text-field',
-    slot: ['icon', 'end-icon', 'prefix', 'suffix'],
+    slots: ['icon', 'end-icon', 'error-icon', 'prefix', 'suffix', 'clear-button', 'clear-icon', 'helper'],
     props: props => [
       radios('variant', ['filled', 'outlined']),
       kv,
@@ -382,8 +391,8 @@ export default [
       label: 'Label',
       type: 'text',
       children: [
-        { is: 'mdui-menu-item', value: 'item-1', children: 'Item 1' },
-        { is: 'mdui-menu-item', value: 'item-2', children: 'Item 2' },
+        { is: 'mdui-menu-item', value: 'item-1', children: [text('Item 1')] },
+        { is: 'mdui-menu-item', value: 'item-2', children: [text('Item 2')] },
       ]
     })
   },
@@ -393,8 +402,6 @@ export default [
     label: 'app-bar',
     drag: { from: [] },
     props: [
-      { lp: ['title', 'children.1.children'] },
-      options(['icon', 'children.0.icon'], ICONS),
       radios('variant', [['center', 'center-aligned'], 'small', 'medium', 'large'], 'small'),
       bool('shrink'),
       { lp: 'scroll-behavior', type: 'checkbox-group', options: ['hide', 'shrink', 'elevate'], get: v => v?.split(' '), set: v => v.join(' '), el: { type: 'button' } },
@@ -403,7 +410,7 @@ export default [
     defaultProps: () => ({
       children: [
         { is: 'mdui-button-icon', icon: 'menu' },
-        { is: 'mdui-top-app-bar-title', 'lcd-selectable': false, children: 'Title' },
+        { is: 'mdui-top-app-bar-title', 'lcd-selectable': false, children: [text('Title')] },
       ]
     })
   },
@@ -417,29 +424,30 @@ export default [
     is: 'mdui-list-item',
     label: 'li',
     drag: false,
-    slots: ['icon', 'end-icon'],
+    slots: ['description', 'icon', 'end-icon'],
     props: props => [
       bool('rounded'),
       radios('alignment', ['start', 'center', 'right']),
       href(props),
     ],
     defaultProps: () => ({
-      children: [{ is: 'span', children: 'Headline' }]
+      children: [text('Headline')]
     })
   },
 
   {
     is: 'mdui-navigation-bar',
     label: 'nav-bar',
+    drag: { from: ['mdui-navigation-bar-item'] },
     props: [
       { lp: 'value' },
     ],
     defaultProps: () => ({
       value: 'bar-1',
       children: [
-        { is: 'mdui-navigation-bar-item', value: 'bar-1', children: [{ is: 'span', children: 'Label 1' }, { is: 'mdui-icon', slot: 'icon', name: 'place--outlined' }, { is: 'mdui-icon', slot: 'active-icon', name: 'place' }] },
-        { is: 'mdui-navigation-bar-item', value: 'bar-2', children: [{ is: 'span', children: 'Label 2' }, { is: 'mdui-icon', slot: 'icon', name: 'place--outlined' }, { is: 'mdui-icon', slot: 'active-icon', name: 'place' }] },
-        { is: 'mdui-navigation-bar-item', value: 'bar-3', children: [{ is: 'span', children: 'Label 3' }, { is: 'mdui-icon', slot: 'icon', name: 'place--outlined' }, { is: 'mdui-icon', slot: 'active-icon', name: 'place' }] },
+        { is: 'mdui-navigation-bar-item', value: 'bar-1', children: [text('Label 1'), { is: 'mdui-icon', slot: 'icon', name: 'place--outlined' }, { is: 'mdui-icon', slot: 'active-icon', name: 'place' }] },
+        { is: 'mdui-navigation-bar-item', value: 'bar-2', children: [text('Label 2'), { is: 'mdui-icon', slot: 'icon', name: 'place--outlined' }, { is: 'mdui-icon', slot: 'active-icon', name: 'place' }] },
+        { is: 'mdui-navigation-bar-item', value: 'bar-3', children: [text('Label 3'), { is: 'mdui-icon', slot: 'icon', name: 'place--outlined' }, { is: 'mdui-icon', slot: 'active-icon', name: 'place' }] },
       ]
     })
   },
@@ -447,6 +455,7 @@ export default [
   {
     is: 'mdui-navigation-bar-item',
     label: 'nav-bar-li',
+    drag: { to: ['mdui-navigation-bar'] },
     hidden: true,
     props: [
       { lp: 'value' }
@@ -454,7 +463,7 @@ export default [
     defaultProps: () => ({
       value: v4(),
       children: [
-        { is: 'span', children: 'Label' },
+        text('Label'),
         { is: 'mdui-icon',  }
       ]
     })
@@ -463,6 +472,7 @@ export default [
   {
     is: 'mdui-icon',
     label: 'icon',
+    slots: ['unchecked-icon', 'checked-icon', 'indeterminate-icon'],
     props: [
       { lp: 'name' },
       { lp: 'src' }
@@ -506,9 +516,9 @@ export default [
     ],
     defaultProps: () => ({
       children: [
-        { is: 'mdui-menu-item', value: 1, children: [{ is: 'span', children: 'Item 1' }, { is: 'mdui-icon', name: 'visibility', slot: 'icon' }] },
-        { is: 'mdui-menu-item', value: 2, children: [{ is: 'span', children: 'Item 2' }, { is: 'mdui-icon', name: 'visibility', slot: 'icon' }] },
-        { is: 'mdui-menu-item', value: 3, children: [{ is: 'span', children: 'Item 3' }, { is: 'mdui-icon', name: 'visibility', slot: 'icon' }] },
+        { is: 'mdui-menu-item', value: 1, children: [text('Item 1'), { is: 'mdui-icon', name: 'visibility', slot: 'icon' }] },
+        { is: 'mdui-menu-item', value: 2, children: [text('Item 2'), { is: 'mdui-icon', name: 'visibility', slot: 'icon' }] },
+        { is: 'mdui-menu-item', value: 3, children: [text('Item 3'), { is: 'mdui-icon', name: 'visibility', slot: 'icon' }] },
       ]
     })
   },

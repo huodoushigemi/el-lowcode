@@ -48,6 +48,7 @@
     "el-form-render": "workspace:*",
     "el-lowcode": "workspace:*",
     "element-plus": "^2.8.1",
+    "hexoid": "^2.0.0",
     "highlight.js": "^11.10.0",
     "infinite-viewer": "^0.29.1",
     "install": "^0.13.0",
