@@ -65,30 +65,6 @@
           </div>
         </el-popover>
       </Scope>
-      <el-popover trigger="hover" placement="bottom-start" :offset="0" :show-arrow="false" popper-style="padding: 0; width: auto; border: 0" :hide-after="0">
-        <template #reference>
-          <button class="btn vs-btn insert-table"><i-tdesign:add-circle /></button>
-        </template>
-        <div class="flex flex-col jcc">
-          <button class="vs-btn btn" @click="exec().addRowBefore().run()">+</button>
-          <div flex jcc>
-            <button class="vs-btn btn" @click="exec().addColumnBefore().run()">+</button>
-            <button class="vs-btn btn" @click="exec().addColumnAfter().run()">+</button>
-          </div>
-          <button class="vs-btn btn" @click="exec().addRowAfter().run()">+</button>
-        </div>
-      </el-popover>
-      <el-popover trigger="hover" placement="bottom-start" :offset="0" :show-arrow="false" popper-style="padding: 0; width: auto; border: 0" :hide-after="0">
-        <template #reference>
-          <button class="btn vs-btn"><i-tdesign:delete /></button>
-        </template>
-        <div class="flex flex-col">
-          <button class="vs-btn btn" @click="exec().deleteRow().run()">Row</button>
-          <button class="vs-btn btn" @click="exec().deleteColumn().run()">Col</button>
-        </div>
-      </el-popover>
-      <button class="vs-btn btn" title="Merge" @click="exec().mergeCells().run()"><i-material-symbols:cell-merge /></button>
-      <button class="vs-btn btn" title="Split" @click="exec().splitCell().run()"><i-ant-design:split-cells-outlined /></button>
     </div>
     <!-- <button class="vs-btn btn" @click="exec().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()"><i-tabler:arrow-bar-right /></button>
     <button class="vs-btn btn" @click="exec().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()"><i-tabler:arrow-bar-left /></button> -->

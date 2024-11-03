@@ -54,6 +54,9 @@ export default [
       children: 'element-plus',
       href: 'https://element-plus.org/zh-CN/',
       target: '_blank'
+    }),
+    devProps: () => ({
+      onClick: e => e.preventDefault()
     })
   },
 

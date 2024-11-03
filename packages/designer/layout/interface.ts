@@ -14,6 +14,7 @@ export interface Widget {
   drag: WidgetDrag
   hidden?: boolean
   cover?: string // todo
+  slots: any[] // todo
   props?: any[] | ((props: Obj, ctx: DesignerCtx, arg: { node: DisplayNode }) => any[])
   defaultProps?(ctx: DesignerCtx): Obj
   devProps: (props: Obj, ctx: DesignerCtx) => Obj
@@ -22,6 +23,7 @@ export interface Widget {
 }
 
 export type UserWidget = Assign<Widget, {
+  slots?: any[]
   drag?: boolean | Assign<WidgetDrag, {
     to?: Arrable<string>
     from?: Arrable<string>
@@ -63,7 +65,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get id () { return this.data._id }
   get is() { return this.data.is }
   get label () { return this.data['data-layer'] || this.config?.label || this.data.is }
-  get data_children () { return isObject(this.$data.children) ? this.$data.children : void 0 }
+  get data_children () { return isArray(this.$data.children) ? this.$data.children : void 0 }
   get dir() { return isArray(this.data_children) }
   get config() { return sloveConfig(this.data, this.designerCtx.widgets) }
 
@@ -75,6 +77,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   #$data = computed(() => {
+    // isString(this.data.children) && this.is != 'span' && (this.data.children = [{ is: 'span', _id: uid(), children: this.data.children }])
     let { children, ...props } = this.data
     // 移除值为 undefuned 的属性
     props = JSON.parse(JSON.stringify(props))

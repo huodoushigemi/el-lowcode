@@ -18,6 +18,10 @@
   --vs-quick-bg: var(--vscode-quickInput-background, #252526);
   --vs-quick-b-c: var(--vscode-pickerGroup-border, #303031);
 
+  --vs-menu-bg: #252526;
+  --vs-menu-li-hover-c: #03395d;
+  --vs-menu-li-hover-bg: #03395d;
+
   --vs-btn-c: #fff;
   --vs-btn-bg: #0e639c;
   --vs-btn-hover-bg: #1177bb;
@@ -129,6 +133,15 @@
 .vs-quick {
   @apply fixed top-36 left-50% translate-x--50% flex flex-col w600 b-1 b-[--vs-quick-b-c] bg-[--vs-quick-bg] z-99;
   box-shadow: 0 0 12px #00000080;
+}
+
+.vs-menu {
+  @apply p6 bg-[--vs-menu-bg];
+  box-shadow: 0 0 12px #00000080;
+}
+
+.vs-menu-li {
+  @apply p10 bg-[--vs-menu-li-bg] hover:bg-[--vs-menu-li-hover-bg];
 }
 
 ::-webkit-scrollbar {

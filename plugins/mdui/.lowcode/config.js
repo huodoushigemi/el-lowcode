@@ -1,4 +1,4 @@
-import { v4 } from 'uuid'
+import { uid } from '@el-lowcode/utils'
 
 const ICONS = ['search', 'arrow_forward', 'downloading', 'attach_file']
 const SIZES = ['normal', 'small', 'large']
@@ -8,7 +8,7 @@ const options = (lp, options, displayValue, extra) => ({ lp, type: 'select', opt
 const radios = (lp, options, displayValue, extra) => ({ lp, type: 'radio-group', options, displayValue, ...extra, el: { type: 'button', ...extra?.el } })
 const checkboxs = (lp, options, displayValue, extra) => ({ lp, type: 'checkbox-group', options, displayValue, ...extra, el: { type: 'button', ...extra?.el } })
 const bool = (lp, displayValue = false) => ({ lp, type: 'switch', displayValue })
-const number = (lp, displayValue) => ({ lp, type: 'input-number', displayValue })
+const number = (lp, displayValue = null, extra) => ({ lp, type: 'input-number', displayValue, ...extra })
 const selectable = (props) => ({ is: 'div', class: 'grid grid-cols-3 gap-x-8', children: [
   { lp: 'selectable', type: 'switch', displayValue: false },
   { lp: 'selected', type: 'switch', displayValue: false },
@@ -29,7 +29,7 @@ const vmodel = (k, evt) => ({
       : { [k]: void 0, [evt]: void 0 }
   }
 })
-const text = s => ({ is: 'span', children: s })
+const text = (s, extra) => ({ is: 'span', children: s, ...extra })
 
 const size = { lp: 'size', type: 'select', options: SIZES, displayValue: 'normal' }
 const grid2 = children => ({ is: 'div', class: 'grid grid-cols-2 gap-x-12', children })
@@ -51,11 +51,11 @@ const btnType = options('type', ['submit', 'reset', 'button'], 'button')
 
 const min = { lp: 'min', type: 'input-number', displayValue: 0 }
 const max = { lp: 'max', type: 'input-number', displayValue: 100 }
-const step = { lp: 'step', type: 'input-number', displayValue: 1, el: { min: 1 } }
+// const step = { lp: 'step', type: 'input-number', displayValue: 1, el: { min: 1 } }
 
 const OptionsInput = (lp, props, child, fn) => ({ lp, el: { is: 'OptionsInput', props, new: (i) => ({ is: child, ...fn?.(i) }) } })
 
-export default [
+const widgets = [
   {
     is: 'mdui-button',
     label: 'button',
@@ -122,6 +122,7 @@ export default [
     drag: { from: 'mdui-segmented-button' },
     slots: ['icon', 'selected-icon', 'end-icon'],
     props: props => [
+      vmodel('value', 'onChange'),
       kv,
       fullWidth,
       radios('selects', ['single', 'multiple']),
@@ -164,6 +165,7 @@ export default [
       variant(['assist', 'filter', 'input', 'suggestion'], 'assist'),
       bool('elevated'),
       selectable(props),
+      bool('deletable'),
       href(props),
       value,
       _icon,
@@ -181,7 +183,7 @@ export default [
     label: 'card',
     slots: [],
     props: props => [
-      variant(['elevated', 'filled', 'outlined'], 'assist'),
+      variant(['elevated', 'filled', 'outlined']),
       bool('clickable'),
       href(props),
       disabled,
@@ -263,9 +265,10 @@ export default [
     is: 'mdui-slider',
     label: 'slider',
     props: [
+      vmodel('value', 'onChange'),
       kv,
       grid2([min, max]),
-      grid2([step, bool('tickmarks')]),
+      grid2([number('step', 1, { el: { min: 0 } }), bool('tickmarks')]),
       bool('nolabel'),
       { lp: 'label-formatter', script: true, displayValue: '{{v => v}}' },
       required,
@@ -461,7 +464,7 @@ export default [
       { lp: 'value' }
     ],
     defaultProps: () => ({
-      value: v4(),
+      value: uid(),
       children: [
         text('Label'),
         { is: 'mdui-icon',  }
@@ -534,5 +537,51 @@ export default [
       disabled,
       href(props),
     ]
+  },
+
+  {
+    is: 'mdui-badge',
+    label: 'badge',
+    props: [
+      { lp: ['text', 'children'] },
+      radios('variant', ['small', 'large'])
+    ],
+    defaultProps: () => ({
+      variant: 'large',
+      children: '99+'
+    })
+  },
+
+  {
+    is: 'mdui-linear-progress',
+    label: 'progress',
+    props: [
+      number('value', void 0, { el: { step: .01 } }),
+      number('max', 1)
+    ],
+  },
+
+  {
+    is: 'mdui-tooltip',
+    label: 'tooltip',
+    slots: ['content'],
+    props: [
+      options('placement', ['auto',  'top-left',  'top-start',  'top',  'top-end',  'top-right',  'bottom-left',  'bottom-start',  'bottom',  'bottom-end',  'bottom-right',  'left-start',  'left',  'left-end',  'right-start',  'right',  'right-end'], 'auto'),
+      checkboxs('trigger', ['click',  'hover',  'focus',  'manual'], void 0, { get: v => v?.split(' ') ?? ['hover', 'focus'], set: v => v?.join(' ') || void 0  }),
+      disabled,
+      bool('open'),
+    ],
+    defaultProps: () => ({
+      children: [
+        { is: 'mdui-button', children: [text('Hover Me')] },
+        text('Plain tooltip', { slot: 'content' })
+      ]
+    })
   }
 ]
+
+// widgets.forEach(e => {
+//   e.devProps ??= () => ({ key: uid() })
+// })
+
+export default widgets
