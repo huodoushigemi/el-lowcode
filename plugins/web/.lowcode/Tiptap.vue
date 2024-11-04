@@ -110,18 +110,13 @@ const editor = useEditor({
     }),
   ],
   onUpdate: () => val.value = editor.value.getHTML(),
-  onFocus: () => isFocused.value = true,
-  onBlur: () => (isFocused.value = false, emit('change', val.value))
+  onBlur: () => emit('change', val.value),
 })
-
-// is focused
-const isFocused = ref(false)
 
 watchEffect(() => {
   if (!editor.value) return
   if (editor.value.getHTML() == val.value) return
-  console.log('tiptap', 111)
-  editor.value.commands.setContent(val.value, false)
+  editor.value.commands.setContent(val.value, true)
 })
 </script>
 

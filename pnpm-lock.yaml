@@ -19,6 +19,7 @@ importers:
       '@scena/guides': ^0.29.2
       '@tiptap/core': ^2.8.0
       '@tiptap/extension-color': ^2.8.0
+      '@tiptap/extension-highlight': ^2.9.1
       '@tiptap/extension-image': ^2.8.0
       '@tiptap/extension-link': ^2.8.0
       '@tiptap/extension-table': ^2.8.0
@@ -62,6 +63,7 @@ importers:
       fast-glob: ^3.3.1
       fs-extra: ^11.1.1
       gogocode: ^1.0.55
+      hexoid: ^2.0.0
       highlight.js: ^11.10.0
       import-meta-resolve: ^4.0.0
       infinite-viewer: ^0.29.1
@@ -89,6 +91,8 @@ importers:
       solid-element: ^1.9.0
       solid-js: ^1.9.2
       strip-literal: ^1.3.0
+      tippy.js: ^6.3.7
+      tippy.vue: ^3.2.1
       tiptap-extension-resize-image: ^1.1.9
       tslib: ^2.6.1
       typescript: ^5.1.6
@@ -129,6 +133,7 @@ importers:
       '@scena/guides': 0.29.2
       '@tiptap/core': 2.8.0_@tiptap+pm@2.8.0
       '@tiptap/extension-color': 2.8.0_mxxdxpx4poustu4ygyxwbfxgyy
+      '@tiptap/extension-highlight': 2.9.1_@tiptap+core@2.8.0
       '@tiptap/extension-image': 2.8.0_@tiptap+core@2.8.0
       '@tiptap/extension-link': 2.8.0_7zjbcg2ngj5girjx556ohmm7fq
       '@tiptap/extension-table': 2.8.0_7zjbcg2ngj5girjx556ohmm7fq
@@ -154,6 +159,7 @@ importers:
       el-form-render: link:packages/el-form-render
       el-lowcode: link:packages/el-lowcode
       element-plus: 2.8.1_vue@3.4.30
+      hexoid: 2.0.0
       highlight.js: 11.10.0
       infinite-viewer: 0.29.1
       install: 0.13.0
@@ -166,6 +172,8 @@ importers:
       qs: 6.12.1
       solid-element: 1.9.0_solid-js@1.9.2
       solid-js: 1.9.2
+      tippy.js: 6.3.7
+      tippy.vue: 3.2.1_vue@3.4.30
       tiptap-extension-resize-image: 1.1.9_srrr7543okz52uihcnhedkopmm
       uuid: 9.0.1
       vue: 3.4.30_typescript@5.5.2
@@ -2342,6 +2350,14 @@ packages:
 
   /@tiptap/extension-heading/2.8.0_@tiptap+core@2.8.0:
     resolution: {integrity: sha512-4inWgrTPiqlivPmEHFOM5ck2UsmOsbKKPtqga6bALvWPmCv24S6/EBwFp8Jz4YABabXDnkviihmGu0LpP9D69w==}
+    peerDependencies:
+      '@tiptap/core': ^2.7.0
+    dependencies:
+      '@tiptap/core': 2.8.0_@tiptap+pm@2.8.0
+    dev: false
+
+  /@tiptap/extension-highlight/2.9.1_@tiptap+core@2.8.0:
+    resolution: {integrity: sha512-ro3bARRgxb4v8w6fPVfG1kO2UWtLgKI5ESfsQ9CqiZuRkZdRKhM5ZpXPIky28Pn7CxhDUSXBXS/MhvP0VuhMJQ==}
     peerDependencies:
       '@tiptap/core': ^2.7.0
     dependencies:
@@ -5903,6 +5919,11 @@ packages:
     resolution: {integrity: sha512-tUCGvt191vNSQgttSyJoibR+VO+I6+iCHIUdhzEMJKE+EAL8BwCN7fUOZlY4ofOelNHsK+gEjxB/B+9N3EWtdA==}
     dev: true
 
+  /hexoid/2.0.0:
+    resolution: {integrity: sha512-qlspKUK7IlSQv2o+5I7yhUd7TxlOG2Vr5LTa3ve2XSNVKAL/n/u/7KLvKmFNimomDIKvZFXWHv0T12mv7rT8Aw==}
+    engines: {node: '>=8'}
+    dev: false
+
   /highlight.js/11.10.0:
     resolution: {integrity: sha512-SYVnVFswQER+zu1laSya563s+F8VDGt7o35d4utbamowvUNLLMovFqwCLSocpZTz3MgaSRA1IbqRWZv97dtErQ==}
     engines: {node: '>=12.0.0'}
@@ -9090,6 +9111,15 @@ packages:
     resolution: {integrity: sha512-E1d3oP2emgJ9dRQZdf3Kkn0qJgI6ZLpyS5z6ZkY1DF3kaQaBsGZsndEpHwx+eC+tYM41HaSNvNtLx8tU57FzTQ==}
     dependencies:
       '@popperjs/core': 2.11.8
+    dev: false
+
+  /tippy.vue/3.2.1_vue@3.4.30:
+    resolution: {integrity: sha512-iCUxJCYWnlSe9T/3Ukcyf9MURbUfsLC7wKL+BgRIIiH1i/PpPuEov4kLJNUrux3buhA8ICzGZPDinjfPBN4XVA==}
+    peerDependencies:
+      vue: ^3.0.0
+    dependencies:
+      tippy.js: 6.3.7
+      vue: 3.4.30_typescript@5.5.2
     dev: false
 
   /tiptap-extension-resize-image/1.1.9_srrr7543okz52uihcnhedkopmm:
