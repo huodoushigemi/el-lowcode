@@ -1,34 +1,5 @@
 <template>
   <div>
-    <h4>Heading</h4>
-    <div flex="~ wrap" gap-1>
-      <button :class="['vs-btn btn', isActive('heading', { level: 1 }) && 'is-active']" @click="exec().toggleHeading({ level: 1 }).run()">H1</button>
-      <button :class="['vs-btn btn', isActive('heading', { level: 2 }) && 'is-active']" @click="exec().toggleHeading({ level: 2 }).run()">H2</button>
-      <button :class="['vs-btn btn', isActive('heading', { level: 3 }) && 'is-active']" @click="exec().toggleHeading({ level: 3 }).run()">H3</button>
-      <button :class="['vs-btn btn', isActive('heading', { level: 4 }) && 'is-active']" @click="exec().toggleHeading({ level: 4 }).run()">H4</button>
-    </div>
-
-    <h4>Text</h4>
-    <div flex="~ wrap" gap-x-1 gap-y-4>
-      <!-- <button :class="['vs-btn btn', isActive('paragraph') && 'is-active']" @click="exec().setParagraph().run()">P</button> -->
-      <button :class="['vs-btn btn', isActive('bold') && 'is-active']" @click="exec().toggleBold().run()">B</button>
-      <button :class="['vs-btn btn', isActive('italic') && 'is-active']" @click="exec().toggleItalic().run()">I</button>
-      <button :class="['vs-btn btn', isActive('underline') && 'is-active']" @click="exec().toggleUnderline().run()">U</button>
-      <button :class="['vs-btn btn', isActive('strike') && 'is-active']" @click="exec().toggleStrike().run()"><s>S</s></button>
-
-      <div flex="~ wrap" gap-1 wfull>
-        <button :class="['vs-btn btn', isActive({ textAlign: 'left' }) && 'is-active']" @click="exec().setTextAlign('left').run()"><i-ic:baseline-align-horizontal-left /></button>
-        <button :class="['vs-btn btn', isActive({ textAlign: 'center' }) && 'is-active']" @click="exec().setTextAlign('center').run()"><i-ic:baseline-align-horizontal-center /></button>
-        <button :class="['vs-btn btn', isActive({ textAlign: 'right' }) && 'is-active']" @click="exec().setTextAlign('right').run()"><i-ic:baseline-align-horizontal-right /></button>
-      </div>
-
-      <div wfull>
-        <!-- <input type="color" :value="editor()?.getAttributes('textStyle').color" @change="e => exec().setColor(e.target.value).run()" /> -->
-        <el-color-picker :modelValue="editor()?.getAttributes('textStyle').color" @update:modelValue="v => exec().setColor(v).run()" size="default" show-alpha />
-      </div>
-    </div>
-
-
     <h4>Link</h4>
     <div flex="~ wrap" gap-1>
       <input class="vs-input" :value="link()?.href" @change="(e) => setLink({ ...link(), href: e.target.value })" placeholder="https://xxx" />
@@ -66,26 +37,12 @@
         </el-popover>
       </Scope>
     </div>
-    <!-- <button class="vs-btn btn" @click="exec().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()"><i-tabler:arrow-bar-right /></button>
-    <button class="vs-btn btn" @click="exec().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()"><i-tabler:arrow-bar-left /></button> -->
-
-    <h4>List</h4>
-    <div flex="~ wrap" gap-1>
-      <button :class="['vs-btn btn', isActive('bulletList') && 'is-active']" @click="exec().toggleBulletList().run()"><i-mdi:format-list-bulleted-square /></button>
-      <button :class="['vs-btn btn', isActive('orderedList') && 'is-active']" @click="exec().toggleOrderedList().run()"><i-mdi:order-numeric-ascending /></button>
-    </div>
-    
-    <h4>Task</h4>
-    <div flex="~ wrap" gap-1>
-      <button :class="['vs-btn btn', isActive('taskList') && 'is-active']" @click="exec().toggleTaskList().run()"><i-mdi:format-list-checks /></button>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, defineComponent, PropType, ref, getCurrentInstance } from 'vue'
 import { parseStringStyle, stringifyStyle, normalizeStyle } from '@vue/shared'
-import { useTransform } from 'el-form-render'
 import { Editor } from '@tiptap/vue-3'
 import { chooseImg } from '@el-lowcode/utils'
 
