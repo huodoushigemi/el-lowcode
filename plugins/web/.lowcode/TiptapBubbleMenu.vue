@@ -55,60 +55,9 @@
       </button>
     </div>
 
-    <!-- <div v-if="inTable()" class="tiptap-bubble">
-      <button class="tiptap-bubble-li">
-        <i-lucide:plus />
-        <Tippy :extra="{ interactive: true, offset: [0, 0], delay: [0, 100] }">
-          <div class="tiptap-bubble" style="display: grid; grid-template-columns: repeat(3, minmax(auto,  1fr));">
-            <button class="tiptap-bubble-li" style="grid-area: 1 / 2 / span 1 / span 1;" @click="exec().addRowBefore().run()"><i-lucide:arrow-up-from-line /></button>
-            <button class="tiptap-bubble-li" style="grid-area: 2 / 1 / span 1 / span 1;" @click="exec().addColumnBefore().run()"><i-lucide:arrow-left-from-line /></button>
-            <button class="tiptap-bubble-li" style="grid-area: 2 / 3 / span 1 / span 1;" @click="exec().addColumnAfter().run()"><i-lucide:arrow-right-from-line /></button>
-            <button class="tiptap-bubble-li" style="grid-area: 3 / 2 / span 1 / span 1;" @click="exec().addRowAfter().run()"><i-lucide:arrow-down-from-line /></button>
-          </div>
-        </Tippy>
-      </button>
-      <button class="tiptap-bubble-li">
-        <i-lucide:trash-2 />
-        <Tippy :extra="{ interactive: true, offset: [0, 0], placement: 'auto-start', delay: [0, 100] }">
-          <div class="tiptap-bubble" style="display: flex; flex-direction: column; align-items: stretch;">
-            <button class="tiptap-bubble-li" @click="exec().deleteRow().run()"><i-lucide:trash-2 style="margin-right: 4px;" />Row</button>
-            <button class="tiptap-bubble-li" @click="exec().deleteColumn().run()"><i-lucide:trash-2 style="margin-right: 4px;" />Col</button>
-          </div>
-        </Tippy>
-      </button>
-      <button v-if="selection instanceof CellSelection && selection.$anchorCell !== selection.$headCell" class="tiptap-bubble-li" @click="exec().mergeCells().run()" title="merge"><i-material-symbols:cell-merge /></button>
-      <button v-if="isMergedCell()" class="tiptap-bubble-li" @click="exec().splitCell().run()" title="split"><i-ant-design:split-cells-outlined /></button>
-    </div> -->
   </BubbleMenu>
-
-  <!-- <Tippy v-if="inTable()" :target="getDom(inTable())" :extra="{ showOnCreate: true, interactive: true, offset: [0, 0], placement: 'top-start' }">
-    <div class="tiptap-bubble">
-      <button class="tiptap-bubble-li">
-        <i-lucide:plus />
-        <Tippy :extra="{ interactive: true, offset: [0, 0], delay: [0, 100] }">
-          <div class="tiptap-bubble" style="display: grid; grid-template-columns: repeat(3, minmax(auto,  1fr));">
-            <button class="tiptap-bubble-li" style="grid-area: 1 / 2 / span 1 / span 1;" @click="exec().addRowBefore().run()"><i-lucide:arrow-up-from-line /></button>
-            <button class="tiptap-bubble-li" style="grid-area: 2 / 1 / span 1 / span 1;" @click="exec().addColumnBefore().run()"><i-lucide:arrow-left-from-line /></button>
-            <button class="tiptap-bubble-li" style="grid-area: 2 / 3 / span 1 / span 1;" @click="exec().addColumnAfter().run()"><i-lucide:arrow-right-from-line /></button>
-            <button class="tiptap-bubble-li" style="grid-area: 3 / 2 / span 1 / span 1;" @click="exec().addRowAfter().run()"><i-lucide:arrow-down-from-line /></button>
-          </div>
-        </Tippy>
-      </button>
-      <button class="tiptap-bubble-li">
-        <i-lucide:trash-2 />
-        <Tippy :extra="{ interactive: true, offset: [0, 0], placement: 'auto-start', delay: [0, 100] }">
-          <div class="tiptap-bubble" style="display: flex; flex-direction: column; align-items: stretch;">
-            <button class="tiptap-bubble-li" @click="exec().deleteRow().run()"><i-lucide:trash-2 style="margin-right: 4px;" />Row</button>
-            <button class="tiptap-bubble-li" @click="exec().deleteColumn().run()"><i-lucide:trash-2 style="margin-right: 4px;" />Col</button>
-          </div>
-        </Tippy>
-      </button>
-      <button v-if="selection instanceof CellSelection && selection.$anchorCell !== selection.$headCell" class="tiptap-bubble-li" @click="exec().mergeCells().run()" title="merge"><i-material-symbols:cell-merge /></button>
-      <button v-if="isMergedCell()" class="tiptap-bubble-li" @click="exec().splitCell().run()" title="split"><i-ant-design:split-cells-outlined /></button>
-    </div>
-  </Tippy> -->
   
-  <!-- <BubbleMenu v-if="inTable()" :editor :shouldShow="() => true" :tippyOptions="{ maxWidth: 400, getReferenceClientRect: () => getDom(inTable())?.getBoundingClientRect() ?? { left: 0, top: 0, width: 0, height: 0 }, placement: 'top-start', delay: 100 }" :updateDelay="100">
+  <BubbleMenu :editor :shouldShow="() => inTable()" :tippyOptions="{ maxWidth: 400, offset: [0, 0], getReferenceClientRect: () => getDom(inTable())?.getBoundingClientRect(), placement: 'top-end' }" :updateDelay="100">
     <div class="tiptap-bubble">
       <button class="tiptap-bubble-li">
         <i-lucide:plus />
@@ -123,7 +72,7 @@
       </button>
       <button class="tiptap-bubble-li">
         <i-lucide:trash-2 />
-        <Tippy :extra="{ interactive: true, offset: [0, 0], placement: 'auto-start', delay: [0, 100] }">
+        <Tippy :extra="{ interactive: true, offset: [0, 0], placement: 'bottom-end', delay: [0, 100] }">
           <div class="tiptap-bubble" style="display: flex; flex-direction: column; align-items: stretch;">
             <button class="tiptap-bubble-li" @click="exec().deleteRow().run()"><i-lucide:trash-2 style="margin-right: 4px;" />Row</button>
             <button class="tiptap-bubble-li" @click="exec().deleteColumn().run()"><i-lucide:trash-2 style="margin-right: 4px;" />Col</button>
@@ -133,7 +82,7 @@
       <button v-if="selection instanceof CellSelection && selection.$anchorCell !== selection.$headCell" class="tiptap-bubble-li" @click="exec().mergeCells().run()" title="merge"><i-material-symbols:cell-merge /></button>
       <button v-if="isMergedCell()" class="tiptap-bubble-li" @click="exec().splitCell().run()" title="split"><i-ant-design:split-cells-outlined /></button>
     </div>
-  </BubbleMenu> -->
+  </BubbleMenu>
 </template>
 
 <script setup lang="tsx">
@@ -215,7 +164,7 @@ function findNodePos(node): number | void {
 }
 function getDom(pos: Node | number) {
   pos = typeof pos == 'number' ? pos : findNodePos(pos) as number
-  return log(pos != null ? props.editor.view.nodeDOM(pos) : void 0)
+  return pos != null ? props.editor.view.nodeDOM(pos) : void 0
 }
 
 const selection = computed(() => props.editor.state.selection)
