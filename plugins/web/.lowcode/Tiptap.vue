@@ -96,7 +96,8 @@ const editor = useEditor({
       defaultProtocol: 'https',
     }),
     Placeholder.configure({
-      placeholder: 'Type / to browse options'
+      placeholder: 'Type / to browse options',
+
     }),
     // Image.configure({ allowBase64: true, HTMLAttributes: { style: 'display: block' } }),
     // ImageResize.configure({ allowBase64: true }),
@@ -211,6 +212,14 @@ watchEffect(() => {
     &.ProseMirror-selectednode {
       outline: 3px solid var(--purple);
     }
+  }
+
+  p.is-empty::before {
+    color: #80808080;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
   }
 }
 </style>

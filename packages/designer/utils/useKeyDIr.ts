@@ -4,17 +4,19 @@ import { MaybeComputedElementRef, useEventListener } from '@vueuse/core'
 interface UseKeyDirProps {
   /**@default 'target' */
   source?: 'target' | 'currentTarget'
+  target?: HTMLElement
+  list?: HTMLElement
 }
 
 export function useKeyDir(el: MaybeComputedElementRef, props?: UseKeyDirProps) {
   const opt = { source: 'currentTarget', ...props } as Required<UseKeyDirProps>
 
-  const stop = useEventListener(el as any, 'keydown', e => {
+  const stop = useEventListener(el || props?.target as any, 'keydown', e => {
     if (!['ArrowUp', 'ArrowDown', 'Enter'].includes(e.key)) return
     e.stopPropagation()
     if (e.key != 'Enter') e.preventDefault()
     const i = { ArrowUp: -1, ArrowDown: 1 }[e.key] || 0
-    const ul = e[opt.source] as HTMLElement
+    const ul = props?.list ?? e[opt.source] as HTMLElement
     const li = ul.querySelector('.focused') ?? ul.querySelector('.selected')
     const curr = li?.getAttribute('data-index') || -1
     const next = ul.querySelector(`[data-index="${+curr + i}"]`)

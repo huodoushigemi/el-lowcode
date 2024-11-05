@@ -86,8 +86,8 @@
 
   <!-- Type / to browse options -->
   <Tippy v-if="isActive('paragraph') && selection.$anchor.nodeBefore?.text == '/'" :target="editor.view.dom.ownerDocument.body" :extra="{ interactive: true, showOnCreate: true, hideOnClick: false, getReferenceClientRect: rect, offset: [0, 4], placement: 'bottom-start' }">
-    <div class="tiptap-bubble" style="flex-direction: column; align-items: stretch; min-width: 128px;">
-      <div v-for="e in newNodes" :class="['tiptap-bubble-li']" style="display: flex; align-items: center;" @click="e.active">
+    <div class="tiptap-bubble" style="flex-direction: column; align-items: stretch; min-width: 128px;" v-list-focus="{ target: editor.view.dom, defaultFirst: true }">
+      <div v-for="(e, i) in newNodes" :class="['tiptap-bubble-li']" style="display: flex; align-items: center;" :data-index="i" @click="e.active">
         <component :is="e.icon" style="margin-right: 6px;" />
         {{ e.label }}
       </div>
@@ -103,7 +103,7 @@ import { TextSelection, AllSelection, Selection } from '@tiptap/pm/state'
 import { CellSelection } from '@tiptap/pm/tables'
 import { Editor, BubbleMenu } from '@tiptap/vue-3'
 import Tippy from '../tippy.vue'
-import { chooseImg } from '@el-lowcode/utils'
+import { chooseImg, vListFocus } from '@el-lowcode/utils'
 
 import TiptapLinkEdit from '../tiptap/TiptapLinkEdit.vue'
 
@@ -134,6 +134,9 @@ const toggleNodes = [
   { label: 'Todo list', icon: () => <i-mdi-format-list-checks />, isActive: () => isActive('taskList'), active: () => exec().toggleTaskList().run() },
 ] 
 const newNodes = [
+  { label: 'Heading 1', icon: () => <i-lucide-heading-1 />, active: () => exec().selectParentNode().deleteSelection().insertContent('<p></p>').toggleHeading({ level: 1 }).run() },
+  { label: 'Heading 2', icon: () => <i-lucide-heading-2 />, active: () => exec().selectParentNode().deleteSelection().insertContent('<p></p>').toggleHeading({ level: 2 }).run() },
+  { label: 'Heading 3', icon: () => <i-lucide-heading-3 />, active: () => exec().selectParentNode().deleteSelection().insertContent('<p></p>').toggleHeading({ level: 3 }).run() },
   { label: 'Table', icon: () => <i-lucide-table />, active: () => exec().selectParentNode().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run() },
   { label: 'Image', icon: () => <i-lucide-image />, active: () => chooseImg({ base64: true, maxSize: 1024 * 200 }).then(src => exec().selectParentNode().setImage({ src }).run()) },
 ]
@@ -218,7 +221,7 @@ const Scope = defineComponent({
   background-color: transparent;
   cursor: pointer;
   
-  &:hover {
+  &.focused, &:hover {
     color: #fff;
     background-color: #2a2d2e;
     // background-color: #03395d;
