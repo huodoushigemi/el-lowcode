@@ -17,6 +17,7 @@ import TextStyle from '@tiptap/extension-text-style'
 import Highlight from '@tiptap/extension-highlight'
 import { Color } from '@tiptap/extension-color'
 import Link from '@tiptap/extension-link'
+import Placeholder from '@tiptap/extension-placeholder'
 import Image from '@tiptap/extension-image'
 // import ImageResize from 'tiptap-extension-resize-image'
 import Table from '@tiptap/extension-table'
@@ -93,6 +94,9 @@ const editor = useEditor({
     Link.configure({
       openOnClick: false,
       defaultProtocol: 'https',
+    }),
+    Placeholder.configure({
+      placeholder: 'Type / to browse options'
     }),
     // Image.configure({ allowBase64: true, HTMLAttributes: { style: 'display: block' } }),
     // ImageResize.configure({ allowBase64: true }),

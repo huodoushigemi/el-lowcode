@@ -4,13 +4,13 @@
 
     </div>
     <div v-else-if="selection.from != selection.to && (selection instanceof TextSelection)" class="tiptap-bubble">
-      <button :class="['tiptap-bubble-li', xxx.find(e => e.isActive()) && 'selected']">
+      <button :class="['tiptap-bubble-li', toggleNodes.find(e => e.isActive()) && 'selected']">
         <div style="line-height: 0">
-          <component :is="(xxx.find(e => e.isActive()) || xxx[0]).icon" />
+          <component :is="(toggleNodes.find(e => e.isActive()) || toggleNodes[0]).icon" />
         </div>
         <Tippy :extra="{ interactive: true, offset: [0, 0], trigger: 'click', placement: 'auto-start', appendTo: 'parent' }">
           <div class="tiptap-bubble" style="flex-direction: column; align-items: stretch;">
-            <div v-for="e in xxx" :class="['tiptap-bubble-li', e.isActive() && 'selected']" style="display: flex; align-items: center;" @click="e.active">
+            <div v-for="e in toggleNodes" :class="['tiptap-bubble-li', e.isActive() && 'selected']" style="display: flex; align-items: center;" @click="e.active">
               <component :is="e.icon" style="margin-right: 6px;" />
               {{ e.label }}
             </div>
@@ -54,10 +54,10 @@
         </Tippy>
       </button>
     </div>
-
   </BubbleMenu>
   
-  <BubbleMenu :editor :shouldShow="() => inTable()" :tippyOptions="{ maxWidth: 400, offset: [0, 0], getReferenceClientRect: () => getDom(inTable())?.getBoundingClientRect(), placement: 'top-end' }" :updateDelay="100">
+  <!-- Table -->
+  <Tippy v-if="inTable()" :target="editor.view.dom.ownerDocument.body" :extra="{ interactive: true, showOnCreate: true, hideOnClick: false, maxWidth: 400, offset: [0, 0], getReferenceClientRect: () => getDom(inTable())?.getBoundingClientRect(), placement: 'top-end' }">
     <div class="tiptap-bubble">
       <button class="tiptap-bubble-li">
         <i-lucide:plus />
@@ -82,18 +82,26 @@
       <button v-if="selection instanceof CellSelection && selection.$anchorCell !== selection.$headCell" class="tiptap-bubble-li" @click="exec().mergeCells().run()" title="merge"><i-material-symbols:cell-merge /></button>
       <button v-if="isMergedCell()" class="tiptap-bubble-li" @click="exec().splitCell().run()" title="split"><i-ant-design:split-cells-outlined /></button>
     </div>
-  </BubbleMenu>
+  </Tippy>
+
+  <!-- Type / to browse options -->
+  <Tippy v-if="isActive('paragraph') && selection.$anchor.nodeBefore?.text == '/'" :target="editor.view.dom.ownerDocument.body" :extra="{ interactive: true, showOnCreate: true, hideOnClick: false, getReferenceClientRect: rect, offset: [0, 4], placement: 'bottom-start' }">
+    <div class="tiptap-bubble" style="flex-direction: column; align-items: stretch; min-width: 128px;">
+      <div v-for="e in newNodes" :class="['tiptap-bubble-li']" style="display: flex; align-items: center;" @click="e.active">
+        <component :is="e.icon" style="margin-right: 6px;" />
+        {{ e.label }}
+      </div>
+    </div>
+  </Tippy>
 </template>
 
 <script setup lang="tsx">
 import { computed, defineComponent, PropType, ref, getCurrentInstance, watchEffect, h } from 'vue'
-import { parseStringStyle, stringifyStyle, normalizeStyle } from '@vue/shared'
-import { getMarkRange } from '@tiptap/core'
+import { parseStringStyle, stringifyStyle } from '@vue/shared'
 import { Node } from '@tiptap/pm/model'
 import { TextSelection, AllSelection, Selection } from '@tiptap/pm/state'
 import { CellSelection } from '@tiptap/pm/tables'
 import { Editor, BubbleMenu } from '@tiptap/vue-3'
-// import { Tippy, TippyDirective as vTippy } from 'tippy.vue'
 import Tippy from '../tippy.vue'
 import { chooseImg } from '@el-lowcode/utils'
 
@@ -101,8 +109,6 @@ import TiptapLinkEdit from '../tiptap/TiptapLinkEdit.vue'
 
 document.head.append(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace/cdn/themes/dark.css' }))
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace/cdn/components/color-picker/color-picker.js'
-
-const setTimeout = (...arg) => window.setTimeout(...arg)
 
 const props = defineProps({
   editor: { type: Object as PropType<Editor>, required: true },
@@ -113,8 +119,12 @@ const fu = () => proxy!.$forceUpdate()
 
 const isActive = (...args) => props.editor.isActive(...args)
 const exec = () => props.editor.chain().focus()
+const rect = () => {
+  const coords = props.editor.view.coordsAtPos(selection.value.from)
+  return DOMRect.fromRect({ x: coords.left, y: coords.top, width: coords.right - coords.left, height: coords.bottom - coords.top })
+}
 
-const xxx = [
+const toggleNodes = [
   { label: 'Paragraph', icon: () => <i-lucide-pilcrow />, isActive: () => isActive('paragraph'), active: () => exec().setParagraph().run() },
   { label: 'Heading 1', icon: () => <i-lucide-heading-1 />, isActive: () => isActive('heading', { level: 1 }), active: () => exec().toggleHeading({ level: 1 }).run() },
   { label: 'Heading 2', icon: () => <i-lucide-heading-2 />, isActive: () => isActive('heading', { level: 2 }), active: () => exec().toggleHeading({ level: 2 }).run() },
@@ -122,7 +132,11 @@ const xxx = [
   { label: 'Bullet list', icon: () => <i-mdi-format-list-bulleted-square />, isActive: () => isActive('bulletList'), active: () => exec().toggleBulletList().run() },
   { label: 'Numbered list', icon: () => <i-mdi-order-numeric-ascending />, isActive: () => isActive('orderedList'), active: () => exec().toggleOrderedList().run() },
   { label: 'Todo list', icon: () => <i-mdi-format-list-checks />, isActive: () => isActive('taskList'), active: () => exec().toggleTaskList().run() },
-  ]
+] 
+const newNodes = [
+  { label: 'Table', icon: () => <i-lucide-table />, active: () => exec().selectParentNode().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run() },
+  { label: 'Image', icon: () => <i-lucide-image />, active: () => chooseImg({ base64: true, maxSize: 1024 * 200 }).then(src => exec().selectParentNode().setImage({ src }).run()) },
+]
 
 const link = () => props.editor.getAttributes('link')
 const setLink = v => (exec()[v.href ? 'setLink' : 'unsetLink'](v).run(), fu())
@@ -141,7 +155,7 @@ const getNodes = ({ from, to }) => {
   props.editor.state.doc.nodesBetween(from, to, node => { nodes.push(node) })
   return nodes
 }
-const inNode = (name, { $from, $to } = props.editor.state.selection) => $from.nodeAfter == $to.nodeBefore && $to.parent.type.name == name
+const inNode = (name, { $from, $to } = props.editor.state.selection) => $from.parent == $to.parent && $to.parent.type.name == name
 const inTable = () => {
   const { $from } = props.editor.state.selection
   return Array(4).fill(0).flatMap((e, i) => $from.node(-i)?.type.name == 'table' ? $from.node(-i) : [])[0]
@@ -171,7 +185,6 @@ const selection = computed(() => props.editor.state.selection)
 watchEffect(() => log(selection.value))
 
 const linkTippy = ref()
-const colorRef = ref()
 
 const Scope = defineComponent({
   setup: (_, { slots }) => () => slots.default!()
