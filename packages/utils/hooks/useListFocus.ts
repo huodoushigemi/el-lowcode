@@ -5,6 +5,7 @@ interface UseListFocusProps {
   target?: HTMLElement
   list?: HTMLElement
   defaultFirst?: boolean
+  loop?: boolean
 }
 
 export function useListFocus(el: MaybeComputedElementRef, props?: UseListFocusProps) {
@@ -17,7 +18,10 @@ export function useListFocus(el: MaybeComputedElementRef, props?: UseListFocusPr
     const ul = list()
     const li = ul.querySelector('.focused') ?? ul.querySelector('.selected')
     const curr = li?.getAttribute('data-index') || -1
-    const next = ul.querySelector(`[data-index="${+curr + i}"]`)
+    let next = ul.querySelector(`[data-index="${+curr + i}"]`)
+    if (!next && props?.loop) {
+      next = i > 0 ? ul.querySelector(`[data-index="0"]`) : ul.querySelector(`[data-index]:last-child`)
+    }
     if (next) {
       ul.classList.add('element-focused')
       li?.classList.remove('focused')
@@ -28,15 +32,17 @@ export function useListFocus(el: MaybeComputedElementRef, props?: UseListFocusPr
     }
   }, { capture: true })
 
-  if (props?.defaultFirst) {
-    const ul = list()
-    const li = ul.querySelector('.focused') ?? ul.querySelector('.selected')
-    if (li) return
-    const next = ul.querySelector(`[data-index="0"]`)
-    if (!next) return
-    ul.classList.add('element-focused')
-    next.classList.add('focused')
-  }
+  ;(() => {
+    if (props?.defaultFirst) {
+      const ul = list()
+      const li = ul.querySelector('.focused') ?? ul.querySelector('.selected')
+      if (li) return
+      const next = ul.querySelector(`[data-index="0"]`)
+      if (!next) return
+      ul.classList.add('element-focused')
+      next.classList.add('focused')
+    }
+  })()
   
   return { stop }
 }

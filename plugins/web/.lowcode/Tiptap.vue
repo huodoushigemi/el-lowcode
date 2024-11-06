@@ -214,7 +214,7 @@ watchEffect(() => {
     }
   }
 
-  p.is-empty::before {
+  p.is-empty::before, h1.is-empty::before, h2.is-empty::before, h3.is-empty::before {
     color: #80808080;
     content: attr(data-placeholder);
     float: left;

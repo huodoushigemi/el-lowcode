@@ -4,13 +4,13 @@
 
     </div>
     <div v-else-if="selection.from != selection.to && (selection instanceof TextSelection)" class="tiptap-bubble">
-      <button :class="['tiptap-bubble-li', toggleNodes.find(e => e.isActive()) && 'selected']">
+      <button :class="['tiptap-bubble-li', toggleNodes.find(e => e.isActive()) && 'selected']" v-list-focus="{ defaultFirst: true, loop: true }">
         <div style="line-height: 0">
           <component :is="(toggleNodes.find(e => e.isActive()) || toggleNodes[0]).icon" />
         </div>
-        <Tippy :extra="{ interactive: true, offset: [0, 0], trigger: 'click', placement: 'auto-start', appendTo: 'parent' }">
+        <Tippy :extra="{ interactive: true, offset: [0, 0], trigger: 'click', placement: 'auto-start', appendTo: e => e }">
           <div class="tiptap-bubble" style="flex-direction: column; align-items: stretch;">
-            <div v-for="e in toggleNodes" :class="['tiptap-bubble-li', e.isActive() && 'selected']" style="display: flex; align-items: center;" @click="e.active">
+            <div v-for="(e, i) in toggleNodes" :class="['tiptap-bubble-li', e.isActive() && 'selected']" :data-index="i" @click="e.active">
               <component :is="e.icon" style="margin-right: 6px;" />
               {{ e.label }}
             </div>
@@ -24,7 +24,7 @@
 
       <button :class="['tiptap-bubble-li', isActive('link') && 'selected']">
         <i-lucide:link />
-        <Tippy :extra="{ interactive: true, onCreate: v => linkTippy = v, offset: [0, 0], trigger: 'click', appendTo: 'parent' }">
+        <Tippy :extra="{ interactive: true, onCreate: v => linkTippy = v, offset: [0, 0], trigger: 'click' }">
           <TiptapLinkEdit class="tiptap-bubble" style="padding: 10px; align-items: start;" :attrs="link()" @update:attrs="v => (setLink(v), linkTippy.hide())" />
         </Tippy>
       </button>
@@ -55,6 +55,29 @@
       </button>
     </div>
   </BubbleMenu>
+
+  <!-- Code block -->
+  <Tippy v-if="isActive('codeBlock')" :target="editor.view.dom.ownerDocument.body" :extra="{ interactive: true, showOnCreate: true, hideOnClick: false, getReferenceClientRect: () => getDom(editor.$node('codeBlock')!.node!).getBoundingClientRect(), offset: [0, 0], placement: 'top-end' }">
+    <div class="tiptap-bubble" style="align-items: stretch;">
+      <button class="tiptap-bubble-li" v-list-focus="{ defaultFirst: true, loop: true }">
+        Language
+        <Tippy :extra="{ interactive: true, offset: [0, 0], trigger: 'click', appendTo: e => e, placement: 'auto-start' }">
+          <div class="tiptap-bubble" style="flex-direction: column; align-items: stretch;">
+            <button v-for="(e, i) in ['JavaScript', 'HTML', 'JSON']" :class="['tiptap-bubble-li']" :data-index="i">{{ e }}</button>
+          </div>
+        </Tippy>
+      </button>
+      <button :class="['tiptap-bubble-li', '']" v-list-focus="{ defaultFirst: true, loop: true }">
+        <i-ic:outline-color-lens />
+        <Tippy :extra="{ interactive: true, offset: [0, 0], trigger: 'click', appendTo: e => e, placement: 'auto-start' }">
+          <div class="tiptap-bubble" style="flex-direction: column; align-items: stretch;">
+            <button v-for="(e, i) in ['github', 'juejin']" :class="['tiptap-bubble-li']" :data-index="i">{{ e }}</button>
+          </div>
+        </Tippy>
+      </button>
+      <button class="tiptap-bubble-li" @click="exec().deleteCurrentNode().run()"><i-lucide:trash-2 /></button>
+    </div>
+  </Tippy>
   
   <!-- Table -->
   <Tippy v-if="inTable()" :target="editor.view.dom.ownerDocument.body" :extra="{ interactive: true, showOnCreate: true, hideOnClick: false, maxWidth: 400, offset: [0, 0], getReferenceClientRect: () => getDom(inTable())?.getBoundingClientRect(), placement: 'top-end' }">
@@ -85,9 +108,9 @@
   </Tippy>
 
   <!-- Type / to browse options -->
-  <Tippy v-if="isActive('paragraph') && selection.$anchor.nodeBefore?.text == '/'" :target="editor.view.dom.ownerDocument.body" :extra="{ interactive: true, showOnCreate: true, hideOnClick: false, getReferenceClientRect: rect, offset: [0, 4], placement: 'bottom-start' }">
-    <div class="tiptap-bubble" style="flex-direction: column; align-items: stretch; min-width: 128px;" v-list-focus="{ target: editor.view.dom, defaultFirst: true }">
-      <div v-for="(e, i) in newNodes" :class="['tiptap-bubble-li']" style="display: flex; align-items: center;" :data-index="i" @click="e.active">
+  <Tippy v-if="selection.$anchor.nodeBefore?.text?.startsWith('/')" :target="editor.view.dom.ownerDocument.body" :extra="{ interactive: true, showOnCreate: true, hideOnClick: false, getReferenceClientRect: rect, offset: [0, 4], placement: 'bottom-start' }">
+    <div class="tiptap-bubble" style="flex-direction: column; align-items: stretch; min-width: 128px;" v-list-focus="{ target: editor.view.dom, loop: true }">
+      <div v-for="(e, i) in newNodes.filter(e => e.label.toLowerCase().includes(selection.$anchor.nodeBefore!.text!.slice(1).toLowerCase()))" :class="['tiptap-bubble-li', i == 0 && 'focused']" :data-index="i" @click="e.active">
         <component :is="e.icon" style="margin-right: 6px;" />
         {{ e.label }}
       </div>
@@ -108,7 +131,7 @@ import { chooseImg, vListFocus } from '@el-lowcode/utils'
 import TiptapLinkEdit from '../tiptap/TiptapLinkEdit.vue'
 
 document.head.append(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace/cdn/themes/dark.css' }))
-import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace/cdn/components/color-picker/color-picker.js'
+import(/* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace/cdn/components/color-picker/color-picker.js')
 
 const props = defineProps({
   editor: { type: Object as PropType<Editor>, required: true },
@@ -132,13 +155,17 @@ const toggleNodes = [
   { label: 'Bullet list', icon: () => <i-mdi-format-list-bulleted-square />, isActive: () => isActive('bulletList'), active: () => exec().toggleBulletList().run() },
   { label: 'Numbered list', icon: () => <i-mdi-order-numeric-ascending />, isActive: () => isActive('orderedList'), active: () => exec().toggleOrderedList().run() },
   { label: 'Todo list', icon: () => <i-mdi-format-list-checks />, isActive: () => isActive('taskList'), active: () => exec().toggleTaskList().run() },
-] 
+]
 const newNodes = [
   { label: 'Heading 1', icon: () => <i-lucide-heading-1 />, active: () => exec().selectParentNode().deleteSelection().insertContent('<p></p>').toggleHeading({ level: 1 }).run() },
   { label: 'Heading 2', icon: () => <i-lucide-heading-2 />, active: () => exec().selectParentNode().deleteSelection().insertContent('<p></p>').toggleHeading({ level: 2 }).run() },
   { label: 'Heading 3', icon: () => <i-lucide-heading-3 />, active: () => exec().selectParentNode().deleteSelection().insertContent('<p></p>').toggleHeading({ level: 3 }).run() },
   { label: 'Table', icon: () => <i-lucide-table />, active: () => exec().selectParentNode().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run() },
   { label: 'Image', icon: () => <i-lucide-image />, active: () => chooseImg({ base64: true, maxSize: 1024 * 200 }).then(src => exec().selectParentNode().setImage({ src }).run()) },
+  { label: 'Code block', icon: () => <i-lucide-code />, active: () => exec().selectParentNode().deleteSelection().insertContent('<p></p>').toggleCodeBlock().run() },
+  { label: 'Blockquote', icon: () => <i-lucide-quote />, active: () => exec().selectParentNode().deleteSelection().insertContent('<p></p>').toggleBlockquote().run() },
+  { label: 'Column', icon: () => <i-octicon-columns-24 />, active: () => exec().selectParentNode().deleteSelection().insertContent('<p></p>').toggleBlockquote().run() },
+  // i-gravity-ui:layout-split-columns
 ]
 
 const link = () => props.editor.getAttributes('link')
@@ -199,10 +226,10 @@ const Scope = defineComponent({
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  align-items: center;
   gap: 2px;
   background-color: #252526;
   box-shadow: 0 0 12px #00000080;
+  font-family: Arial;
 
   > svg {
     width: 1rem;

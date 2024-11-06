@@ -21,22 +21,6 @@
         <input class="vs-input" style="width: 60px" type="number" :value="parseInt(image().style.height)" @change="e => setImageH(e.target.value)" placeholder="H" />
       </template>
     </div>
-
-    <h4>Table</h4>
-    <div flex="~ wrap" gap-1>
-      <Scope>
-        <el-popover trigger="hover" placement="bottom-start" :offset="0" :show-arrow="false" popper-style="padding: 0; width: auto; border: 0" :hide-after="0">
-          <template #reference>
-            <button class="btn vs-btn insert-table">Table</button>
-          </template>
-          <div @mousemove="e => txy = (e.target as HTMLElement).getAttribute('xy')?.split(',') || [0, 0]" @mouseleave="txy = [0, 0]" @click="txy.includes(0) ? void 0 : exec().insertTable({ rows: txy[1], cols: txy[0], withHeaderRow: true }).run()" grid style="grid-template-columns: repeat(6, minmax(0, 1fr)); border-left: 1px solid #808080; border-top: 1px solid #808080">
-            <template v-for="rowi in 6">
-              <div v-for="coli in 6" :class="['cell', rowi <= txy[1] && coli <= txy[0] && 'is-active']" :xy="`${coli},${rowi}`" style="width: 15px; height: 15px; border-right: 1px solid #808080; border-bottom: 1px solid #808080;" />
-            </template>
-          </div>
-        </el-popover>
-      </Scope>
-    </div>
   </div>
 </template>
 
