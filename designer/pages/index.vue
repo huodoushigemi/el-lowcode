@@ -28,6 +28,7 @@ onMounted(() => {
     "/plugins/web",
     "/plugins/element-plus",
     "/plugins/echarts",
+    "/plugins/vuetify",
     "/plugins/antv",
     "/plugins/decorates",
     "/plugins/chatgpt",

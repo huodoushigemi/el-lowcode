@@ -1,5 +1,5 @@
 import { computed, InjectionKey, mergeProps, ref, toRaw } from 'vue'
-import { isArray, isObject, isString, normalizeStyle } from '@vue/shared'
+import { isArray, isObject, isPlainObject, isString, normalizeStyle } from '@vue/shared'
 import { Fn, unrefElement } from '@vueuse/core'
 import { Arrable, Assign, deepClone, Fnable, Obj, set, uid } from '@el-lowcode/utils'
 import { processProps } from 'el-lowcode'
@@ -64,10 +64,17 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   get id () { return this.data._id }
   get is() { return this.data.is }
-  get label () { return this.data['data-layer'] || this.config?.label || this.data.is }
-  get data_children () { return isArray(this.$data.children) ? this.$data.children : void 0 }
+  get label () { return this.data['lcd-label'] || this.config?.label || this.data.is }
   get dir() { return isArray(this.data_children) }
   get config() { return sloveConfig(this.data, this.designerCtx.widgets) }
+
+  get data_children () {
+    return (
+      isArray(this.$data.children) ? this.$data.children :
+      isPlainObject(this.$data.children) ? Object.entries(this.$data.children).map(([k, v]) => ({ is: 'div', 'lcd-label': `#${k}`, 'v-slot': k, ...v })) :
+      void 0
+    )
+  }
 
   ref = ref()
 
@@ -111,7 +118,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
     drag.disabled ||= !this.selectable
     return drag
   }
-  get selectable() { return (this.$data['lcd-selectable'] || this.data['lcd-selectable']) !== false }
+  get selectable() { return !this.$data['v-slot'] && (this.$data['lcd-selectable'] || this.data['lcd-selectable']) !== false }
 
   get lock() { return this.$data['lcd-lock'] }
   set lock(bool) { this.data['lcd-lock'] = bool || void 0 }
@@ -126,7 +133,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   override insertable(node: DisplayNode) {
-    if (!isArray(this.data_children)) return false
+    if (!isArray(this.data_children) || !isArray(this.$data.children)) return false
     if (node.drag.to && !node.drag.to.includes(this.is)) return false
     if (this.drag.from && !this.drag.from.includes(node.is)) return false
     if (node.drag.ancestor && !this.path.some(e => node.drag.ancestor!.includes(e.is))) return false
@@ -160,6 +167,8 @@ export interface DesignerCtx {
     zoom: number
     style?: Record<string, any>
   }
+
+  newProps(is: string): BoxProps
   widgets: Record<string, Widget | undefined>
 
   plugins: {

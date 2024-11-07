@@ -34,7 +34,7 @@ const OptionsInput = (lp, props, child, fn) => ({ lp, el: { is: 'OptionsInput', 
 export const widgets = [
   {
     is: 'v-expansion-panels',
-    label: 'expansion-panels',
+    label: 'expands',
     drag: { from: ['v-expansion-panels'] },
     props: [
       vmodel(),
@@ -42,13 +42,15 @@ export const widgets = [
       color('bg-color'),
       bool('disabled'),
       bool('eager'),
-      nool('focusable'),
-      nool('hide-actions'),
+      bool('focusable'),
+      bool('hide-actions'),
       ripple
     ],
-    defaultProps: () => ({
+    defaultProps: (ctx) => ({
       multiple: true,
-      children: []
+      children: [
+        ctx.newProps('v-expansion-panel'),
+      ]
     })
   },
 
@@ -61,10 +63,10 @@ export const widgets = [
       bool('disabled'),
       bool('eager'),
     ],
-    defaultProps: () => ({
+    defaultProps: (ctx) => ({
       children: [
-        { is: 'v-expansion-panel-title', children: [Text('Item')] },
-        { is: 'v-expansion-panel-text', children: [Text('Text')] }
+        ctx.newProps('v-expansion-panel-title'),
+        ctx.newProps('v-expansion-panel-text')
       ]
     })
   },
@@ -79,16 +81,16 @@ export const widgets = [
         default: { scope: '$panel', children: [Text('Item')] },
       },
     }),
-    devProps: () => ({ 'lcd-selectable': true })
+    devProps: () => ({ 'lcd-selectable': false })
   },
 
   {
-    is: 'v-expansion-text',
+    is: 'v-expansion-panel-text',
     hidden: true,
     props: [],
     defaultProps: () => ({
       children: [Text('Text')]
     }),
-    devProps: () => ({ 'lcd-selectable': true })
+    devProps: () => ({ 'lcd-selectable': false })
   }
 ]

@@ -1,4 +1,4 @@
-export * from './config'
+export * from './widgets'
 
 export function activate(designerCtx) {
   

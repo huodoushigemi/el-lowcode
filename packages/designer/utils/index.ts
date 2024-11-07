@@ -2,8 +2,8 @@ import { computed, MaybeRefOrGetter, reactive, Ref, ref, toValue, watch, watchEf
 import { isArray, isObject, remove } from '@vue/shared'
 import { Awaitable, computedAsync, Fn } from '@vueuse/core'
 import { useTransformer } from 'el-form-render'
-import { keyBy, toArr, treeUtils, unFn } from '@el-lowcode/utils'
-import { Contributes, DesignerCtx, DisplayNode, ExtensionContext, UserWidget, Widget } from '../layout/interface'
+import { keyBy, toArr, treeUtils, uid, unFn } from '@el-lowcode/utils'
+import { BoxProps, Contributes, DesignerCtx, DisplayNode, ExtensionContext, UserWidget, Widget } from '../layout/interface'
 
 export * as genCode from './genCode'
 export * from './quickPick'
@@ -59,8 +59,8 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     dragged: computed(() => designerCtx.draggedId ? designerCtx.keyedCtx[designerCtx.draggedId] : void 0),
     plugins: [],
     pluginsLoading: computed(() => allUrls.value.every(url => !!xxx[url].value)),
+    newProps: computed(() => is => Object.assign({ is } as BoxProps, designerCtx.widgets[is]!.defaultProps?.(designerCtx))),
     widgets: computed(() => keyBy(designerCtx.plugins.flatMap(e => e.widgets?.map(normalWidget) || []), 'is')),
-    // widgets: {},
     viewRenderer: {},
     commands: createEvents(),
     dict: {

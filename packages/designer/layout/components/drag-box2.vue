@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { cloneVNode, computed, defineComponent, h, inject, mergeProps, reactive, ref, shallowRef, watchEffect } from 'vue'
 import type { Ref } from 'vue'
-import { isArray, isObject } from '@vue/shared'
+import { isArray, isObject, isPlainObject } from '@vue/shared'
 import { unrefElement, useEventListener } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
 import { mapValues } from '@el-lowcode/utils'
-import { parseAttrs } from '../../components/_utils'
 import type { DesignerCtx, BoxProps, DisplayNode } from '../interface'
 
 defineOptions({
@@ -30,11 +29,16 @@ const wm = new WeakMap()
 const EMPTY = Symbol()
 
 const Render = createRender({
-  defaultIs: 'div',
+  defaultIs: null,
   processProps: (_props: any) => {
     if (_props[EMPTY]) return _props
     return wm.get(_props)?.value || wm.set(_props, computed(() => {
       let { children, ...props } = designer.keyedCtx[_props._id].$data
+
+      if (isPlainObject(_props.children) && isArray(children)) {
+        props.children = children.reduce((o, e) => (o[e['v-slot']] = e, o), {})
+        return props
+      }
 
       const ctx = setup(_props)
 
@@ -222,7 +226,6 @@ function useDrop(node: DisplayNode, emptyRef: Ref<HTMLElement>) {
 
     const el = e.currentTarget as HTMLElement
     const doc = el.ownerDocument
-    // const dragNode = _id ? designer.keyedCtx[_id] : new designer.DisplayNode(parseAttrs(designer.widgets[is!]!, designer))
     
     // 自由布局
     if (node.isAbsLayout) {
@@ -307,7 +310,7 @@ function resolveNode(el: HTMLElement) {
   const is = el.getAttribute('lcd-is')
   const id = el.getAttribute('_id')
   if (!is && !id) return
-  return designer.keyedCtx[id!] || new designer.DisplayNode(parseAttrs(designer.widgets[is!]!, designer))
+  return designer.keyedCtx[id!] || new designer.DisplayNode(designer.newProps(is!))
 }
 
 const dragLineStyle = reactive({ transform: '',  width: '', height: '' })
