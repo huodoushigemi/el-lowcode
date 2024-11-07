@@ -1,6 +1,6 @@
 import { h, resolveDynamicComponent, createVNode, createTextVNode, toDisplayString, VNode } from 'vue'
-import { isArray, isPlainObject } from '@vue/shared'
-import { unFn, Fnable, Arrable } from '@el-lowcode/utils'
+import { isArray, isFunction, isPlainObject } from '@vue/shared'
+import { unFn, Fnable, Arrable, mapValues } from '@el-lowcode/utils'
 
 export type Props = {
   is?: any
@@ -21,30 +21,30 @@ type CreateRender = {
 
 /*#__NO_SIDE_EFFECTS__*/
 export function createRender({ defaultIs = 'div', processProps = (props: Props) => props }: CreateRender) {
-  return function Render(props: Props): VNode | null {
+
+  const _h = e => isPlainObject(e) ? Render(e) : e
+  
+  function Render(props: Props): VNode | null {
     const { is, $, children, ...attrs } = processProps(props)
+    
     return (
       props.$?.condition == null || !!$?.condition
         ? h(
             // @ts-ignore
             resolveDynamicComponent(is || defaultIs),
             attrs,
-            {
-              default: () => {
-                const childs = unFn(children)
-                return (
-                  // todo
-                  // isArray(childs) ? childs.map(e => isPlainObject(e) ? createVNode(Render, e) : e) :
-                  isArray(childs) ? childs.map(e => isPlainObject(e) ? Render(e) : e) :
-                  // isPlainObject(childs) ? Render(childs) :
-                  childs
-                )
-              }
-            }
+
+            // children
+            isArray(children) ? { default: () => children.map(e => _h(e)) } :
+            isPlainObject(children) ? mapValues(children, v => (scope) => v.children.map(e => _h(e))) :
+            isFunction(children) ? { default: () => { const ret = children(); return isArray(ret) ? ret.map(e => _h(e)) : ret; } } :
+            children
           )
         : null
     )
   }
+
+  return Render
 }
 
 export const Render = createRender({})
