@@ -33,12 +33,12 @@ export default [
     })
   },
 
-  // createH('h1', false),
-  // createH('h2'),
-  // createH('h3'),
-  // createH('h4'),
-  // createH('h5'),
-  // createH('h6'),
+  createH('h1'),
+  createH('h2'),
+  createH('h3'),
+  createH('h4'),
+  createH('h5'),
+  createH('h6'),
 
   {
     is: 'a',
@@ -107,6 +107,7 @@ export default [
       onInput: e => (e.stopPropagation(), toRaw(props).children = e.currentTarget.innerText, (e.currentTarget.innerText == e.currentTarget.innerHTML) || (e.currentTarget.innerHTML = e.currentTarget.innerText)),
       onKeydown: e => e.stopPropagation(),
       onClick: e => e.currentTarget.focus(),
+      onClick: e => e.stopPropagation()
     }),
     defaultProps: () => ({
       children: '文本'

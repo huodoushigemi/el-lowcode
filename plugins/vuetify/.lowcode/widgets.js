@@ -33,9 +33,21 @@ const OptionsInput = (lp, props, child, fn) => ({ lp, el: { is: 'OptionsInput', 
 
 export const widgets = [
   {
+    is: 'v-btn',
+    label: 'button',
+    props: [],
+  },
+
+  {
+    is: 'v-icon',
+    label: 'icon',
+    props: [],
+  },
+
+  {
     is: 'v-expansion-panels',
     label: 'expands',
-    drag: { from: ['v-expansion-panels'] },
+    drag: { from: ['v-expansion-panel'] },
     props: [
       vmodel(),
       radios('variant', [['—', void 0], 'accordion', 'inset', 'popout']),
@@ -47,7 +59,7 @@ export const widgets = [
       ripple
     ],
     defaultProps: (ctx) => ({
-      multiple: true,
+      // multiple: true,
       children: [
         ctx.newProps('v-expansion-panel'),
       ]
@@ -89,8 +101,58 @@ export const widgets = [
     hidden: true,
     props: [],
     defaultProps: () => ({
-      children: [Text('Text')]
+      children: []
     }),
     devProps: () => ({ 'lcd-selectable': false })
+  },
+
+  {
+    is: 'v-layout',
+    label: 'layout',
+    defaultProps: (ctx) => ({
+      style: { height: '100%' },
+      children: [
+        ctx.newProps('v-app-bar'),
+        ctx.newProps('v-main'),
+        // ctx.newProps('v-footer')
+      ]
+    }),
+    devProps: () => ({ 'lcd-selectable': false })
+  },
+
+  {
+    is: 'v-main',
+    label: 'main',
+    defaultProps: (ctx) => ({
+      children: []
+    }),
+    devProps: () => ({ 'lcd-selectable': false })
+  },
+
+  {
+    is: 'v-app-bar',
+    label: 'appbar',
+    props: [
+      bool('absolute'),
+      bool('border'),
+      bool('collapse'),
+      radios('density', [['_'], 'prominent', 'comfortable', 'compact']),
+      num('elevation'),
+      num('extension-height', 48),
+      num('height', 64),
+      bool('flat'),
+      bool('floating'),
+      checkboxs('scroll-behavior', ['hide', 'collapse', 'elevate', 'fade-image', 'inverted'], [], { get: v => v?.split(' '), set: v => v.join(' ') }),
+      num('scroll-threshold', 0),
+    ],
+    defaultProps: () => ({
+      elevation: 8,
+      children: {
+        prepend: { children: [{ is: 'v-btn', icon: 'mdi-menu' }] },
+        title: { children: [Text('Title')] },
+        append: { children: [{ is: 'v-btn', icon: 'mdi-dots-vertical' }] },
+        extension: { children: [] }
+      }
+    })
   }
 ]

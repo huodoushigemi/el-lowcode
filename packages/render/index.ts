@@ -36,7 +36,8 @@ export function createRender({ defaultIs = 'div', processProps = (props: Props) 
 
             // children
             isArray(children) ? { default: () => children.map(e => _h(e)) } :
-            isPlainObject(children) ? mapValues(children, v => (scope) => v.children.map(e => _h(e))) :
+            // isPlainObject(children) ? mapValues(children, v => (scope) => v.children.map(e => _h(e))) :
+            isPlainObject(children) ? mapValues(children, v => (scope) => _h(v)) :
             isFunction(children) ? { default: () => { const ret = children(); return isArray(ret) ? ret.map(e => _h(e)) : ret; } } :
             children
           )

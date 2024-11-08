@@ -29,16 +29,12 @@ const wm = new WeakMap()
 const EMPTY = Symbol()
 
 const Render = createRender({
-  defaultIs: null,
+  defaultIs: 'Fragment',
   processProps: (_props: any) => {
     if (_props[EMPTY]) return _props
     return wm.get(_props)?.value || wm.set(_props, computed(() => {
-      let { children, ...props } = designer.keyedCtx[_props._id].$data
-
-      if (isPlainObject(_props.children) && isArray(children)) {
-        props.children = children.reduce((o, e) => (o[e['v-slot']] = e, o), {})
-        return props
-      }
+      const node = designer.keyedCtx[_props._id]
+      let { children, ...props } = node.$data
 
       const ctx = setup(_props)
 
@@ -51,7 +47,7 @@ const Render = createRender({
         }
       }
       else if (isObject(children)) {
-        // todo 插槽
+        
       }
 
       // 合并属性
@@ -123,10 +119,11 @@ function sortAbsolute(arr: BoxProps[]) {
 
 function useDrop(node: DisplayNode, emptyRef: Ref<HTMLElement>) {
   const firstEl = () => node.children![0]?.el ?? emptyRef.value
-  const target = () => isArray(node.children) ? firstEl()?.parentElement : void 0
+  const target = () => node.children ? firstEl()?.parentElement : void 0
   let x = 0, y = 0
   useEventListener(target, 'dragover', e => {
     if (!dragNode) return
+    console.log(node.is, node.$data);
     if (!node.insertable(dragNode)) return
 
     e.preventDefault()

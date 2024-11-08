@@ -10,6 +10,10 @@ await Promise.all(lib.map(e => new Promise((resolve, reject) => {
 
 export default {
   install(app) {
-    app.use(Vuetify.createVuetify())
+    app.use(Vuetify.createVuetify({
+      theme: {
+        defaultTheme: 'dark'
+      }
+    }))
   }
 }

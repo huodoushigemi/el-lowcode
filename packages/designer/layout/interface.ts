@@ -42,7 +42,7 @@ export interface BoxProps {
   is?: any
   _id: string
   el?: Obj
-  children?: string | number | BoxProps[]
+  children?: string | number | BoxProps[] | { [k: string]: BoxProps }
   $?: {
     // todo
     loop: string
@@ -68,12 +68,15 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get dir() { return isArray(this.data_children) }
   get config() { return sloveConfig(this.data, this.designerCtx.widgets) }
 
-  get data_children () {
+  #data_children = computed(() => {
     return (
       isArray(this.$data.children) ? this.$data.children :
-      isPlainObject(this.$data.children) ? Object.entries(this.$data.children).map(([k, v]) => ({ is: 'div', 'lcd-label': `#${k}`, 'v-slot': k, ...v })) :
+      isPlainObject(this.$data.children) ? Object.entries(this.$data.children).map(([k, v]) => ({ 'lcd-label': `#${k}`, 'v-slot': k, ...v })) :
       void 0
     )
+  })
+  get data_children () {
+    return this.#data_children.value
   }
 
   ref = ref()
@@ -118,7 +121,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
     drag.disabled ||= !this.selectable
     return drag
   }
-  get selectable() { return !this.$data['v-slot'] && (this.$data['lcd-selectable'] || this.data['lcd-selectable']) !== false }
+  get selectable() { return !this.$data['v-slot'] && (this.$data['lcd-selectable'] !== false && this.data['lcd-selectable']) !== false }
 
   get lock() { return this.$data['lcd-lock'] }
   set lock(bool) { this.data['lcd-lock'] = bool || void 0 }
@@ -133,7 +136,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   override insertable(node: DisplayNode) {
-    if (!isArray(this.data_children) || !isArray(this.$data.children)) return false
+    if (!isArray(this.$data.children)) return false
     if (node.drag.to && !node.drag.to.includes(this.is)) return false
     if (this.drag.from && !this.drag.from.includes(node.is)) return false
     if (node.drag.ancestor && !this.path.some(e => node.drag.ancestor!.includes(e.is))) return false
