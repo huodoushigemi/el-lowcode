@@ -25,7 +25,7 @@
             <!-- resize -->
             <Moveable
               :style="`margin-top: ${-iframeScroll.y}px; margin-left: ${-iframeScroll.x}px`"
-              :target="designerCtx.active?.isRoot ? undefined : designerCtx.active?.el"
+              :target="designerCtx.active?.isRoot || designerCtx.active?.inline ? undefined : designerCtx.active?.el"
               :resizable="true"
               :rotatable="false"
               :origin="false"

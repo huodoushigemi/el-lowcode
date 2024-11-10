@@ -1,6 +1,7 @@
 import { defineAsyncComponent, h } from 'vue'
 import Page from './page'
 import Grid from './grid'
+import UnoIcon from './UnoIcon.vue'
 
 if (typeof document != 'undefined') import('wc-appbar')
 if (typeof document != 'undefined') import('wc-waterfall')
@@ -9,6 +10,7 @@ export default {
   install(app) {
     app.use(Page)
     app.use(Grid)
+    app.component('UnoIcon', UnoIcon)
     
     app.component('AbsoluteLayout', (props, { slots }) => h('div', props, slots))
     app.component('VHtml', (props) => h('div', { ...props }))

@@ -1,6 +1,7 @@
 const lib = [
-  ['script', { src: 'https://unpkg.com/vuetify@3.7.4/dist/vuetify.min.js' }],
-  ['link', { href: 'https://unpkg.com/vuetify@3.7.4/dist/vuetify.min.css', rel: 'stylesheet' }],
+  ['script', { src: 'https://unpkg.com/vuetify@3.7.4/dist/vuetify-labs.js' }],
+  ['link', { href: 'https://unpkg.com/vuetify@3.7.4/dist/vuetify-labs.min.css', rel: 'stylesheet' }],
+  ['link', { href: 'https://unpkg.com/@mdi/font@5.x/css/materialdesignicons.min.css', rel: 'stylesheet' }],
 ]
 
 await Promise.all(lib.map(e => new Promise((resolve, reject) => {

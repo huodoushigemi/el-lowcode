@@ -63,15 +63,19 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   get id () { return this.data._id }
-  get is() { return this.data.is }
-  get label () { return this.data['lcd-label'] || this.config?.label || this.data.is }
+  get is() { return this.data.is || 'Fragment' }
+  get label () { return (this.vslot && `#${this.vslot}`) || this.data['lcd-label'] || this.config?.label || this.data.is }
   get dir() { return isArray(this.data_children) }
-  get config() { return sloveConfig(this.data, this.designerCtx.widgets) }
+  get vslot() { return isPlainObject(this.parent?.data.children) ? Object.entries(this.parent!.data.children).find(([k, v]) => v == this.data)![0] : void 0 }
+  get config() {
+    if (!this.designerCtx.widgets[this.is]) console.error(`${this.is}: Unable to find a matching el_lowcode configuration of ${this.is}`, this.data)
+    return this.designerCtx.widgets[this.is]
+  }
 
   #data_children = computed(() => {
     return (
       isArray(this.$data.children) ? this.$data.children :
-      isPlainObject(this.$data.children) ? Object.entries(this.$data.children).map(([k, v]) => ({ 'lcd-label': `#${k}`, 'v-slot': k, ...v })) :
+      isPlainObject(this.$data.children) ? Object.values(this.$data.children) :
       void 0
     )
   })
@@ -82,18 +86,17 @@ export abstract class DisplayNode extends Node<BoxProps> {
   ref = ref()
 
   get el(): HTMLElement | undefined {
+    if (this.vslot) return
     let el = unrefElement(this.ref)
     return el?.nodeType == 3 ? el.nextElementSibling : el
   }
 
   #$data = computed(() => {
-    // isString(this.data.children) && this.is != 'span' && (this.data.children = [{ is: 'span', _id: uid(), children: this.data.children }])
     let { children, ...props } = this.data
     // 移除值为 undefuned 的属性
     props = JSON.parse(JSON.stringify(props))
     props.children = children
     props = processProps(props, this.designerCtx.pageCtx)
-    // props = this.config?.devProps ? this.config?.devProps(this.data, this.designerCtx) : props
     if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(this.data, this.designerCtx)) as any
     return props
   })
@@ -110,6 +113,8 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get y() { return parseTransform(this.data.style?.transform)[1] }
   set y(v) { set(this.data, 'style.transform', `translate(${this.x}px, ${v}px)`) }
 
+  get inline() { return this.el ? window.getComputedStyle(this.el).display == 'inline' : false }
+
   // 自由布局
   get isAbsLayout() { return !!this.$data['data-absolute-layout'] }
   set isAbsLayout(bool) { this.data['data-absolute-layout'] = bool || void 0 }
@@ -121,7 +126,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
     drag.disabled ||= !this.selectable
     return drag
   }
-  get selectable() { return !this.$data['v-slot'] && (this.$data['lcd-selectable'] !== false && this.data['lcd-selectable']) !== false }
+  get selectable() { return this.$data['lcd-selectable'] !== false && this.data['lcd-selectable'] !== false }
 
   get lock() { return this.$data['lcd-lock'] }
   set lock(bool) { this.data['lcd-lock'] = bool || void 0 }
@@ -142,6 +147,12 @@ export abstract class DisplayNode extends Node<BoxProps> {
     if (node.drag.ancestor && !this.path.some(e => node.drag.ancestor!.includes(e.is))) return false
     if (this.lock) return false
     return super.insertable(node)
+  }
+
+  override remove() {
+    return this.vslot
+      ? (delete this.parent!.data.children![this.vslot], this.parent = void 0, this)
+      : super.remove()
   }
 }
 

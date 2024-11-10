@@ -1,4 +1,4 @@
-import { isArray } from '@vue/shared'
+import { isArray, isObject } from '@vue/shared'
 
 const PROPS = {
   key: 'key',
@@ -18,7 +18,8 @@ function flat<T>(tree: T[], childrenKey = PROPS.children) {
   const queue = [...tree]
   for (let i = 0; i < queue.length; i++) {
     const item = queue[i]
-    isArray(item[childrenKey]) && queue.push(...item[childrenKey])
+    isArray(item[childrenKey]) ? queue.push(...item[childrenKey]) :
+    isObject(item[childrenKey]) ? queue.push(...Object.values(item[childrenKey])) : void 0
   }
   return queue
 }

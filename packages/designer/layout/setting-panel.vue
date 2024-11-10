@@ -34,7 +34,7 @@
 import { computed, inject, ref } from 'vue'
 import { isArray, parseStringStyle, stringifyStyle, isOn, isPlainObject } from '@vue/shared'
 import { createRender } from '@el-lowcode/render'
-import { mapValues, pick, unFn } from '@el-lowcode/utils'
+import { mapValues, omit, pick, unFn } from '@el-lowcode/utils'
 import { ElFormRender, normalizeItem } from 'el-form-render'
 import { designerCtxKey } from './interface'
 import Scriptable from './components/scriptable.vue'
@@ -48,7 +48,7 @@ import StyleLayout from './components/style/StyleLayout.vue'
 const visible = ref(false)
 const internalProps = ['_id', 'is', 'children']
 const editModel = computed({
-  get: () => JSON.stringify({ ...model.value, _id: void 0, is: void 0, children: isArray(model.value?.children) ? void 0 : model.value?.children }, null, '  '),
+  get: () => JSON.stringify(omit(model.value, internalProps), null, '  '),
   set: v => Object.assign(model.value, mapValues(model.value, () => void 0), pick(model.value, internalProps), JSON.parse(v))
 })
 

@@ -5,7 +5,7 @@ import { createRender } from '@el-lowcode/render'
 export * from './ConfigProvider'
 
 export const Render = createRender({
-  defaultIs: 'div',
+  defaultIs: 'Fragment',
   processProps
 })
 

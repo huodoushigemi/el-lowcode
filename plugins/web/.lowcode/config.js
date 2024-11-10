@@ -53,5 +53,23 @@ export default [
       children: [],
     }),
     purify: (props) => ({ ...props, is: 'div', 'data-absolute-layout': void 0 })
+  },
+  
+  {
+    is: 'Fragment',
+    hidden: true,
+    props: [],
+    devProps: () => ({ 'lcd-selectable': false })
+  },
+
+  {
+    is: 'uno-icon',
+    label: 'icon',
+    props: [
+      { lp: 'src' }
+    ],
+    defaultProps: () => ({
+      src: `https://api.iconify.design/logos:vitejs.svg`
+    })
   }
 ]

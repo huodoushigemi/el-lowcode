@@ -72,7 +72,7 @@ function setup(props: BoxProps) {
   useDrop(node, boxRef)
   useDrag(node)
   
-  useEventListener(elRef, 'mousedown', e => {
+  useEventListener(() => node.el, 'mousedown', e => {
     if (!node.selectable) return
     if (e.button != 0) return
     e.stopPropagation()
@@ -80,11 +80,20 @@ function setup(props: BoxProps) {
     designer.activeId = props._id
   })
 
-  useEventListener(elRef, 'mouseover', e => {
+  useEventListener(() => node.el, 'mouseover', e => {
     if (!node.selectable) return
     e.stopPropagation()
     if (designer.dragged) return
     designer.hoverId = props._id
+  })
+
+  // add attrs
+  watchEffect(() => {
+    const el = node.el
+    if (!el) return
+    el.setAttribute('draggable', (!node.isAbs && !node.drag.disabled) + '')
+    el.setAttribute('_id', node.id)
+    el.setAttribute('lcd-is', node.is)
   })
 
   const ret = {
@@ -123,7 +132,6 @@ function useDrop(node: DisplayNode, emptyRef: Ref<HTMLElement>) {
   let x = 0, y = 0
   useEventListener(target, 'dragover', e => {
     if (!dragNode) return
-    console.log(node.is, node.$data);
     if (!node.insertable(dragNode)) return
 
     e.preventDefault()
@@ -149,7 +157,7 @@ function useDrop(node: DisplayNode, emptyRef: Ref<HTMLElement>) {
     }
     // 排序布局
     else {
-      const draggables = [...el.children].filter(e => e.getAttribute('draggable') == 'true') as HTMLElement[]
+      const draggables = [...el.children].filter(e => e.getAttribute('lcd-is')) as HTMLElement[]
 
       // 查找距离 xy 最近的元素
       const rects = draggables.map(e => e.getBoundingClientRect())
@@ -257,12 +265,6 @@ function useDrag(node: DisplayNode) {
     e.stopPropagation()
     dragStart(e)
     e.dataTransfer!.setDragImage(new Image(), 0, 0)
-  })
-  watchEffect(() => {
-    const el = node.el
-    if (!el) return
-    el.setAttribute?.('draggable', draggable() + '')
-    el.setAttribute?.('_id', node.id)
   })
 }
 
