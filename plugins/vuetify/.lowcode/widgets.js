@@ -348,7 +348,8 @@ export const widgets = [
   {
     is: 'v-expansion-panel-title',
     hidden: true,
-    vSlots: [['default', ['expanded']], ['actions', ['expanded']]],
+    // vSlots: [['default', ['expanded']], ['actions', ['expanded']]],
+    vSlots: ['actions'],
     props: [],
     defaultProps: () => ({
       children: {

@@ -117,10 +117,11 @@ const styles = computed(() => [
   { lp: 'style', get: val => stringifyStyle(val).replace(/;/g, ';\n'), set: val => parseStringStyle(val), el: { is: Input, type: 'textarea', placeholder: 'font-size: inherit;\ncolor: inherit;', autosize: { minRows: 4, maxRows: 12 } } },
 ])
 
-const commons = [
+const commons = computed(() => [
   { lp: 'id' },
   { lp: 'class' },
   { lp: 'slot' },
+  node.value.slots && { lp: ['enable-slots', ''], options: node.value.slots, get: () => node.value.vSlots, set: v => (node.value.vSlots = v, void 0), el: { multiple: true } },
   { lp: ['condition', '$.condition'], type: 'switch', displayValue: true },
   { is: 'ElDivider' },
   { is: 'h1', children: 'Event' },
@@ -129,7 +130,7 @@ const commons = [
   { is: 'el-divider' },
   { lp: ['onMounted','onVnodeMounted'] },
   { lp: ['onBeforeMount', 'onVnodeBeforeMount'] },
-]
+])
 </script>
 
 <style scoped lang="scss">

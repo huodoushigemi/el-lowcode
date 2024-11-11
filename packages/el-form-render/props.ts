@@ -10,7 +10,7 @@ export type NormalizedOpt = {
   [k: string]: any
 }
 
-export type Opt = string | NormalizedOpt
+export type Opt = string | any[] | NormalizedOpt
 
 export const formItemRenderPropsBase = {
   is: null,

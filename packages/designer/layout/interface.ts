@@ -1,8 +1,9 @@
 import { computed, InjectionKey, mergeProps, ref, toRaw } from 'vue'
 import { isArray, isObject, isPlainObject, isString, normalizeStyle } from '@vue/shared'
 import { Fn, unrefElement } from '@vueuse/core'
-import { Arrable, Assign, deepClone, Fnable, Obj, set, uid } from '@el-lowcode/utils'
+import { Arrable, Assign, deepClone, Fnable, Obj, pick, set, uid } from '@el-lowcode/utils'
 import { processProps } from 'el-lowcode'
+import { solveOptions } from 'el-form-render'
 import { Node } from './components/Node'
 import { sloveConfig } from '../components/_utils'
 import { parseTransform } from './components/utils'
@@ -14,7 +15,10 @@ export interface Widget {
   drag: WidgetDrag
   hidden?: boolean
   cover?: string // todo
-  slots: any[] // todo
+  // slots: { label?: string; value: string }[]
+  // vSlots: { label?: string; value: string; args?: any[] }[]
+  slots: any[]
+  vSlots: any[]
   props?: any[] | ((props: Obj, ctx: DesignerCtx, arg: { node: DisplayNode }) => any[])
   defaultProps?(ctx: DesignerCtx): Obj
   devProps: (props: Obj, ctx: DesignerCtx) => Obj
@@ -114,6 +118,25 @@ export abstract class DisplayNode extends Node<BoxProps> {
   set y(v) { set(this.data, 'style.transform', `translate(${this.x}px, ${v}px)`) }
 
   get inline() { return this.el ? window.getComputedStyle(this.el).display == 'inline' : false }
+
+  get slots() {
+    if (this.config?.slots) return solveOptions(this.config.slots)
+    if (this.config?.vSlots) return solveOptions(this.config.vSlots)
+  }
+
+  get vSlots() { return isPlainObject(this.$data.children) ? Object.keys(this.$data.children) : void 0 }
+  set vSlots(v) {
+    const vslots =
+      isArray(this.data.children) ? { default: { children: this.data.children } } :
+      isPlainObject(this.data.children) ? this.data.children :
+      {}
+    if (!v?.length) {
+      this.data.children = vslots.default.children
+    } else {
+      const defaults = Object.fromEntries(v.map(e => [e, { children: [] }]))
+      this.data.children = pick({ ...defaults, ...vslots }, [...v, 'default'])
+    }
+  }
 
   // 自由布局
   get isAbsLayout() { return !!this.$data['data-absolute-layout'] }
