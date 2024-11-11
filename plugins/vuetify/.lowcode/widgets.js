@@ -1,3 +1,5 @@
+import { colorNames } from "chalk"
+
 const ICONS = ['search', 'arrow_forward', 'downloading', 'attach_file']
 const SIZES = ['normal', 'small', 'large']
 const COLORS = [['—'], 'primary', 'success', 'warning', 'error']
@@ -16,6 +18,7 @@ const grid2 = children => ({ is: 'div', class: 'grid grid-cols-2 gap-x-12', chil
 const ripple = bool('ripple')
 const _href = { is: 'div', class: 'grid gap-x-12', style: 'grid-template-columns: 70% 1fr', children: [{ lp: 'href' }, { lp: ['new-tab', 'target'], script: false, type: 'switch', get: v => v == '_blank', set: v => v ? '_blank' : void 0 }] }
 // const _color = { is: 'div', children: [radios('color', COLORS), radios('base-color', COLORS)] }
+const _cancelable = bool(['cancelable', 'mandatory'], false, { get: v => !v, set: v => !v })
 
 const vmodel = (k = 'modelValue', evt = `onUpdate:${k}`) => ({
   lp: `v-model${k == 'modelValue' ? '' : `:${k}`}`,
@@ -36,6 +39,195 @@ const Text = (s, extra) => ({ is: 'span', children: s, ...extra })
 const optionsInput = (lp, props, fn) => ({ lp, el: { is: 'OptionsInput', props, new: (i) => ({ ...fn?.(i) }) } })
 
 export const widgets = [
+  {
+    is: 'v-layout',
+    label: 'layout',
+    category: 'Navigation',
+    defaultProps: (ctx) => ({
+      style: { height: '100%' },
+      children: [
+        ctx.newProps('v-app-bar'),
+        ctx.newProps('v-main'),
+        ctx.newProps('v-bottom-navigation')
+      ]
+    }),
+    devProps: () => ({ 'lcd-selectable': false })
+  },
+
+  {
+    is: 'v-main',
+    label: 'main',
+    category: 'Navigation',
+    hidden: true,
+    defaultProps: (ctx) => ({
+      children: []
+    }),
+    devProps: () => ({ 'lcd-selectable': false })
+  },
+
+  {
+    is: 'v-app-bar',
+    label: 'appbar',
+    category: 'Navigation',
+    vSlots: ['prepend', 'append', 'title', 'extension'],
+    props: [
+      bool('border'),
+      bool('collapse'),
+      radios('rounded', [['—'], 'lg', 'xl']),
+      radios('density', [['—'], 'prominent', 'comfortable', 'compact']),
+      num('elevation'),
+      grid2([num('height', 64), num('extension-height', 48)]),
+      // bool('absolute'),
+      // bool('flat'),
+      // bool('floating'),
+      checkboxs('scroll-behavior', ['hide', 'collapse', 'elevate', 'fade-image', 'inverted'], [], { get: v => v?.split(' '), set: v => v.join(' ') }),
+      num('scroll-threshold', 0),
+    ],
+    defaultProps: () => ({
+      elevation: 8,
+      children: {
+        prepend: { children: [{ is: 'v-btn', icon: true, children: [{ is: 'uno-icon', src: 'https://api.iconify.design/mdi:menu.svg', style: { width: '24px', height: '24px' } }] }] },
+        title: { children: [Text('Title')] },
+        append: { children: [{ is: 'v-btn', icon: true, children: [{ is: 'uno-icon', src: 'https://api.iconify.design/design/mdi:dots-vertical.svg', style: { width: '24px', height: '24px' } }] }] },
+        extension: { children: [] }
+      }
+    })
+  },
+
+  {
+    is: 'v-bottom-navigation',
+    label: 'tabbar',
+    category: 'Navigation',
+    props: [
+      vmodel(),
+      bool('active', true),
+      radios('color', COLORS),
+      bool('border'),
+      radios('density', [['—', void 0], 'comfortable', 'compact']),
+      bool('disabled'),
+      num('elevation'),
+      // bool('grow'),
+      // num('height', 56),
+      radios('mode', [['—'], 'shift']),
+      radios('rounded', [['—'], 'lg', 'xl']),
+    ],
+    defaultProps: () => ({
+      color: 'primary',
+      mandatory: true,
+      children: [
+        { is: 'v-btn', style: { flex: '1 0' }, children: [{ is: 'v-icon', icon: 'mdi-widgets' }, Text('Components')] },
+        { is: 'v-btn', style: { flex: '1 0' }, children: [{ is: 'v-icon', icon: 'mdi-file-document-multiple' }, Text('Forms')] },
+        { is: 'v-btn', style: { flex: '1 0' }, children: [{ is: 'v-icon', icon: 'mdi-apple-icloud' }, Text('Api')] },
+      ]
+    })
+  },
+
+  {
+    is: 'v-navigation-drawer',
+    label: 'drawer',
+    category: 'Navigation',
+    vSlots: ['prepend', 'append'],
+    props: [
+      vmodel(),
+      bool('border'),
+      radios('color', COLORS),
+      str('image'),
+      radios('location', ['top', 'bottom', ['left'], 'right']),
+      bool('permanent'),
+      bool('temporary'),
+      grid2([bool('rail'), bool('expand-on-hover')]),
+      bool(['close-on-click-modal', 'persistent']),
+      // num('rail-width', 30),
+      // bool('scrim', true),
+      radios('rounded', [['—'], 'lg', 'xl']),
+    ],
+    defaultProps: () => ({
+      children: {
+        default: { children: [Text('Content')] },
+        append: { children: [{ is: 'v-btn', block: true, children: [Text('Logout')] }] },
+      }
+    })
+  },
+
+  {
+    is: 'v-tabs',
+    label: 'tabs',
+    category: 'Navigation',
+    drag: { from: 'v-tab' },
+    props: [
+      vmodel(),
+      radios('align-tabs', ['title', ['start'], 'center', 'end']),
+      radios('color', COLORS),
+      radios('bg-color', COLORS),
+      radios('density', [['—', void 0], 'comfortable', 'compact']),
+      radios('direction', [['horizontal'], 'vertical']),
+      bool('center-active'),
+      bool('grow'),
+      bool('disabled'),
+      grid2([bool('hide-slider'), radios('slider-color', COLORS)]),
+      grid2([bool('multiple'), num(['max-count', 'max'])]),
+      // bool('next-icon'),
+      // bool('prev-icon'),
+      bool('show-arrows'),
+    ],
+    defaultProps: () => ({
+      children: [
+        { is: 'v-tab', children: [Text('Tab 1')] },
+        { is: 'v-tab', children: [Text('Tab 2')] },
+        { is: 'v-tab', children: [Text('Tab 3')] },
+      ]
+    })
+  },
+
+  {
+    is: 'v-tab',
+    label: 'tab',
+    category: 'Navigation',
+    hidden: true,
+    drag: { to: ['v-tabs'] },
+    vSlots: ['prepend', 'append'],
+    props: [
+      str('value'),
+      radios('variant', ['flat', ['text'], 'elevated', 'tonal', 'outlined', 'plain']),
+      radios('color', COLORS),
+      bool('disabled'),
+      bool('fixed'),
+      _href,
+      grid2([bool('hide-slider'), radios('slider-color', COLORS)]),
+    ],
+    defaultProps: () => ({
+      children: [Text('Tab')]
+    })
+  },
+  
+  {
+    is: 'v-tabs-window',
+    label: 'tabs-window',
+    category: 'Navigation',
+    drag: { from: ['v-tabs-window-item'] },
+    props: [
+      vmodel(),
+    ],
+    defaultProps: (ctx) => ({
+      style: { padding: '16px' },
+      children: [ctx.newProps('v-tabs-window-item'), ctx.newProps('v-tabs-window-item'), ctx.newProps('v-tabs-window-item')]
+    })
+  },
+
+  {
+    is: 'v-tabs-window-item',
+    label: 'tabs-window-item',
+    category: 'Navigation',
+    hidden: true,
+    drag: { to: ['v-tabs-window'] },
+    props: [
+      str('value')
+    ],
+    defaultProps: () => ({
+      children: [{ is: 'h3', children: 'Content' } ],
+    })
+  },
+
   {
     is: 'v-btn',
     label: 'button',
@@ -63,6 +255,55 @@ export const widgets = [
     props: [
       str('icon')
     ],
+  },
+
+  {
+    is: 'v-chip-group',
+    label: 'chip-group',
+    darg: { from: ['v-chip'] },
+    props: [
+      vmodel(),
+      radios('variant', ['flat', 'text', 'elevated', ['tonal'], 'outlined', 'plain']),
+      radios('color', COLORS),
+      // radios('density', [['—', void 0], 'comfortable', 'compact']),
+      bool(['wrap', 'column']),
+      bool('show-arrows'),
+      bool('disabled'),
+      bool('filter'),
+      _cancelable,
+      grid2([bool('multiple'), num(['max-count', 'max'])]),
+    ],
+    defaultProps: (ctx) => ({
+      color: 'primary',
+      valueComparator: `{{(a, b) => a == b}}`,
+      children: [
+        { ...ctx.newProps('v-chip'), value: '1' },
+        { ...ctx.newProps('v-chip'), value: '2' },
+        { ...ctx.newProps('v-chip'), value: '3' },
+      ]
+    })
+  },
+  
+  {
+    is: 'v-chip',
+    label: 'chip',
+    vSlots: ['prepend', 'append'],
+    props: [
+      str('value'),
+      radios('variant', ['flat', 'text', 'elevated', ['tonal'], 'outlined', 'plain']),
+      radios('color', COLORS),
+      bool('border'),
+      bool('label'),
+      bool('closable'),
+      radios('density', [['—', void 0], 'comfortable', 'compact']),
+      bool('disabled'),
+      bool('filter'),
+      _href,
+      radios('rounded', [['—'], 'lg', 'xl']),
+    ],
+    defaultProps: () => ({
+      children: [Text('Chip')]
+    })
   },
 
   {
@@ -128,58 +369,6 @@ export const widgets = [
   },
 
   {
-    is: 'v-layout',
-    label: 'layout',
-    defaultProps: (ctx) => ({
-      style: { height: '100%' },
-      children: [
-        ctx.newProps('v-app-bar'),
-        ctx.newProps('v-main'),
-        // ctx.newProps('v-footer')
-      ]
-    }),
-    devProps: () => ({ 'lcd-selectable': false })
-  },
-
-  {
-    is: 'v-main',
-    label: 'main',
-    hidden: true,
-    defaultProps: (ctx) => ({
-      children: []
-    }),
-    devProps: () => ({ 'lcd-selectable': false })
-  },
-
-  {
-    is: 'v-app-bar',
-    label: 'appbar',
-    vSlots: ['prepend', 'append', 'title', 'extension'],
-    props: [
-      bool('border'),
-      bool('collapse'),
-      radios('rounded', [['—'], 'lg', 'xl']),
-      radios('density', [['—'], 'prominent', 'comfortable', 'compact']),
-      num('elevation'),
-      grid2([num('height', 64), num('extension-height', 48)]),
-      // bool('absolute'),
-      // bool('flat'),
-      // bool('floating'),
-      checkboxs('scroll-behavior', ['hide', 'collapse', 'elevate', 'fade-image', 'inverted'], [], { get: v => v?.split(' '), set: v => v.join(' ') }),
-      num('scroll-threshold', 0),
-    ],
-    defaultProps: () => ({
-      elevation: 8,
-      children: {
-        prepend: { children: [{ is: 'v-btn', icon: true, children: [{ is: 'uno-icon', src: 'https://api.iconify.design/mdi:menu.svg', style: { width: '24px', height: '24px' } }] }] },
-        title: { children: [Text('Title')] },
-        append: { children: [{ is: 'v-btn', icon: true, children: [{ is: 'uno-icon', src: 'https://api.iconify.design/design/mdi:dots-vertical.svg', style: { width: '24px', height: '24px' } }] }] },
-        extension: { children: [] }
-      }
-    })
-  },
-
-  {
     is: 'v-list',
     label: 'list',
     drag: { from: ['v-list-item'] },
@@ -236,32 +425,6 @@ export const widgets = [
       children: {
         default: { children: [Text('Item')] },
         prepend: { children: [{ is: 'v-icon', icon: 'mdi-clock' }] },
-      }
-    })
-  },
-
-  {
-    is: 'v-navigation-drawer',
-    label: 'drawer',
-    vSlots: ['prepend', 'append'],
-    props: [
-      vmodel(),
-      bool('border'),
-      radios('color', COLORS),
-      str('image'),
-      radios('location', ['top', 'bottom', ['left'], 'right']),
-      bool('permanent'),
-      bool('temporary'),
-      grid2([bool('rail'), bool('expand-on-hover')]),
-      bool(['close-on-click-modal', 'persistent']),
-      // num('rail-width', 30),
-      // bool('scrim', true),
-      radios('rounded', [['—'], 'lg', 'xl']),
-    ],
-    defaultProps: () => ({
-      children: {
-        default: { children: [Text('Content')] },
-        append: { children: [{ is: 'v-btn', block: true, children: [Text('Logout')] }] },
       }
     })
   },
@@ -487,8 +650,8 @@ export const widgets = [
   {
     is: 'v-range-slider',
     label: 'slider',
-    vSlots: ['label', 'append', 'append'],
     hidden: true,
+    vSlots: ['label', 'append', 'append'],
     props: props => [
       vmodel(),
       bool('range', void 0, { get: () => props.is == 'v-range-slider', set: () => void 0, out: v => ({ is: v ? 'v-range-slider' : 'v-slider' }) }),

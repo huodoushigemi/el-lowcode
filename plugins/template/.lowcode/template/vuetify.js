@@ -9,6 +9,9 @@ export default {
       "drawer": {
         "value": false
       },
+      "tabs": {
+        "value": "0"
+      },
       "list": {
         "value": "2"
       },
@@ -34,6 +37,13 @@ export default {
         "values": [
           10,
           30
+        ]
+      },
+      "chips": {
+        "value": "1",
+        "values": [
+          "Work",
+          "Vacation"
         ]
       }
     },
@@ -107,6 +117,73 @@ export default {
               }
             },
             "_id": "95f33fdce2f75702"
+          },
+          {
+            "is": "v-bottom-navigation",
+            "children": [
+              {
+                "is": "v-btn",
+                "children": [
+                  {
+                    "is": "v-icon",
+                    "icon": "mdi-widgets",
+                    "_id": "410ae55d3f6a9905"
+                  },
+                  {
+                    "is": "span",
+                    "children": "Components",
+                    "_id": "410ae55d3f6a9906",
+                    "style": {}
+                  }
+                ],
+                "_id": "410ae55d3f6a9902",
+                "style": {
+                  "flex": "1 0"
+                }
+              },
+              {
+                "is": "v-btn",
+                "children": [
+                  {
+                    "is": "v-icon",
+                    "icon": "mdi-file-document-multiple",
+                    "_id": "410ae55d3f6a9907"
+                  },
+                  {
+                    "is": "span",
+                    "children": "Forms",
+                    "_id": "410ae55d3f6a9908"
+                  }
+                ],
+                "_id": "410ae55d3f6a9903",
+                "style": {
+                  "flex": "1 0"
+                }
+              },
+              {
+                "is": "v-btn",
+                "children": [
+                  {
+                    "is": "v-icon",
+                    "icon": "mdi-apple-icloud",
+                    "_id": "410ae55d3f6a9909"
+                  },
+                  {
+                    "is": "span",
+                    "children": "Api",
+                    "_id": "410ae55d3f6a990a"
+                  }
+                ],
+                "_id": "410ae55d3f6a9904",
+                "style": {
+                  "flex": "1 0"
+                }
+              }
+            ],
+            "_id": "410ae55d3f6a9901",
+            "color": "primary",
+            "mandatory": true,
+            "mode": "shift"
           },
           {
             "is": "v-main",
@@ -1383,7 +1460,7 @@ export default {
                             "children": [
                               {
                                 "is": "uno-icon",
-                                "src": "https://api.iconify.design/mdi:calendar.svg",
+                                "src": "https://api.iconify.design/mdi:integrated-circuit-chip.svg",
                                 "_id": "53d98fd689073102",
                                 "style": {
                                   "width": "24px",
@@ -1393,7 +1470,7 @@ export default {
                               },
                               {
                                 "is": "span",
-                                "children": "Date Input",
+                                "children": "Chip Group",
                                 "_id": "53d98fd689073103"
                               }
                             ],
@@ -1409,11 +1486,151 @@ export default {
                             "is": "div",
                             "children": [
                               {
-                                "is": "v-date-input",
-                                "label": "Label",
-                                "clearable": true,
-                                "prependIcon": "",
-                                "_id": "53d98fd689073106"
+                                "is": "v-chip-group",
+                                "color": "success",
+                                "valueComparator": "{{(a, b) => a == b}}",
+                                "children": [
+                                  {
+                                    "is": "v-chip",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Chip",
+                                        "_id": "534d5b7da4c23214"
+                                      }
+                                    ],
+                                    "value": "1",
+                                    "_id": "534d5b7da4c23211"
+                                  },
+                                  {
+                                    "is": "v-chip",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Chip",
+                                        "_id": "534d5b7da4c23215"
+                                      }
+                                    ],
+                                    "value": "2",
+                                    "_id": "534d5b7da4c23212"
+                                  },
+                                  {
+                                    "is": "v-chip",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Chip",
+                                        "_id": "534d5b7da4c23216"
+                                      }
+                                    ],
+                                    "value": "3",
+                                    "_id": "534d5b7da4c23213"
+                                  }
+                                ],
+                                "_id": "534d5b7da4c23210",
+                                "modelValue": "{{state.chips.value}}",
+                                "onUpdate:modelValue": "{{(v) => {\n  state.chips.value = v\n}}}"
+                              },
+                              {
+                                "is": "p",
+                                "children": "Multiple",
+                                "_id": "0c6716e67b6f2f02"
+                              },
+                              {
+                                "is": "v-chip-group",
+                                "color": "primary",
+                                "valueComparator": "{{(a, b) => a == b}}",
+                                "children": [
+                                  {
+                                    "is": "v-chip",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Work",
+                                        "_id": "0c6716e67b6f2f07"
+                                      }
+                                    ],
+                                    "value": "Work",
+                                    "_id": "0c6716e67b6f2f04"
+                                  },
+                                  {
+                                    "is": "v-chip",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Home Improvement",
+                                        "_id": "0c6716e67b6f2f08"
+                                      }
+                                    ],
+                                    "value": "Home Improvement",
+                                    "_id": "0c6716e67b6f2f05"
+                                  },
+                                  {
+                                    "is": "v-chip",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Vacation",
+                                        "_id": "0c6716e67b6f2f09"
+                                      }
+                                    ],
+                                    "value": "Vacation",
+                                    "_id": "0c6716e67b6f2f06"
+                                  },
+                                  {
+                                    "is": "v-chip",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Food",
+                                        "_id": "0c6716e67b6f2f0c"
+                                      }
+                                    ],
+                                    "value": "Food",
+                                    "_id": "0c6716e67b6f2f0d"
+                                  },
+                                  {
+                                    "is": "v-chip",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Drawers",
+                                        "_id": "0c6716e67b6f2f0a"
+                                      }
+                                    ],
+                                    "value": "Drawers",
+                                    "_id": "0c6716e67b6f2f0b"
+                                  },
+                                  {
+                                    "is": "v-chip",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Shopping",
+                                        "_id": "0c6716e67b6f2f10"
+                                      }
+                                    ],
+                                    "value": "Shopping",
+                                    "_id": "0c6716e67b6f2f11"
+                                  },
+                                  {
+                                    "is": "v-chip",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Art",
+                                        "_id": "0c6716e67b6f2f0e"
+                                      }
+                                    ],
+                                    "value": "Art",
+                                    "_id": "0c6716e67b6f2f0f"
+                                  }
+                                ],
+                                "_id": "0c6716e67b6f2f03",
+                                "modelValue": "{{state.chips.values}}",
+                                "onUpdate:modelValue": "{{(v) => {\n  state.chips.values = v\n}}}",
+                                "multiple": true,
+                                "column": true
                               }
                             ],
                             "_id": "53d98fd689073107",
@@ -1428,6 +1645,238 @@ export default {
                       }
                     ],
                     "_id": "53d98fd689073109"
+                  },
+                  {
+                    "is": "v-expansion-panel",
+                    "children": [
+                      {
+                        "is": "v-expansion-panel-title",
+                        "children": {
+                          "default": {
+                            "scope": "$panel",
+                            "children": [
+                              {
+                                "is": "uno-icon",
+                                "src": "https://api.iconify.design/iconoir:window-tabs.svg",
+                                "_id": "534d5b7da4c23208",
+                                "style": {
+                                  "width": "24px",
+                                  "height": "24px",
+                                  "marginRight": "12px"
+                                }
+                              },
+                              {
+                                "is": "span",
+                                "children": "Tabs\n\n",
+                                "_id": "534d5b7da4c23209"
+                              }
+                            ],
+                            "_id": "534d5b7da4c2320a"
+                          }
+                        },
+                        "_id": "534d5b7da4c2320b"
+                      },
+                      {
+                        "is": "v-expansion-panel-text",
+                        "children": [
+                          {
+                            "is": "div",
+                            "children": [
+                              {
+                                "is": "v-tabs",
+                                "children": [
+                                  {
+                                    "is": "v-tab",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Tab 1",
+                                        "_id": "1a68970c9bf2bd0c"
+                                      }
+                                    ],
+                                    "_id": "1a68970c9bf2bd09"
+                                  },
+                                  {
+                                    "is": "v-tab",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Tab 2",
+                                        "_id": "1a68970c9bf2bd0d"
+                                      }
+                                    ],
+                                    "_id": "1a68970c9bf2bd0a"
+                                  }
+                                ],
+                                "_id": "1a68970c9bf2bd08",
+                                "alignTabs": "start",
+                                "modelValue": "{{state.tabs.value}}",
+                                "onUpdate:modelValue": "{{(v) => {\n  state.tabs.value = v\n}}}"
+                              },
+                              {
+                                "is": "v-tabs",
+                                "children": [
+                                  {
+                                    "is": "v-tab",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Tab 1",
+                                        "_id": "1a68970c9bf2bd30"
+                                      }
+                                    ],
+                                    "_id": "1a68970c9bf2bd31"
+                                  },
+                                  {
+                                    "is": "v-tab",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Tab 2",
+                                        "_id": "1a68970c9bf2bd32"
+                                      }
+                                    ],
+                                    "_id": "1a68970c9bf2bd33"
+                                  }
+                                ],
+                                "_id": "1a68970c9bf2bd36",
+                                "alignTabs": "start",
+                                "color": "primary",
+                                "modelValue": "{{state.tabs.value}}",
+                                "onUpdate:modelValue": "{{(v) => {\n  state.tabs.value = v\n}}}"
+                              },
+                              {
+                                "is": "v-tabs",
+                                "children": [
+                                  {
+                                    "is": "v-tab",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Tab 1",
+                                        "_id": "1a68970c9bf2bd29"
+                                      }
+                                    ],
+                                    "_id": "1a68970c9bf2bd2a"
+                                  },
+                                  {
+                                    "is": "v-tab",
+                                    "children": [
+                                      {
+                                        "is": "span",
+                                        "children": "Tab 2",
+                                        "_id": "1a68970c9bf2bd2b"
+                                      }
+                                    ],
+                                    "_id": "1a68970c9bf2bd2c"
+                                  }
+                                ],
+                                "_id": "1a68970c9bf2bd2f",
+                                "alignTabs": "start",
+                                "color": "success",
+                                "grow": true,
+                                "modelValue": "{{state.tabs.value}}",
+                                "onUpdate:modelValue": "{{(v) => {\n  state.tabs.value = v\n}}}"
+                              }
+                            ],
+                            "_id": "534d5b7da4c2320d",
+                            "style": {
+                              "display": "flex",
+                              "gap": "12px 12px",
+                              "flexDirection": "column"
+                            }
+                          },
+                          {
+                            "is": "v-tabs-window",
+                            "children": [
+                              {
+                                "is": "v-tabs-window-item",
+                                "children": [
+                                  {
+                                    "is": "h3",
+                                    "children": "Tab 1 Content",
+                                    "_id": "78a50294b63fcd05"
+                                  }
+                                ],
+                                "_id": "78a50294b63fcd02"
+                              },
+                              {
+                                "is": "v-tabs-window-item",
+                                "children": [
+                                  {
+                                    "is": "h3",
+                                    "children": "Tab 2 Content",
+                                    "_id": "78a50294b63fcd06"
+                                  }
+                                ],
+                                "_id": "78a50294b63fcd03"
+                              }
+                            ],
+                            "_id": "78a50294b63fcd01",
+                            "modelValue": "{{state.tabs.value}}",
+                            "onUpdate:modelValue": "{{(v) => {\n  state.tabs.value = v\n}}}",
+                            "style": {
+                              "paddingTop": "16px",
+                              "paddingBottom": "16px",
+                              "paddingLeft": "16px",
+                              "paddingRight": "16px",
+                              "backgroundColor": "rgba(71, 71, 71, 1)"
+                            }
+                          }
+                        ],
+                        "_id": "534d5b7da4c2320e"
+                      }
+                    ],
+                    "_id": "534d5b7da4c2320f"
+                  },
+                  {
+                    "is": "v-expansion-panel",
+                    "children": [
+                      {
+                        "is": "v-expansion-panel-title",
+                        "children": {
+                          "default": {
+                            "scope": "$panel",
+                            "children": [
+                              {
+                                "is": "uno-icon",
+                                "src": "https://api.iconify.design/mdi:calendar.svg",
+                                "_id": "1a68970c9bf2bd01",
+                                "style": {
+                                  "width": "24px",
+                                  "height": "24px",
+                                  "marginRight": "12px"
+                                }
+                              },
+                              {
+                                "is": "span",
+                                "children": "Date Input",
+                                "_id": "1a68970c9bf2bd02"
+                              }
+                            ],
+                            "_id": "1a68970c9bf2bd03"
+                          }
+                        },
+                        "_id": "1a68970c9bf2bd04"
+                      },
+                      {
+                        "is": "v-expansion-panel-text",
+                        "children": [
+                          {
+                            "is": "div",
+                            "children": [],
+                            "_id": "1a68970c9bf2bd05",
+                            "style": {
+                              "display": "flex",
+                              "gap": "12px 12px",
+                              "flexDirection": "column"
+                            }
+                          }
+                        ],
+                        "_id": "1a68970c9bf2bd06"
+                      }
+                    ],
+                    "_id": "1a68970c9bf2bd07"
                   }
                 ],
                 "_id": "c8ab828199239d03"
