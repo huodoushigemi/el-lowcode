@@ -297,6 +297,7 @@ function dragStart(e: DragEvent) {
 function dragEnd() {
   dragNode = void 0 
   dragged.value = void 0
+  dragRelatedNode = void 0
   designer.draggedId = void 0
   designer.hoverId = void 0
   dragRelatedDir = void 0

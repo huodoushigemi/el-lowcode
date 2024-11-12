@@ -70,7 +70,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get is() { return this.data.is || 'Fragment' }
   get label () { return (this.vslot && `#${this.vslot}`) || this.data['lcd-label'] || this.config?.label || this.data.is }
   get dir() { return isArray(this.data_children) }
-  get vslot() { return isPlainObject(this.parent?.data.children) ? Object.entries(this.parent!.data.children).find(([k, v]) => v == this.data)![0] : void 0 }
+  get vslot() { return isPlainObject(this.parent?.data.children) ? Object.entries(this.parent!.data.children).find(([k, v]) => v == this.data)?.[0] : void 0 }
   get config() {
     if (!this.designerCtx.widgets[this.is]) console.error(`${this.is}: Unable to find a matching el_lowcode configuration of ${this.is}`, this.data)
     return this.designerCtx.widgets[this.is]
