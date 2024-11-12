@@ -3,7 +3,7 @@ import { createApp, provide, defineAsyncComponent, h } from 'vue'
 function create(AsyncComp) {
   let app
   return {
-    mount(container) {
+    mount(container, designerCtx) {
       app = createApp({ provide: { designerCtx }, render: () => h(AsyncComp) })
       app.mount(container)
     },
