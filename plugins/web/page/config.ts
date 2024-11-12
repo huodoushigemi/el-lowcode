@@ -31,7 +31,7 @@ export default {
   props: [
     { lp: 'fit', options: ['contain', 'cover', 'fill', 'scrollY', 'scrollX'] },
     // { is: 'div', class: 'my8', children: '变量' },
-    { lp: 'state', class: 'font-bold', el: { is: State } }
+    // { lp: 'state', class: 'font-bold', el: { is: State } }
   ],
   defaultProps: () => ({
     children: []

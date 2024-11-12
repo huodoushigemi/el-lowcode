@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cloneVNode, computed, defineComponent, h, inject, mergeProps, reactive, ref, shallowRef, watchEffect } from 'vue'
+import { cloneVNode, computed, defineComponent, effectScope, getCurrentScope, h, inject, mergeProps, onBeforeUnmount, onScopeDispose, reactive, ref, shallowRef, watchEffect } from 'vue'
 import type { Ref } from 'vue'
 import { isArray, isObject, isPlainObject } from '@vue/shared'
 import { unrefElement, useEventListener } from '@vueuse/core'
@@ -32,8 +32,8 @@ const Render = createRender({
   defaultIs: 'Fragment',
   processProps: (_props: any) => {
     if (_props[EMPTY]) return _props
-    return wm.get(_props)?.value || wm.set(_props, computed(() => {
-      const node = designer.keyedCtx[_props._id]
+    // return wm.get(_props)?.value || wm.set(_props, computed(() => {
+      const node = designer.keyedCtx[_props._id] // todo
       let { children, ...props } = node.$data
 
       const ctx = setup(_props)
@@ -55,7 +55,7 @@ const Render = createRender({
       props = mergeProps(props, ctx.attrs)
 
       return props
-    })).get(_props).value
+    // })).get(_props).value
     
   }
 })
@@ -69,31 +69,34 @@ function setup(props: BoxProps) {
   const node = designer.keyedCtx[props._id]
   const elRef = designer.keyedCtx[props._id].ref, boxRef = ref(), nillRef = ref()
   
-  useDrop(node, boxRef)
-  useDrag(node)
+  let scope = effectScope()
+  scope.run(() => {
+    useDrop(node, boxRef)
+    useDrag(node)
+    
+    useEventListener(() => node.el, 'mousedown', e => {
+      if (!node.selectable) return
+      if (e.button != 0) return
+      e.stopPropagation()
+      if (designer.dragged) return
+      designer.activeId = props._id
+    })
   
-  useEventListener(() => node.el, 'mousedown', e => {
-    if (!node.selectable) return
-    if (e.button != 0) return
-    e.stopPropagation()
-    if (designer.dragged) return
-    designer.activeId = props._id
-  })
-
-  useEventListener(() => node.el, 'mouseover', e => {
-    if (!node.selectable) return
-    e.stopPropagation()
-    if (designer.dragged) return
-    designer.hoverId = props._id
-  })
-
-  // add attrs
-  watchEffect(() => {
-    const el = node.el
-    if (!el) return
-    el.setAttribute('draggable', (!node.isAbs && !node.drag.disabled) + '')
-    el.setAttribute('_id', node.id)
-    el.setAttribute('lcd-is', node.is)
+    useEventListener(() => node.el, 'mouseover', e => {
+      if (!node.selectable) return
+      e.stopPropagation()
+      if (designer.dragged) return
+      designer.hoverId = props._id
+    })
+  
+    // add attrs
+    watchEffect(() => {
+      const el = node.el
+      if (!el) return
+      el.setAttribute('draggable', (!node.isAbs && !node.drag.disabled) + '')
+      el.setAttribute('_id', node.id)
+      el.setAttribute('lcd-is', node.is)
+    })
   })
 
   const ret = {
@@ -102,6 +105,7 @@ function setup(props: BoxProps) {
     attrs: {
       ref: elRef,
       get key() { return props._id },
+      onVnodeBeforeUnmount: () => (scope.stop(), scope = void 0, propsCtx.delete(props), console.log(111))
     },
   }
 
