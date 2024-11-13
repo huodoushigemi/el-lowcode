@@ -24,12 +24,14 @@
             <selected-layer />
             <!-- resize -->
             <Moveable
+              v-if="designerCtx.active && !designerCtx.active.isRoot && designerCtx.active.el && !designerCtx.active?.inline"
+              :key="designerCtx.active.id"
+              :target="designerCtx.active.el"
               :style="`margin-top: ${-iframeScroll.y}px; margin-left: ${-iframeScroll.x}px`"
-              :target="designerCtx.active?.isRoot || designerCtx.active?.inline ? undefined : designerCtx.active?.el"
               :resizable="true"
               :rotatable="false"
               :origin="false"
-              :renderDirections="resizeDir(designerCtx.active)"
+              :renderDirections="designerCtx.active.isAbs ? undefined : ['e', 'se', 's']"
               :hideDefaultLines="true"
               :snappable="true"
               :snapGap="false"
@@ -209,11 +211,6 @@ function onResize({ target, width, height, transform, drag }) {
 function onResizeEnd(e) {
   triggerRef(toRef(designerCtx.dragged!.data, 'style'))
   designerCtx.draggedId = undefined
-}
-function resizeDir(node?: DisplayNode) {
-  if (!node) return undefined
-  if (node.data.is == 'Page') return []
-  return node.isAbs ? undefined : ['e', 'se', 's']
 }
 
 // 快捷键

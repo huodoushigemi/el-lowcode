@@ -92,7 +92,11 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get el(): HTMLElement | undefined {
     if (this.vslot) return
     let el = unrefElement(this.ref)
-    return el?.nodeType == 3 ? el.nextElementSibling : el
+    // todo
+    // return el?.nodeType == 3 ? el.nextElementSibling : el
+    return el?.nodeType == 3
+      ? el.nextElementSibling == 3 ? void 0 : el.nextElementSibling
+      : el
   }
 
   #$data = computed(() => {

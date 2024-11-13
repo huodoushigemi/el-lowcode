@@ -22,7 +22,7 @@
         <i-bi:arrows-move ref="moveHandle" class="icon" text-16="!" cursor-move />
         <i-solar:copy-line-duotone class="icon" @click="copy" />
 
-        <Moveable :target="active.isRoot ? undefined : designerCtx.active?.el" :dragTarget="unrefElement(moveHandle)" :draggable="true" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
+        <Moveable v-if="active.el" :key="active.id" :target="active.el" :dragTarget="unrefElement(moveHandle)" :draggable="true" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
       </div>
     </div>
 

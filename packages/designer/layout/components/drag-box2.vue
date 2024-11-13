@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { cloneVNode, computed, defineComponent, effectScope, getCurrentScope, h, inject, mergeProps, onBeforeUnmount, onScopeDispose, reactive, ref, shallowRef, watchEffect } from 'vue'
+import { cloneVNode, computed, defineComponent, effectScope, h, inject, mergeProps, reactive, ref, shallowRef, watchEffect } from 'vue'
 import type { Ref } from 'vue'
 import { isArray, isObject, isPlainObject } from '@vue/shared'
-import { unrefElement, useEventListener } from '@vueuse/core'
+import {useEventListener } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
 import { mapValues } from '@el-lowcode/utils'
 import type { DesignerCtx, BoxProps, DisplayNode } from '../interface'
@@ -12,14 +12,14 @@ defineOptions({
 })
 
 const props = defineProps({
-  el: Object
+  root: Object
 })
 
 defineRender(() => {
   return [
     h(DragLine),
     h(DragGuidMask),
-    cloneVNode(Render(props.el!) || h('div'), { 'lcd-root': '' }),
+    cloneVNode(Render(props.root!) || h('div'), { 'lcd-root': '' }),
   ]
 })
 
@@ -32,6 +32,7 @@ const Render = createRender({
   defaultIs: 'Fragment',
   processProps: (_props: any) => {
     if (_props[EMPTY]) return _props
+    
     // return wm.get(_props)?.value || wm.set(_props, computed(() => {
       const node = designer.keyedCtx[_props._id] // todo
       let { children, ...props } = node.$data
@@ -66,11 +67,12 @@ const propsCtx = new WeakMap()
 function setup(props: BoxProps) {
   if (propsCtx.has(props)) return propsCtx.get(props)
   
-  const node = designer.keyedCtx[props._id]
-  const elRef = designer.keyedCtx[props._id].ref, boxRef = ref(), nillRef = ref()
-  
   let scope = effectScope()
-  scope.run(() => {
+
+  return scope.run(() => {
+    const node = designer.keyedCtx[props._id]
+    const elRef = designer.keyedCtx[props._id].ref, boxRef = ref(), nillRef = ref()
+    
     useDrop(node, boxRef)
     useDrag(node)
     
@@ -79,14 +81,14 @@ function setup(props: BoxProps) {
       if (e.button != 0) return
       e.stopPropagation()
       if (designer.dragged) return
-      designer.activeId = props._id
+      designer.activeId = node.id
     })
   
     useEventListener(() => node.el, 'mouseover', e => {
       if (!node.selectable) return
       e.stopPropagation()
       if (designer.dragged) return
-      designer.hoverId = props._id
+      designer.hoverId = node.id
     })
   
     // add attrs
@@ -97,21 +99,25 @@ function setup(props: BoxProps) {
       el.setAttribute('_id', node.id)
       el.setAttribute('lcd-is', node.is)
     })
+
+    let count = 0
+
+    const ret = {
+      boxRef,
+      nillRef,
+      attrs: {
+        ref: elRef,
+        get key() { return node.id },
+        // onVnodeBeforeUnmount: () => --count <= 0 && (scope?.stop(), scope = void 0, propsCtx.delete(props), props = void 0, console.log('bum')),
+        onVnodeBeforeMount: () => count++,
+        onVnodeUnmounted: () => --count <= 0 && (scope?.stop(), scope.effects.length = scope.cleanups.length = 0, scope = void 0, propsCtx.delete(props), console.log('um')),
+      },
+    }
+
+    propsCtx.set(props, ret)
+    
+    return ret
   })
-
-  const ret = {
-    boxRef,
-    nillRef,
-    attrs: {
-      ref: elRef,
-      get key() { return props._id },
-      onVnodeBeforeUnmount: () => (scope.stop(), scope = void 0, propsCtx.delete(props), console.log(111))
-    },
-  }
-
-  propsCtx.set(props, ret)
-  
-  return ret
 }
 
 // 将 absolute 的元素移动到前面

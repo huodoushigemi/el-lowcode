@@ -111,11 +111,13 @@
         },
         render: () => [
           h(ConfigProvider, designerCtx.root, {
-            default: () => h(DragBox, { el: designerCtx.root }),
+            default: () => h(DragBox, { root: designerCtx.root }),
             loading: () => h('h1', { style: 'margin: 0; text-align: center; transform: translate(0, 45vh);' }, 'Loading……')
           }),
-          h(Moveable, {
-            target: !designerCtx.hover?.isRoot && designerCtx.hover?.isAbs ? designerCtx.hover.el : undefined,
+          // free drag
+          designerCtx.hover?.isAbs && designerCtx.hover.el && h(Moveable, {
+            key: designerCtx.hover.id,
+            target: designerCtx.hover.el,
             draggable: true,
             origin: false,
             hideDefaultLines: true,
