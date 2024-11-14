@@ -184,9 +184,9 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   override remove() {
-    this.designerCtx.activeId = this.designerCtx.rootCtx.id
-    this.designerCtx.hoverId = this.designerCtx.rootCtx.id
-    this.designerCtx.draggedId = void 0
+    // this.designerCtx.activeId = this.designerCtx.rootCtx.id
+    // this.designerCtx.hoverId = this.designerCtx.rootCtx.id
+    // this.designerCtx.draggedId = void 0
     this.designerCtx = this.ref = this.ref.value = void
     super.remove()
   }
