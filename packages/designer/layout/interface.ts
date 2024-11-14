@@ -68,47 +68,53 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   get id () { return this.data._id }
   get is() { return this.data.is || 'Fragment' }
-  get label () { return (this.vslot && `#${this.vslot}`) || this.data['lcd-label'] || this.config?.label || this.data.is }
+  get label () { return this.data.is }
   get dir() { return isArray(this.data_children) }
-  get vslot() { return isPlainObject(this.parent?.data.children) ? Object.entries(this.parent!.data.children).find(([k, v]) => v == this.data)?.[0] : void 0 }
-  get config() {
-    if (!this.designerCtx.widgets[this.is]) console.error(`${this.is}: Unable to find a matching el_lowcode configuration of ${this.is}`, this.data)
-    return this.designerCtx.widgets[this.is]
-  }
+  // get vslot() { return isPlainObject(this.parent?.data.children) ? Object.entries(this.parent!.data.children).find(([k, v]) => v == this.data)?.[0] : void 0 }
+  // get config() {
+  //   if (!this.designerCtx.widgets[this.is]) console.error(`${this.is}: Unable to find a matching el_lowcode configuration of ${this.is}`, this.data)
+  //   return this.designerCtx.widgets[this.is]
+  // }
 
-  #data_children = computed(() => {
+  // #data_children = computed(() => {
+  //   return (
+  //     isArray(this.$data.children) ? this.$data.children :
+  //     isPlainObject(this.$data.children) ? Object.values(this.$data.children) :
+  //     void 0
+  //   )
+  // })
+  // get data_children () {
+  //   return this.#data_children.value
+  // }
+  get data_children() {
     return (
       isArray(this.$data.children) ? this.$data.children :
       isPlainObject(this.$data.children) ? Object.values(this.$data.children) :
       void 0
     )
-  })
-  get data_children () {
-    return this.#data_children.value
   }
 
   ref = ref()
 
   get el(): HTMLElement | undefined {
-    if (this.vslot) return
+    // if (this.vslot) return
     let el = unrefElement(this.ref)
-    // todo
-    // return el?.nodeType == 3 ? el.nextElementSibling : el
     return el?.nodeType == 3
       ? el.nextElementSibling == 3 ? void 0 : el.nextElementSibling
       : el
   }
 
-  #$data = computed(() => {
-    let { children, ...props } = this.data
-    // 移除值为 undefuned 的属性
-    props = JSON.parse(JSON.stringify(props))
-    props.children = children
-    props = processProps(props, this.designerCtx.pageCtx)
-    if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(this.data, this.designerCtx)) as any
-    return props
-  })
-  get $data() { return this.#$data.value as BoxProps }
+  // #$data = computed(() => {
+  //   let { children, ...props } = this.data
+  //   // 移除值为 undefuned 的属性
+  //   props = JSON.parse(JSON.stringify(props))
+  //   props.children = children
+  //   props = processProps(props, this.designerCtx.pageCtx)
+  //   if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(this.data, this.designerCtx)) as any
+  //   return props
+  // })
+  // get $data() { return this.#$data.value as BoxProps }
+  get $data() { return this.data as BoxProps }
 
   // 自由拖拽
   get isAbs() { return this.$data.style?.position == 'absolute' }
@@ -123,24 +129,24 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   get inline() { return this.el ? window.getComputedStyle(this.el).display == 'inline' : false }
 
-  get slots() {
-    if (this.config?.slots) return solveOptions(this.config.slots)
-    if (this.config?.vSlots) return solveOptions(this.config.vSlots)
-  }
+  // get slots() {
+  //   if (this.config?.slots) return solveOptions(this.config.slots)
+  //   if (this.config?.vSlots) return solveOptions(this.config.vSlots)
+  // }
 
-  get vSlots() { return isPlainObject(this.$data.children) ? Object.keys(this.$data.children) : void 0 }
-  set vSlots(v) {
-    const vslots =
-      isArray(this.data.children) ? { default: { children: this.data.children } } :
-      isPlainObject(this.data.children) ? this.data.children :
-      {}
-    if (!v?.length) {
-      this.data.children = vslots.default.children
-    } else {
-      const defaults = Object.fromEntries(v.map(e => [e, { children: [] }]))
-      this.data.children = pick({ ...defaults, ...vslots }, [...v, 'default'])
-    }
-  }
+  // get vSlots() { return isPlainObject(this.$data.children) ? Object.keys(this.$data.children) : void 0 }
+  // set vSlots(v) {
+  //   const vslots =
+  //     isArray(this.data.children) ? { default: { children: this.data.children } } :
+  //     isPlainObject(this.data.children) ? this.data.children :
+  //     {}
+  //   if (!v?.length) {
+  //     this.data.children = vslots.default.children
+  //   } else {
+  //     const defaults = Object.fromEntries(v.map(e => [e, { children: [] }]))
+  //     this.data.children = pick({ ...defaults, ...vslots }, [...v, 'default'])
+  //   }
+  // }
 
   // 自由布局
   get isAbsLayout() { return !!this.$data['data-absolute-layout'] }
@@ -149,9 +155,10 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get isRoot() { return !this.parent }
 
   get drag(): WidgetDrag {
-    const drag = { ...this.config?.drag, ...this.data['lcd-drag'], ...this.$data['lcd-drag'] }
-    drag.disabled ||= !this.selectable
-    return drag
+    // const drag = { ...this.config?.drag, ...this.data['lcd-drag'], ...this.$data['lcd-drag'] }
+    // drag.disabled ||= !this.selectable
+    // return drag
+    return {}
   }
   get selectable() { return this.$data['lcd-selectable'] !== false && this.data['lcd-selectable'] !== false }
 
@@ -177,10 +184,16 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   override remove() {
-    return this.vslot
-      ? (delete this.parent!.data.children![this.vslot], this.parent = void 0, this)
-      : super.remove()
+    this.designerCtx.activeId = this.designerCtx.rootCtx.id
+    this.designerCtx.hoverId = this.designerCtx.rootCtx.id
+    this.designerCtx.draggedId = void 0
+    this.designerCtx = this.ref = this.ref.value = void
+    super.remove()
   }
+
+  // override doRemove() {
+  //   this.vslot ? (delete this.parent!.data.children![this.vslot]) : super.doRemove()
+  // }
 }
 
 export interface DesignerCtx {

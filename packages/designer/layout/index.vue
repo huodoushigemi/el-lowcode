@@ -1,16 +1,16 @@
 <template>
   <div class="designer" flex="~ col" @keydown="onKeydown" v-key-dir="{ source: 'target' }">
     <div flex flex-1 h0>
-      <Activitybar v-model="activeView" :list="activitybars" />
+      <!-- <Activitybar v-model="activeView" :list="activitybars" /> -->
 
       <KeepAlive>
-        <Views v-if="activeView" :activitybar="activitybars.find(e => e.id == activeView)" :key="activeView" w300 />
+        <Views v-if="activeView && activitybars.find(e => e.id == activeView)" :activitybar="activitybars.find(e => e.id == activeView)" :key="activeView" w300 />
       </KeepAlive>
 
       <div relative flex-1 w0 hfull>
         <!-- Canvas Viewport -->
          <!-- v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y"  -->
-        <infinite-viewer wfull hfull overflow-hidden style="background: var(--vs-panel-bg)" @click="designerCtx.activeId = undefined" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
+        <!-- <infinite-viewer wfull hfull overflow-hidden style="background: var(--vs-panel-bg)" @click="designerCtx.activeId = undefined" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop> -->
           <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @click.stop @mouseleave="designerCtx.dragged || (designerCtx.hoverId = undefined)">
             <iframe
               :key="srcurl + srcdoc + root._id"
@@ -21,9 +21,9 @@
               @vue:beforeUnmount="({ el }) => el.contentWindow.app?.unmount()"
             />
 
-            <selected-layer />
+            <!-- <selected-layer /> -->
             <!-- resize -->
-            <Moveable
+            <!-- <Moveable
               v-if="designerCtx.active && !designerCtx.active.isRoot && designerCtx.active.el && !designerCtx.active?.inline"
               :key="designerCtx.active.id"
               :target="designerCtx.active.el"
@@ -41,30 +41,29 @@
               :useMutationObserver="true"
               @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd"
               @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd"
-            />
+            /> -->
           </div>
-        </infinite-viewer>
+        <!-- </infinite-viewer> -->
 
         <!-- Breadcrumb -->
-        <div class="absolute top-20 left-35 flex aic text-13 lh-32" @mouseleave="designerCtx.hoverId = void 0">
+        <!-- <div class="absolute top-20 left-35 flex aic text-13 lh-32" @mouseleave="designerCtx.hoverId = void 0">
           <div v-for="(node, i, len) in designerCtx.active?.path" class="vs-breadcrumb-li" @click="designerCtx.activeId = node.id" @mouseenter="designerCtx.hoverId = node.id">
             <div class="max-w150 truncate">{{ node.label }}</div>
             <div v-if="node != designerCtx.active" mx4> > </div>
           </div>
-        </div>
+        </div> -->
       </div>
 
       
       <!-- Setting -->
-      <aside w256 b-l="1px solid [--el-border-color]" overflow-overlay>
+      <!-- <aside w256 b-l="1px solid [--el-border-color]" overflow-overlay>
         <setting-panel />
       </aside>
-      <!-- <state-drawer /> -->
 
-      <ExportCode ref="exportCode" />
+      <ExportCode ref="exportCode" /> -->
     </div>
 
-    <Statusbar>
+    <!-- <Statusbar>
       <div flex aic bg="#3655b5" class="li ml0! pr8" @click="designerCtx.commands.emit('lcd.toggleDevice')">
         <i-material-symbols:devices-outline wa mr4 h20 />
         {{ devices.find(e => eq(e.value, viewer.size.v))?.label || (`${parseInt(viewer.size.v.width)} × ${parseInt(viewer.size.v.height)}`) }}
@@ -78,7 +77,7 @@
         <input type="range" v-model.number="viewer.zoom.v" min="60" max="250" />
         <InputNumber v-model="viewer.zoom.v" noUnit :min="60" :max="250" class="w50 h20" />
       </div>
-    </Statusbar>
+    </Statusbar> -->
   </div>
 </template>
 
@@ -166,7 +165,8 @@ const viewer = {
 console.log(window.designerCtx = designerCtx)
 
 // 时间旅行
-const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500, capacity: 20 })
+// const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500, capacity: 20 })
+const undo = () => {}, redo = () => {}
 
 const disposes = [
   designerCtx.commands.on('lcd.toggleDevice', async () => viewer.size.v = await quickPick({ items: devices, value: viewer.size.v })),
@@ -185,7 +185,7 @@ const exportCode = ref()
 const iframeScroll = computed(() => reactive(useWindowScroll({ window: designerCtx.rootCtx.el?.ownerDocument.defaultView })))
 
 const activitybars = computed(() => designerCtx.plugins.flatMap(e => e.contributes.activitybar || []))
-const activeView = ref()
+const activeView = ref('widgets')
 
 // moveable
 function onDragStart(e) {
@@ -225,7 +225,8 @@ function onKeydown(e: KeyboardEvent) {
     [() => key == 'delete', () => {
       if (!designerCtx.active) return
       if (designerCtx.active.isRoot) {
-        designerCtx.root.children = []
+        // designerCtx.root.children = []
+        designerCtx.active.empty()
       } else {
         designerCtx.active.remove()
       }

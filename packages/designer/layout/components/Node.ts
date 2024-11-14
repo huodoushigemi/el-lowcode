@@ -4,7 +4,7 @@ import { remove } from '@vue/shared'
 export abstract class Node<T = any> {
   #data: Ref<T>
   get data() { return this.#data.value }
-  // set data(v) { this.#data.value = v }
+  set data(v) { this.#data.value = v }
 
   abstract get id(): string
   abstract get label(): string
@@ -32,13 +32,14 @@ export abstract class Node<T = any> {
   #index = computed(() => this.parent!.children?.indexOf(this) ?? 0)
   get index(): number { return this.#index.value }
 
-  #wm = new WeakMap<any, typeof this>()
+  // #wm = new WeakMap<any, typeof this>()
   
   #children = computed(() => {
-    const wm = this.root.#wm
+    // const wm = this.root.#wm
     return this.data_children?.map(e => {
       // @ts-ignore
-      const node = wm.get(e) ?? wm.set(e, new this.constructor(e)).get(e)!
+      // const node = wm.get(e) ?? wm.set(e, new this.constructor(e)).get(e)!
+      const node = new this.constructor(e)
       node.parent = this
       return node
     })
@@ -50,13 +51,27 @@ export abstract class Node<T = any> {
   get siblings(): typeof this[] { return this.parent?.children?.filter(e => this != e) || [] }
 
   remove() {
-    return this.parent ? (remove(this.parent.data_children!, this.data), this.parent = void 0, this) : this
+    this.empty()
+    this.doRemove()
+    // this.root.#wm.delete(this.data) // 删除根节点中的映射关系.
+    this.parent = void 0
+    this.parent = this.data = void 0
+    this.#data = this.#parent = this.#parents = this.#deep = this.#index = this.#children = void 0
+    return this
+  }
+
+  doRemove() {
+    this.parent && remove(this.parent.data_children!, this.data)
+  }
+
+  empty() {
+    this.children?.forEach(e => e.remove())
   }
 
   insertBefore(node: Node, refer?: Node) {
     if (node == refer) return
     if (!this.insertable(node)) throw ''
-    node.remove()
+    node.doRemove()
     node.parent = this
     this.data_children!.splice(refer ? refer.index : this.data_children!.length, 0, node.data)
   }
