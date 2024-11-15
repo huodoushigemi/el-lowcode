@@ -5,7 +5,6 @@ import { Arrable, Assign, deepClone, Fnable, Obj, pick, set, uid } from '@el-low
 import { processProps } from 'el-lowcode'
 import { solveOptions } from 'el-form-render'
 import { Node } from './components/Node'
-import { sloveConfig } from '../components/_utils'
 import { parseTransform } from './components/utils'
 
 export interface Widget {
@@ -70,11 +69,11 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get is() { return this.data.is || 'Fragment' }
   get label () { return this.data.is }
   get dir() { return isArray(this.data_children) }
-  // get vslot() { return isPlainObject(this.parent?.data.children) ? Object.entries(this.parent!.data.children).find(([k, v]) => v == this.data)?.[0] : void 0 }
-  // get config() {
-  //   if (!this.designerCtx.widgets[this.is]) console.error(`${this.is}: Unable to find a matching el_lowcode configuration of ${this.is}`, this.data)
-  //   return this.designerCtx.widgets[this.is]
-  // }
+  get vslot() { return isPlainObject(this.parent?.data.children) ? Object.entries(this.parent!.data.children).find(([k, v]) => v == this.data)?.[0] : void 0 }
+  get config() {
+    if (!this.designerCtx.widgets[this.is]) console.error(`${this.is}: Unable to find a matching el_lowcode configuration of ${this.is}`, this.data)
+    return this.designerCtx.widgets[this.is]
+  }
 
   // #data_children = computed(() => {
   //   return (
@@ -104,17 +103,16 @@ export abstract class DisplayNode extends Node<BoxProps> {
       : el
   }
 
-  // #$data = computed(() => {
-  //   let { children, ...props } = this.data
-  //   // 移除值为 undefuned 的属性
-  //   props = JSON.parse(JSON.stringify(props))
-  //   props.children = children
-  //   props = processProps(props, this.designerCtx.pageCtx)
-  //   if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(this.data, this.designerCtx)) as any
-  //   return props
-  // })
-  // get $data() { return this.#$data.value as BoxProps }
-  get $data() { return this.data as BoxProps }
+  #$data = computed(() => {
+    let { children, ...props } = this.data
+    // 移除值为 undefuned 的属性
+    props = JSON.parse(JSON.stringify(props))
+    props.children = children
+    props = processProps(props, this.designerCtx.pageCtx)
+    if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(this.data, this.designerCtx)) as any
+    return props
+  })
+  get $data() { return this.#$data.value as BoxProps }
 
   // 自由拖拽
   get isAbs() { return this.$data.style?.position == 'absolute' }
@@ -129,24 +127,24 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   get inline() { return this.el ? window.getComputedStyle(this.el).display == 'inline' : false }
 
-  // get slots() {
-  //   if (this.config?.slots) return solveOptions(this.config.slots)
-  //   if (this.config?.vSlots) return solveOptions(this.config.vSlots)
-  // }
+  get slots() {
+    if (this.config?.slots) return solveOptions(this.config.slots)
+    if (this.config?.vSlots) return solveOptions(this.config.vSlots)
+  }
 
-  // get vSlots() { return isPlainObject(this.$data.children) ? Object.keys(this.$data.children) : void 0 }
-  // set vSlots(v) {
-  //   const vslots =
-  //     isArray(this.data.children) ? { default: { children: this.data.children } } :
-  //     isPlainObject(this.data.children) ? this.data.children :
-  //     {}
-  //   if (!v?.length) {
-  //     this.data.children = vslots.default.children
-  //   } else {
-  //     const defaults = Object.fromEntries(v.map(e => [e, { children: [] }]))
-  //     this.data.children = pick({ ...defaults, ...vslots }, [...v, 'default'])
-  //   }
-  // }
+  get vSlots() { return isPlainObject(this.$data.children) ? Object.keys(this.$data.children) : void 0 }
+  set vSlots(v) {
+    const vslots =
+      isArray(this.data.children) ? { default: { children: this.data.children } } :
+      isPlainObject(this.data.children) ? this.data.children :
+      {}
+    if (!v?.length) {
+      this.data.children = vslots.default.children
+    } else {
+      const defaults = Object.fromEntries(v.map(e => [e, { children: [] }]))
+      this.data.children = pick({ ...defaults, ...vslots }, [...v, 'default'])
+    }
+  }
 
   // 自由布局
   get isAbsLayout() { return !!this.$data['data-absolute-layout'] }
@@ -155,10 +153,9 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get isRoot() { return !this.parent }
 
   get drag(): WidgetDrag {
-    // const drag = { ...this.config?.drag, ...this.data['lcd-drag'], ...this.$data['lcd-drag'] }
-    // drag.disabled ||= !this.selectable
-    // return drag
-    return {}
+    const drag = { ...this.config?.drag, ...this.data['lcd-drag'], ...this.$data['lcd-drag'] }
+    drag.disabled ||= !this.selectable
+    return drag
   }
   get selectable() { return this.$data['lcd-selectable'] !== false && this.data['lcd-selectable'] !== false }
 
@@ -184,16 +181,13 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   override remove() {
-    // this.designerCtx.activeId = this.designerCtx.rootCtx.id
-    // this.designerCtx.hoverId = this.designerCtx.rootCtx.id
-    // this.designerCtx.draggedId = void 0
-    this.designerCtx = this.ref = this.ref.value = void
-    super.remove()
+    this.designerCtx.activeId = this.previousSibling?.id ?? this.nextSibling?.id ?? this.parent?.id
+    return super.remove()
   }
 
-  // override doRemove() {
-  //   this.vslot ? (delete this.parent!.data.children![this.vslot]) : super.doRemove()
-  // }
+  override doRemove() {
+    this.vslot ? (delete this.parent!.data.children![this.vslot]) : super.doRemove()
+  }
 }
 
 export interface DesignerCtx {

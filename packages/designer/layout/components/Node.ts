@@ -32,19 +32,28 @@ export abstract class Node<T = any> {
   #index = computed(() => this.parent!.children?.indexOf(this) ?? 0)
   get index(): number { return this.#index.value }
 
-  // #wm = new WeakMap<any, typeof this>()
+  #wm = new WeakMap<any, typeof this>()
   
-  #children = computed(() => {
-    // const wm = this.root.#wm
+  // #children = computed(() => {
+  //   // const wm = this.root.#wm
+  //   return this.data_children?.map(e => {
+  //     // @ts-ignore
+  //     // const node = wm.get(e) ?? wm.set(e, new this.constructor(e)).get(e)!
+  //     const node = new this.constructor(e)
+  //     node.parent = this
+  //     return node
+  //   })
+  // })
+  // get children() { return this.#children.value }
+  get children() {
+    const wm = this.root.#wm
     return this.data_children?.map(e => {
       // @ts-ignore
-      // const node = wm.get(e) ?? wm.set(e, new this.constructor(e)).get(e)!
-      const node = new this.constructor(e)
+      const node = wm.get(e) ?? wm.set(e, new this.constructor(e)).get(e)!
       node.parent = this
       return node
     })
-  })
-  get children() { return this.#children.value }
+  }
 
   get previousSibling(): typeof this | undefined { return this.parent?.children![this.index - 1] }
   get nextSibling(): typeof this | undefined { return this.parent?.children![this.index + 1] }
@@ -53,10 +62,8 @@ export abstract class Node<T = any> {
   remove() {
     this.empty()
     this.doRemove()
-    // this.root.#wm.delete(this.data) // 删除根节点中的映射关系.
+    this.root.#wm.delete(this.data)
     this.parent = void 0
-    this.parent = this.data = void 0
-    this.#data = this.#parent = this.#parents = this.#deep = this.#index = this.#children = void 0
     return this
   }
 

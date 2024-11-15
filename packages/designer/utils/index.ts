@@ -1,8 +1,8 @@
-import { computed, MaybeRefOrGetter, reactive, Ref, ref, toValue, watch, watchEffect, watchSyncEffect } from 'vue'
+import { computed, MaybeRefOrGetter, reactive, Ref, ref, toValue, watch } from 'vue'
 import { isArray, isObject, remove } from '@vue/shared'
-import { Awaitable, computedAsync, Fn } from '@vueuse/core'
+import { computedAsync, Fn } from '@vueuse/core'
 import { useTransformer } from 'el-form-render'
-import { keyBy, toArr, treeUtils, uid, unFn } from '@el-lowcode/utils'
+import { keyBy, toArr, treeUtils, unFn } from '@el-lowcode/utils'
 import { BoxProps, Contributes, DesignerCtx, DisplayNode, ExtensionContext, UserWidget, Widget } from '../layout/interface'
 
 export * as genCode from './genCode'

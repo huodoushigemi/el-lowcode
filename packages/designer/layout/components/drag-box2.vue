@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { cloneVNode, computed, defineComponent, effectScope, h, inject, mergeProps, reactive, ref, shallowRef, watchEffect } from 'vue'
 import type { Ref } from 'vue'
-import { isArray, isObject, isPlainObject } from '@vue/shared'
+import { isArray, isObject } from '@vue/shared'
 import {useEventListener } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
 import { mapValues } from '@el-lowcode/utils'
@@ -17,8 +17,8 @@ const props = defineProps({
 
 defineRender(() => {
   return [
-    // h(DragLine),
-    // h(DragGuidMask),
+    h(DragLine),
+    h(DragGuidMask),
     cloneVNode(Render(props.root!) || h('div'), { 'lcd-root': '' }),
   ]
 })
@@ -65,51 +65,14 @@ const Render = createRender({
 const propsCtx = new WeakMap()
 
 function setup(props: BoxProps) {
-  let node = designer.keyedCtx[props._id]
-  let boxRef = ref()
-  
-  return {
-    boxRef,
-    attrs: {
-      ref: node.ref,
-      key: node.id,
-      onVnodeMounted() {
-        const el = node.el
-        useDrop(node, boxRef)
-        useDrag(node)
-
-        el?.addEventListener('mousedown', e => {
-          if (!node.selectable) return
-          if (e.button != 0) return
-          e.stopPropagation()
-          if (designer.dragged) return
-          designer.activeId = node.id
-        })
-      
-        el?.addEventListener('mouseover', e => {
-          if (!node.selectable) return
-          e.stopPropagation()
-          if (designer.dragged) return
-          designer.hoverId = node.id
-        })
-
-        el?.setAttribute('draggable', (!node.isAbs && !node.drag.disabled) + '')
-        el?.setAttribute('_id', node.id)
-        el?.setAttribute('lcd-is', node.is)
-      },
-      onVnodeUnmounted() {
-        node = boxRef = boxRef.value = void 0
-      }
-    },
-  }
   if (propsCtx.has(props)) return propsCtx.get(props)
   
   let scope = effectScope()
-
+  
   return scope.run(() => {
-    const node = designer.keyedCtx[props._id]
-    const elRef = designer.keyedCtx[props._id].ref, boxRef = ref(), nillRef = ref()
-    
+    let node = designer.keyedCtx[props._id]
+    let elRef = designer.keyedCtx[props._id].ref, boxRef = ref()
+
     useDrop(node, boxRef)
     useDrag(node)
     
@@ -139,20 +102,28 @@ function setup(props: BoxProps) {
 
     let count = 0
 
-    const ret = {
+    let ret = {
       boxRef,
-      nillRef,
       attrs: {
         ref: elRef,
         get key() { return node.id },
-        // onVnodeBeforeUnmount: () => --count <= 0 && (scope?.stop(), scope = void 0, propsCtx.delete(props), props = void 0, console.log('bum')),
         onVnodeBeforeMount: () => count++,
-        onVnodeUnmounted: () => --count <= 0 && (scope?.stop(), scope.effects.length = scope.cleanups.length = 0, scope = void 0, propsCtx.delete(props), console.log('um')),
+        onVnodeUnmounted: () => {
+          if (--count) return
+          count = void 0
+          scope?.stop()
+          scope = void 0
+          node = void 0
+          boxRef.value = void 0
+          boxRef = void 0
+          propsCtx.delete(props)
+          console.log('um');
+        },
       },
     }
 
     propsCtx.set(props, ret)
-    
+
     return ret
   })
 }
@@ -177,8 +148,7 @@ function useDrop(node: DisplayNode, emptyRef: Ref<HTMLElement>) {
   const firstEl = () => node.children![0]?.el ?? emptyRef.value
   const target = () => node.children ? firstEl()?.parentElement : void 0
   let x = 0, y = 0
-  target()?.addEventListener('dragover', e => {
-  // useEventListener(target, 'dragover', e => {
+  useEventListener(target, 'dragover', e => {
     if (!dragNode) return
     if (!node.insertable(dragNode)) return
 
@@ -272,8 +242,7 @@ function useDrop(node: DisplayNode, emptyRef: Ref<HTMLElement>) {
     }
   })
 
-  target()?.addEventListener('drop', e => {
-  // useEventListener(target, 'drop', async (e) => {
+  useEventListener(target, 'drop', async (e) => {
     if (dragNode && dragNode == dragRelatedNode) return dragEnd()
     if (!dragNode) return
     e.stopPropagation()
@@ -308,10 +277,7 @@ function useDrop(node: DisplayNode, emptyRef: Ref<HTMLElement>) {
 }
 
 function useDrag(node: DisplayNode) {
-  const draggable = () => !node.isAbs && !node.drag.disabled
-  const target = () => draggable() ? node.el : void 0
-  target()?.addEventListener('dragstart', e => {
-  // useEventListener(target, 'dragstart', e => {
+  useEventListener(() => node.el && !node.isAbs && !node.drag.disabled ? node.el : void 0, 'dragstart', e => {
     e.stopPropagation()
     dragStart(e)
     e.dataTransfer!.setDragImage(new Image(), 0, 0)
