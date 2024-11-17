@@ -37,11 +37,11 @@ const Render = createRender({
       const node = designer.keyedCtx[_props._id] // todo
       let { children, ...props } = node.$data
 
-      const ctx = setup(_props)
+      const ctx = setup(node)
 
       if (isArray(children)) {
         if (!children.length) {
-          children = [{ ref: ctx.boxRef, is: 'div', class: 'empty-placeholder', [EMPTY]: 1 } as any]
+          children = [{ ref: ctx.boxRef, is: 'div', class: 'empty-placeholder', key: NaN, [EMPTY]: 1 } as any]
         }
         else {
           sortAbsolute(children)
@@ -61,17 +61,17 @@ const Render = createRender({
   }
 })
 
+let count = 0
 
 const propsCtx = new WeakMap()
 
-function setup(props: BoxProps) {
-  if (propsCtx.has(props)) return propsCtx.get(props)
+function setup(node: DisplayNode) {
+  if (propsCtx.has(node)) return propsCtx.get(node)
   
   let scope = effectScope()
   
   return scope.run(() => {
-    let node = designer.keyedCtx[props._id]
-    let elRef = designer.keyedCtx[props._id].ref, boxRef = ref()
+    let elRef = node.ref, boxRef = ref()
 
     useDrop(node, boxRef)
     useDrag(node)
@@ -100,29 +100,29 @@ function setup(props: BoxProps) {
       el.setAttribute('lcd-is', node.is)
     })
 
-    let count = 0
+    let flag = 0
 
     let ret = {
       boxRef,
       attrs: {
         ref: elRef,
-        get key() { return node.id },
-        onVnodeBeforeMount: () => count++,
+        key: count++,
+        // _id: node.id,
+        // draggable: true,
+        // 'lcd-is': node.is,
+        onVnodeBeforeMount: () => flag++,
         onVnodeUnmounted: () => {
-          if (--count) return
-          count = void 0
+          if (--flag) return
+          propsCtx.delete(node)
           scope?.stop()
-          scope = void 0
+          node = scope = boxRef = boxRef.value = elRef = elRef.value = ret = void 0
           node = void 0
-          boxRef.value = void 0
-          boxRef = void 0
-          propsCtx.delete(props)
           console.log('um');
         },
       },
     }
 
-    propsCtx.set(props, ret)
+    propsCtx.set(node, ret)
 
     return ret
   })
@@ -232,7 +232,6 @@ function useDrop(node: DisplayNode, emptyRef: Ref<HTMLElement>) {
           style = { left: x, top: y, width, height }
         }
       }
-      
 
       Object.assign(dragLineStyle, {
         transform: `translate(${style.left}px, ${style.top}px)`,
@@ -243,9 +242,10 @@ function useDrop(node: DisplayNode, emptyRef: Ref<HTMLElement>) {
   })
 
   useEventListener(target, 'drop', async (e) => {
+    e.stopPropagation()
+    e.preventDefault()
     if (dragNode && dragNode == dragRelatedNode) return dragEnd()
     if (!dragNode) return
-    e.stopPropagation()
 
     const el = e.currentTarget as HTMLElement
     const doc = el.ownerDocument
@@ -259,7 +259,8 @@ function useDrop(node: DisplayNode, emptyRef: Ref<HTMLElement>) {
       nill.remove()
       // 计算坐标
       dragNode.isAbs = true
-      dragNode.xy = [e.x - x, e.y - y]
+      dragNode.x = e.x - x
+      dragNode.y = e.y - y
       node.insertBefore(dragNode)
     }
     // 排序布局

@@ -6,6 +6,7 @@ const styleEl = Object.assign(document.createElement('style'), {
   innerHTML: `
     .v-expansion-panel-title__overlay { pointer-events: none; }
     .v-navigation-drawer__scrim { position: fixed }
+    .v-progress-linear { transition: none }
   `
 })
 

@@ -18,7 +18,7 @@
               :src="srcurl"
               :srcdoc="srcdoc"
               @vue:mounted="({ el }) => el.contentWindow.designerCtx = designerCtx"
-              @vue:beforeUnmount="({ el }) => el.contentWindow.app?.unmount()"
+              @vue:beforeUnmount="({ el }) => el.contentWindow.unmount?.()"
             />
 
             <selected-layer />
@@ -169,7 +169,7 @@ const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, {
 
 const disposes = [
   designerCtx.commands.on('lcd.toggleDevice', async () => viewer.size.v = await quickPick({ items: devices, value: viewer.size.v })),
-  designerCtx.commands.on('lcd.clear', () => root.value = initial()),
+  designerCtx.commands.on('lcd.clear', () => (designerCtx.rootCtx.el?.ownerDocument.defaultView.unmount(), designerCtx.rootCtx.remove(), root.value = initial())),
   designerCtx.commands.on('lcd.undo', undo),
   designerCtx.commands.on('lcd.redo', redo),
   designerCtx.commands.on('lcd.download', () => exportCode.value.vis = true),
@@ -222,13 +222,7 @@ function onKeydown(e: KeyboardEvent) {
   const kb = [
     // 按 Delete 删除当前选中元素
     [() => key == 'delete', () => {
-      if (!designerCtx.active) return
-      if (designerCtx.active.isRoot) {
-        // designerCtx.root.children = []
-        designerCtx.active.empty()
-      } else {
-        designerCtx.active.remove()
-      }
+      designerCtx.active?.remove()
     }],
     // ↑ → ↓ ←
     [() => ['arrowup', 'arrowleft', 'arrowdown', 'arrowright'].includes(key), () => {

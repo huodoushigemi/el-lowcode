@@ -698,4 +698,89 @@ export const widgets = [
       // children: 
     })
   },
+
+  {
+    is: 'v-progress-linear',
+    label: 'progress',
+    category: 'Feedback',
+    vSlots: ['default'],
+    props: [
+      vmodel(),
+      radios('color', COLORS),
+      // radios('bg-color', COLORS),
+      bool('striped'),
+      bool('indeterminate'),
+      num('max', 100),
+      radios('rounded', [['—'], 'lg', 'xl']),
+    ]
+  },
+
+  {
+    is: 'v-alert',
+    label: 'alert',
+    category: 'Feedback',
+    vSlots: ['append', 'append', 'title'],
+    props: [
+      radios('type', [['—'], 'success', 'info', 'warning', 'error']),
+      radios('variant', ['text', ['flat'], 'elevated', 'tonal', 'outlined', 'plain']),
+      radios('color', COLORS),
+      radios('border', [['—'], 'top', 'start', 'bottom', 'end']),
+      bool('closable'),
+      radios('density', [['—'], 'comfortable', 'compact']),
+      radios('rounded', [['—'], 'lg', 'xl']),
+    ],
+    defaultProps: () => ({
+      type: 'success',
+      children: {
+        title: { children: [Text('Success alert')] },
+        default: { children: [Text('More text description')] }
+      }
+    })
+  },
+
+  {
+    is: 'v-timeline',
+    label: 'timeline',
+    category: 'Feedback',
+    drag: { from: ['v-timeline-item'] },
+    props: [
+      radios('side', [['—'], 'end', 'start']),
+      radios('density', [['—'], 'comfortable', 'compact']),
+      radios('direction', ['horizontal', ['vertical']]),
+      // radios('align', ['start', ['center']]),
+      radios('dot-color', COLORS),
+      bool('fill-dot'),
+      
+      radios('line-color', COLORS),
+      num('line-inset'),
+      num('line-thickness'),
+
+    ],
+    defaultProps: (ctx) => ({
+      children: [
+        ctx.newProps('v-timeline-item'),
+        ctx.newProps('v-timeline-item'),
+        ctx.newProps('v-timeline-item'),
+      ]
+    })
+  },
+
+  {
+    is: 'v-timeline-item',
+    label: 'timeline-item',
+    category: 'Feedback',
+    hidden: true,
+    drag: { to: ['v-timeline'] },
+    vSlots: ['icon', 'opposite'],
+    props: [
+      radios('dot-color', COLORS),
+      bool('fill-dot'),
+      // radios('line-color', COLORS),
+      num('line-inset'),
+      // radios('side', [['—'], 'end', 'start']),
+    ],
+    defaultProps: (ctx) => ({
+      children: []
+    })
+  },
 ]

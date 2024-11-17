@@ -118,8 +118,6 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get isAbs() { return this.$data.style?.position == 'absolute' }
   set isAbs(bool) { this.data.style = bool ? normalizeStyle([this.data.style, { position: 'absolute', margin: 0 }]) : normalizeStyle([this.data.style, { position: void 0, transform: void 0, margin: void 0 }]) }
 
-  get xy() { return parseTransform(this.data.style?.transform) }
-  set xy([x, y]) { set(this.data, 'style.transform', `translate(${x}px, ${y}px)`) }
   get x() { return parseTransform(this.data.style?.transform)[0] }
   set x(v) { set(this.data, 'style.transform', `translate(${v}px, ${this.y}px)`) }
   get y() { return parseTransform(this.data.style?.transform)[1] }
@@ -182,7 +180,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   override remove() {
     this.designerCtx.activeId = this.previousSibling?.id ?? this.nextSibling?.id ?? this.parent?.id
-    return super.remove()
+    this.isRoot ? this.empty() : super.remove()
   }
 
   override doRemove() {

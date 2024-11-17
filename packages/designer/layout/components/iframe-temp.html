@@ -140,7 +140,11 @@
       app.use(ElLowcode)
       app.mount(document.body)
 
-      window.app = app
+      app._context.reload = void 0
+
+      window.unmount = () => {
+        app.unmount()
+      }
     </script>
   </head>
   <body>
