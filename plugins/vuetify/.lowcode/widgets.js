@@ -1,8 +1,7 @@
-import { colorNames } from "chalk"
-
 const ICONS = ['search', 'arrow_forward', 'downloading', 'attach_file']
 const SIZES = ['normal', 'small', 'large']
 const COLORS = [['—'], 'primary', 'success', 'warning', 'error']
+// const LOCATIONS = [['TL', 'top start'], ['TR', 'top end'], ['BL', 'bottom start'], ['BR', 'bottom end']]
 
 const str = (lp, extra) => ({ lp, displayValue: '', ...extra })
 const options = (lp, options, displayValue, extra) => ({ lp, options, displayValue, ...extra })
@@ -245,7 +244,7 @@ export const widgets = [
       _href,
     ],
     defaultProps: (ctx) => ({
-      children: [Text('BUTTON')]
+      children: [Text('Button')]
     })
   },
 
@@ -372,7 +371,7 @@ export const widgets = [
   {
     is: 'v-list',
     label: 'list',
-    drag: { from: ['v-list-item'] },
+    // drag: { from: ['v-list-item'] },
     // vSlots: ['header', 'subheader', 'prepend', 'append'],
     props: [
       grid2([vmodel('selected'), bool('selectable')]),
@@ -775,12 +774,123 @@ export const widgets = [
     props: [
       radios('dot-color', COLORS),
       bool('fill-dot'),
-      // radios('line-color', COLORS),
       num('line-inset'),
-      // radios('side', [['—'], 'end', 'start']),
     ],
     defaultProps: (ctx) => ({
       children: []
     })
   },
+
+  {
+    is: 'v-tooltip',
+    label: 'tooltip',
+    category: 'Feedback',
+    vSlots: ['activator'],
+    props: [
+      vmodel(),
+      radios('location', ['start', ['end'], 'top', 'bottom'])
+    ],
+    defaultProps: () => ({
+      children: {
+        activator: { children: [{ is: 'v-btn', icon: true, children: [Text('G')] }] },
+        default: { children: [Text('Tooltip')] }
+      }
+    }),
+    devProps: () => ({
+      'lcd-selectable': false
+    })
+  },
+
+  {
+    is: 'v-fab',
+    label: 'fab',
+    category: 'Feedback',
+    props: [
+      // radios('position', [['—'], 'fixed', 'absolute', 'sticky']),
+      radios('variant', ['text', ['elevated'], 'tonal', 'outlined', 'plain']),
+      checkboxs('location', ['start', 'end', 'top', 'bottom'], [], { get: v => v?.split(' '), set: v => v.join(' ') }),
+      radios('color', COLORS),
+      bool('absolute'),
+      bool('offset'),
+      bool('block'),
+      bool('border'),
+      bool('disabled'),
+      bool('loading'),
+      bool('icon'),
+      radios('rounded', [['—'], 'lg', 'xl']),
+      radios('size', [['xs', 'x-small'], ['sm', 'small'], ['md'], ['lg', 'x-large']]),
+      num('elevation'), 
+      _href,
+    ],
+    defaultProps: () => ({
+      icon: true,
+      children: [{ is: 'uno-icon', src: 'https://api.iconify.design/mdi:plus.svg', style: { width: '24px', height: '24px' } }]
+    }),
+  },
+
+  {
+    is: 'v-skeleton-loader',
+    label: 'skeleton',
+    category: 'Feedback',
+    props: [
+      options('type', ['card', 'card-avatar','image', 'text', 'sentences', 'paragraph', 'article', 'chip', 'table', 'ossein', 'actions'], [], { get: v => v?.split(','), set: v => v.filter(e => e).join(','), el: { multiple: true } }),
+      radios('color', COLORS),
+      num('elevation'),
+    ],
+    defaultProps: () => ({
+      type: 'image,sentences'
+    })
+  },
+
+  {
+    is: 'v-badge',
+    label: 'badge',
+    category: 'Feedback',
+    props: props => [
+      grid2([str('content'), num('max')]),
+      radios('color', COLORS),
+      bool('dot'),
+      bool('inline'),
+      props.inline || grid2([num('offset-x'), num('offset-y')]),
+      props.inline || radios('location', [['TL', 'top start'], ['TR', 'top end'], ['BL', 'bottom start'], ['BR', 'bottom end']], 'top end'),
+    ],
+    defaultProps: () => ({
+      color: 'error',
+      max: 99,
+      content: 100,
+      children: [
+        { is: 'v-btn', icon: true, children: [{ is: 'uno-icon', src: 'https://api.iconify.design/mdi:message-outline.svg', style: { width: '24px', height: '24px' } }] }
+      ]
+    }),
+    devProps: props => ({
+      children: props.inline ? (props.children = void 0) : (props.children ??= [])
+    })
+  },
+  
+  {
+    is: 'v-speed-dial',
+    label: 'speed-dial',
+    vSlots: ['activator'],
+    props: [
+      vmodel(),
+      checkboxs('location', ['start', 'end', 'top', 'bottom'], [], { get: v => v?.split(' '), set: v => v.join(' ') }),
+      options('transition', ['scale-transition', 'slide-x-transition', 'slide-y-transition', 'slide-x-reverse-transition', 'slide-y-reverse-transition']),
+      bool('open-on-hover'),
+      bool('disabled'),
+    ],
+    defaultProps: () => ({
+      location: 'right center',
+      children: {
+        activator: { children: [{ is: 'v-btn', icon: true, children: [{ is: 'uno-icon', src: 'https://api.iconify.design/mdi:plus.svg', style: { width: '24px', height: '24px' } }] }] },
+        default: { children: [
+          { is: 'v-btn', icon: true, children: [{ is: 'uno-icon', src: 'https://api.iconify.design/mdi:plus.svg', style: { width: '24px', height: '24px' } }] },
+          { is: 'v-btn', icon: true, children: [{ is: 'uno-icon', src: 'https://api.iconify.design/mdi:plus.svg', style: { width: '24px', height: '24px' } }] },
+          { is: 'v-btn', icon: true, children: [{ is: 'uno-icon', src: 'https://api.iconify.design/mdi:plus.svg', style: { width: '24px', height: '24px' } }] },
+        ] }
+      }
+    }),
+    devProps: () => ({
+      'lcd-selectable': false
+    })
+  }
 ]
