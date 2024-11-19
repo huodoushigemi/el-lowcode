@@ -15,7 +15,7 @@ export default {
     app.component('AbsoluteLayout', (props, { slots }) => h('div', props, slots))
     app.component('VHtml', (props) => h('div', { ...props }))
 
-    app.component('Fragment', (props, { slots }) => slots.default())
+    app.component('Fragment', (props, { slots }) => [slots.default()])
     
     app.component('wangeditor', defineAsyncComponent(() => import('./wangeditor.vue')))
     app.component('tiptap', defineAsyncComponent(() => import('./.lowcode/Tiptap.vue')))

@@ -67,7 +67,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   get id () { return this.data._id }
   get is() { return this.data.is || 'Fragment' }
-  get label () { return this.data.is }
+  get label () { return (this.vslot && `#${this.vslot}`) || this.data['lcd-label'] || this.config?.label || this.data.is }
   get dir() { return isArray(this.data_children) }
   get vslot() { return isPlainObject(this.parent?.data.children) ? Object.entries(this.parent!.data.children).find(([k, v]) => v == this.data)?.[0] : void 0 }
   get config() {
@@ -96,7 +96,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   ref = ref()
 
   get el(): HTMLElement | undefined {
-    // if (this.vslot) return
+    if (this.vslot) return
     let el = unrefElement(this.ref)
     return el?.nodeType == 3
       ? el.nextElementSibling == 3 ? void 0 : el.nextElementSibling
@@ -120,10 +120,22 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   get x() { return parseTransform(this.data.style?.transform)[0] }
   set x(v) { set(this.data, 'style.transform', `translate(${v}px, ${this.y}px)`) }
+
   get y() { return parseTransform(this.data.style?.transform)[1] }
   set y(v) { set(this.data, 'style.transform', `translate(${this.x}px, ${v}px)`) }
 
-  get inline() { return this.el ? window.getComputedStyle(this.el).display == 'inline' : false }
+  get inline() { return this.el ? window.getComputedStyle(this.el).display.includes('inline') : false }
+  set inline(v) { v ? set(this.data, 'style.display', (this.flex && 'inline-flex') || (this.grid || 'inline-grid')) : void 0 }
+
+  get flex() { return this.el ? window.getComputedStyle(this.el).display.includes('flex') : false }
+  set flex(v) { v ? set(this.data, 'style.display', this.inline ? 'inline-flex' : 'flex') : void 0 }
+
+  get grid() { return this.el ? window.getComputedStyle(this.el).display.includes('grid') : false }
+  set grid(v) { v ? set(this.data, 'style.display', this.inline ? 'inline-grid' : 'grid') : void 0 }
+
+  // 自由布局
+  get isAbsLayout() { return !!this.$data['data-absolute-layout'] }
+  set isAbsLayout(bool) { this.data['data-absolute-layout'] = bool || void 0 }
 
   get slots() {
     if (this.config?.slots) return solveOptions(this.config.slots)
@@ -143,10 +155,6 @@ export abstract class DisplayNode extends Node<BoxProps> {
       this.data.children = pick({ ...defaults, ...vslots }, [...v, 'default'])
     }
   }
-
-  // 自由布局
-  get isAbsLayout() { return !!this.$data['data-absolute-layout'] }
-  set isAbsLayout(bool) { this.data['data-absolute-layout'] = bool || void 0 }
 
   get isRoot() { return !this.parent }
 

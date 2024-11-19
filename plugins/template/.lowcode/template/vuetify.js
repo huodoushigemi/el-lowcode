@@ -33,6 +33,12 @@ export default {
       slider: {
         values: [10, 30],
       },
+      rate: {
+        value: 3,
+      },
+      otp: {
+        value: '',
+      },
       chips: {
         value: '1',
         values: ['Work', 'Vacation'],
@@ -193,7 +199,7 @@ export default {
                             children: [
                               {
                                 is: 'uno-icon',
-                                src: 'https://api.iconify.design/iconoir:mouse-button-left.svg',
+                                src: 'https://api.iconify.design/mdi:card-text.svg',
                                 _id: 'd695ffb4ed696802',
                                 style: {
                                   width: '24px',
@@ -203,7 +209,7 @@ export default {
                               },
                               {
                                 is: 'span',
-                                children: 'Button',
+                                children: 'Card\n\n',
                                 _id: 'c8ab828199239d08',
                                 style: {},
                               },
@@ -217,6 +223,170 @@ export default {
                         is: 'v-expansion-panel-text',
                         children: [
                           {
+                            is: 'v-card',
+                            children: [
+                              {
+                                is: 'v-card-item',
+                                children: [
+                                  {
+                                    is: 'v-card-title',
+                                    children: [
+                                      {
+                                        is: 'span',
+                                        children: 'Card Title',
+                                        _id: 'cbd137b7c272aa09',
+                                      },
+                                    ],
+                                    _id: 'cbd137b7c272aa05',
+                                  },
+                                  {
+                                    is: 'v-card-subtitle',
+                                    children: [
+                                      {
+                                        is: 'span',
+                                        children: 'Card subtitle secondary text',
+                                        _id: 'cbd137b7c272aa0a',
+                                      },
+                                    ],
+                                    _id: 'cbd137b7c272aa06',
+                                  },
+                                ],
+                                _id: 'cbd137b7c272aa02',
+                              },
+                              {
+                                is: 'v-card-text',
+                                children: [
+                                  {
+                                    is: 'span',
+                                    children: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                                    _id: 'cbd137b7c272aa07',
+                                  },
+                                ],
+                                _id: 'cbd137b7c272aa03',
+                              },
+                              {
+                                is: 'v-card-actions',
+                                children: [
+                                  {
+                                    is: 'v-btn',
+                                    color: 'primary',
+                                    children: [
+                                      {
+                                        is: 'span',
+                                        children: 'More',
+                                        _id: 'cbd137b7c272aa0b',
+                                      },
+                                    ],
+                                    _id: 'cbd137b7c272aa08',
+                                  },
+                                ],
+                                _id: 'cbd137b7c272aa04',
+                              },
+                            ],
+                            _id: 'cbd137b7c272aa01',
+                            elevation: 16,
+                          },
+                          {
+                            is: 'v-card',
+                            children: [
+                              {
+                                is: 'img',
+                                src: 'https://cdn.vuetifyjs.com/images/cards/sunshine.jpg',
+                                style: {
+                                  height: '180px',
+                                  width: '100%',
+                                },
+                                _id: 'cbd137b7c272aa17',
+                                loading: 'eager',
+                              },
+                              {
+                                is: 'v-card-title',
+                                children: [
+                                  {
+                                    is: 'span',
+                                    children: 'Top western road trips',
+                                    _id: 'cbd137b7c272aa0c',
+                                  },
+                                ],
+                                _id: 'cbd137b7c272aa0d',
+                              },
+                              {
+                                is: 'v-card-subtitle',
+                                children: [
+                                  {
+                                    is: 'span',
+                                    children: '1,000 miles of wonder',
+                                    _id: 'cbd137b7c272aa0e',
+                                  },
+                                ],
+                                _id: 'cbd137b7c272aa0f',
+                              },
+                              {
+                                is: 'v-card-actions',
+                                children: [
+                                  {
+                                    is: 'v-btn',
+                                    color: 'warning',
+                                    children: [
+                                      {
+                                        is: 'span',
+                                        children: 'More',
+                                        _id: 'cbd137b7c272aa13',
+                                      },
+                                    ],
+                                    _id: 'cbd137b7c272aa14',
+                                  },
+                                ],
+                                _id: 'cbd137b7c272aa15',
+                              },
+                            ],
+                            _id: 'cbd137b7c272aa16',
+                            style: {
+                              marginTop: '20px',
+                            },
+                            variant: 'tonal',
+                          },
+                        ],
+                        _id: 'c8ab828199239d06',
+                      },
+                    ],
+                    _id: 'c8ab828199239d04',
+                  },
+                  {
+                    is: 'v-expansion-panel',
+                    children: [
+                      {
+                        is: 'v-expansion-panel-title',
+                        children: {
+                          default: {
+                            scope: '$panel',
+                            children: [
+                              {
+                                is: 'uno-icon',
+                                src: 'https://api.iconify.design/iconoir:mouse-button-left.svg',
+                                _id: 'af7dbd78886ada01',
+                                style: {
+                                  width: '24px',
+                                  height: '24px',
+                                  marginRight: '12px',
+                                },
+                              },
+                              {
+                                is: 'span',
+                                children: 'Button',
+                                _id: 'af7dbd78886ada02',
+                                style: {},
+                              },
+                            ],
+                            _id: 'af7dbd78886ada03',
+                          },
+                        },
+                        _id: 'af7dbd78886ada04',
+                      },
+                      {
+                        is: 'v-expansion-panel-text',
+                        children: [
+                          {
                             is: 'div',
                             children: [
                               {
@@ -225,10 +395,10 @@ export default {
                                   {
                                     is: 'span',
                                     children: 'Default',
-                                    _id: '75e036b47287370e',
+                                    _id: 'af7dbd78886ada05',
                                   },
                                 ],
-                                _id: '75e036b47287370d',
+                                _id: 'af7dbd78886ada06',
                               },
                               {
                                 is: 'v-btn',
@@ -236,10 +406,10 @@ export default {
                                   {
                                     is: 'span',
                                     children: 'Text',
-                                    _id: '75e036b472873711',
+                                    _id: 'af7dbd78886ada07',
                                   },
                                 ],
-                                _id: '75e036b472873712',
+                                _id: 'af7dbd78886ada08',
                                 variant: 'text',
                               },
                               {
@@ -248,10 +418,10 @@ export default {
                                   {
                                     is: 'span',
                                     children: 'Tonal',
-                                    _id: '75e036b472873717',
+                                    _id: 'af7dbd78886ada09',
                                   },
                                 ],
-                                _id: '75e036b472873718',
+                                _id: 'af7dbd78886ada0a',
                                 variant: 'tonal',
                               },
                               {
@@ -260,10 +430,10 @@ export default {
                                   {
                                     is: 'span',
                                     children: 'Outlined',
-                                    _id: '75e036b472873715',
+                                    _id: 'af7dbd78886ada0b',
                                   },
                                 ],
-                                _id: '75e036b472873716',
+                                _id: 'af7dbd78886ada0c',
                                 variant: 'outlined',
                               },
                               {
@@ -272,10 +442,10 @@ export default {
                                   {
                                     is: 'span',
                                     children: 'Plain',
-                                    _id: '75e036b472873713',
+                                    _id: 'af7dbd78886ada0d',
                                   },
                                 ],
-                                _id: '75e036b472873714',
+                                _id: 'af7dbd78886ada0e',
                                 variant: 'plain',
                               },
                               {
@@ -284,10 +454,10 @@ export default {
                                   {
                                     is: 'span',
                                     children: 'Block & Border & Rounded & Small',
-                                    _id: '4b8938a3b2c60201',
+                                    _id: 'af7dbd78886ada0f',
                                   },
                                 ],
-                                _id: '4b8938a3b2c60202',
+                                _id: 'af7dbd78886ada10',
                                 block: true,
                                 border: true,
                                 rounded: 'xl',
@@ -298,11 +468,11 @@ export default {
                                 children: [
                                   {
                                     is: 'v-icon',
-                                    _id: '4b8938a3b2c60205',
+                                    _id: 'af7dbd78886ada11',
                                     icon: 'mdi-account',
                                   },
                                 ],
-                                _id: '4b8938a3b2c60204',
+                                _id: 'af7dbd78886ada12',
                                 icon: true,
                                 size: 'x-small',
                               },
@@ -311,11 +481,11 @@ export default {
                                 children: [
                                   {
                                     is: 'v-icon',
-                                    _id: '4b8938a3b2c6020a',
+                                    _id: 'af7dbd78886ada13',
                                     icon: 'mdi-plus',
                                   },
                                 ],
-                                _id: '4b8938a3b2c6020b',
+                                _id: 'af7dbd78886ada14',
                                 icon: true,
                                 size: 'small',
                               },
@@ -324,11 +494,11 @@ export default {
                                 children: [
                                   {
                                     is: 'v-icon',
-                                    _id: '4b8938a3b2c60208',
+                                    _id: 'af7dbd78886ada15',
                                     icon: '$vuetify',
                                   },
                                 ],
-                                _id: '4b8938a3b2c60209',
+                                _id: 'af7dbd78886ada16',
                                 icon: true,
                               },
                               {
@@ -336,16 +506,16 @@ export default {
                                 children: [
                                   {
                                     is: 'v-icon',
-                                    _id: '4b8938a3b2c60206',
+                                    _id: 'af7dbd78886ada17',
                                     icon: 'mdi-open-in-new',
                                   },
                                 ],
-                                _id: '4b8938a3b2c60207',
+                                _id: 'af7dbd78886ada18',
                                 icon: true,
                                 size: 'x-large',
                               },
                             ],
-                            _id: '75e036b47287370c',
+                            _id: 'af7dbd78886ada19',
                             style: {
                               display: 'flex',
                               gap: '12px 12px',
@@ -353,10 +523,10 @@ export default {
                             },
                           },
                         ],
-                        _id: 'c8ab828199239d06',
+                        _id: 'af7dbd78886ada1a',
                       },
                     ],
-                    _id: 'c8ab828199239d04',
+                    _id: 'af7dbd78886ada1b',
                   },
                   {
                     is: 'v-expansion-panel',
@@ -1426,7 +1596,50 @@ export default {
                         children: [
                           {
                             is: 'div',
-                            children: [],
+                            children: [
+                              {
+                                is: 'v-rating',
+                                activeColor: 'primary',
+                                _id: '50b017e161d87e02',
+                                modelValue: '{{state.rate.value}}',
+                                'onUpdate:modelValue': '{{(v) => {\n  state.rate.value = v\n}}}',
+                                children: {},
+                                hover: true,
+                              },
+                              {
+                                is: 'v-rating',
+                                activeColor: 'success',
+                                _id: '97946b49784e8503',
+                                modelValue: '{{state.rate.value}}',
+                                'onUpdate:modelValue': '{{(v) => {\n  state.rate.value = v\n}}}',
+                                children: {},
+                                density: 'compact',
+                                hover: true,
+                              },
+                              {
+                                is: 'v-rating',
+                                activeColor: 'warning',
+                                _id: '97946b49784e8502',
+                                modelValue: '{{state.rate.value}}',
+                                'onUpdate:modelValue': '{{(v) => {\n  state.rate.value = v\n}}}',
+                                children: {},
+                                density: 'compact',
+                                hover: true,
+                                halfIncrements: true,
+                                length: 6,
+                              },
+                              {
+                                is: 'v-rating',
+                                activeColor: 'error',
+                                _id: '97946b49784e8501',
+                                modelValue: '{{state.rate.value}}',
+                                'onUpdate:modelValue': '{{(v) => {\n  state.rate.value = v\n}}}',
+                                children: {},
+                                density: 'compact',
+                                hover: true,
+                                length: 7,
+                              },
+                            ],
                             _id: 'b6d2da7d9d43340e',
                             style: {
                               display: 'flex',
@@ -1439,6 +1652,88 @@ export default {
                       },
                     ],
                     _id: 'b6d2da7d9d433410',
+                  },
+                  {
+                    is: 'v-expansion-panel',
+                    children: [
+                      {
+                        is: 'v-expansion-panel-title',
+                        children: {
+                          default: {
+                            scope: '$panel',
+                            children: [
+                              {
+                                is: 'uno-icon',
+                                src: 'https://api.iconify.design/material-symbols:shield-lock.svg',
+                                _id: '97946b49784e8504',
+                                style: {
+                                  width: '24px',
+                                  height: '24px',
+                                  marginRight: '12px',
+                                },
+                              },
+                              {
+                                is: 'span',
+                                children: 'OTP Input',
+                                _id: '97946b49784e8505',
+                              },
+                            ],
+                            _id: '97946b49784e8506',
+                          },
+                        },
+                        _id: '97946b49784e8507',
+                      },
+                      {
+                        is: 'v-expansion-panel-text',
+                        children: [
+                          {
+                            is: 'div',
+                            children: [
+                              {
+                                is: 'v-otp-input',
+                                _id: '97946b49784e8517',
+                                modelValue: '{{state.otp.value}}',
+                                'onUpdate:modelValue': '{{(v) => {\n  state.otp.value = v\n}}}',
+                                variant: 'underlined',
+                                autofocus: true,
+                                baseColor: 'warning',
+                                placeholder: '.',
+                              },
+                              {
+                                is: 'v-otp-input',
+                                _id: '97946b49784e8510',
+                                modelValue: '{{state.otp.value}}',
+                                'onUpdate:modelValue': '{{(v) => {\n  state.otp.value = v\n}}}',
+                                baseColor: 'primary',
+                              },
+                              {
+                                is: 'v-otp-input',
+                                _id: '97946b49784e8515',
+                                modelValue: '{{state.otp.value}}',
+                                'onUpdate:modelValue': '{{(v) => {\n  state.otp.value = v\n}}}',
+                                variant: 'filled',
+                                baseColor: 'success',
+                              },
+                              {
+                                is: 'v-otp-input',
+                                _id: '97946b49784e8514',
+                                modelValue: '{{state.otp.value}}',
+                                'onUpdate:modelValue': '{{(v) => {\n  state.otp.value = v\n}}}',
+                                variant: 'solo-filled',
+                              },
+                            ],
+                            _id: '97946b49784e850c',
+                            style: {
+                              display: 'flex',
+                              gap: '12px 12px',
+                              flexDirection: 'column',
+                            },
+                          },
+                        ],
+                        _id: '97946b49784e850d',
+                      },
+                    ],
+                    _id: '97946b49784e850e',
                   },
                   {
                     is: 'v-expansion-panel',

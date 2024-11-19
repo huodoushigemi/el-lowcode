@@ -228,8 +228,43 @@ export const widgets = [
   },
 
   {
+    is: 'v-card',
+    label: 'card',
+    category: 'Container',
+    vSlots: ['prepend', 'append', 'title', 'subtitle', 'actions'],
+    props: [
+      radios('variant', ['flat', 'text', ['elevated'], 'tonal', 'outlined', 'plain']),
+      radios('color', COLORS),
+      bool('border'),
+      radios('density', [['—'], 'comfortable', 'compact']),
+      bool('disabled'),
+      bool('loading'),
+      str('image'),
+      radios('rounded', [['—'], 'lg', 'xl']),
+      num('elevation'),
+      _href,
+    ],
+    defaultProps: () => ({
+      children: [
+        { is: 'v-card-item', children: [
+          { is: 'v-card-title', children: [Text('Card Title')] },
+          { is: 'v-card-subtitle', children: [Text('Card subtitle secondary text')] },
+        ] },
+        { is: 'v-card-text', children: [Text('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.')] },
+        { is: 'v-card-actions', children: [{ is: 'v-btn', color: 'primary', children: [Text('More')] }] },
+      ]
+    })
+  },
+  { is: 'v-card-item', hidden: true },
+  { is: 'v-card-title', hidden: true },
+  { is: 'v-card-subtitle', hidden: true },
+  { is: 'v-card-text', hidden: true },
+  { is: 'v-card-actions', hidden: true },
+
+  {
     is: 'v-btn',
     label: 'button',
+    category: 'Container',
     props: [
       radios('color', COLORS),
       bool('block'),
@@ -308,6 +343,7 @@ export const widgets = [
   {
     is: 'v-expansion-panels',
     label: 'expands',
+    category: 'Container',
     drag: { from: ['v-expansion-panel'] },
     props: [
       vmodel(),
@@ -330,6 +366,7 @@ export const widgets = [
   {
     is: 'v-expansion-panel',
     drag: { to: ['v-expansion-panels'], from: [] },
+    category: 'Container',
     hidden: true,
     props: [
       str('value'),
@@ -346,6 +383,7 @@ export const widgets = [
 
   {
     is: 'v-expansion-panel-title',
+    category: 'Container',
     hidden: true,
     // vSlots: [['default', ['expanded']], ['actions', ['expanded']]],
     vSlots: ['actions'],
@@ -371,6 +409,7 @@ export const widgets = [
   {
     is: 'v-list',
     label: 'list',
+    category: 'Container',
     // drag: { from: ['v-list-item'] },
     // vSlots: ['header', 'subheader', 'prepend', 'append'],
     props: [
@@ -406,6 +445,7 @@ export const widgets = [
   {
     is: 'v-list-item',
     label: 'list-item',
+    category: 'Container',
     vSlots: ['prepend', 'append', 'title'],
     props: [
       str('value'),
@@ -432,6 +472,7 @@ export const widgets = [
   {
     is: 'v-text-field',
     label: 'input',
+    category: 'Form',
     vSlots: ['prepend-inner', 'append-inner'],
     props: [
       vmodel(),
@@ -457,6 +498,7 @@ export const widgets = [
   {
     is: 'v-select',
     label: 'select',
+    category: 'Form',
     vSlots: ['prepend-inner', 'append-inner'],
     props: [
       vmodel(),
@@ -492,6 +534,7 @@ export const widgets = [
   {
     is: 'v-date-input',
     label: 'date-input',
+    category: 'Form',
     vSlots: ['prepend-inner', 'append-inner'],
     props: [
       vmodel(),
@@ -527,6 +570,7 @@ export const widgets = [
   {
     is: 'v-checkbox',
     label: 'checkbox',
+    category: 'Form',
     vSlots: ['label'],
     props: [
       vmodel(),
@@ -551,6 +595,7 @@ export const widgets = [
   {
     is: 'v-radio-group',
     label: 'radios',
+    category: 'Form',
     drag: { from: ['v-radio'] },
     vSlots: ['label'],
     props: [
@@ -575,6 +620,7 @@ export const widgets = [
   {
     is: 'v-radio',
     label: 'radios',
+    category: 'Form',
     drag: { from: ['v-radio-group'] },
     vSlots: ['label'],
     hidden: true,
@@ -595,6 +641,7 @@ export const widgets = [
   {
     is: 'v-switch',
     label: 'switch',
+    category: 'Form',
     vSlots: ['label'],
     props: [
       vmodel(),
@@ -620,6 +667,7 @@ export const widgets = [
   {
     is: 'v-slider',
     label: 'slider',
+    category: 'Form',
     vSlots: ['label', 'append', 'append'],
     props: props => [
       vmodel(),
@@ -650,6 +698,7 @@ export const widgets = [
   {
     is: 'v-range-slider',
     label: 'slider',
+    category: 'Form',
     hidden: true,
     vSlots: ['label', 'append', 'append'],
     props: props => [
@@ -681,10 +730,12 @@ export const widgets = [
   {
     is: 'v-rating',
     label: 'rate',
+    category: 'Form',
     vSlots: ['item', 'item-label'],
     props: [
       vmodel(),
       radios('active-color', COLORS),
+      bool('hover'),
       bool('clearable'),
       bool('disabled'),
       radios('density', [['—', void 0], 'comfortable', 'compact']),
@@ -694,7 +745,30 @@ export const widgets = [
     ],
     defaultProps: () => ({
       activeColor: 'primary',
+      hover: true,
       // children: 
+    })
+  },
+
+  {
+    is: 'v-otp-input',
+    label: 'otp-input',
+    category: 'Form',
+    vSlots: ['item', 'item-label'],
+    props: [
+      vmodel(),
+      bool('autofocus'),
+      radios('variant', [['outlined'], 'underlined', 'filled', 'solo', 'solo-filled']),
+      radios('color', COLORS),
+      radios('base-color', COLORS),
+      num('length', 6),
+      str('placeholder'),
+      bool('disabled'),
+      radios('type', [['number'], 'text', 'password']),
+      // todo rules
+    ],
+    defaultProps: () => ({
+
     })
   },
 
