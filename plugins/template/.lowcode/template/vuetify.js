@@ -346,6 +346,196 @@ export default {
                             },
                             variant: 'tonal',
                           },
+                          {
+                            is: 'v-card',
+                            children: [
+                              {
+                                is: 'div',
+                                children: [
+                                  {
+                                    is: 'img',
+                                    src: 'https://cdn.vuetifyjs.com/images/cards/docks.jpg',
+                                    style: {
+                                      'object-fit': 'cover',
+                                      position: 'absolute',
+                                      width: '100%',
+                                      height: '100%',
+                                    },
+                                    _id: '8d4f9fb469d67c23',
+                                    loading: 'eager',
+                                  },
+                                  {
+                                    is: 'v-card-title',
+                                    children: [
+                                      {
+                                        is: 'span',
+                                        children: 'Top 10 Australian beaches',
+                                        _id: '8d4f9fb469d67c1f',
+                                      },
+                                    ],
+                                    _id: '8d4f9fb469d67c1b',
+                                    style: {
+                                      position: 'absolute',
+                                      bottom: '0',
+                                      width: '100%',
+                                    },
+                                  },
+                                ],
+                                _id: '8d4f9fb469d67c25',
+                                style: {
+                                  position: 'relative',
+                                  height: '200px',
+                                },
+                              },
+                              {
+                                is: 'v-card-subtitle',
+                                children: [
+                                  {
+                                    is: 'span',
+                                    children: 'Number 10',
+                                    _id: '8d4f9fb469d67c20',
+                                  },
+                                ],
+                                _id: '8d4f9fb469d67c1c',
+                                style: {
+                                  paddingTop: '16px',
+                                },
+                              },
+                              {
+                                is: 'v-card-text',
+                                children: [
+                                  {
+                                    is: 'span',
+                                    children: 'Whitehaven Beach',
+                                    _id: '8d4f9fb469d67c1d',
+                                  },
+                                  {
+                                    is: 'span',
+                                    children: 'Whitsunday Island, Whitsunday Islands',
+                                    _id: '9a07ad8ea4cc9301',
+                                  },
+                                ],
+                                _id: '8d4f9fb469d67c19',
+                                style: {
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                },
+                              },
+                              {
+                                is: 'v-card-actions',
+                                children: [
+                                  {
+                                    is: 'v-btn',
+                                    color: 'orange',
+                                    children: [
+                                      {
+                                        is: 'span',
+                                        children: 'Share',
+                                        _id: '8d4f9fb469d67c21',
+                                      },
+                                    ],
+                                    _id: '8d4f9fb469d67c1e',
+                                  },
+                                  {
+                                    is: 'v-btn',
+                                    color: 'orange',
+                                    children: [
+                                      {
+                                        is: 'span',
+                                        children: 'Expolre',
+                                        _id: '8d4f9fb469d67c26',
+                                      },
+                                    ],
+                                    _id: '8d4f9fb469d67c27',
+                                  },
+                                ],
+                                _id: '8d4f9fb469d67c1a',
+                              },
+                            ],
+                            _id: '8d4f9fb469d67c17',
+                            style: {
+                              marginTop: '20px',
+                            },
+                            elevation: 16,
+                          },
+                          {
+                            is: 'v-card',
+                            children: [
+                              {
+                                is: 'div',
+                                children: [
+                                  {
+                                    is: 'v-card-title',
+                                    children: [
+                                      {
+                                        is: 'span',
+                                        children: 'Supermodel',
+                                        _id: '8d4f9fb469d67c02',
+                                      },
+                                    ],
+                                    _id: '8d4f9fb469d67c03',
+                                  },
+                                  {
+                                    is: 'v-card-subtitle',
+                                    children: [
+                                      {
+                                        is: 'span',
+                                        children: 'Foster the People',
+                                        _id: '8d4f9fb469d67c04',
+                                      },
+                                    ],
+                                    _id: '8d4f9fb469d67c05',
+                                  },
+                                  {
+                                    is: 'v-card-actions',
+                                    children: [
+                                      {
+                                        is: 'v-btn',
+                                        children: [
+                                          {
+                                            is: 'span',
+                                            children: 'Start Radio',
+                                            _id: '8d4f9fb469d67c06',
+                                          },
+                                        ],
+                                        _id: '8d4f9fb469d67c07',
+                                        variant: 'outlined',
+                                        size: 'small',
+                                        style: {
+                                          marginLeft: '8px',
+                                        },
+                                      },
+                                    ],
+                                    _id: '8d4f9fb469d67c08',
+                                  },
+                                ],
+                                _id: '8d4f9fb469d67c0b',
+                                style: {
+                                  flex: '1',
+                                  width: '0px',
+                                },
+                              },
+                              {
+                                is: 'img',
+                                src: 'https://cdn.vuetifyjs.com/images/cards/foster.jpg',
+                                style: {
+                                  height: '125px',
+                                  marginTop: '12px',
+                                  marginLeft: '12px',
+                                  marginRight: '12px',
+                                  marginBottom: '12px',
+                                },
+                                _id: '8d4f9fb469d67c0c',
+                                loading: 'eager',
+                              },
+                            ],
+                            _id: '8d4f9fb469d67c09',
+                            style: {
+                              marginTop: '20px',
+                              display: 'flex',
+                            },
+                            color: '#1F7087',
+                          },
                         ],
                         _id: 'c8ab828199239d06',
                       },
