@@ -12,14 +12,7 @@ function create(AsyncComp) {
 }
 
 export function activate(designerCtx) {
-  // designerCtx.viewRenderer['git-explorer'] = create(defineAsyncComponent(() => import('./views/GitExplorerView.vue')))
-  designerCtx.viewRenderer['comp-tree'] = create(defineAsyncComponent(() => import('./views/CompTreeView.vue')))
-  designerCtx.viewRenderer['schema-sourcecode'] = create(defineAsyncComponent(() => import('./views/Schema.vue')))
-  designerCtx.viewRenderer['plugin-market'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
-  designerCtx.viewRenderer['plugin-market.views.all'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
-  designerCtx.viewRenderer['plugin-market.views.installed'] = create(defineAsyncComponent(() => import('./views/PluginsView.vue')))
-  designerCtx.viewRenderer['widgets'] = create(defineAsyncComponent(() => import('./views/CompView2.vue')))
-  // designerCtx.customEditorRenderer['schema.json.editor'] = create(() => )
+  
 }
 
 export function deactivate(designer) {
@@ -39,6 +32,11 @@ export const contributes = (designerCtx) => ({
     //   icon: 'https://api.iconify.design/vscode-icons:default-folder.svg'
     // },
     {
+      id: 'snippets',
+      title: '片段',
+      icon: 'https://api.iconify.design/pajamas:snippet.svg'
+    },
+    {
       id: 'comp-tree',
       title: '组件树',
       icon: 'https://api.iconify.design/tdesign:tree-list.svg'
@@ -55,10 +53,22 @@ export const contributes = (designerCtx) => ({
     },
   ],
   views: {
-    'plugin-market': [
-      // { id: 'plugin-market.views.all', name: 'All' },
-      // { id: 'plugin-market.views.installed', name: 'Installed' },
+    'widgets': [
+      { id: 'widgets', renderer: create(defineAsyncComponent(() => import('./views/CompView2.vue'))) }
     ],
+    'snippets': [
+      { id: 'snippets', renderer: create(defineAsyncComponent(() => import('./views/SnippetsView.vue'))) }
+    ],
+    'comp-tree': [
+      { id: 'comp-tree', renderer: create(defineAsyncComponent(() => import('./views/CompTreeView.vue'))) }
+    ],
+    'schema-sourcecode': [
+      { id: 'schema-sourcecode', renderer: create(defineAsyncComponent(() => import('./views/Schema.vue'))) }
+    ],
+    'plugin-market': [
+      { id: 'plugin-market', renderer: create(defineAsyncComponent(() => import('./views/PluginsView.vue'))) }
+    ],
+    
   },
   // todo
   customEditors: [

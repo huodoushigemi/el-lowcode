@@ -38,7 +38,7 @@ const Share = create(defineComponent({
 }))
 
 export function activate(designerCtx) {
-  designerCtx.viewRenderer['template'] = create(defineAsyncComponent(() => import('./TemplateView.vue')))
+  
 }
 
 export function deactivate(designerCtx) {
@@ -53,6 +53,11 @@ export const contributes = {
       icon: 'https://api.iconify.design/mdi:shopping-outline.svg'
     },
   ],
+  views: {
+    'template': [
+      { id: 'template', renderer: create(defineAsyncComponent(() => import('./TemplateView.vue'))) }
+    ]
+  },
   statusbar: [
     { class: 'px0', renderer: Share },
     { icon: { is: IEye, class: 'hfull wa' }, onClick: (ctx) => previewLcd(ctx.root) }

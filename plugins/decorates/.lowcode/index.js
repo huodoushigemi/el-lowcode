@@ -13,7 +13,7 @@ function create(AsyncComp) {
 }
 
 export function activate(designerCtx) {
-  designerCtx.viewRenderer['decorates'] = create(defineAsyncComponent(() => import('./DecoratesView.vue')))
+  
 }
 
 export const widgets = [
@@ -31,8 +31,8 @@ export const contributes = (designerCtx) => ({
   ],
   views: {
     'decorates': [
-      // { id: 'plugin-market.views.all', name: 'All' },
-      // { id: 'plugin-market.views.installed', name: 'Installed' },
+      { id: 'plugin-market.views.all', renderer: create(defineAsyncComponent(() => import('./DecoratesView.vue'))) },
+      { id: 'plugin-market.views.installed', name: 'Installed' },
     ],
   },
 })

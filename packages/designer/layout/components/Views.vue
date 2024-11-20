@@ -4,25 +4,32 @@
       {{ activitybar?.title }}
     </div>
 
-    <div
+    <!-- <div
       class="h0 overflow-auto"
       :style="{ flex: sizeMap[activitybar!.id]?.grow }"
       @vue:mounted="({ el }) => mount(el, activitybar!.id)"
       @vue:unmounted="({ el }) => unmount(el, activitybar!.id)"
-    />
+    /> -->
 
-    <div v-for="pane in list" class="pane" :style="{ flex: sizeMap[pane.id]?.grow, height: expanded[pane.id] ? 0 : void 0 }">
+    <div v-if="list.length > 1" v-for="pane in list" class="pane" :style="{ flex: sizeMap[pane.id]?.grow, height: expanded[pane.id] ? 0 : void 0 }">
       <div :class="['pane-header flex aic lh-22', expanded[pane.id] && 'expanded']" tabindex="0" @click="expanded[pane.id] = !expanded[pane.id]">
         <i-tdesign:chevron-right :rotate="expanded[pane.id] ? 90 : 0" ml4 />
-        <div font-700 truncate uppercase>{{ pane.name }}</div>
+        <div font-700 truncate uppercase>{{ pane.name || pane.id }}</div>
       </div>
       <div
         v-if="expanded[pane.id]"
         class="pane-body flex-1 overflow-auto"
-        @vue:mounted="({ el }) => mount(el, pane.id)"
-        @vue:unmounted="({ el }) => unmount(el, pane.id)"
+        @vue:mounted="({ el }) => mount(el, pane)"
+        @vue:unmounted="({ el }) => unmount(el, pane)"
       />
     </div>
+
+    <div
+      v-else
+      class="pane-body flex-1 h0 overflow-auto"
+      @vue:mounted="({ el }) => mount(el, list[0])"
+      @vue:unmounted="({ el }) => unmount(el, list[0])"
+    />
   </div>
 </template>
 
@@ -44,8 +51,10 @@ const expanded = ref({})
 // const wm = new WeakMap()
 const sizeMap = reactive({})
 
-function mount(el, id) {
-  designer.viewRenderer[id]?.mount(el, designer)
+function mount(el, pane) {
+  const { id, renderer } = pane
+  renderer?.mount(el, designer)
+  // designer.viewRenderer[id]?.mount(el, designer)
   sizeMap[id] ??= {}
   const xxx = sizeMap[id]
   xxx.scrollHeight = el.scrollHeight
@@ -60,8 +69,9 @@ function mount(el, id) {
   })
 }
 
-function unmount(el, id) {
-  designer.viewRenderer[id]?.unmount?.(el, designer)
+function unmount(el, pane) {
+  const { id, renderer } = pane
+  renderer?.unmount?.(el, designer)
   sizeMap[id].sizeObs?.stop()
   sizeMap[id].childObs?.stop()
   sizeMap[id] = void 0

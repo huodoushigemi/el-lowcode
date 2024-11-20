@@ -41,6 +41,12 @@ export interface WidgetDrag {
   disabled?: boolean
 }
 
+export interface Snippet {
+  id: string
+  title: string
+  schema: () => BoxProps
+}
+
 export interface BoxProps {
   is?: any
   _id: string
@@ -229,6 +235,7 @@ export interface DesignerCtx {
     url: string
     packageJSON: Record<string, any>
     widgets: Widget[]
+    snippets?: Snippet[]
     contributes: Contributes
     isActive: boolean
     activate()

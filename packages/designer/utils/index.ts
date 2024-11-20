@@ -61,6 +61,8 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     pluginsLoading: computed(() => allUrls.value.every(url => !!xxx[url].value)),
     newProps: computed(() => is => Object.assign({ is } as BoxProps, designerCtx.widgets[is]!.defaultProps?.(designerCtx))),
     widgets: computed(() => keyBy(designerCtx.plugins.flatMap(e => e.widgets?.map(normalWidget) || []), 'is')),
+    // snippets: computed(() => keyBy(designerCtx.plugins.flatMap(e => e.snippets || []), 'id')),
+    snippets: computed(() => designerCtx.plugins.flatMap(e => e.snippets || [])),
     viewRenderer: {},
     commands: createEvents(),
     dict: {
