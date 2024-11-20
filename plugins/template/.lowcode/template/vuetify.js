@@ -200,7 +200,7 @@ export default {
                               {
                                 is: 'uno-icon',
                                 src: 'https://api.iconify.design/mdi:card-text.svg',
-                                _id: 'd695ffb4ed696802',
+                                _id: 'b769d09254845208',
                                 style: {
                                   width: '24px',
                                   height: '24px',
@@ -210,14 +210,14 @@ export default {
                               {
                                 is: 'span',
                                 children: 'Card\n\n',
-                                _id: 'c8ab828199239d08',
+                                _id: 'b769d09254845209',
                                 style: {},
                               },
                             ],
-                            _id: 'c8ab828199239d07',
+                            _id: 'b769d0925484520a',
                           },
                         },
-                        _id: 'c8ab828199239d05',
+                        _id: 'b769d0925484520b',
                       },
                       {
                         is: 'v-expansion-panel-text',
@@ -234,10 +234,10 @@ export default {
                                       {
                                         is: 'span',
                                         children: 'Card Title',
-                                        _id: 'cbd137b7c272aa09',
+                                        _id: 'b769d0925484520c',
                                       },
                                     ],
-                                    _id: 'cbd137b7c272aa05',
+                                    _id: 'b769d0925484520d',
                                   },
                                   {
                                     is: 'v-card-subtitle',
@@ -245,13 +245,13 @@ export default {
                                       {
                                         is: 'span',
                                         children: 'Card subtitle secondary text',
-                                        _id: 'cbd137b7c272aa0a',
+                                        _id: 'b769d0925484520e',
                                       },
                                     ],
-                                    _id: 'cbd137b7c272aa06',
+                                    _id: 'b769d0925484520f',
                                   },
                                 ],
-                                _id: 'cbd137b7c272aa02',
+                                _id: 'b769d09254845210',
                               },
                               {
                                 is: 'v-card-text',
@@ -259,10 +259,10 @@ export default {
                                   {
                                     is: 'span',
                                     children: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                                    _id: 'cbd137b7c272aa07',
+                                    _id: 'b769d09254845211',
                                   },
                                 ],
-                                _id: 'cbd137b7c272aa03',
+                                _id: 'b769d09254845212',
                               },
                               {
                                 is: 'v-card-actions',
@@ -274,16 +274,16 @@ export default {
                                       {
                                         is: 'span',
                                         children: 'More',
-                                        _id: 'cbd137b7c272aa0b',
+                                        _id: 'b769d09254845213',
                                       },
                                     ],
-                                    _id: 'cbd137b7c272aa08',
+                                    _id: 'b769d09254845214',
                                   },
                                 ],
-                                _id: 'cbd137b7c272aa04',
+                                _id: 'b769d09254845215',
                               },
                             ],
-                            _id: 'cbd137b7c272aa01',
+                            _id: 'b769d09254845216',
                             elevation: 16,
                           },
                           {
@@ -296,7 +296,7 @@ export default {
                                   height: '180px',
                                   width: '100%',
                                 },
-                                _id: 'cbd137b7c272aa17',
+                                _id: 'b769d09254845217',
                                 loading: 'eager',
                               },
                               {
@@ -305,10 +305,10 @@ export default {
                                   {
                                     is: 'span',
                                     children: 'Top western road trips',
-                                    _id: 'cbd137b7c272aa0c',
+                                    _id: 'b769d09254845218',
                                   },
                                 ],
-                                _id: 'cbd137b7c272aa0d',
+                                _id: 'b769d09254845219',
                               },
                               {
                                 is: 'v-card-subtitle',
@@ -316,10 +316,10 @@ export default {
                                   {
                                     is: 'span',
                                     children: '1,000 miles of wonder',
-                                    _id: 'cbd137b7c272aa0e',
+                                    _id: 'b769d0925484521a',
                                   },
                                 ],
-                                _id: 'cbd137b7c272aa0f',
+                                _id: 'b769d0925484521b',
                               },
                               {
                                 is: 'v-card-actions',
@@ -331,16 +331,16 @@ export default {
                                       {
                                         is: 'span',
                                         children: 'More',
-                                        _id: 'cbd137b7c272aa13',
+                                        _id: 'b769d0925484521c',
                                       },
                                     ],
-                                    _id: 'cbd137b7c272aa14',
+                                    _id: 'b769d0925484521d',
                                   },
                                 ],
-                                _id: 'cbd137b7c272aa15',
+                                _id: 'b769d0925484521e',
                               },
                             ],
-                            _id: 'cbd137b7c272aa16',
+                            _id: 'b769d0925484521f',
                             style: {
                               marginTop: '20px',
                             },
@@ -361,7 +361,7 @@ export default {
                                       width: '100%',
                                       height: '100%',
                                     },
-                                    _id: '8d4f9fb469d67c23',
+                                    _id: 'b769d09254845220',
                                     loading: 'eager',
                                   },
                                   {
@@ -370,10 +370,10 @@ export default {
                                       {
                                         is: 'span',
                                         children: 'Top 10 Australian beaches',
-                                        _id: '8d4f9fb469d67c1f',
+                                        _id: 'b769d09254845221',
                                       },
                                     ],
-                                    _id: '8d4f9fb469d67c1b',
+                                    _id: 'b769d09254845222',
                                     style: {
                                       position: 'absolute',
                                       bottom: '0',
@@ -381,7 +381,7 @@ export default {
                                     },
                                   },
                                 ],
-                                _id: '8d4f9fb469d67c25',
+                                _id: 'b769d09254845223',
                                 style: {
                                   position: 'relative',
                                   height: '200px',
@@ -393,10 +393,10 @@ export default {
                                   {
                                     is: 'span',
                                     children: 'Number 10',
-                                    _id: '8d4f9fb469d67c20',
+                                    _id: 'b769d09254845224',
                                   },
                                 ],
-                                _id: '8d4f9fb469d67c1c',
+                                _id: 'b769d09254845225',
                                 style: {
                                   paddingTop: '16px',
                                 },
@@ -407,15 +407,15 @@ export default {
                                   {
                                     is: 'span',
                                     children: 'Whitehaven Beach',
-                                    _id: '8d4f9fb469d67c1d',
+                                    _id: 'b769d09254845226',
                                   },
                                   {
                                     is: 'span',
                                     children: 'Whitsunday Island, Whitsunday Islands',
-                                    _id: '9a07ad8ea4cc9301',
+                                    _id: 'b769d09254845227',
                                   },
                                 ],
-                                _id: '8d4f9fb469d67c19',
+                                _id: 'b769d09254845228',
                                 style: {
                                   display: 'flex',
                                   flexDirection: 'column',
@@ -431,10 +431,10 @@ export default {
                                       {
                                         is: 'span',
                                         children: 'Share',
-                                        _id: '8d4f9fb469d67c21',
+                                        _id: 'b769d09254845229',
                                       },
                                     ],
-                                    _id: '8d4f9fb469d67c1e',
+                                    _id: 'b769d0925484522a',
                                   },
                                   {
                                     is: 'v-btn',
@@ -443,16 +443,16 @@ export default {
                                       {
                                         is: 'span',
                                         children: 'Expolre',
-                                        _id: '8d4f9fb469d67c26',
+                                        _id: 'b769d0925484522b',
                                       },
                                     ],
-                                    _id: '8d4f9fb469d67c27',
+                                    _id: 'b769d0925484522c',
                                   },
                                 ],
-                                _id: '8d4f9fb469d67c1a',
+                                _id: 'b769d0925484522d',
                               },
                             ],
-                            _id: '8d4f9fb469d67c17',
+                            _id: 'b769d0925484522e',
                             style: {
                               marginTop: '20px',
                             },
@@ -470,10 +470,10 @@ export default {
                                       {
                                         is: 'span',
                                         children: 'Supermodel',
-                                        _id: '8d4f9fb469d67c02',
+                                        _id: 'b769d0925484522f',
                                       },
                                     ],
-                                    _id: '8d4f9fb469d67c03',
+                                    _id: 'b769d09254845230',
                                   },
                                   {
                                     is: 'v-card-subtitle',
@@ -481,10 +481,10 @@ export default {
                                       {
                                         is: 'span',
                                         children: 'Foster the People',
-                                        _id: '8d4f9fb469d67c04',
+                                        _id: 'b769d09254845231',
                                       },
                                     ],
-                                    _id: '8d4f9fb469d67c05',
+                                    _id: 'b769d09254845232',
                                   },
                                   {
                                     is: 'v-card-actions',
@@ -495,10 +495,10 @@ export default {
                                           {
                                             is: 'span',
                                             children: 'Start Radio',
-                                            _id: '8d4f9fb469d67c06',
+                                            _id: 'b769d09254845233',
                                           },
                                         ],
-                                        _id: '8d4f9fb469d67c07',
+                                        _id: 'b769d09254845234',
                                         variant: 'outlined',
                                         size: 'small',
                                         style: {
@@ -506,10 +506,10 @@ export default {
                                         },
                                       },
                                     ],
-                                    _id: '8d4f9fb469d67c08',
+                                    _id: 'b769d09254845235',
                                   },
                                 ],
-                                _id: '8d4f9fb469d67c0b',
+                                _id: 'b769d09254845236',
                                 style: {
                                   flex: '1',
                                   width: '0px',
@@ -525,16 +525,118 @@ export default {
                                   marginRight: '12px',
                                   marginBottom: '12px',
                                 },
-                                _id: '8d4f9fb469d67c0c',
+                                _id: 'b769d09254845237',
                                 loading: 'eager',
                               },
                             ],
-                            _id: '8d4f9fb469d67c09',
+                            _id: 'b769d09254845238',
                             style: {
                               marginTop: '20px',
                               display: 'flex',
                             },
                             color: '#1F7087',
+                          },
+                        ],
+                        _id: 'b769d09254845239',
+                      },
+                    ],
+                    _id: 'b769d0925484523a',
+                  },
+                  {
+                    is: 'v-expansion-panel',
+                    children: [
+                      {
+                        is: 'v-expansion-panel-title',
+                        children: {
+                          default: {
+                            scope: '$panel',
+                            children: [
+                              {
+                                is: 'uno-icon',
+                                src: 'https://api.iconify.design/mdi:view-carousel.svg',
+                                _id: 'd695ffb4ed696802',
+                                style: {
+                                  width: '24px',
+                                  height: '24px',
+                                  marginRight: '12px',
+                                },
+                              },
+                              {
+                                is: 'span',
+                                children: 'Carousel',
+                                _id: 'c8ab828199239d08',
+                                style: {},
+                              },
+                            ],
+                            _id: 'c8ab828199239d07',
+                          },
+                        },
+                        _id: 'c8ab828199239d05',
+                      },
+                      {
+                        is: 'v-expansion-panel-text',
+                        children: [
+                          {
+                            is: 'v-carousel',
+                            children: [
+                              {
+                                is: 'v-carousel-item',
+                                children: [
+                                  {
+                                    is: 'img',
+                                    src: 'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
+                                    style: {
+                                      width: '100%',
+                                      height: '100%',
+                                      objectFit: 'cover',
+                                    },
+                                    _id: 'b769d0925484523f',
+                                  },
+                                ],
+                                _id: 'b769d0925484523c',
+                              },
+                              {
+                                is: 'v-carousel-item',
+                                children: [
+                                  {
+                                    is: 'img',
+                                    src: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
+                                    style: {
+                                      width: '100%',
+                                      height: '100%',
+                                      objectFit: 'cover',
+                                    },
+                                    _id: 'b769d09254845240',
+                                    loading: 'eager',
+                                  },
+                                ],
+                                _id: 'b769d0925484523d',
+                              },
+                              {
+                                is: 'v-carousel-item',
+                                children: [
+                                  {
+                                    is: 'img',
+                                    src: 'https://cdn.vuetifyjs.com/images/cards/docks.jpg',
+                                    style: {
+                                      width: '100%',
+                                      height: '100%',
+                                      objectFit: 'cover',
+                                    },
+                                    _id: 'b769d09254845241',
+                                  },
+                                ],
+                                _id: 'b769d0925484523e',
+                              },
+                            ],
+                            _id: 'b769d0925484523b',
+                            style: {
+                              height: '216px',
+                            },
+                            cycle: true,
+                            interval: 2000,
+                            showArrows: 'hover',
+                            progress: 'primary',
                           },
                         ],
                         _id: 'c8ab828199239d06',

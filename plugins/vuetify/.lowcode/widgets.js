@@ -470,6 +470,43 @@ export const widgets = [
   },
 
   {
+    is: 'v-carousel',
+    label: 'carousel',
+    category: 'Container',
+    vSlots: ['prev', 'next'],
+    props: [
+      vmodel(),
+      // radios('color', COLORS),
+      bool('continuous', true),
+      radios('direction', [['horizontal'], 'vertical']),
+      bool('disabled'),
+      grid2([bool('hide-delimiters'), bool(['hide-delimiter-bg', 'hide-delimiter-background'])]),
+      grid2([bool(['autoplay', 'cycle']), num('interval', 6000)]),
+      radios('progress', COLORS),
+      radios('show-arrows', [['true'], ['false', false], 'hover']),
+    ],
+    defaultProps: () => ({
+      children: [
+        { is: 'v-carousel-item', children: [{ is: 'img', src: 'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg', style: { width: '100%', height: '100%', objectFit: 'cover' } }] },
+        { is: 'v-carousel-item', children: [{ is: 'img', src: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg', style: { width: '100%', height: '100%', objectFit: 'cover' } }] },
+        { is: 'v-carousel-item', children: [{ is: 'img', src: 'https://cdn.vuetifyjs.com/images/cards/docks.jpg', style: { width: '100%', height: '100%', objectFit: 'cover' } }] },
+      ]
+    })
+  },
+
+  {
+    is: 'v-carousel-item',
+    category: 'Container',
+    hidden: true,
+    props: [
+      str('value'),
+    ],
+    defaultProps: () => ({
+      children: [{ is: 'img', src: 'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg', style: { width: '100%', height: '100%', objectFit: 'cover' } }]
+    })
+  },
+
+  {
     is: 'v-text-field',
     label: 'input',
     category: 'Form',
@@ -938,6 +975,32 @@ export const widgets = [
     }),
     devProps: props => ({
       children: props.inline ? (props.children = void 0) : (props.children ??= [])
+    })
+  },
+
+  {
+    is: 'v-dialog',
+    label: 'dialog',
+    category: 'Feedback',
+    vSlots: ['activator'],
+    props: [
+      vmodel(),
+      bool('eager'),
+      bool('fullscreen'),
+      bool('persistent'),
+      bool(['modal', 'scrim'])
+    ],
+    defaultProps: () => ({
+      children: {
+        activator: { children: [{ is: 'v-btn', children: [Text('Open Dialog')] }] },
+        default: { children: [{ is: 'v-card', children: [
+          { is: 'v-card-item', children: [
+            { is: 'v-card-title', children: [Text('Dialog')] },
+          ] },
+          { is: 'v-card-text', children: [Text('Dialog Content')] },
+          { is: 'v-card-actions', class: 'justify-end', children: [{ is: 'v-btn', color: 'primary', children: [Text('OK')] }] }
+        ] }] }
+      }
     })
   },
   
