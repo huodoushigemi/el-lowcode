@@ -1,5 +1,5 @@
 <template>
-  <div class="selected-layer" absolute inset-0 pointer-events-none select-none z-9>
+  <div class="selected-layer" absolute inset-0 pointer-events-none select-none z-9 @mouseover="designerCtx.hoverId = active!.id">
     <div v-if="!designerCtx.dragged" absolute outline="1 dashed [--vs-focus-b-c]" op75 outline-offset--1 :style="calcStyle(designerCtx.hover?.el)">
       <div class="absolute bottom-full px8 max-w8em text-12 truncate c-white bg-[--vs-focus-b-c]">
         {{ designerCtx.hover?.label }}
@@ -7,7 +7,7 @@
     </div>
     
     <div v-if="active" absolute outline="1.5 solid [--vs-focus-b-c]" outline-offset--1.5 :style="calcStyle(designerCtx.active?.el)" @mousedown.stop>
-      <div v-if="active.parent && !active.isAbs" class="actions absolute bottom-full flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]" :op="designerCtx.dragged && 0" @mousedown.stop draggable="true" @dragstart="dispatchDrag">
+      <div v-if="active.parent && !active.isAbs" class="actions absolute bottom-full flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]" :class="!!designerCtx.dragged && 'op0 pointer-events-none!'" @mousedown.stop draggable="true" @dragstart="dispatchDrag">
         <div px12 max-w12em truncate bg="#17d57e">{{ active.label }}</div>
         <i-solar:arrow-to-top-right-bold class="icon" @click="active2parent" />
         <i-solar:arrow-up-linear class="icon" @click="moveUp" />
@@ -16,7 +16,11 @@
         <i-solar:trash-bin-minimalistic-linear class="icon" hover="c-red" @click="remove" />
       </div>
 
-      <div v-if="active.parent && active.isAbs" class="actions absolute bottom-full flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]" :op="designerCtx.dragged && 0" @mouseenter="designerCtx.hoverId = active.id" @mouseover="designerCtx.hoverId = active.id">
+      <!-- <div v-if="active.parent && !active.isAbs" class="actions absolute bottom-full right-0 flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]" :class="!!designerCtx.dragged && 'op0 pointer-events-none!'" @mousedown.stop draggable="true" @dragstart="dispatchDrag">
+        <i-mdi:dots-vertical />
+      </div> -->
+
+      <div v-if="active.parent && active.isAbs" class="actions absolute bottom-full right-0 flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]" :op="designerCtx.dragged && 0" @mouseenter="designerCtx.hoverId = active.id" @mouseover="designerCtx.hoverId = active.id">
         <div px12 max-w12em truncate bg="#17d57e">{{ active.label }}</div>
         <i-solar:arrow-to-top-right-bold class="icon" @click="active2parent" />
         <i-bi:arrows-move ref="moveHandle" class="icon" text-16="!" cursor-move />
@@ -68,7 +72,10 @@ function onDragEnd(e) {
 
 function dispatchDrag(e: DragEvent) {
   e.stopPropagation()
-  designerCtx.active!.el?.dispatchEvent(new DragEvent('dragstart', e))
+  e.dataTransfer!.setDragImage(new Image(), 0, 0)
+  requestAnimationFrame(() => {
+    designerCtx.active!.el?.dispatchEvent(new DragEvent('dragstart'))
+  })
 }
 
 // 监听 dom 变化
@@ -79,7 +86,7 @@ const rootEl = () => designerCtx.rootCtx.el?.ownerDocument.body
 
 useMutationObserver(rootEl, fu, { subtree: true, childList: true, attributes: true, characterData: true })
 useResizeObserver(rootEl, fu)
-useResizeObserver(() => designerCtx.active?.el, fu)
+// useResizeObserver(() => designerCtx.active?.el, fu)
 </script>
 
 <style lang="scss">

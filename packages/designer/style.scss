@@ -182,3 +182,11 @@
   mask-image: var(--mask-image);
   -webkit-mask-image: var(--mask-image);
 }
+
+// moveable
+.moveable-control {
+  width: 8px !important;
+  height: 8px !important;
+  margin-top: -4px !important;
+  margin-left: -4px !important;
+}

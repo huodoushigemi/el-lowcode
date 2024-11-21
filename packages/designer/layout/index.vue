@@ -25,7 +25,7 @@
             <!-- resize -->
             <Moveable
               v-if="designerCtx.active && !designerCtx.active.isRoot && designerCtx.active.el && !designerCtx.active?.inline"
-              :key="designerCtx.active.id"
+              :key="designerCtx.active.id + ':' + designerCtx.active.index"
               :target="designerCtx.active.el"
               :style="`margin-top: ${-iframeScroll.y}px; margin-left: ${-iframeScroll.x}px`"
               :resizable="true"
