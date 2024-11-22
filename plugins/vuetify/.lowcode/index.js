@@ -1,6 +1,7 @@
 import { watchEffect } from 'vue'
 
 export * from './widgets'
+export * from './snippets'
 
 const styleEl = Object.assign(document.createElement('style'), {
   innerHTML: `

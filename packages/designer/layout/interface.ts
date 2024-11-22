@@ -230,6 +230,7 @@ export interface DesignerCtx {
 
   newProps(is: string): BoxProps
   widgets: Record<string, Widget | undefined>
+  snippets: Snippet[]
 
   plugins: {
     url: string

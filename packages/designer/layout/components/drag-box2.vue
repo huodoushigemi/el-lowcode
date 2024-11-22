@@ -326,8 +326,14 @@ function resolveNode(el: HTMLElement) {
   if (el.nodeType != 1) return
   const is = el.getAttribute('lcd-is')
   const id = el.getAttribute('_id')
-  if (!is && !id) return
-  return designer.keyedCtx[id!] || new designer.DisplayNode(designer.newProps(is!))
+  const snippet = el.getAttribute('lcd-snippet')
+  if (is || id) {
+    return designer.keyedCtx[id!] || new designer.DisplayNode(designer.newProps(is!))
+  }
+  else {
+    const data = designer.snippets.find(e => e.id == snippet)?.schema()
+    return new designer.DisplayNode(data)
+  }
 }
 
 const dragLineStyle = reactive({ transform: '',  width: '', height: '' })

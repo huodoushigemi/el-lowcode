@@ -79,6 +79,11 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     }))
   })()
 
+  watch(() => designerCtx.dragged, (val, old) => {
+    old?.el?.removeAttribute('lcd-dragged')
+    val?.el?.setAttribute('lcd-dragged', '')
+  })
+
   return designerCtx
 }
 
@@ -124,6 +129,7 @@ export async function createPluginCtx(module, designerCtx: DesignerCtx) {
   return {
     contributes,
     widgets: module.widgets || [],
+    snippets: module.snippets,
     activate,
     deactivate,
     isActive,
