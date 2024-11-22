@@ -164,6 +164,7 @@ export default {
     },
     style: {
       'max-width': '512px',
+      width: '100%',
       margin: 'auto',
     },
     plugins: [

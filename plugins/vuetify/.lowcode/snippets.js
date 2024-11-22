@@ -46,7 +46,7 @@ const cards = [
         {
           is: 'div',
           children: [
-            { is: 'img', src: 'https://cdn.vuetifyjs.com/images/cards/docks.jpg', style: { 'object-fit': 'cover', position: 'absolute', width: '100%', height: '100%' } },
+            { is: 'img', src: 'https://cdn.vuetifyjs.com/images/cards/docks.jpg', style: { objectFit: 'cover', position: 'absolute', width: '100%', height: '100%' } },
             { is: 'v-card-title', children: [{ is: 'span', children: 'Top 10 Australian beaches' }], style: { position: 'absolute', bottom: '0', width: '100%' } },
           ],
           style: { position: 'relative', height: '200px' },

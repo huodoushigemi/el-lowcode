@@ -143,6 +143,8 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get isAbsLayout() { return !!this.$data['data-absolute-layout'] }
   set isAbsLayout(bool) { this.data['data-absolute-layout'] = bool || void 0 }
 
+  get text() { return isString(this.data.children) ? this.data.children : void 0 }
+
   get slots() {
     if (this.config?.slots) return solveOptions(this.config.slots)
     if (this.config?.vSlots) return solveOptions(this.config.vSlots)
@@ -224,6 +226,8 @@ export interface DesignerCtx {
   canvas: {
     x: number
     y: number
+    w: number
+    h: number
     zoom: number
     style?: Record<string, any>
   }
@@ -242,8 +246,6 @@ export interface DesignerCtx {
     activate()
     deactivate()
   }[]
-
-  viewRenderer: Record<string, Renderer>
 
   commands: {
     on(command: string, cb: (...args: any[]) => any): Fn

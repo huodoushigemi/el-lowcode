@@ -9,8 +9,7 @@
 
       <div relative flex-1 w0 hfull>
         <!-- Canvas Viewport -->
-         <!-- v-model:x="designerCtx.canvas.x" v-model:y="designerCtx.canvas.y"  -->
-        <infinite-viewer wfull hfull overflow-hidden style="background: var(--vs-panel-bg)" @click="designerCtx.activeId = undefined" v-model:zoom="designerCtx.canvas.zoom" @wheel.prevent.stop>
+        <infinite-viewer wfull hfull overflow-hidden style="background: var(--vs-panel-bg)" @click="designerCtx.activeId = undefined" v-model:zoom="canvas.zoom" v-model:x="canvas.x" v-model:y="canvas.y" @wheel.prevent.stop>
           <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @click.stop @mouseleave="designerCtx.dragged || (designerCtx.hoverId = undefined)">
             <iframe
               :key="srcurl + srcdoc + root._id"
@@ -66,7 +65,7 @@
     <Statusbar>
       <div flex aic bg="#3655b5" class="li ml0! pr8" @click="designerCtx.commands.emit('lcd.toggleDevice')">
         <i-material-symbols:devices-outline wa mr4 h20 />
-        {{ devices.find(e => eq(e.value, viewer.size.v))?.label || (`${parseInt(viewer.size.v.width)} × ${parseInt(viewer.size.v.height)}`) }}
+        {{ devices.find(e => eq(e.value, [canvas.w, canvas.h]))?.label || (`${canvas.w} × ${canvas.h}`) }}
       </div>
       <i-tdesign:close class="li wa" @click="designerCtx.commands.emit('lcd.clear')" />
       <i-mdi:undo-variant class="li  wa mr0!" :op="!canUndo && '20'" @click="designerCtx.commands.emit('lcd.undo')" />
@@ -74,8 +73,8 @@
       <i-tdesign:download class="li wa" @click="designerCtx.commands.emit('lcd.download')" />
       <div flex aic text-nowrap class="li ml12!">
         <i-mdi:magnify-expand wa mr2 h18 />
-        <input type="range" v-model.number="viewer.zoom.v" min="60" max="250" />
-        <InputNumber v-model="viewer.zoom.v" noUnit :min="60" :max="250" class="w50 h20" />
+        <input type="range" v-model.number="canvas.zoom" min=".6" max="2.5" step=".01" />
+        <InputNumber :model-value="Math.round(canvas.zoom * 100)" @update:model-value="v => canvas.zoom = +((v || 0) / 100).toFixed(2)" noUnit :min="60" :max="250" class="w50 h20" />
       </div>
     </Statusbar>
   </div>
@@ -123,12 +122,6 @@ app.component('MonacoEditor', MonacoEditor)
 
 const log = (...arg) => console.log(...arg)
 
-const devices = [['iPhone SE', '375,667'], ['iPhone12 Pro', '390,844'], ['iPad Mini', '768,1024']].map(e => ({
-  label: e[0],
-  description: e[1].replace(',', ' × '),
-  value: { width: `${e[1].split(',')[0]}px`, height: `${e[1].split(',')[1]}px` },
-}))
-
 const props = defineProps({
   json: Object,
   extraPlugins: Array as PropType<string[]>,
@@ -150,17 +143,20 @@ const initial = () => ({
 const root = ref(props.json ?? initial())
 
 const designerCtx = createDesignerCtx(root, () => props.extraPlugins)
+const { canvas } = designerCtx
 
 provide(designerCtxKey, designerCtx)
 provide('designerCtx', designerCtx)
 defineExpose(designerCtx)
 
-const viewer = {
-  zoom: useTransformer(designerCtx, 'canvas.zoom', { get: v => (v * 100).toFixed(), set: v => +(v / 100).toFixed(2) }),
-  size: useTransformer(root, 'designer.canvas.style', { get: v => pick(v, ['width', 'height']), set: v => JSON.parse(JSON.stringify(v)) }),
-  w: useTransformer(root, 'designer.canvas.style.width', { get: v => v || parseInt(v), set: v => v + 'px' }),
-  h: useTransformer(root, 'designer.canvas.style.height', { get: v => v || parseInt(v), set: v => v + 'px' }),
-}
+
+const devices = [['iPhone SE', '375,667'], ['iPhone12 Pro', '390,844'], ['iPad Mini', '768,1024']].map(e => ({
+  label: e[0],
+  description: e[1].replace(',', ' × '),
+  // value: { width: `${e[1].split(',')[0]}px`, height: `${e[1].split(',')[1]}px` },
+  value: e[1].split(',').map(e => +e),
+}))
+// const device = useTransformer(root, 'designer.canvas.style', { get: v => pick(v, ['width', 'height']), set: v => JSON.parse(JSON.stringify(v)) })
 
 console.log(window.designerCtx = designerCtx)
 
@@ -168,15 +164,13 @@ console.log(window.designerCtx = designerCtx)
 const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500, capacity: 20 })
 
 const disposes = [
-  designerCtx.commands.on('lcd.toggleDevice', async () => viewer.size.v = await quickPick({ items: devices, value: viewer.size.v })),
+  designerCtx.commands.on('lcd.toggleDevice', async () => quickPick({ items: devices, value: [canvas.w, canvas.h] }).then(v => (canvas.w = v[0], canvas.h = v[1]))),
   designerCtx.commands.on('lcd.clear', () => (designerCtx.rootCtx.el?.ownerDocument.defaultView.unmount(), designerCtx.rootCtx.remove(), root.value = initial())),
   designerCtx.commands.on('lcd.undo', undo),
   designerCtx.commands.on('lcd.redo', redo),
   designerCtx.commands.on('lcd.download', () => exportCode.value.vis = true),
 ]
 onUnmounted(() => disposes.forEach(cb => cb()))
-
-const initCanvas = () => get(root.value, 'designer.canvas') || set(root.value, 'designer.canvas', {})
 
 const viewport = ref<HTMLElement>()
 const exportCode = ref()

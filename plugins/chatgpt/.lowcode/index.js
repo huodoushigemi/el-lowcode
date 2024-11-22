@@ -13,7 +13,6 @@ function create(AsyncComp) {
 }
 
 export function activate(designerCtx) {
-  // designerCtx.viewRenderer['template'] = create(defineAsyncComponent(() => import('./TemplateView.vue')))
   const div = document.createElement('div')
   const app = createApp({ provide: { designerCtx }, render: () => 
     h(ElTooltip, { effect: 'light', content: '敬请期待……' }, 

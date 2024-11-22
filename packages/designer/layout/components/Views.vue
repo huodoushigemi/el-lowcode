@@ -54,7 +54,6 @@ const sizeMap = reactive({})
 function mount(el, pane) {
   const { id, renderer } = pane
   renderer?.mount(el, designer)
-  // designer.viewRenderer[id]?.mount(el, designer)
   sizeMap[id] ??= {}
   const xxx = sizeMap[id]
   xxx.scrollHeight = el.scrollHeight

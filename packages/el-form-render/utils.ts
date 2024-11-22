@@ -1,4 +1,4 @@
-import { Ref, ref, toValue } from 'vue'
+import { Ref, ref, toRaw, toValue } from 'vue'
 import { isArray } from '@vue/shared'
 import { camelize, isPromise, isString } from '@vue/shared'
 import { get, set, unFn } from '@el-lowcode/utils'
@@ -39,11 +39,11 @@ export const showOpt = (opt?: NormalizedOpt) => opt?.label ?? opt?.value
 
 const normalizeOpt = (opt: Opt): NormalizedOpt => isString(opt) ? ({ label: opt, value: opt }) : isArray(opt) ? { label: opt[0], value: opt[1] } : opt
 
-export const useTransformer = (_model, _prop, opt: Pick<Item0, 'defaultValue' | 'displayValue' | 'get' | 'set' | 'out'> = {}) => {
+export const useTransformer = (_model, _prop, opt: Pick<Item0, 'defaultValue' | 'displayValue' | 'get' | 'set' | 'out'> & { untrackedGet?: boolean; silentSet?(v, model): any } = {}) => {
   const ret = {
     get() {
       const model = toValue(_model), prop = toValue(_prop)
-      let v = get(model, prop)
+      let v = get(opt.untrackedGet ? toRaw(model) : model, prop)
       if (opt.get) v = opt.get(v, model)
       if (opt.defaultValue !== undefined && (v === undefined || v === '')) set(model, prop, v = unFn(opt.defaultValue))
       if (opt.displayValue !== undefined && (v === undefined || v === '')) v = unFn(opt.displayValue)
@@ -51,7 +51,8 @@ export const useTransformer = (_model, _prop, opt: Pick<Item0, 'defaultValue' | 
     },
     set(val) {
       const model = toValue(_model), prop = toValue(_prop)
-      if (opt.set) set(model, prop, opt.set(val, model))
+      if (opt.silentSet) set(toRaw(model), prop, opt.silentSet(val, model))
+      else if (opt.set) set(model, prop, opt.set(val, model))
       else set(model, prop, val)
       if (opt.out) Object.assign(model, opt.out!(val, model))
       val = get(model, prop)

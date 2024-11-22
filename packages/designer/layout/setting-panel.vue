@@ -120,7 +120,7 @@ const styles = computed(() => [
 const commons = computed(() => [
   { lp: 'id' },
   { lp: 'class' },
-  { lp: 'slot' },
+  node.value.parent.slots && { lp: 'slot', options: node.value.parent.slots },
   node.value.slots && { lp: ['enable-slots', ''], options: node.value.slots, get: () => node.value.vSlots, set: v => (node.value.vSlots = v, void 0), el: { multiple: true } },
   { lp: ['condition', '$.condition'], type: 'switch', displayValue: true },
   { is: 'ElDivider' },

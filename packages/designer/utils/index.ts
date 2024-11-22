@@ -1,8 +1,8 @@
-import { computed, MaybeRefOrGetter, reactive, Ref, ref, toValue, watch } from 'vue'
+import { computed, MaybeRefOrGetter, reactive, Ref, ref, toRaw, toValue, watch } from 'vue'
 import { isArray, isObject, remove } from '@vue/shared'
 import { computedAsync, Fn } from '@vueuse/core'
 import { useTransformer } from 'el-form-render'
-import { keyBy, toArr, treeUtils, unFn } from '@el-lowcode/utils'
+import { keyBy, pick, toArr, treeUtils, unFn } from '@el-lowcode/utils'
 import { BoxProps, Contributes, DesignerCtx, DisplayNode, ExtensionContext, UserWidget, Widget } from '../layout/interface'
 
 export * as genCode from './genCode'
@@ -50,7 +50,14 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     // @ts-ignore
     DisplayNode: class $DisplayNode extends DisplayNode { designerCtx = designerCtx },
     pageCtx: computed(() => reactive({ state: JSON.parse(JSON.stringify(root.value.state || {})) })),
-    canvas: { x: 0, y: 0, zoom: 1, style: useTransformer(root, 'designer.canvas.style') },
+    canvas: {
+      x: useTransformer(root, 'designer.canvas.x', { silentSet: v => +v.toFixed(0) }),
+      y: useTransformer(root, 'designer.canvas.y', { silentSet: v => +v.toFixed(0) }),
+      w: useTransformer(root, 'designer.canvas.style.width', { get: v => v || parseInt(v), set: v => v + 'px' }),
+      h: useTransformer(root, 'designer.canvas.style.height', { get: v => v || parseInt(v), set: v => v + 'px' }),
+      zoom: useTransformer(root, 'designer.canvas.zoom', { get: v => v || 1, set: v => +(v * 100).toFixed(0) / 100 }),
+      style: useTransformer(root, 'designer.canvas.style')
+    },
     root,
     rootCtx: computed(() => new designerCtx.DisplayNode(designerCtx.root)),
     keyedCtx: computed(() => keyBy(treeUtils.flat([designerCtx.rootCtx]), 'id')),
@@ -63,7 +70,6 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     widgets: computed(() => keyBy(designerCtx.plugins.flatMap(e => e.widgets?.map(normalWidget) || []), 'is')),
     // snippets: computed(() => keyBy(designerCtx.plugins.flatMap(e => e.snippets || []), 'id')),
     snippets: computed(() => designerCtx.plugins.flatMap(e => e.snippets || [])),
-    viewRenderer: {},
     commands: createEvents(),
     dict: {
       plugins: [],
@@ -83,6 +89,37 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     old?.el?.removeAttribute('lcd-dragged')
     val?.el?.setAttribute('lcd-dragged', '')
   })
+
+  // 文本元素 开启编辑模式
+  watch(() => designerCtx.active, (val, old) => {
+    if (val?.text != null && val.el) {
+      val.el.addEventListener('click', () => {
+        val.el!.setAttribute('lcd-text', '')
+        val.el!.setAttribute('contenteditable', 'plaintext-only')
+        val.el!.setAttribute('spellcheck', 'false')
+        val.el!.addEventListener('input', onTextInput)
+        val.el!.addEventListener('keydown', onTextKeyDown)
+        val.el!.__lcd_node = val
+      }, { once: true })
+    }
+    if (old?.el) {
+      old.el.removeAttribute('lcd-text')
+      old.el.removeAttribute('contenteditable')
+      old.el.removeAttribute('spellcheck')
+      old.el.removeEventListener('input', onTextInput)
+      old.el.removeEventListener('keydown', onTextKeyDown)
+      old.el.__lcd_node = void 0
+    }
+  })
+  function onTextInput(e) {
+    e.stopPropagation()
+    const node = e.currentTarget.__lcd_node as DisplayNode
+    toRaw(node.data).children = node.el.innerText
+  }
+  function onTextKeyDown(e) {
+    if (e.key == 'Enter') e.preventDefault()
+    e.stopPropagation()
+  }
 
   return designerCtx
 }

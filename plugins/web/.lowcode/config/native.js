@@ -101,14 +101,6 @@ export default [
     props: [
       { lp: ['text', 'children'] },
     ],
-    devProps: props => ({
-      contenteditable: true,
-      style: 'outline: 0',
-      onInput: e => (e.stopPropagation(), toRaw(props).children = e.currentTarget.innerText, (e.currentTarget.innerText == e.currentTarget.innerHTML) || (e.currentTarget.innerHTML = e.currentTarget.innerText)),
-      onKeydown: e => e.stopPropagation(),
-      onClick: e => e.currentTarget.focus(),
-      onClick: e => e.stopPropagation()
-    }),
     defaultProps: () => ({
       children: '文本'
     })
