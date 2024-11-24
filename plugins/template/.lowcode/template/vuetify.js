@@ -209,7 +209,7 @@ export default {
                               },
                               {
                                 is: 'span',
-                                children: 'Card\n\n',
+                                children: 'Card',
                                 _id: 'b769d09254845209',
                                 style: {},
                               },
@@ -2245,7 +2245,7 @@ export default {
                               },
                               {
                                 is: 'span',
-                                children: 'Tabs\n\n',
+                                children: 'Tabs',
                                 _id: '534d5b7da4c23209',
                               },
                             ],
@@ -2502,7 +2502,7 @@ export default {
                               },
                               {
                                 is: 'span',
-                                children: 'Alert\n\n',
+                                children: 'Alert',
                                 _id: '67430a7d8687b002',
                               },
                             ],
@@ -3002,7 +3002,7 @@ export default {
                                     children: [
                                       {
                                         is: 'span',
-                                        children: 'Inbox\n\n',
+                                        children: 'Inbox',
                                         _id: 'aabc7030c4d65010',
                                       },
                                     ],

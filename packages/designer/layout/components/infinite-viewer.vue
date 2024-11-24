@@ -1,6 +1,6 @@
 <template>
   <div class="infinite-viewer" ref="el" relative @mousedown.middle.prevent="middlePressed = true" @mouseup.middle.prevent="middlePressed = false">
-    <div absolute w20 h20 z-1 @click="viewer.scrollCenter(); viewer.setZoom(1); viewer.emit('pinch', { zoom: 1 })" />
+    <div absolute w20 h20 z-1 @click="scrollCenter(); viewer.setZoom(1); viewer.emit('pinch', { zoom: 1 })" />
     <div class="guides-x" absolute left-20 right-0 h20 z-1 />
     <div class="guides-y" absolute top-20 bottom-0 w20 z-1 />
     <div
@@ -102,10 +102,19 @@ onMounted(() => {
   
   if (['x', 'y'].every(k => props[k] == null)) {
     requestAnimationFrame(() => {
-      viewer.scrollCenter()
+      scrollCenter()
     })
   }
 
   watchEffect(() => viewer.setTo(pick(props, ['x', 'y', 'zoom'])))
 })
+
+function scrollCenter() {
+  const w = viewer.getViewportWidth(), h = viewer.viewportHeight // todo
+  const w2 = viewer.getContainerWidth(), h2 = viewer.getContainerHeight()
+  let x = 0, y = 0
+  if (w < w2) x = (w2 - w) / 2
+  if (h < h2) y = (h2 - h) / 2
+  viewer.scrollTo(-x, -y)
+}
 </script>

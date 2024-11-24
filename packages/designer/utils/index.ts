@@ -93,12 +93,15 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
   // 文本元素 开启编辑模式
   watch(() => designerCtx.active, (val, old) => {
     if (val?.text != null && val.el) {
-      val.el.addEventListener('click', () => {
+      val.el.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
         val.el!.setAttribute('lcd-text', '')
         val.el!.setAttribute('contenteditable', 'plaintext-only')
         val.el!.setAttribute('spellcheck', 'false')
         val.el!.addEventListener('input', onTextInput)
         val.el!.addEventListener('keydown', onTextKeyDown)
+        val.el!.addEventListener('click', onClick)
         val.el!.__lcd_node = val
       }, { once: true })
     }
@@ -108,6 +111,7 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
       old.el.removeAttribute('spellcheck')
       old.el.removeEventListener('input', onTextInput)
       old.el.removeEventListener('keydown', onTextKeyDown)
+      old.el.removeEventListener('click', onClick)
       old.el.__lcd_node = void 0
     }
   })
@@ -118,6 +122,10 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
   }
   function onTextKeyDown(e) {
     if (e.key == 'Enter') e.preventDefault()
+    e.stopPropagation()
+  }
+  function onClick(e) {
+    e.preventDefault()
     e.stopPropagation()
   }
 

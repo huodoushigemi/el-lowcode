@@ -13,12 +13,14 @@
   --vs-panel-bg: #202020;
   --vs-statusbar-bg: #505050;
   --vs-statusbar-hover-bg: #ffffff1f;
+  --vs-ai-hover-bg: rgba(90, 93, 94, 0.31);
   // #252526
 
   --vs-quick-bg: var(--vscode-quickInput-background, #252526);
   --vs-quick-b-c: var(--vscode-pickerGroup-border, #303031);
 
   --vs-menu-bg: #252526;
+  --vs-menu-b-c: #454545;
   --vs-menu-li-hover-c: #03395d;
   --vs-menu-li-hover-bg: #03395d;
 
@@ -74,6 +76,11 @@
   }
 }
 
+.vs-actions {
+  & > .vs-li {
+    @apply p3 w22 h22 hover:bg-[--vs-ai-hover-bg];
+  }
+}
 .vs-ai {
   cursor: pointer;
   &:hover {
@@ -136,12 +143,16 @@
 }
 
 .vs-menu {
-  @apply p6 bg-[--vs-menu-bg];
+  @apply p5 bg-[--vs-menu-bg] b-1 b-solid b-[--vs-menu-b-c];
   box-shadow: 0 0 12px #00000080;
 }
 
 .vs-menu-li {
-  @apply p10 bg-[--vs-menu-li-bg] hover:bg-[--vs-menu-li-hover-bg];
+  @apply flex aic px6 h26 bg-[--vs-menu-li-bg] text-nowrap hover:bg-[--vs-menu-li-hover-bg] cursor-pointer;
+}
+
+hr:last-child {
+  display: none;
 }
 
 ::-webkit-scrollbar {

@@ -829,7 +829,7 @@ export const widgets = [
     is: 'v-alert',
     label: 'alert',
     category: 'Feedback',
-    vSlots: ['append', 'append', 'title'],
+    vSlots: ['prepend', 'append', 'title'],
     props: [
       radios('type', [['—'], 'success', 'info', 'warning', 'error']),
       radios('variant', ['text', ['flat'], 'elevated', 'tonal', 'outlined', 'plain']),

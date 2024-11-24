@@ -41,7 +41,7 @@ const Render = createRender({
 
       if (isArray(children)) {
         if (!children.length) {
-          children = [{ ref: ctx.boxRef, is: 'div', class: 'empty-placeholder', key: NaN, [EMPTY]: 1 } as any]
+          children = [{ ref: ctx.boxRef, is: 'div', class: 'empty-placeholder', [EMPTY]: 1 } as any]
         }
         else {
           sortAbsolute(children)

@@ -1,30 +1,38 @@
 <template>
   <div class="selected-layer" absolute inset-0 pointer-events-none select-none z-9 @mouseover="designerCtx.hoverId = active!.id">
-    <div v-if="!designerCtx.dragged" absolute outline="1 dashed [--vs-focus-b-c]" op75 outline-offset--1 :style="calcStyle(designerCtx.hover?.el)">
+    <div v-if="!designerCtx.dragged" absolute outline="1 dashed [--vs-focus-b-c] offset--1" op75 :style="calcStyle(designerCtx.hover?.el)">
       <div class="absolute bottom-full px8 max-w8em text-12 truncate c-white bg-[--vs-focus-b-c]">
         {{ designerCtx.hover?.label }}
       </div>
     </div>
     
-    <div v-if="active" absolute outline="1.5 solid [--vs-focus-b-c]" outline-offset--1.5 :style="calcStyle(designerCtx.active?.el)" @mousedown.stop>
-      <div v-if="active.parent && !active.isAbs" class="actions absolute bottom-full flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]" :class="!!designerCtx.dragged && 'op0 pointer-events-none!'" @mousedown.stop draggable="true" @dragstart="dispatchDrag">
-        <div px12 max-w12em truncate bg="#17d57e">{{ active.label }}</div>
-        <i-solar:arrow-to-top-right-bold class="icon" @click="active2parent" />
-        <i-solar:arrow-up-linear class="icon" @click="moveUp" />
-        <i-solar:arrow-down-linear class="icon" @click="moveDown" />
-        <i-solar:copy-line-duotone class="icon" @click="copy" />
-        <i-solar:trash-bin-minimalistic-linear class="icon" hover="c-red" @click="remove" />
+    <div v-if="active" absolute outline="1 solid [--vs-focus-b-c] offset--1" :style="calcStyle(designerCtx.active?.el)" @mousedown.stop>
+      <div v-if="active.parent && !active.isAbs" :key="active.id" class="vs-actions absolute bottom-full right-0 flex text-14 pointer-events-auto bg-#333" :class="!!designerCtx.dragged && 'op0 pointer-events-none!'" style="box-shadow: 0 0 12px #00000080" @mousedown.stop draggable="true" @dragstart="dispatchDrag">
+        <div class="vs-li">
+          <i-mdi:dots-vertical w16 h16 />
+          <Tippy class="vs-menu" :extra="{ interactive: true, offset: [0, 0], delay: [0, 300], duration: 0, placement: 'right-start' }">
+            <!-- <div class="vs-menu-li"><i-solar:arrow-to-top-right-bold class="icon" @click="active2parent" /></div> -->
+            <button class="vs-menu-li" :disabled="!active.previousSibling" @click="active.after(active.previousSibling!)"><i-solar:arrow-up-linear mr6 />上移</button>
+            <button class="vs-menu-li" :disabled="!active.nextSibling" @click="active.before(active.nextSibling!)"><i-solar:arrow-down-linear mr6 />下移</button>
+            <button class="vs-menu-li" @click="active.after(active.clone())"><i-solar:copy-line-duotone mr6 />拷贝</button>
+            <button class="vs-menu-li" @click="active.empty()" hover="c-red"><i-solar:broom-broken mr6 />清空</button>
+            <button class="vs-menu-li" @click="active.remove()" hover="c-red"><i-solar:trash-bin-minimalistic-linear mr6 />删除</button>
+            <hr />
+            <!-- v-slots -->
+            <button v-if="active.config?.vSlots || active.config?.slots" class="vs-menu-li" @click="active.remove()">
+              <i-fa6-solid:check-to-slot mr6 />Slots
+              <Tippy class="vs-menu" :extra="{ interactive: true, offset: [-6, 5], delay: [0, 150], duration: 0, placement: 'right-start' }">
+                <div v-for="slot in (active.config?.vSlots || active.config?.slots)" class="vs-menu-li" @click="active.vSlots = active.vSlots!.includes(slot) ? remove(active.vSlots!, slot) : active.vSlots!.push(slot)"><i-mdi:check mr6 :op="active.vSlots!.includes(slot) ? 100 : 0" />{{ slot }}</div>
+              </Tippy>
+            </button>
+          </Tippy>
+        </div>
       </div>
-
-      <!-- <div v-if="active.parent && !active.isAbs" class="actions absolute bottom-full right-0 flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]" :class="!!designerCtx.dragged && 'op0 pointer-events-none!'" @mousedown.stop draggable="true" @dragstart="dispatchDrag">
-        <i-mdi:dots-vertical />
-      </div> -->
 
       <div v-if="active.parent && active.isAbs" class="actions absolute bottom-full right-0 flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]" :op="designerCtx.dragged && 0" @mouseenter="designerCtx.hoverId = active.id" @mouseover="designerCtx.hoverId = active.id">
         <div px12 max-w12em truncate bg="#17d57e">{{ active.label }}</div>
-        <i-solar:arrow-to-top-right-bold class="icon" @click="active2parent" />
         <i-bi:arrows-move ref="moveHandle" class="icon" text-16="!" cursor-move />
-        <i-solar:copy-line-duotone class="icon" @click="copy" />
+        <i-solar:copy-line-duotone class="icon" @click="active.after(active.clone())" />
 
         <Moveable v-if="active.el" :key="active.id" :target="active.el" :dragTarget="unrefElement(moveHandle)" :draggable="true" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
       </div>
@@ -35,20 +43,15 @@
 
 <script setup lang="ts">
 import { getCurrentInstance, inject, computed, ref } from 'vue'
+import { remove } from '@vue/shared'
 import { unrefElement, useMutationObserver, useResizeObserver } from '@vueuse/core'
 import Moveable from 'vue3-moveable'
 import { designerCtxKey } from '../interface'
+import Tippy from './tippy.vue'
 
 const designerCtx = inject(designerCtxKey)!
 
 const active = computed(() => designerCtx.active)
-
-const moveUp = () => designerCtx.active!.previousSibling ? designerCtx.active!.previousSibling.before(designerCtx.active!) : void 0
-const moveDown = () => designerCtx.active!.nextSibling ? designerCtx.active!.nextSibling!.after(designerCtx.active!) : void 0
-const active2parent = () => designerCtx.activeId = designerCtx.active!.parent!.id
-const remove = () => designerCtx.active!.remove()
-const copy = () => designerCtx.active!.after(designerCtx.active!.clone())
-
 
 const calcStyle = (el?: HTMLElement | null) => {
   if (!el) return { display: 'none' }

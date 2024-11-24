@@ -1,10 +1,10 @@
 <template>
   <div class="designer" flex="~ col" @keydown="onKeydown" v-key-dir="{ source: 'target' }">
     <div flex flex-1 h0>
-      <Activitybar v-model="activeView" :list="activitybars" />
+      <Activitybar v-model="activitybar" :list="activitybars" />
 
       <KeepAlive>
-        <Views v-if="activeView && activitybars.find(e => e.id == activeView)" :activitybar="activitybars.find(e => e.id == activeView)" :key="activeView" w300 />
+        <Views v-if="activitybar" :activitybar="activitybars.find(e => e.id == activitybar)" :key="activitybar" w300 />
       </KeepAlive>
 
       <div relative flex-1 w0 hfull>
@@ -23,7 +23,7 @@
             <selected-layer />
             <!-- resize -->
             <Moveable
-              v-if="designerCtx.active && !designerCtx.active.isRoot && designerCtx.active.el && !designerCtx.active?.inline"
+              v-if="designerCtx.active && !designerCtx.active.isRoot && designerCtx.active.el && !designerCtx.active?.inline && designerCtx.active.is != 'span'"
               :key="designerCtx.active.id + ':' + designerCtx.active.index"
               :target="designerCtx.active.el"
               :style="`margin-top: ${-iframeScroll.y}px; margin-left: ${-iframeScroll.x}px`"
@@ -178,7 +178,8 @@ const exportCode = ref()
 const iframeScroll = computed(() => reactive(useWindowScroll({ window: designerCtx.rootCtx.el?.ownerDocument.defaultView })))
 
 const activitybars = computed(() => designerCtx.plugins.flatMap(e => e.contributes.activitybar || []))
-const activeView = ref('widgets')
+const activitybar = ref(root.value.designer?.activitybar ?? 'widgets')
+// const activitybar = useTransformer(root, 'designer.activitybar', { displayValue: 'widgets' })
 
 // moveable
 function onDragStart(e) {

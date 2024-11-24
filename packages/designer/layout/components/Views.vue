@@ -25,7 +25,7 @@
     </div>
 
     <div
-      v-else
+      v-else-if="list.length"
       class="pane-body flex-1 h0 overflow-auto"
       @vue:mounted="({ el }) => mount(el, list[0])"
       @vue:unmounted="({ el }) => unmount(el, list[0])"
@@ -44,7 +44,7 @@ const props = defineProps({
 
 const designer = inject<DesignerCtx>('designerCtx')!
 
-const list = computed(() => designer.plugins.flatMap(e => e.contributes.views?.[props.activitybar!.id] || []))
+const list = computed(() => designer.plugins.flatMap(e => e.contributes.views?.[props.activitybar?.id!] || []))
 
 const expanded = ref({})
 
