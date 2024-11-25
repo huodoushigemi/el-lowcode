@@ -18,23 +18,23 @@
             <div class="vs-menu-li" @click="active.remove()" hover="c-red"><i-solar:trash-bin-minimalistic-linear mr6 />删除</div>
             <hr />
             <!-- v-slots -->
-            <div v-if="active.config?.vSlots" class="vs-menu-li" @click="active.remove()">
+            <div v-if="active.config?.vSlots" class="vs-menu-li">
               <i-fa6-solid:check-to-slot mr6 />v-slots
-              <Tippy class="vs-menu" :extra="{ interactive: true, offset: [-6, 5], delay: [0, 150], duration: 0, placement: 'right-start' }">
+              <Tippy class="vs-menu" :extra="{ interactive: true, offset: [-6, 5], delay: [0, 150], duration: 0, placement: 'right-start', hideOnClick: false }">
                 <div v-for="slot in active.config?.vSlots" class="vs-menu-li" @click="active.vSlots[slot] = active.vSlots[slot] ? void 0 : []"><i-mdi:check mr6 :op="active.vSlots[slot] ? 100 : 0" />{{ slot }}</div>
               </Tippy>
             </div>
             <!-- slots -->
-            <!-- <div v-if="active.config?.slots" class="vs-menu-li" @click="active.remove()">
+            <!-- <div v-if="active.config?.slots" class="vs-menu-li">
               <i-fa6-solid:check-to-slot mr6 />v-slots
-              <Tippy class="vs-menu" :extra="{ interactive: true, offset: [-6, 5], delay: [0, 150], duration: 0, placement: 'right-start' }">
+              <Tippy class="vs-menu" :extra="{ interactive: true, offset: [-6, 5], delay: [0, 150], duration: 0, placement: 'right-start', hideOnClick: false }">
                 <div v-for="slot in active.config?.slots" class="vs-menu-li" @click="active.vSlots[slot] = active.vSlots[slot] ? void 0 : []"><i-mdi:check mr6 :op="active.vSlots[slot] ? 100 : 0" />{{ slot }}</div>
               </Tippy>
             </div> -->
             <!-- slot -->
-            <div v-if="active.parent?.config?.slots" class="vs-menu-li" @click="active.remove()">
+            <div v-if="active.parent?.config?.slots" class="vs-menu-li">
               <i-fa6-solid:check-to-slot mr6 />slot
-              <Tippy class="vs-menu" :extra="{ interactive: true, offset: [-6, 5], delay: [0, 150], duration: 0, placement: 'right-start' }">
+              <Tippy class="vs-menu" :extra="{ interactive: true, offset: [-6, 5], delay: [0, 150], duration: 0, placement: 'right-start', hideOnClick: false }">
                 <div v-for="slot in active.parent.config.slots" class="vs-menu-li" @click="active.data.slot = active.data.slot == slot ? void 0 : slot"><i-mdi:check mr6 :op="active.data.slot == slot ? 100 : 0" />{{ slot }}</div>
               </Tippy>
             </div>
