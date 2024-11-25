@@ -145,10 +145,20 @@
 .vs-menu {
   @apply p5 bg-[--vs-menu-bg] b-1 b-solid b-[--vs-menu-b-c];
   box-shadow: 0 0 12px #00000080;
+  & > hr {
+    @apply -mx5 my5;
+  }
 }
 
 .vs-menu-li {
   @apply flex aic px6 h26 bg-[--vs-menu-li-bg] text-nowrap hover:bg-[--vs-menu-li-hover-bg] cursor-pointer;
+  &[disabled=true] {
+    @apply op40 pointer-events-none;
+  }
+}
+
+hr {
+  @apply h1 bg-[--vs-menu-b-c];
 }
 
 hr:last-child {

@@ -94,7 +94,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get data_children() {
     return (
       isArray(this.$data.children) ? this.$data.children :
-      isPlainObject(this.$data.children) ? Object.values(this.$data.children) :
+      isPlainObject(this.$data.children) ? Object.values(this.$data.children).filter(e => e) :
       void 0
     )
   }
@@ -145,23 +145,48 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   get text() { return isString(this.data.children) ? this.data.children : void 0 }
 
-  get slots() {
-    if (this.config?.slots) return solveOptions(this.config.slots)
-    if (this.config?.vSlots) return solveOptions(this.config.vSlots)
-  }
+  // get slots() {
+  //   if (this.config?.slots) return solveOptions(this.config.slots)
+  //   if (this.config?.vSlots) return solveOptions(this.config.vSlots)
+  // }
 
-  get vSlots() { return isPlainObject(this.$data.children) ? Object.keys(this.$data.children) : void 0 }
-  set vSlots(v) {
-    const vslots =
-      isArray(this.data.children) ? { default: { children: this.data.children } } :
-      isPlainObject(this.data.children) ? this.data.children :
-      {}
-    if (!v?.length) {
-      this.data.children = vslots.default.children
-    } else {
-      const defaults = Object.fromEntries(v.map(e => [e, { children: [] }]))
-      this.data.children = pick({ ...defaults, ...vslots }, [...v, 'default'])
-    }
+  // get vSlots() { return isPlainObject(this.$data.children) ? Object.keys(this.$data.children) : void 0 }
+  // set vSlots(v) {
+  //   const vslots =
+  //     isArray(this.data.children) ? { default: { children: this.data.children } } :
+  //     isPlainObject(this.data.children) ? this.data.children :
+  //     {}
+  //   if (!v?.length) {
+  //     this.data.children = vslots.default.children
+  //   } else {
+  //     const defaults = Object.fromEntries(v.map(e => [e, { children: [] }]))
+  //     this.data.children = pick({ ...defaults, ...vslots }, [...v, 'default'])
+  //   }
+  // }
+
+  // 插槽化 children
+  #vSlots
+  get vSlots() {
+    return this.#vSlots ??= new Proxy({}, {
+      get: (target, p, receiver) => {
+        return p == 'default' && isArray(this.data.children) ? { default: this.data.children } : this.data.children?.[p]
+      },
+      set: (target, p, val, receiver) => {
+        if (isArray(this.data.children) && p == 'default' && isArray(val)) {
+          this.data.children = val
+        } else {
+          let children = this.data.children as any
+          if (isArray(children)) children = { default: { children } }
+          children[p] = isArray(val) ? { children: val } : val == true ? { children: [] } : val
+          // 最小化 children
+          if (Object.entries(children).every(([k, v]) => k == 'default' || v == null) && Object.entries(children.default).every(([k, v]) => k == 'children' || v == null)) {
+            children = children.default.children
+          }
+          this.data.children = children
+        }
+        return true
+      },
+    })
   }
 
   get isRoot() { return !this.parent }
@@ -195,7 +220,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   override remove() {
-    this.designerCtx.activeId = this.previousSibling?.id ?? this.nextSibling?.id ?? this.parent?.id
+    this.designerCtx.activeId = this.prev?.id ?? this.next?.id ?? this.parent?.id
     this.isRoot ? this.empty() : super.remove()
   }
 

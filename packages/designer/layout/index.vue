@@ -23,19 +23,20 @@
             <selected-layer />
             <!-- resize -->
             <Moveable
-              v-if="designerCtx.active && !designerCtx.active.isRoot && designerCtx.active.el && !designerCtx.active?.inline && designerCtx.active.is != 'span'"
-              :key="designerCtx.active.id + ':' + designerCtx.active.index"
-              :target="designerCtx.active.el"
+              v-if="active && !active.isRoot && active.el && !active?.inline && active.is != 'span'"
+              ref="moveable"
+              :key="active.id"
               :style="`margin-top: ${-iframeScroll.y}px; margin-left: ${-iframeScroll.x}px`"
+              :target="active.el"
               :resizable="true"
               :rotatable="false"
               :origin="false"
-              :renderDirections="designerCtx.active.isAbs ? undefined : ['e', 'se', 's']"
+              :renderDirections="active.isAbs ? undefined : ['e', 'se', 's']"
               :hideDefaultLines="true"
               :snappable="true"
               :snapGap="false"
               :snapElement="true"
-              :elementGuidelines="[designerCtx.active?.parent, ...designerCtx.active?.siblings || []].map(e => e?.el)"
+              :elementGuidelines="[active?.parent, ...active?.siblings || []].map(e => e?.el)"
               :useResizeObserver="true"
               :useMutationObserver="true"
               @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd"
@@ -46,9 +47,9 @@
 
         <!-- Breadcrumb -->
         <div class="absolute top-20 left-35 flex aic text-13 lh-32" @mouseleave="designerCtx.hoverId = void 0">
-          <div v-for="(node, i, len) in designerCtx.active?.path" class="vs-breadcrumb-li" @click="designerCtx.activeId = node.id" @mouseenter="designerCtx.hoverId = node.id">
+          <div v-for="(node, i, len) in active?.path" class="vs-breadcrumb-li" @click="designerCtx.activeId = node.id" @mouseenter="designerCtx.hoverId = node.id">
             <div class="max-w150 truncate">{{ node.label }}</div>
-            <div v-if="node != designerCtx.active" mx4> > </div>
+            <div v-if="node != active" mx4> > </div>
           </div>
         </div>
       </div>
@@ -81,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, ref, getCurrentInstance, PropType, reactive, onUnmounted, toRaw, triggerRef, toRef } from 'vue'
+import { watch, computed, provide, ref, getCurrentInstance, PropType, reactive, onUnmounted, toRaw, triggerRef, toRef, toRefs, nextTick } from 'vue'
 import { computedAsync, useDebouncedRefHistory, useEventListener, unrefElement, useWindowScroll, refDebounced } from '@vueuse/core'
 import Moveable from 'vue3-moveable'
 
@@ -120,7 +121,7 @@ app.component('EditTable', EditTable)
 app.component('Tabs', Tabs)
 app.component('MonacoEditor', MonacoEditor)
 
-const log = (...arg) => console.log(...arg)
+const log = (...arg) => (console.log(...arg), arg[0])
 
 const props = defineProps({
   json: Object,
@@ -144,6 +145,7 @@ const root = ref(props.json ?? initial())
 
 const designerCtx = createDesignerCtx(root, () => props.extraPlugins)
 const { canvas } = designerCtx
+const { active } = toRefs(designerCtx)
 
 provide(designerCtxKey, designerCtx)
 provide('designerCtx', designerCtx)
@@ -182,6 +184,11 @@ const activitybar = ref(root.value.designer?.activitybar ?? 'widgets')
 // const activitybar = useTransformer(root, 'designer.activitybar', { displayValue: 'widgets' })
 
 // moveable
+const moveable = ref()
+watch(() => active!.value?.index, async () => {
+  await nextTick()
+  moveable.value?.updateRect()
+})
 function onDragStart(e) {
   designerCtx.draggedId = e.target.getAttribute('_id')
 }
@@ -217,11 +224,11 @@ function onKeydown(e: KeyboardEvent) {
   const kb = [
     // 按 Delete 删除当前选中元素
     [() => key == 'delete', () => {
-      designerCtx.active?.remove()
+      active!.value?.remove()
     }],
     // ↑ → ↓ ←
     [() => ['arrowup', 'arrowleft', 'arrowdown', 'arrowright'].includes(key), () => {
-      const node = designerCtx.active
+      const node = active!.value
       if (!node || node.isRoot) return
       const offset = e.shiftKey ? 10 : 1
       if (node.isAbs) {

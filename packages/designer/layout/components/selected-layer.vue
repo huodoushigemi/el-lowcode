@@ -11,20 +11,33 @@
         <div class="vs-li">
           <i-mdi:dots-vertical w16 h16 />
           <Tippy class="vs-menu" :extra="{ interactive: true, offset: [0, 0], delay: [0, 300], duration: 0, placement: 'right-start' }">
-            <!-- <div class="vs-menu-li"><i-solar:arrow-to-top-right-bold class="icon" @click="active2parent" /></div> -->
-            <button class="vs-menu-li" :disabled="!active.previousSibling" @click="active.after(active.previousSibling!)"><i-solar:arrow-up-linear mr6 />上移</button>
-            <button class="vs-menu-li" :disabled="!active.nextSibling" @click="active.before(active.nextSibling!)"><i-solar:arrow-down-linear mr6 />下移</button>
-            <button class="vs-menu-li" @click="active.after(active.clone())"><i-solar:copy-line-duotone mr6 />拷贝</button>
-            <button class="vs-menu-li" @click="active.empty()" hover="c-red"><i-solar:broom-broken mr6 />清空</button>
-            <button class="vs-menu-li" @click="active.remove()" hover="c-red"><i-solar:trash-bin-minimalistic-linear mr6 />删除</button>
+            <div class="vs-menu-li" :disabled="!active.prev" @click="active.after(active.prev!)"><i-solar:arrow-up-linear mr6 />上移</div>
+            <div class="vs-menu-li" :disabled="!active.next" @click="active.before(active.next!)"><i-solar:arrow-down-linear mr6 />下移</div>
+            <div class="vs-menu-li" @click="active.after(active.clone())"><i-solar:copy-line-duotone mr6 />拷贝</div>
+            <div class="vs-menu-li" @click="active.empty()" hover="c-red"><i-solar:broom-broken mr6 />清空</div>
+            <div class="vs-menu-li" @click="active.remove()" hover="c-red"><i-solar:trash-bin-minimalistic-linear mr6 />删除</div>
             <hr />
             <!-- v-slots -->
-            <button v-if="active.config?.vSlots || active.config?.slots" class="vs-menu-li" @click="active.remove()">
-              <i-fa6-solid:check-to-slot mr6 />Slots
+            <div v-if="active.config?.vSlots" class="vs-menu-li" @click="active.remove()">
+              <i-fa6-solid:check-to-slot mr6 />v-slots
               <Tippy class="vs-menu" :extra="{ interactive: true, offset: [-6, 5], delay: [0, 150], duration: 0, placement: 'right-start' }">
-                <div v-for="slot in (active.config?.vSlots || active.config?.slots)" class="vs-menu-li" @click="active.vSlots = active.vSlots!.includes(slot) ? remove(active.vSlots!, slot) : active.vSlots!.push(slot)"><i-mdi:check mr6 :op="active.vSlots!.includes(slot) ? 100 : 0" />{{ slot }}</div>
+                <div v-for="slot in active.config?.vSlots" class="vs-menu-li" @click="active.vSlots[slot] = active.vSlots[slot] ? void 0 : []"><i-mdi:check mr6 :op="active.vSlots[slot] ? 100 : 0" />{{ slot }}</div>
               </Tippy>
-            </button>
+            </div>
+            <!-- slots -->
+            <!-- <div v-if="active.config?.slots" class="vs-menu-li" @click="active.remove()">
+              <i-fa6-solid:check-to-slot mr6 />v-slots
+              <Tippy class="vs-menu" :extra="{ interactive: true, offset: [-6, 5], delay: [0, 150], duration: 0, placement: 'right-start' }">
+                <div v-for="slot in active.config?.slots" class="vs-menu-li" @click="active.vSlots[slot] = active.vSlots[slot] ? void 0 : []"><i-mdi:check mr6 :op="active.vSlots[slot] ? 100 : 0" />{{ slot }}</div>
+              </Tippy>
+            </div> -->
+            <!-- slot -->
+            <div v-if="active.parent?.config?.slots" class="vs-menu-li" @click="active.remove()">
+              <i-fa6-solid:check-to-slot mr6 />slot
+              <Tippy class="vs-menu" :extra="{ interactive: true, offset: [-6, 5], delay: [0, 150], duration: 0, placement: 'right-start' }">
+                <div v-for="slot in active.parent.config.slots" class="vs-menu-li" @click="active.data.slot = active.data.slot == slot ? void 0 : slot"><i-mdi:check mr6 :op="active.data.slot == slot ? 100 : 0" />{{ slot }}</div>
+              </Tippy>
+            </div>
           </Tippy>
         </div>
       </div>

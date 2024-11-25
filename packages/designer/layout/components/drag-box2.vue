@@ -368,22 +368,48 @@ const DragGuidMask = defineComponent({
 <style lang="scss">
 .empty-placeholder {
   position: relative;
-  padding: 18px 72px;
-  height: 100%;
-  opacity: .4;
+  padding: 18px;
+  align-self: stretch;
+  flex: 1;
+  overflow: hidden;
+  container-type: inline-size;
+  container-name: empty-placeholder;
+  outline-offset: -1px;
+  mix-blend-mode: difference;
   &::after {
     content: 'Drag and drop here';
+    opacity: .4;
     text-wrap: nowrap;
     position: absolute;
     top: 50%;
     left: 50%;
+    color: rgba(#e6a23c, .5);
     transform: translate(-50%, -50%);
+  }
+  &:hover {
+    outline: 1px dashed rgba(#e6a23c, .4);
+    background: rgba(#e6a23c, .1);
+  }
+}
+
+@container empty-placeholder (max-width: 128px) {
+  .empty-placeholder::after {
+    content: '';
+    inset: 0;
+    opacity: 1;
+    transform: unset;
+    outline: 1px dashed rgba(#e6a23c, .4);
+    outline-offset: -1px;
   }
 }
 
 [lcd-root] > .empty-placeholder {
   position: absolute;
   inset: 0;
+  font-size: 22px;
+  &:hover {
+    background: unset;
+  }
 }
 [lcd-lock] > * {
   pointer-events: none;

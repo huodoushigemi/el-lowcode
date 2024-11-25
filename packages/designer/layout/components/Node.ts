@@ -30,7 +30,7 @@ export abstract class Node<T = any> {
   #deep = computed(() => (this.parent?.deep ?? -1) + 1)
   get deep(): number { return this.#deep.value }
 
-  #index = computed(() => this.parent!.children?.indexOf(this) ?? 0)
+  #index = computed(() => this.parent?.children?.indexOf(this) ?? 0)
   get index(): number { return this.#index.value }
 
   #wm: WeakMap<any, typeof this> | undefined
@@ -56,8 +56,8 @@ export abstract class Node<T = any> {
     })
   }
 
-  get previousSibling(): typeof this | undefined { return this.parent?.children![this.index - 1] }
-  get nextSibling(): typeof this | undefined { return this.parent?.children![this.index + 1] }
+  get prev(): typeof this | undefined { return this.parent?.children![this.index - 1] }
+  get next(): typeof this | undefined { return this.parent?.children![this.index + 1] }
   get siblings(): typeof this[] { return this.parent?.children?.filter(e => this != e) || [] }
 
   get descendants() {
@@ -93,7 +93,7 @@ export abstract class Node<T = any> {
   }
 
   after(node: Node) {
-    this.parent!.insertBefore(node, this.nextSibling)
+    this.parent!.insertBefore(node, this.next)
   }
 
   contains(node: Node) {
