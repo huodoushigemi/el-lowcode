@@ -1,5 +1,5 @@
 <template>
-  <div :class="['vs-tree vs-ul hfull', selected && 'element-selection']" tabindex="0" @dragstart="onDragstart" @dragover="onDragover" @drop="onDrop" @dragend="onDragend" @click="onClick" @pointerover="onHover" @pointerleave="onHover">
+  <div :class="['vs-tree vs-ul hfull', selected && 'element-selection']" tabindex="0" @dragstart="onDragstart" @dragover="onDragover" @drop="onDrop" @dragend="onDragend" @click="onClick" @pointerover="onHover" @pointerleave="onHover" v-list-focus>
     <div class="drag-guide" :style="dragGuideStyle" />
     
     <template v-for="(node, i) in expandTree" :key="node.id">
@@ -30,7 +30,7 @@
 import { computed, reactive, toRaw, shallowRef, ref } from 'vue'
 import { isArray } from '@vue/shared'
 import { toReactive } from '@vueuse/core'
-import { keyBy, unFn } from '@el-lowcode/utils'
+import { keyBy, unFn, vListFocus } from '@el-lowcode/utils'
 import { Node } from './Node'
 
 type Props = {

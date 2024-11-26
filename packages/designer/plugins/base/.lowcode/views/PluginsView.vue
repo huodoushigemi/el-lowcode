@@ -4,7 +4,7 @@
     <ElTooltip content="远程插件" placement="right"><i-ep:plus class="vs-ai" mla p6 text-24 rd-6 @click="addRemotePlugin()" /></ElTooltip>
      <!-- <button class="vs-btn" flex aic mla @click="addRemotePlugin()">+ 远程插件</button> -->
   </div>
-  <div :class="['vs-ul', drawer.url && 'element-selection']" tabindex="0">
+  <div :class="['vs-ul', drawer.url && 'element-selection']" tabindex="0" v-list-focus>
     <Async v-for="(url, i) in designerCtx.dict.plugins" :load="loadPkg(url)">
       <template #default="{ data: pkg }">
         <div :class="['vs-li plugin-li flex aic pr8 h74', url == drawer.url && 'selected']" :op="pkg.disabled && 40 " :title="`${pkg.name}\n\n${pkg.description}`" :data-index="i" @click="showMD(url)">
@@ -39,6 +39,7 @@ import { computedAsync } from '@vueuse/core'
 import { ElMessage, ElMessageBox, ElDrawer, ElTooltip } from 'element-plus'
 
 import { DesignerCtx } from '@el-lowcode/designer'
+import { vListFocus } from '@el-lowcode/utils'
 import MD from './MD.vue'
 
 const designerCtx = inject<DesignerCtx>('designerCtx')!

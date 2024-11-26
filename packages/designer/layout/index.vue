@@ -1,5 +1,5 @@
 <template>
-  <div class="designer" flex="~ col" @keydown="onKeydown" v-key-dir="{ source: 'target' }">
+  <div class="designer" flex="~ col" @keydown="onKeydown">
     <div flex flex-1 h0>
       <Activitybar v-model="activitybar" :list="activitybars" />
 
@@ -83,7 +83,7 @@
 
 <script setup lang="ts">
 import { watch, computed, provide, ref, getCurrentInstance, PropType, reactive, onUnmounted, toRaw, triggerRef, toRef, toRefs, nextTick } from 'vue'
-import { computedAsync, useDebouncedRefHistory, useEventListener, unrefElement, useWindowScroll, refDebounced } from '@vueuse/core'
+import { computedAsync, useDebouncedRefHistory, useWindowScroll } from '@vueuse/core'
 import Moveable from 'vue3-moveable'
 
 import { eq, get, pick, set, uid } from '@el-lowcode/utils'
@@ -97,7 +97,7 @@ import SettingPanel from './setting-panel.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import Statusbar from './components/Statusbar.vue'
 // import { vue2esm } from './vue2esm'
-import { createDesignerCtx, quickPick, vKeyDir } from '../utils'
+import { createDesignerCtx, quickPick } from '../utils'
 
 import OptionsInput from '../components/OptionsInput.vue'
 import PairInput from '../components/PairInput.vue'

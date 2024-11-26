@@ -1,7 +1,6 @@
 import { createApp, ref, nextTick } from 'vue'
 import { onClickOutside } from '@vueuse/core'
-import { eq } from '@el-lowcode/utils'
-import { useKeyDir } from './useKeyDIr'
+import { eq, useListFocus } from '@el-lowcode/utils'
 
 interface QuickPickOptions {
   title?: string
@@ -22,7 +21,7 @@ export function quickPick({ title, placeholder = '请选择', items, value }: Qu
     const elRef = ref()
     const inputRef = ref()
     const stop = onClickOutside(elRef, close, { detectIframe: true })
-    useKeyDir(elRef)
+    useListFocus(elRef, { loop: true })
 
     const app = createApp(() => <div ref={elRef} class='vs-base vs-ul vs-quick focus element-selection' onKeydown={e => e.key == 'Escape' && close()}>
       <input class='vs-input sticky top-0 my8 mx6' ref={inputRef} placeholder={placeholder} />

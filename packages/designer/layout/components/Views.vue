@@ -4,29 +4,17 @@
       {{ activitybar?.title }}
     </div>
 
-    <!-- <div
-      class="h0 overflow-auto"
-      :style="{ flex: sizeMap[activitybar!.id]?.grow }"
-      @vue:mounted="({ el }) => mount(el, activitybar!.id)"
-      @vue:unmounted="({ el }) => unmount(el, activitybar!.id)"
-    /> -->
-
-    <div v-if="list.length > 1" v-for="pane in list" class="pane" :style="{ flex: sizeMap[pane.id]?.grow, height: expanded[pane.id] ? 0 : void 0 }">
-      <div :class="['pane-header flex aic lh-22', expanded[pane.id] && 'expanded']" tabindex="0" @click="expanded[pane.id] = !expanded[pane.id]">
-        <i-tdesign:chevron-right :rotate="expanded[pane.id] ? 90 : 0" ml4 />
-        <div font-700 truncate uppercase>{{ pane.name || pane.id }}</div>
-      </div>
+    <Expand v-if="list.length > 1" v-for="pane in list" :modelValue="expanded[pane.id]" @update:modelValue="expanded[pane.id] = $event" :title="pane.name || pane.id" class="h0" :style="{ flex: expanded[pane.id] ? 1 : '0 content', height: `${pane.initialSize}px` }">
       <div
-        v-if="expanded[pane.id]"
-        class="pane-body flex-1 overflow-auto"
+        class="vs-expand-body"
         @vue:mounted="({ el }) => mount(el, pane)"
         @vue:unmounted="({ el }) => unmount(el, pane)"
       />
-    </div>
+    </Expand>
 
     <div
       v-else-if="list.length"
-      class="pane-body flex-1 h0 overflow-auto"
+      class="vs-expand-body"
       @vue:mounted="({ el }) => mount(el, list[0])"
       @vue:unmounted="({ el }) => unmount(el, list[0])"
     />
@@ -34,9 +22,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, PropType, ref, reactive } from 'vue'
-import { useMutationObserver, useResizeObserver } from '@vueuse/core'
-import { Activitybar, Contributes, DesignerCtx } from '../interface'
+import { computed, inject, PropType, ref } from 'vue'
+import { Activitybar, DesignerCtx } from '../interface'
+import Expand from './Expand.vue'
 
 const props = defineProps({
   activitybar: Object as PropType<Activitybar>,
@@ -48,56 +36,13 @@ const list = computed(() => designer.plugins.flatMap(e => e.contributes.views?.[
 
 const expanded = ref({})
 
-// const wm = new WeakMap()
-const sizeMap = reactive({})
-
 function mount(el, pane) {
   const { id, renderer } = pane
   renderer?.mount(el, designer)
-  sizeMap[id] ??= {}
-  const xxx = sizeMap[id]
-  xxx.scrollHeight = el.scrollHeight
-  xxx.sizeObs = useResizeObserver(el, () => xxx.scrollHeight = el.scrollHeight)
-  xxx.childObs = useMutationObserver(el, () => xxx.scrollHeight = el.scrollHeight, { subtree: false, childList: true })
-  xxx.grow = computed(() => {
-    // @ts-ignore
-    const t: number = Object.values(sizeMap).reduce((t, e) => t + (e?.scrollHeight || 0), 0)
-    
-    return t ? Math.max(xxx.scrollHeight, t * .2) / t : 0
-    // return t ? xxx.scrollHeight / t : 0
-  })
 }
 
 function unmount(el, pane) {
   const { id, renderer } = pane
   renderer?.unmount?.(el, designer)
-  sizeMap[id].sizeObs?.stop()
-  sizeMap[id].childObs?.stop()
-  sizeMap[id] = void 0
 }
 </script>
-
-<style lang="scss">
-.pane {
-  display: flex;
-  flex-direction: column;
-
-  #{&}-header {
-    position: relative;
-    cursor: pointer;
-    color: var(--vscode-activityBar-foreground, #fff);
-    background: var(--vscode-activityBar-background, #333333);
-  }
-
-  #{&}-header.expanded {
-    &::after{
-      content: '';
-      position: absolute;
-      top: 100%;
-      width: 100%;
-      height: 3px;
-      box-shadow: #000 0 6px 6px -6px inset;
-    }
-  }
-}
-</style>

@@ -7,7 +7,6 @@ import { BoxProps, Contributes, DesignerCtx, DisplayNode, ExtensionContext, User
 
 export * as genCode from './genCode'
 export * from './quickPick'
-export * from './useKeyDIr'
 
 export function objStringify(obj, fn) {
   if (isArray(obj)) {
@@ -53,8 +52,8 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     canvas: {
       x: useTransformer(root, 'designer.canvas.x', { silentSet: v => +v.toFixed(0) }),
       y: useTransformer(root, 'designer.canvas.y', { silentSet: v => +v.toFixed(0) }),
-      w: useTransformer(root, 'designer.canvas.style.width', { get: v => v || parseInt(v), set: v => v + 'px' }),
-      h: useTransformer(root, 'designer.canvas.style.height', { get: v => v || parseInt(v), set: v => v + 'px' }),
+      w: useTransformer(root, 'designer.canvas.style.width', { get: v => v && parseInt(v), set: v => v + 'px' }),
+      h: useTransformer(root, 'designer.canvas.style.height', { get: v => v && parseInt(v), set: v => v + 'px' }),
       zoom: useTransformer(root, 'designer.canvas.zoom', { get: v => v || 1, set: v => +(v * 100).toFixed(0) / 100 }),
       style: useTransformer(root, 'designer.canvas.style')
     },
@@ -69,10 +68,11 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     newProps: computed(() => is => Object.assign({ is } as BoxProps, designerCtx.widgets[is]!.defaultProps?.(designerCtx))),
     widgets: computed(() => keyBy(designerCtx.plugins.flatMap(e => e.widgets?.map(normalWidget) || []), 'is')),
     // snippets: computed(() => keyBy(designerCtx.plugins.flatMap(e => e.snippets || []), 'id')),
-    snippets: computed(() => designerCtx.plugins.flatMap(e => e.snippets || [])),
+    snippets: computed(() => [...designerCtx.dict.snippets, ...designerCtx.plugins.flatMap(e => e.snippets || [])]),
     commands: createEvents(),
     dict: {
       plugins: [],
+      snippets: []
     },
   })
 

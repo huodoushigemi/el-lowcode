@@ -4,7 +4,7 @@ import type { Ref } from 'vue'
 import { isArray, isObject } from '@vue/shared'
 import {useEventListener } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
-import { mapValues } from '@el-lowcode/utils'
+import { mapValues, unFn } from '@el-lowcode/utils'
 import type { DesignerCtx, BoxProps, DisplayNode } from '../interface'
 
 defineOptions({
@@ -331,7 +331,7 @@ function resolveNode(el: HTMLElement) {
     return designer.keyedCtx[id!] || new designer.DisplayNode(designer.newProps(is!))
   }
   else {
-    const data = designer.snippets.find(e => e.id == snippet)?.schema()
+    const data = unFn(designer.snippets.find(e => e.id == snippet)?.schema)
     return new designer.DisplayNode(data)
   }
 }
