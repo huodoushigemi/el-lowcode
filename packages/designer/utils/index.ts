@@ -2,7 +2,7 @@ import { computed, MaybeRefOrGetter, reactive, Ref, ref, toRaw, toValue, watch }
 import { isArray, isObject, remove } from '@vue/shared'
 import { computedAsync, Fn } from '@vueuse/core'
 import { useTransformer } from 'el-form-render'
-import { keyBy, pick, toArr, treeUtils, unFn } from '@el-lowcode/utils'
+import { keyBy, mapValues, pick, toArr, treeUtils, unFn } from '@el-lowcode/utils'
 import { BoxProps, Contributes, DesignerCtx, DisplayNode, ExtensionContext, UserWidget, Widget } from '../layout/interface'
 
 export * as genCode from './genCode'
@@ -32,11 +32,8 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
   // load plugins
   watch(allUrls, urls => {
     urls.forEach(url => (xxx[url] ??= computedAsync(async () => {
-      const plugin = reactive({
-        url,
-        ...await createPluginCtx(await import(/* @vite-ignore */ `${url}/.lowcode/index.js`), designerCtx),
-        packageJSON: await fetch(`${url}/.lowcode/package.json`).then(e => e.json()),
-      }) as DesignerCtx['plugins'][0]
+      const packageJSON = await fetch(`${url}/.lowcode/package.json`).then(e => e.json())
+      const plugin = await createPluginCtx(url, await import(/* @vite-ignore */ `${url}/.lowcode/index.js`), packageJSON, designerCtx)
       designerCtx.plugins.push(plugin)
       return plugin
     }, void 0, { onError: e => console.error(e) })))
@@ -77,12 +74,10 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
   })
 
   ;(async () => {
-    designerCtx.plugins.unshift(reactive({
-      // url: await import('../plugins/base?url').replaceAll('/index.js', '') as string,
-      url: '',
-      ...await createPluginCtx(await import('../plugins/base/.lowcode/index'), designerCtx),
-      packageJSON: await import(`../plugins/base/.lowcode/package.json`),
-    }))
+    const packageJSON = await import(`../plugins/base/.lowcode/package.json`)
+    designerCtx.plugins.unshift(
+      await createPluginCtx('', await import('../plugins/base/.lowcode/index'), packageJSON, designerCtx)
+    )
   })()
 
   watch(() => designerCtx.dragged, (val, old) => {
@@ -146,12 +141,22 @@ function normalWidget(widget: UserWidget): Widget {
   }
 }
 
-export async function createPluginCtx(module, designerCtx: DesignerCtx) {
+export async function createPluginCtx(url, module, packageJSON, designerCtx: DesignerCtx) {
   const extCtx: ExtensionContext = {
     subscriptions: []
   }
   const isActive = ref(false)
-  const contributes = computed<Contributes>(() => unFn(module.contributes, designerCtx) || {})
+  const contributes = computed<Contributes>(() => {
+    const contributes = { ...unFn(module.contributes, designerCtx) || {} }
+    contributes.views = mapValues(contributes.views || {}, v => {
+      return v.map(view => ({
+        ...view,
+        name: view.name === true ? packageJSON.displayName ?? packageJSON.name : view.name,
+        icon: view.icon === true ? packageJSON.icon : view.icon,
+      }))
+    })
+    return contributes
+  })
   const activate = async () => {
     await module.activate?.(designerCtx, extCtx)
     isActive.value = true
@@ -171,14 +176,16 @@ export async function createPluginCtx(module, designerCtx: DesignerCtx) {
     commandCbs = val.commands?.flatMap(e => e.cb ? designerCtx.commands.on(e.command, e.cb) : []) || []
   }, { immediate: true })
 
-  return {
+  return reactive({
+    url,
     contributes,
     widgets: module.widgets || [],
     snippets: module.snippets,
     activate,
     deactivate,
     isActive,
-  }
+    packageJSON
+  })
 }
 
 function createEvents() {

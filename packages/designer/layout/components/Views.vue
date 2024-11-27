@@ -4,27 +4,35 @@
       {{ activitybar?.title }}
     </div>
 
-    <Expand v-if="list.length > 1" v-for="pane in list" :modelValue="expanded[pane.id]" @update:modelValue="expanded[pane.id] = $event" :title="pane.name || pane.id" class="h0" :style="{ flex: expanded[pane.id] ? 1 : '0 content', height: `${pane.initialSize}px` }">
-      <div
-        class="vs-expand-body"
-        @vue:mounted="({ el }) => mount(el, pane)"
-        @vue:unmounted="({ el }) => unmount(el, pane)"
-      />
+    <Expand
+      v-if="list.length > 1"
+      v-for="pane in list"
+      :modelValue="expanded[pane.id] ?? true"
+      @update:modelValue="expanded[pane.id] = $event"
+      :title="pane.name || pane.id"
+      :icon="pane.icon"
+      :iconClass="pane.iconClass"
+      class="h0"
+      :style="{ height: `${pane.initialSize}px` }"
+    >
+      <Pane :pane="pane" />
     </Expand>
 
-    <div
-      v-else-if="list.length"
-      class="vs-expand-body"
-      @vue:mounted="({ el }) => mount(el, list[0])"
-      @vue:unmounted="({ el }) => unmount(el, list[0])"
-    />
+    <Pane v-else-if="list.length" :pane="list[0]" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, inject, PropType, ref } from 'vue'
+import { computed, h, inject, PropType, ref } from 'vue'
+import { isArray } from '@vue/shared'
 import { Activitybar, DesignerCtx } from '../interface'
 import Expand from './Expand.vue'
+
+import Widgets from './CompView.vue'
+
+const is = {
+  widgets: Widgets
+}
 
 const props = defineProps({
   activitybar: Object as PropType<Activitybar>,
@@ -45,4 +53,11 @@ function unmount(el, pane) {
   const { id, renderer } = pane
   renderer?.unmount?.(el, designer)
 }
+
+const Pane = ({ pane }) => h(is[isArray(pane.is) ? pane.is[0] : pane.is] || 'div', {
+  ...isArray(pane.is) ? pane.is[1] : void 0,
+  class: 'vs-expand-body',
+  onVnodeMounted: ({ el }) => mount(el, pane),
+  onVnodeUnmounted: ({ el }) => unmount(el, pane),
+})
 </script>

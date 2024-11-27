@@ -1,4 +1,5 @@
 import { watchEffect } from 'vue'
+import { widgets } from './widgets'
 
 export * from './widgets'
 export * from './snippets'
@@ -22,11 +23,10 @@ export function deactivate(designerCtx) {
   styleEl.remove()
 }
 
-
-// v-expansion-panel-title__overlay
-
-export const contributes = {
-  activitybar: [
-
-  ]
-}
+export const contributes = (designerCtx) => ({
+  views: {
+    'widgets': [
+      { id: 'widgets.vuetify', name: true, icon: true, iconClass: 'my4', is: ['widgets', { list: widgets }] }
+    ],
+  }
+})

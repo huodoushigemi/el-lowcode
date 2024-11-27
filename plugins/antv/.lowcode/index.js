@@ -67,3 +67,11 @@ export const widgets = [
     })
   }
 ]
+
+export const contributes = {
+  views: {
+    'widgets': [
+      { id: 'widgets.echarts', name: true, icon: true, iconClass: 'my4', is: ['widgets', { list: widgets }] }
+    ],
+  }
+}

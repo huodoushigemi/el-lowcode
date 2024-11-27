@@ -1,8 +1,11 @@
 <template>
   <div :class="['vs-expand', open && 'expanded']" v-auto-animate="{ duration: 200, easing: 'linear' }">
-    <div :class="['vs-expand-header', open && 'expanded']" flex cursor-pointer select-none :open="open" @click="open = !open">
+    <div :class="['vs-expand-header', open && 'expanded']" flex cursor-pointer select-none tabindex="0" role="button" @click="open = !open">
       <i-ep:arrow-up class="mx2 p1 w16 h16" :rotate="open ? 180 : 90" text-12 />
-      <div class="title uppercase font-700"><slot name="title">{{ title }}</slot></div>
+      <div class="title flex aic uppercase font-700">
+        <img v-if="icon" :class="[iconClass, 'mr6 w22 hfull object-contain']" :src="icon" />
+        <slot name="title">{{ title }}</slot>
+      </div>
       <slot name="actions" />
     </div>
 
@@ -16,15 +19,18 @@ import { useVModel } from '@vueuse/core'
 
 const props = defineProps({
   modelValue: Boolean,
+  defaultValue: Boolean,
+  icon: String,
+  iconClass: String,
   title: String
 })
 
-const open = useVModel(props, 'modelValue', void 0, { passive: true })
+const open = useVModel(props, 'modelValue', void 0, { passive: true, defaultValue: props.defaultValue })
 </script>
 
 <style lang="scss">
 .vs-expand {
-  @apply flex flex-col;
+  @apply flex flex-col flex-[0_0_min-content] [&.expanded]:flex-[1_min-content];
 
   &-header {
     @apply flex aic relative cursor-pointer lh-22;

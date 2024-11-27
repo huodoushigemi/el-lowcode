@@ -53,9 +53,6 @@ export const contributes = (designerCtx) => ({
     },
   ],
   views: {
-    'widgets': [
-      { id: 'widgets', renderer: create(defineAsyncComponent(() => import('./views/CompView.vue'))) }
-    ],
     'snippets': [
       { id: 'snippets', renderer: create(defineAsyncComponent(() => import('./views/SnippetsView.vue'))) }
     ],

@@ -286,7 +286,10 @@ export interface Contributes {
   views?: Record<string, {
     id: string
     name: string
+    icon?: string
+    iconClass?: string
     initialSize?: number
+    renderer?: Renderer
   }[]>
   statusbar?: StatusBarItem[]
   commands?: Command[]
