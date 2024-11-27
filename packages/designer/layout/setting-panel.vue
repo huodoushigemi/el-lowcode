@@ -118,10 +118,19 @@ const styles = computed(() => [
 ])
 
 const commons = computed(() => [
-  { lp: 'id' },
-  { lp: 'class' },
-  { lp: ['condition', '$.condition'], type: 'switch', displayValue: true },
-  { is: 'ElDivider' },
+  { is: 'div', class: 'grid grid-cols-5 gap-x-8', children: [
+    { lp: 'id', class: 'col-span-2' },
+    { lp: 'class', class: 'col-span-3' },
+  ] },
+  { is: 'hr' },
+  { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
+    { lp: ['v-for', '$.for'], class: 'col-span-2', script: true },
+    { prop: '$.forArgs.0', el: { placeholder: 'item' } },
+    { prop: '$.forArgs.1', el: { placeholder: 'index' } },
+  ] },
+  { is: 'hr' },
+  { lp: ['v-if', '$.condition'], type: 'switch', displayValue: true },
+  { is: 'hr' },
   { is: 'h1', children: 'Event' },
   { lp: 'onClick' },
   { lp: 'onChange' },

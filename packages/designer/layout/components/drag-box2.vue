@@ -30,8 +30,9 @@ const EMPTY = Symbol()
 
 const Render = createRender({
   defaultIs: 'Fragment',
-  processProps: (_props: any) => {
+  processProps: (_props: any, vars) => {
     if (_props[EMPTY]) return _props
+    // todo for
     
     // return wm.get(_props)?.value || wm.set(_props, computed(() => {
       const node = designer.keyedCtx[_props._id] // todo

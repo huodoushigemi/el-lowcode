@@ -79,6 +79,9 @@ export default {
                 is: 'ElFormItemRender',
                 label: '备注',
                 prop: 'remark',
+                $: {
+                  condition: "{{state.formData.sex != '1'}}",
+                },
                 children: [
                   {
                     is: 'ElInput',
@@ -86,9 +89,6 @@ export default {
                     _id: '9a8fa22c-bdba-4cd6-9c54-5b344e4068f0',
                     placeholder: '为男时隐藏',
                     type: 'textarea',
-                    $: {
-                      condition: "{{state.formData.sex != '1'}}",
-                    },
                     showWordLimit: false,
                   },
                 ],

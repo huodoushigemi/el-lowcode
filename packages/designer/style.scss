@@ -158,7 +158,7 @@
 }
 
 hr {
-  @apply h1 bg-[--vs-menu-b-c];
+  @apply b-t-1 b-t-solid b-t-[--vs-menu-b-c];
 }
 
 hr:last-child {

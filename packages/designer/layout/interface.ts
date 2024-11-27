@@ -115,6 +115,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
     props = JSON.parse(JSON.stringify(props))
     props.children = children
     props = processProps(props, this.designerCtx.pageCtx)
+    // todo $
     if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(this.data, this.designerCtx)) as any
     return props
   })

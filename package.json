@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && node ./build/vite.config.js",
-    "clean": "rimraf --glob dist \"packages/*/dist\"",
+    "clean": "rimraf --glob dist \"packages/*/dist\" \"plugins/*/.lowcode/dist\"",
     "preview": "vite preview",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs && pnpm build",
