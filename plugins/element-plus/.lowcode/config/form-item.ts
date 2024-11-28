@@ -70,5 +70,4 @@ function xxx(props) {
       Object.defineProperty(toRaw(props.children[0]), 'lcd-selectable', { value: false, writable: true })
     }
   }
-  return props
 }

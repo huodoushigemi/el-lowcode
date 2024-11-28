@@ -15,11 +15,10 @@ export default {
  },
 } as Plugin
 
-export function processProps(props, { state } = inject('pageCtx') as any) {
+export function processProps(props, vars) {
   const { children, ..._props } =  props
   props = _props
 
-  const vars = { state }
   props = deepClone(props, e => _execExp(e, vars))
   props.children = _execExp(children, vars)
 

@@ -112,6 +112,7 @@
           designerCtx
         },
         render: () => [
+          // todo updated
           h(ConfigProvider, designerCtx.root, {
             default: () => h(DragBox, { root: designerCtx.root }),
             loading: () => h('h1', { style: 'margin: 0; text-align: center; transform: translate(0, 45vh);' }, 'Loading……')

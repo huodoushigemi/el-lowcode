@@ -1,4 +1,4 @@
-import { computed, InjectionKey, mergeProps, ref, toRaw } from 'vue'
+import { computed, InjectionKey, mergeProps, ref, shallowRef, toRaw } from 'vue'
 import { isArray, isObject, isPlainObject, isString, normalizeStyle } from '@vue/shared'
 import { Fn, unrefElement } from '@vueuse/core'
 import { Arrable, Assign, deepClone, Fnable, Obj, pick, set, uid } from '@el-lowcode/utils'
@@ -93,8 +93,8 @@ export abstract class DisplayNode extends Node<BoxProps> {
   // }
   get data_children() {
     return (
-      isArray(this.$data.children) ? this.$data.children :
-      isPlainObject(this.$data.children) ? Object.values(this.$data.children).filter(e => e) :
+      isArray(this.data.children) ? this.data.children :
+      isPlainObject(this.data.children) ? Object.values(this.data.children).filter(e => e) :
       void 0
     )
   }
@@ -109,12 +109,16 @@ export abstract class DisplayNode extends Node<BoxProps> {
       : el
   }
 
+  #vars = shallowRef()
+  get vars() { return this.#vars.value }
+  set vars(v) { this.#vars.value = v }
+
   #$data = computed(() => {
     let { children, ...props } = this.data
     // 移除值为 undefuned 的属性
     props = JSON.parse(JSON.stringify(props))
     props.children = children
-    props = processProps(props, this.designerCtx.pageCtx)
+    props = processProps(props, this.vars)
     // todo $
     if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(this.data, this.designerCtx)) as any
     return props
@@ -122,7 +126,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get $data() { return this.#$data.value as BoxProps }
 
   // 自由拖拽
-  get isAbs() { return this.$data.style?.position == 'absolute' }
+  get isAbs() { return this.data.style?.position == 'absolute' }
   set isAbs(bool) { this.data.style = bool ? normalizeStyle([this.data.style, { position: 'absolute', margin: 0 }]) : normalizeStyle([this.data.style, { position: void 0, transform: void 0, margin: void 0 }]) }
 
   get x() { return parseTransform(this.data.style?.transform)[0] }
@@ -141,7 +145,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   set grid(v) { v ? set(this.data, 'style.display', this.inline ? 'inline-grid' : 'grid') : void 0 }
 
   // 自由布局
-  get isAbsLayout() { return !!this.$data['data-absolute-layout'] }
+  get isAbsLayout() { return !!this.data['data-absolute-layout'] }
   set isAbsLayout(bool) { this.data['data-absolute-layout'] = bool || void 0 }
 
   get text() { return isString(this.data.children) ? this.data.children : void 0 }
@@ -212,7 +216,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   override insertable(node: DisplayNode) {
-    if (!isArray(this.$data.children)) return false
+    if (!isArray(this.data.children)) return false
     if (node.drag.to && !node.drag.to.includes(this.is)) return false
     if (this.drag.from && !this.drag.from.includes(node.is)) return false
     if (node.drag.ancestor && !this.path.some(e => node.drag.ancestor!.includes(e.is))) return false
@@ -232,7 +236,6 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
 export interface DesignerCtx {
   DisplayNode: { new (...args: ConstructorParameters<typeof DisplayNode>): DisplayNode }
-  pageCtx: { state: any }
   
   activeId?: string
   readonly active?: DisplayNode

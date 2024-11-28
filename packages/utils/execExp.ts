@@ -17,5 +17,4 @@ export function execExp(exp: unknown, ctx: Obj) {
   const vars = { ...ctx, ...provideVars }
   const func = new Function(...Object.keys(vars), `return ${matched[1]}`)
   return func(...Object.values(vars))
-  // return set(model.value, prop, val)
 }

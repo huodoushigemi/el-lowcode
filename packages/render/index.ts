@@ -1,4 +1,4 @@
-import { h, resolveDynamicComponent, createVNode, createTextVNode, toDisplayString, VNode } from 'vue'
+import { h, resolveDynamicComponent, createVNode, createTextVNode, toDisplayString, VNode, inject } from 'vue'
 import { isArray, isFunction, isPlainObject } from '@vue/shared'
 import { unFn, Fnable, Arrable, mapValues, Obj } from '@el-lowcode/utils'
 
@@ -23,7 +23,7 @@ type CreateRender = {
 
 /*#__NO_SIDE_EFFECTS__*/
 export function createRender({ defaultIs = 'div', processProps = (props: Props, vars: Obj) => props }: CreateRender) {
-  const __h = e => isPlainObject(e) ? Render(e) : e
+  const __h = (e, vars) => isPlainObject(e) ? Render(e, vars) : e
 
   const _h = (props: Props, vars: Obj) => {
     const { is, $, children, ...attrs } = processProps(props, vars)
@@ -35,10 +35,10 @@ export function createRender({ defaultIs = 'div', processProps = (props: Props, 
           attrs,
 
           // children
-          isArray(children) ? { default: () => children.map(e => __h(e)) } :
+          isArray(children) ? { default: () => children.map(e => __h(e, vars)) } :
           // isPlainObject(children) ? mapValues(children, v => (scope) => v.children.map(e => _h(e))) :
-          isPlainObject(children) ? mapValues(children, v => (scope) => __h(v)) :
-          isFunction(children) ? { default: () => { const ret = children(); return isArray(ret) ? ret.map(e => __h(e)) : ret; } } :
+          isPlainObject(children) ? mapValues(children, v => (scope) => __h(v, vars)) :
+          isFunction(children) ? { default: () => { const ret = children(); return isArray(ret) ? ret.map(e => __h(e, vars)) : ret; } } :
           children
         )
       : null
@@ -61,7 +61,10 @@ export function createRender({ defaultIs = 'div', processProps = (props: Props, 
     }
   }
 
-  return Render
+  return (props) => {
+    const vars = inject('pageCtx', void 0) as any
+    return Render(props, vars)
+  }
 }
 
 export const Render = createRender({})

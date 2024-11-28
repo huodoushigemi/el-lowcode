@@ -19,7 +19,7 @@ defineRender(() => {
   return [
     h(DragLine),
     h(DragGuidMask),
-    cloneVNode(Render(props.root!) || h('div'), { 'lcd-root': '' }),
+    cloneVNode(Render(props.root!) || h('div') as any, { 'lcd-root': '' }),
   ]
 })
 
@@ -32,10 +32,10 @@ const Render = createRender({
   defaultIs: 'Fragment',
   processProps: (_props: any, vars) => {
     if (_props[EMPTY]) return _props
-    // todo for
     
     // return wm.get(_props)?.value || wm.set(_props, computed(() => {
       const node = designer.keyedCtx[_props._id] // todo
+      node.vars = vars
       let { children, ...props } = node.$data
 
       const ctx = setup(node)
@@ -47,9 +47,6 @@ const Render = createRender({
         else {
           sortAbsolute(children)
         }
-      }
-      else if (isObject(children)) {
-        
       }
 
       // 合并属性
