@@ -123,12 +123,11 @@ const commons = computed(() => [
     { lp: 'class', class: 'col-span-3' },
   ] },
   { is: 'hr' },
-  { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
+  { is: 'div', class: 'grid grid-cols-4 space-x--1', children: [
     { lp: ['v-for', '$.for'], class: 'col-span-2', script: true },
-    { prop: '$.forArgs.0', el: { placeholder: 'item' } },
-    { prop: '$.forArgs.1', el: { placeholder: 'index' } },
+    { label: 'ㅤ', prop: '$.forArgs.0', script: false, el: { placeholder: 'item' } },
+    { label: 'ㅤ', prop: '$.forArgs.1', script: false, el: { placeholder: 'index' } },
   ] },
-  { is: 'hr' },
   { lp: ['v-if', '$.condition'], type: 'switch', displayValue: true },
   { is: 'hr' },
   { is: 'h1', children: 'Event' },

@@ -8,8 +8,8 @@
       </KeepAlive>
 
       <div relative flex-1 w0 hfull>
-        <!-- Canvas Viewport -->
-        <infinite-viewer wfull hfull overflow-hidden style="background: var(--vs-panel-bg)" @click="designerCtx.activeId = undefined" v-model:zoom="canvas.zoom" v-model:x="canvas.x" v-model:y="canvas.y" @wheel.prevent.stop>
+        <!-- v-model:x="canvas.x" v-model:y="canvas.y" -->
+        <infinite-viewer wfull hfull overflow-hidden style="background: var(--vs-panel-bg)" @click="designerCtx.activeId = undefined" v-model:zoom="canvas.zoom" @wheel.prevent.stop>
           <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @click.stop @mouseleave="designerCtx.dragged || (designerCtx.hoverId = undefined)">
             <iframe
               :key="srcurl + srcdoc + root._id"

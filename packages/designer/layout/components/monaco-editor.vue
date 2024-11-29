@@ -4,7 +4,7 @@
     @keydown="onKeydown"
     v-loading="!isMount"
     v-bind="{...$props, ...$attrs}"
-    :value="value || modelValue"
+    :value="_val"
     :modelValue="void 0"
     @update:value="emit('update:modelValue', _val = $event)"
     :class="language"

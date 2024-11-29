@@ -54,9 +54,9 @@ export interface BoxProps {
   children?: string | number | BoxProps[] | { [k: string]: BoxProps }
   $?: {
     // todo
-    loop: string
+    for?: string
     // todo
-    loopArgs: [string, string]
+    forArgs?: [string, string]
     condition: any
   }
   [k: string]: any
@@ -113,17 +113,23 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get vars() { return this.#vars.value }
   set vars(v) { this.#vars.value = v }
 
-  #$data = computed(() => {
+  #$data = computed(() => this.processProps(this.vars))
+  get $data() { return this.#$data.value as BoxProps }
+
+  processProps(vars?: Record<string, any>) {
     let { children, ...props } = this.data
     // 移除值为 undefuned 的属性
     props = JSON.parse(JSON.stringify(props))
     props.children = children
-    props = processProps(props, this.vars)
+    props = processProps(props, vars)
     // todo $
     if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(this.data, this.designerCtx)) as any
+    if (this.indexInFor > 0) props = mergeProps(props, { style: 'pointer-events: none;' }) as any
     return props
-  })
-  get $data() { return this.#$data.value as BoxProps }
+  }
+
+  get itemInFor() { return this.data.$?.for ? this.vars[this.data.$.forArgs?.[0] || 'item'] : this.parent?.itemInFor }
+  get indexInFor() { return this.data.$?.for ? this.vars[this.data.$.forArgs?.[1] || 'index'] : this.parent?.indexInFor }
 
   // 自由拖拽
   get isAbs() { return this.data.style?.position == 'absolute' }

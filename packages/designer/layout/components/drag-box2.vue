@@ -3,6 +3,7 @@ import { cloneVNode, computed, defineComponent, effectScope, h, inject, mergePro
 import type { Ref } from 'vue'
 import { isArray, isObject } from '@vue/shared'
 import {useEventListener } from '@vueuse/core'
+import { processProps } from 'el-lowcode'
 import { createRender } from '@el-lowcode/render'
 import { mapValues, unFn } from '@el-lowcode/utils'
 import type { DesignerCtx, BoxProps, DisplayNode } from '../interface'
@@ -19,7 +20,7 @@ defineRender(() => {
   return [
     h(DragLine),
     h(DragGuidMask),
-    cloneVNode(Render(props.root!) || h('div') as any, { 'lcd-root': '' }),
+    cloneVNode(Render(props.root!) || h('div') as any, { 'lcd-root': '', onMousedown, onMouseover }),
   ]
 })
 
@@ -32,6 +33,15 @@ const Render = createRender({
   defaultIs: 'Fragment',
   processProps: (_props: any, vars) => {
     if (_props[EMPTY]) return _props
+    if (!_props.is && _props.$?.for) return processProps(_props, vars)
+
+    if (_props.$?.for) {
+      const node = new designer.DisplayNode(_props)
+      node.vars = vars
+      if (node.indexInFor > 0) {
+        return node.processProps(vars)
+      }
+    }
     
     // return wm.get(_props)?.value || wm.set(_props, computed(() => {
       const node = designer.keyedCtx[_props._id] // todo
@@ -55,7 +65,6 @@ const Render = createRender({
 
       return props
     // })).get(_props).value
-    
   }
 })
 
@@ -73,21 +82,6 @@ function setup(node: DisplayNode) {
 
     useDrop(node, boxRef)
     useDrag(node)
-    
-    useEventListener(() => node.el, 'mousedown', e => {
-      if (!node.selectable) return
-      if (e.button != 0) return
-      e.stopPropagation()
-      if (designer.dragged) return
-      designer.activeId = node.id
-    })
-  
-    useEventListener(() => node.el, 'mouseover', e => {
-      if (!node.selectable) return
-      e.stopPropagation()
-      if (designer.dragged) return
-      designer.hoverId = node.id
-    })
   
     // add attrs
     watchEffect(() => {
@@ -124,6 +118,23 @@ function setup(node: DisplayNode) {
 
     return ret
   })
+}
+
+function onMousedown(e: MouseEvent) {
+  if (e.button != 0) return
+  e.stopPropagation()
+  const el = e.composedPath().find(e => resolveNode(e as HTMLElement)?.selectable)!
+  const node = resolveNode(el as HTMLElement)!
+  if (designer.dragged) return
+  designer.activeId = node.id
+}
+
+function onMouseover(e: MouseEvent) {
+  if (designer.dragged) return
+  e.stopPropagation()
+  const el = e.composedPath().find(e => resolveNode(e as HTMLElement)?.selectable)!
+  const node = resolveNode(el as HTMLElement)!
+  designer.hoverId = node.id
 }
 
 // 将 absolute 的元素移动到前面
@@ -328,7 +339,7 @@ function resolveNode(el: HTMLElement) {
   if (is || id) {
     return designer.keyedCtx[id!] || new designer.DisplayNode(designer.newProps(is!))
   }
-  else {
+  else if (snippet) {
     const data = unFn(designer.snippets.find(e => e.id == snippet)?.schema)
     return new designer.DisplayNode(data)
   }

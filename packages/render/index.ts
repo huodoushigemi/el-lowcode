@@ -22,7 +22,7 @@ type CreateRender = {
 }
 
 /*#__NO_SIDE_EFFECTS__*/
-export function createRender({ defaultIs = 'div', processProps = (props: Props, vars: Obj) => props }: CreateRender) {
+export function createRender({ defaultIs = 'div', processProps = (props) => props }: CreateRender) {
   const __h = (e, vars) => isPlainObject(e) ? Render(e, vars) : e
 
   const _h = (props: Props, vars: Obj) => {

@@ -8,7 +8,7 @@
       </template>
     </template>
 
-    <div v-if="isScript || script === true" flex justify-between px8 wfull bg="[--el-fill-color-light]" bg-hover cursor-pointer :c="exp || '[--el-text-color-placeholder]'" style="border: var(--el-border)" @click="visible = true">
+    <div v-if="isScript || script === true" flex justify-between px8 wfull lh-22 bg="[--el-fill-color-light]" cursor-pointer :c="exp || '[--el-text-color-placeholder]'" style="border: var(--el-border)" @click="visible = true">
       <span>{{ `{\{` }}</span>
       <span mx12 truncate class="empty:after:content-['JS_Expression']">{{ exp }}</span>
       <span>{{ `}\}` }}</span>
