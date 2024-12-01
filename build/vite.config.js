@@ -61,6 +61,7 @@ async function buildPlugin(name) {
 await buildPlugin('web')
 await buildPlugin('element-plus')
 await buildPlugin('echarts')
+await buildPlugin('vuetify')
 await buildPlugin('ant-design-vue')
 await buildPlugin('naive-ui')
 await buildPlugin('mdui')

@@ -53,11 +53,9 @@ export interface BoxProps {
   el?: Obj
   children?: string | number | BoxProps[] | { [k: string]: BoxProps }
   $?: {
-    // todo
     for?: string
-    // todo
     forArgs?: [string, string]
-    condition: any
+    if: any
   }
   [k: string]: any
 }
@@ -253,8 +251,8 @@ export interface DesignerCtx {
   readonly dragged?: DisplayNode
 
   root: BoxProps
-  rootCtx: DisplayNode
-  keyedCtx: Record<string, DisplayNode>
+  rootNode: DisplayNode
+  keyedNode: Record<string, DisplayNode>
 
   currentState: Obj
   // readonly viewport: HTMLElement

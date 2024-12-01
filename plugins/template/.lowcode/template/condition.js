@@ -1,5 +1,5 @@
 export default {
-  id: 'condition',
+  id: 'if',
   title: '组件联动',
   schema: {
     is: 'Page',
@@ -80,7 +80,7 @@ export default {
                 label: '备注',
                 prop: 'remark',
                 $: {
-                  condition: "{{state.formData.sex != '1'}}",
+                  if: "{{state.formData.sex != '1'}}",
                 },
                 children: [
                   {

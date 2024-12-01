@@ -31,20 +31,22 @@ const EMPTY = Symbol()
 
 const Render = createRender({
   defaultIs: 'Fragment',
-  processProps: (_props: any, vars) => {
+  processProps: (_props: any, vars, { provide }) => {
     if (_props[EMPTY]) return _props
     if (!_props.is && _props.$?.for) return processProps(_props, vars)
-
+    if (vars.__not_index_0_in_for) return processProps(_props, vars)
+    
     if (_props.$?.for) {
       const node = new designer.DisplayNode(_props)
       node.vars = vars
       if (node.indexInFor > 0) {
+        provide({ __not_index_0_in_for: true })
         return node.processProps(vars)
       }
     }
     
     // return wm.get(_props)?.value || wm.set(_props, computed(() => {
-      const node = designer.keyedCtx[_props._id] // todo
+      const node = designer.keyedNode[_props._id] // todo
       node.vars = vars
       let { children, ...props } = node.$data
 
@@ -337,7 +339,7 @@ function resolveNode(el: HTMLElement) {
   const id = el.getAttribute('_id')
   const snippet = el.getAttribute('lcd-snippet')
   if (is || id) {
-    return designer.keyedCtx[id!] || new designer.DisplayNode(designer.newProps(is!))
+    return designer.keyedNode[id!] || new designer.DisplayNode(designer.newProps(is!))
   }
   else if (snippet) {
     const data = unFn(designer.snippets.find(e => e.id == snippet)?.schema)
@@ -354,8 +356,8 @@ const DragLine = defineComponent({
 
 const dragMaskRects = computed(() => {
   const { to } = dragged.value?.drag || {}
-  const putable = to ? Object.values(designer.keyedCtx).filter(e => to.includes(e.is)) : void 0
-  // const putable = dragged.value ? Object.values(designer.keyedCtx).sort((a, b) => a.deep - b.deep).filter(e => e.insertable(dragged.value!)) : void 0
+  const putable = to ? Object.values(designer.keyedNode).filter(e => to.includes(e.is)) : void 0
+  // const putable = dragged.value ? Object.values(designer.keyedNode).sort((a, b) => a.deep - b.deep).filter(e => e.insertable(dragged.value!)) : void 0
   return putable?.map(e => e.el!.getBoundingClientRect()).map(e => ({ x: e.x, y: e.y, w: e.width, h: e.height }))
 })
 const DragGuidMask = defineComponent({

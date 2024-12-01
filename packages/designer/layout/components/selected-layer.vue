@@ -56,7 +56,6 @@
 
 <script setup lang="ts">
 import { getCurrentInstance, inject, computed, ref } from 'vue'
-import { remove } from '@vue/shared'
 import { unrefElement, useMutationObserver, useResizeObserver } from '@vueuse/core'
 import Moveable from 'vue3-moveable'
 import { designerCtxKey } from '../interface'
@@ -98,7 +97,7 @@ function dispatchDrag(e: DragEvent) {
 const ins = getCurrentInstance()!
 const fu = () => ins.proxy!.$forceUpdate()
 
-const rootEl = () => designerCtx.rootCtx.el?.ownerDocument.body
+const rootEl = () => designerCtx.rootNode.el?.ownerDocument.body
 
 useMutationObserver(rootEl, fu, { subtree: true, childList: true, attributes: true, characterData: true })
 useResizeObserver(rootEl, fu)

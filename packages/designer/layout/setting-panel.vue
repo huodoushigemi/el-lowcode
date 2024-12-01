@@ -77,7 +77,7 @@ const RenderItems = ({ items }) => items?.map(e => isPlainObject(e) && Render(e)
 
 const designerCtx = inject(designerCtxKey)
 
-const node = computed(() => designerCtx.active ?? designerCtx.rootCtx)
+const node = computed(() => designerCtx.active ?? designerCtx.rootNode)
 const model = computed(() => node.value.data)
 const config = computed(() => node.value?.config)
 
@@ -128,7 +128,7 @@ const commons = computed(() => [
     { label: 'ㅤ', prop: '$.forArgs.0', script: false, el: { placeholder: 'item' } },
     { label: 'ㅤ', prop: '$.forArgs.1', script: false, el: { placeholder: 'index' } },
   ] },
-  { lp: ['v-if', '$.condition'], type: 'switch', displayValue: true },
+  { lp: ['v-if', '$.if'], type: 'switch', displayValue: true },
   { is: 'hr' },
   { is: 'h1', children: 'Event' },
   { lp: 'onClick' },

@@ -6,7 +6,7 @@ export type Props = {
   is?: any
   children?: Fnable<string | number | Arrable<Props>>
   $?: {
-    condition?: any
+    if?: any
     // loop: string
     // loopArgs: [string, string]
     for?: string
@@ -18,7 +18,7 @@ export type Props = {
 type CreateRender = {
   /** @default 'div' */
   defaultIs?: any
-  processProps?: (props: Props, vars: Obj) => Props
+  processProps?: (props: Props, vars: Obj, aaa) => Props
 }
 
 /*#__NO_SIDE_EFFECTS__*/
@@ -26,9 +26,11 @@ export function createRender({ defaultIs = 'div', processProps = (props) => prop
   const __h = (e, vars) => isPlainObject(e) ? Render(e, vars) : e
 
   const _h = (props: Props, vars: Obj) => {
-    const { is, $, children, ...attrs } = processProps(props, vars)
+    const { is, $, children, ...attrs } = processProps(props, vars, {
+      provide: (state) => vars = { ...vars, ...state }
+    })
     
-    return props.$?.condition == null || !!$?.condition
+    return props.$?.if == null || !!$?.if
       ? h(
           // @ts-ignore
           resolveDynamicComponent(is || defaultIs),
@@ -38,7 +40,7 @@ export function createRender({ defaultIs = 'div', processProps = (props) => prop
           isArray(children) ? { default: () => children.map(e => __h(e, vars)) } :
           // isPlainObject(children) ? mapValues(children, v => (scope) => v.children.map(e => _h(e))) :
           isPlainObject(children) ? mapValues(children, v => (scope) => __h(v, vars)) :
-          isFunction(children) ? { default: () => { const ret = children(); return isArray(ret) ? ret.map(e => __h(e, vars)) : ret; } } :
+          isFunction(children) ? { default: () => { const ret = children(); return isArray(ret) ? ret.map(e => __h(e, vars, aaa)) : ret; } } :
           children
         )
       : null
@@ -48,11 +50,11 @@ export function createRender({ defaultIs = 'div', processProps = (props) => prop
     if (props.$?.for) {
       const { $: { for: $for, ...$ }, ..._props } = props
       _props.$ = $
-      const { $: { for: $_for } } = processProps({ $: { for: $for } }, vars) as Required<Props>
+      const { $: { for: $_for } } = processProps({ $: { for: $for } }, vars, {}) as Required<Props>
       if (isArray($_for)) {
         return $_for.map((item, index) => {
           const for_vars = { [$.forArgs?.[0] || 'item']: item, [$.forArgs?.[1] || 'index']: index }
-          return _h(_props, { ...vars, ...for_vars })
+          return _h(props, { ...vars, ...for_vars })
         })
       }
     }

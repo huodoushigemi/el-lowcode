@@ -167,7 +167,7 @@ const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, {
 
 const disposes = [
   designerCtx.commands.on('lcd.toggleDevice', async () => quickPick({ items: devices, value: [canvas.w, canvas.h] }).then(v => (canvas.w = v[0], canvas.h = v[1]))),
-  designerCtx.commands.on('lcd.clear', () => (designerCtx.rootCtx.el?.ownerDocument.defaultView.unmount(), designerCtx.rootCtx.remove(), root.value = initial())),
+  designerCtx.commands.on('lcd.clear', () => (designerCtx.rootNode.el?.ownerDocument.defaultView.unmount(), designerCtx.rootNode.remove(), root.value = initial())),
   designerCtx.commands.on('lcd.undo', undo),
   designerCtx.commands.on('lcd.redo', redo),
   designerCtx.commands.on('lcd.download', () => exportCode.value.vis = true),
@@ -177,7 +177,7 @@ onUnmounted(() => disposes.forEach(cb => cb()))
 const viewport = ref<HTMLElement>()
 const exportCode = ref()
 
-const iframeScroll = computed(() => reactive(useWindowScroll({ window: designerCtx.rootCtx.el?.ownerDocument.defaultView })))
+const iframeScroll = computed(() => reactive(useWindowScroll({ window: designerCtx.rootNode.el?.ownerDocument.defaultView })))
 
 const activitybars = computed(() => designerCtx.plugins.flatMap(e => e.contributes.activitybar || []))
 const activitybar = ref(root.value.designer?.activitybar ?? 'widgets')

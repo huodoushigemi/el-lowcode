@@ -75,6 +75,7 @@ importers:
       markdown-it: ^14.1.0
       md5: ^2.3.0
       micromatch: ^4.0.5
+      moveable: ^0.53.0
       msw: ^1.2.3
       npm: ^10.9.0
       postcss: ^8.4.41
@@ -118,6 +119,7 @@ importers:
       vue-request: ^2.0.4
       vue-router: ^4.2.5
       vue-tsc: ^1.8.27
+      vue3-moveable: ^0.28.0
       wc-appbar: ^0.0.8
       wc-fill-remain: ^0.0.7
       wc-hljs: ^0.0.0
@@ -167,6 +169,7 @@ importers:
       lodash-es: 4.17.21
       markdown-it: 14.1.0
       md5: 2.3.0
+      moveable: 0.53.0
       npm: 10.9.0
       postcss: 8.4.41
       qrcode: 1.5.4
@@ -181,6 +184,7 @@ importers:
       vue-echarts: 7.0.3_echarts@5.5.1+vue@3.4.30
       vue-request: 2.0.4_vue@3.4.30
       vue-router: 4.4.0_vue@3.4.30
+      vue3-moveable: 0.28.0
       wc-appbar: 0.0.8
       wc-fill-remain: 0.0.7
       wc-hljs: 0.0.0_bgdxiy6ou4glmbzvo4sw27dxb4

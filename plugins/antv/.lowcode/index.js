@@ -6,7 +6,7 @@ export const widgets = [
     label: '交叉表',
     category: '表格',
     props: (props, ctx) => {
-      const node = ctx.keyedCtx[props._id]
+      const node = ctx.keyedNode[props._id]
       const ks = Object.keys(node?.$data.dataCfg.data?.[0] || {})
       
       return [

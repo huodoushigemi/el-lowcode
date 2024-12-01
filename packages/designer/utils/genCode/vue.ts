@@ -22,16 +22,16 @@ export function vue(ctx: DesignerCtx) {
     return v
   }
   function through(props: BoxProps, queue = [] as BoxProps[]) {
-    const { is, _id, children, $, ...attrs } = ctx.keyedCtx[props._id].config?.purify?.(props) ?? props
+    const { is, _id, children, $, ...attrs } = ctx.keyedNode[props._id].config?.purify?.(props) ?? props
     const indent = '  '.repeat(queue.length)
 
     xml += `${indent}<${is}`
 
     if ($) {
       // v-if
-      if ($.condition) xml += ` v-if=${JSON.stringify(parseExp($.condition).replaceAll(`"`, `'`))}`
+      if ($.if) xml += ` v-if=${JSON.stringify(parseExp($.if).replaceAll(`"`, `'`))}`
       // todo v-for
-      if ($.loop) {}
+      if ($.for) {}
     }
     
     for (const k in attrs) {

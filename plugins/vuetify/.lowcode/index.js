@@ -15,7 +15,7 @@ const styleEl = Object.assign(document.createElement('style'), {
 
 export function activate(designerCtx) {
   watchEffect(() => {
-    designerCtx.rootCtx.el?.ownerDocument.head.append(styleEl)
+    designerCtx.rootNode.el?.ownerDocument.head.append(styleEl)
   })
 }
 

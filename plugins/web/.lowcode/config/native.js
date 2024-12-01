@@ -231,7 +231,7 @@ export default [
     icon: 'https://api.iconify.design/mdi:language-html5.svg',
     props: (props, lcd) => [
       // { lp: ['v-html', 'innerHTML'], el: { type: 'textarea', autosize: { maxRows: 6 } } }
-      { is: TiptapProps, el: lcd.keyedCtx[props._id].el }
+      { is: TiptapProps, el: lcd.keyedNode[props._id].el }
     ],
     defaultProps: () => ({
       innerHTML: '<h1>v-html 用于渲染富文本</h1><p>这里可用直接编辑，采用了 Tiptap 富文本编辑器</p>'
