@@ -1,6 +1,6 @@
 <template>
   <div class="activitybar" flex="~ col" w48>
-    <div v-for="bar in list" :class="modelValue == bar.id ? 'op100' : 'op40'" hover="op100" :title="bar.title" @click="emit('update:modelValue', modelValue == bar.id ? void 0 : bar.id)">
+    <div v-for="bar in list" :class="modelValue == bar.id ? 'op100' : 'op40'" hover="op100" :title="bar.title" @click="emit('update:modelValue', bar.id)">
       <div v-if="modelValue == bar.id" absolute w1 h48 style="background: var(--vscode-activityBar-activeBorder, #fff)" />
 
       <div v-if="bar.icon.includes('.svg')" class="activitybar_icon w48 h48" :style="`-webkit-mask-image: url(${bar.icon})`" />

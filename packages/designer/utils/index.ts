@@ -1,6 +1,6 @@
 import { computed, MaybeRefOrGetter, reactive, Ref, ref, toRaw, toValue, watch } from 'vue'
 import { isArray, isObject, remove } from '@vue/shared'
-import { computedAsync, Fn } from '@vueuse/core'
+import { computedAsync, Fn, tryOnBeforeUnmount } from '@vueuse/core'
 import { useTransformer } from 'el-form-render'
 import { keyBy, mapValues, pick, toArr, treeUtils, unFn } from '@el-lowcode/utils'
 import { BoxProps, Contributes, DesignerCtx, DisplayNode, ExtensionContext, UserWidget, Widget } from '../layout/interface'
@@ -70,6 +70,11 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
       plugins: [],
       snippets: []
     },
+    workbench: {
+      activitybarId: root.value.designer?.activitybar ?? 'widgets',
+      sidebarVisible: true
+      // workbench.action.toggleSidebarVisibility
+    }
   })
 
   ;(async () => {
@@ -191,6 +196,7 @@ function createEvents() {
   const e = {}
   function on(k: string, cb: (...args: any[]) => void) {
     (e[k] ??= []).push(cb)
+    tryOnBeforeUnmount(() => off(k, cb))
     return () => off(k, cb)
   }
   function off(k: string, cb: (...args: any[]) => void) {

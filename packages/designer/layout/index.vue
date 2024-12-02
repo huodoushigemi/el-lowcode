@@ -83,7 +83,7 @@
 
 <script setup lang="ts">
 import { watch, computed, provide, ref, getCurrentInstance, PropType, reactive, onUnmounted, toRaw, triggerRef, toRef, toRefs, nextTick } from 'vue'
-import { computedAsync, useDebouncedRefHistory, useWindowScroll } from '@vueuse/core'
+import { computedAsync, Fn, useDebouncedRefHistory, useWindowScroll } from '@vueuse/core'
 import Moveable from 'vue3-moveable'
 
 import { eq, get, pick, set, uid } from '@el-lowcode/utils'
@@ -164,14 +164,11 @@ console.log(window.designerCtx = designerCtx)
 // 时间旅行
 const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500, capacity: 20 })
 
-const disposes = [
-  designerCtx.commands.on('lcd.toggleDevice', async () => quickPick({ items: devices, value: [canvas.w, canvas.h] }).then(v => (canvas.w = v[0], canvas.h = v[1]))),
-  designerCtx.commands.on('lcd.clear', () => (designerCtx.rootNode.el?.ownerDocument.defaultView.unmount(), designerCtx.rootNode.remove(), root.value = initial())),
-  designerCtx.commands.on('lcd.undo', undo),
-  designerCtx.commands.on('lcd.redo', redo),
-  designerCtx.commands.on('lcd.download', () => exportCode.value.vis = true),
-]
-onUnmounted(() => disposes.forEach(cb => cb()))
+designerCtx.commands.on('lcd.toggleDevice', async () => quickPick({ items: devices, value: [canvas.w, canvas.h] }).then(v => (canvas.w = v[0], canvas.h = v[1])))
+designerCtx.commands.on('lcd.clear', () => (designerCtx.rootNode.el?.ownerDocument.defaultView.unmount(), designerCtx.rootNode.remove(), root.value = initial()))
+designerCtx.commands.on('lcd.undo', undo)
+designerCtx.commands.on('lcd.redo', redo)
+designerCtx.commands.on('lcd.download', () => exportCode.value.vis = true)
 
 const viewport = ref<HTMLElement>()
 const exportCode = ref()
@@ -179,8 +176,30 @@ const exportCode = ref()
 const iframeScroll = computed(() => reactive(useWindowScroll({ window: designerCtx.rootNode.el?.ownerDocument.defaultView })))
 
 const activitybars = computed(() => designerCtx.plugins.flatMap(e => e.contributes.activitybar || []))
-const activitybar = ref(root.value.designer?.activitybar ?? 'widgets')
-// const activitybar = useTransformer(root, 'designer.activitybar', { displayValue: 'widgets' })
+const activitybar = useTransformer(designerCtx, 'workbench.activitybarId', {
+  get: v => designerCtx.workbench.sidebarVisible ? v : void 0,
+  set: v => (designerCtx.workbench.sidebarVisible = activitybar.value != v, v)
+})
+
+const views = computed(() => designerCtx.plugins.map(e => e.contributes.views || {}))
+const viewsCbs = [] as Fn[]
+onUnmounted(() => viewsCbs.forEach(e => e()))
+watch(views, (val, old) => {
+  viewsCbs.forEach(e => e())
+  // designerCtx.commands.off()
+
+  val.forEach(views => {
+    for (const k in views) {
+      views[k].forEach(view => {
+        viewsCbs.push(designerCtx.commands.on(`workbench.view.${view.id}`, () => {
+          designerCtx.workbench.activitybarId = k
+          designerCtx.workbench.sidebarVisible = true
+        }))
+      })
+    }
+  })
+}, { immediate: true })
+
 
 // moveable
 const moveable = ref()
