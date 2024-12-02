@@ -71,6 +71,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   get id () { return this.data._id }
   get is() { return this.data.is || 'Fragment' }
+  get icon() { return this.config?.icon }
   get label () { return (this.vslot && `#${this.vslot}`) || this.data['lcd-label'] || this.config?.label || this.data.is }
   get dir() { return isArray(this.data_children) }
   get vslot() { return isPlainObject(this.parent?.data.children) ? Object.entries(this.parent!.data.children).find(([k, v]) => v == this.data)?.[0] : void 0 }
@@ -235,6 +236,14 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   override doRemove() {
     this.vslot ? (delete this.parent!.data.children![this.vslot]) : super.doRemove()
+  }
+
+  override click() {
+    this.designerCtx.activeId = this.id
+  }
+
+  override hover() {
+    this.designerCtx.hoverId = this.id
   }
 }
 

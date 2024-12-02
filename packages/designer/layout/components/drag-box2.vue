@@ -128,7 +128,7 @@ function onMousedown(e: MouseEvent) {
   const el = e.composedPath().find(e => resolveNode(e as HTMLElement)?.selectable)!
   const node = resolveNode(el as HTMLElement)!
   if (designer.dragged) return
-  designer.activeId = node.id
+  node.click()
 }
 
 function onMouseover(e: MouseEvent) {
@@ -136,7 +136,7 @@ function onMouseover(e: MouseEvent) {
   e.stopPropagation()
   const el = e.composedPath().find(e => resolveNode(e as HTMLElement)?.selectable)!
   const node = resolveNode(el as HTMLElement)!
-  designer.hoverId = node.id
+  node.hover()
 }
 
 // 将 absolute 的元素移动到前面
@@ -282,7 +282,7 @@ function useDrop(node: DisplayNode, emptyRef: Ref<HTMLElement>) {
         : node.insertBefore(dragNode)
     }
 
-    designer.activeId = dragNode.id
+    dragNode.click()
 
     dragEnd()
   })
@@ -323,7 +323,6 @@ function dragEnd() {
   dragged.value = void 0
   dragRelatedNode = void 0
   designer.draggedId = void 0
-  designer.hoverId = void 0
   dragRelatedDir = void 0
   dragLineStyle.width = ''
   dragLineStyle.height = ''

@@ -10,6 +10,7 @@ export abstract class Node<T = any> {
   abstract get id(): string
   abstract get label(): string
   abstract get data_children(): any[] | undefined
+  get icon(): any { return void 0 }
 
   get root() { let node = this; while(node.parent) node = node.parent; return node }
   get isRoot() { return !this.parent }
@@ -22,6 +23,8 @@ export abstract class Node<T = any> {
   get parents() { return this.#parents.value }
 
   get path() { return [this, ...this.parents].reverse() }
+
+  get disabled() { return false }
 
   constructor(data) {
     this.#data = shallowRef(data)
@@ -103,5 +106,13 @@ export abstract class Node<T = any> {
 
   insertable(node: Node) {
     return !node.contains(this)
+  }
+
+  click() {
+    
+  }
+
+  hover() {
+    
   }
 }

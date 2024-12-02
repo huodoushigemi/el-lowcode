@@ -47,7 +47,7 @@
 
         <!-- Breadcrumb -->
         <div class="absolute top-20 left-35 flex aic text-13 lh-32" @mouseleave="designerCtx.hoverId = void 0">
-          <div v-for="(node, i, len) in active?.path" class="vs-breadcrumb-li" @click="designerCtx.activeId = node.id" @mouseenter="designerCtx.hoverId = node.id">
+          <div v-for="(node, i, len) in active?.path" class="vs-breadcrumb-li" @click="node.click()" @mouseenter="node.hover()">
             <div class="max-w150 truncate">{{ node.label }}</div>
             <div v-if="node != active" mx4> > </div>
           </div>
@@ -150,7 +150,6 @@ const { active } = toRefs(designerCtx)
 provide(designerCtxKey, designerCtx)
 provide('designerCtx', designerCtx)
 defineExpose(designerCtx)
-
 
 const devices = [['iPhone SE', '375,667'], ['iPhone12 Pro', '390,844'], ['iPad Mini', '768,1024']].map(e => ({
   label: e[0],
