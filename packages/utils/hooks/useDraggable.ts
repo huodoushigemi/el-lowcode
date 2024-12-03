@@ -22,6 +22,8 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
   })
 
   useEventListener(root, 'dragover', (e: DragEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
     if (e.x == x && e.y == y) return
     x = e.x; y = e.y
 
@@ -29,8 +31,6 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
     const path = e.composedPath()
     dragoverEl = path.slice(0, path.indexOf(container)).find(e => e instanceof Element ? props.dragover(e as Element, dragEl!) : void 0) as HTMLElement
     if (!dragoverEl) return
-    e.stopPropagation()
-    e.preventDefault()
     const children = props.children(dragoverEl).filter(el => props.children(el))
     const [, el, rect, dir] = nearest = nearestEl(e.x, e.y, children, dragoverEl)!
     const size = 6, v = dir == 'T' || dir == 'B'
@@ -42,6 +42,8 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
   })
 
   useEventListener(root, 'drop', e => {
+    e.stopPropagation()
+    e.preventDefault()
     props.drop(dragoverEl!, dragEl!, nearest[1], nearest[3] == 'T' || nearest[3] == 'L' ? 'prev' : 'next')
   })
 

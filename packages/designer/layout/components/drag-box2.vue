@@ -19,8 +19,6 @@ const props = defineProps({
 const rootEl = ref()
 
 defineRender(() => {
-  console.log(unrefElement(rootEl));
-  
   return [
     // h(DragLine),
     // h(DragGuidMask),
@@ -30,13 +28,17 @@ defineRender(() => {
 
 useDraggable(rootEl, {
   dragover(el, drag) {
-    return !!el.getAttribute('lcd-dragover')
+    const id = el.getAttribute('lcd-dragover')
+    if (!id) return false
+    const node1 = designer.keyedNode[id], node2 = resolveNode(drag)!
+    return node1.insertable(node2)
   },
   children(el) {
     return [...el.children].filter((el: any) => el.getAttribute('lcd-is'))
   },
-  drop(el, drag, type) {
-    console.log(arguments)
+  drop(el, drag, related, type) {
+    const dragNode = resolveNode(drag)!
+    type == 'prev' ? resolveNode(related)!.before(dragNode) : resolveNode(related)!.after(dragNode)
   },
 })
 
@@ -360,7 +362,7 @@ function dragover() {
   Object.assign(dragLineStyle, mapValues(dragLineStyle, () => void 0))
 }
 
-function resolveNode(el: HTMLElement) {
+function resolveNode(el: Element) {
   if (el.nodeType != 1) return
   const is = el.getAttribute('lcd-is')
   const id = el.getAttribute('_id')
