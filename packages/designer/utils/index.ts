@@ -203,7 +203,7 @@ function createEvents() {
     remove(e[k] || [], cb)
   }
   function emit(k: string, ...args: any[]) {
-    return Promise.all(e[k]?.map(fn => fn(...args)))
+    return e[k] && Promise.all(e[k]?.map(fn => fn(...args)))
   }
   return { on, off, emit }
 }

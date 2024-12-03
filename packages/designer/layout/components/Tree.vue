@@ -12,7 +12,7 @@
         :aria-expanded="node.dir ? node.expand : void 0"
       >
         <!-- indent guide -->
-        <div v-if="node.expand && node.children!.length" :class="['indent-guide', (node.selected || (node.id == selected?.parent.id && !selected.expand)) && 'active']" :style="`left: ${(node.deep + 1) * indent}px; height: ${node.expandCount * 22}px`" />
+        <div v-if="node.expand && node.children!.length" :class="['indent-guide', (node.selected || selected.some(e => e.parent?.id == node.id && !e.expand)) && 'active']" :style="`left: ${(node.deep + 1) * indent}px; height: ${node.expandCount * 22}px`" />
 
         <!-- arrow -->
         <i-tdesign:chevron-right v-if="node.dir" :rotate="node.expand ? 90 : 0" class='mr2 w18 h18' />
@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import { computed, reactive, toRaw, shallowRef, ref } from 'vue'
 import { isArray } from '@vue/shared'
-import { toReactive } from '@vueuse/core'
+import { toReactive, useVModel } from '@vueuse/core'
 import { keyBy, unFn, vListFocus } from '@el-lowcode/utils'
 import { Node } from './Node'
 
@@ -39,6 +39,7 @@ type Props = {
   indent?: number
   showLine?: boolean
   expandKeys?: Record<string, boolean>
+  selectedKeys?: Array<string>
 
   draggable?: boolean | ((node: $_Node) => boolean)
   dropable?: boolean | ((e: DropEvent) => boolean)
@@ -53,23 +54,23 @@ const props = withDefaults(defineProps<Props>(), {
   dropable: true
 })
 
-const emit = defineEmits(['node-click', 'node-hover'])
+const emit = defineEmits(['node-click', 'node-hover', 'update:selectedKeys'])
 
 class $_Node extends props.Node {
   get dir() { return isArray(this.data_children) }
   get expand() { return props.expandKeys[this.id] }
   get expandCount(): number { return this.expand ? this.children!.reduce((t, e) => t + e.expandCount, this.children!.length) : 0 }
-  get selected() { return selected.value?.id == this.id }
+  get selected() { return selectedKeys.value?.includes(this.id) }
   get siblingSelected() { return selected.value?.id == this.parent?.id }
 }
 
 const rootNode = computed(() => {
-  const root = new $_Node({})
-  Object.defineProperty(root, 'data_children', { get() { return props.data } })
+  const root = new $_Node({ children: props.data })
   return root
 })
 
-const selected = shallowRef()
+const selectedKeys = useVModel(props, 'selectedKeys', void 0, { passive: true, defaultValue: [] })
+const selected = computed(() => selectedKeys.value!.map(e => keyed[e]))
 
 const dragGuideStyle = reactive({ left: '', top: '', height: '', width: '' })
 
@@ -81,16 +82,16 @@ const expandTree = computed(() => {
   return ret
 })
 
-const keyed = toRaw(toReactive(computed(() => keyBy(expandTree.value, 'id'))))
+const keyed = toRaw(toReactive(computed(() => keyBy(rootNode.value.descendants, 'id'))))
 
 function onClick(e: MouseEvent) {
   const node = getNode(e)
   if (node) {
     if (node.dir) props.expandKeys[node.id] = !node.expand
-    selected.value = node
+    selectedKeys.value = [node.id]
     emit('node-click', node)
   } else {
-    selected.value = void 0
+    selectedKeys.value = []
     emit('node-click', void 0)
   }
 }

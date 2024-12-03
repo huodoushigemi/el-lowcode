@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { cloneVNode, computed, defineComponent, effectScope, h, inject, mergeProps, reactive, ref, shallowRef, watchEffect } from 'vue'
+import { cloneVNode, computed, defineComponent, effectScope, h, inject, mergeProps, reactive, ref, shallowRef, watch, watchEffect } from 'vue'
 import type { Ref } from 'vue'
 import { isArray, isObject } from '@vue/shared'
-import {useEventListener } from '@vueuse/core'
+import {unrefElement, useEventListener } from '@vueuse/core'
 import { processProps } from 'el-lowcode'
 import { createRender } from '@el-lowcode/render'
-import { mapValues, unFn } from '@el-lowcode/utils'
+import { mapValues, unFn, useDraggable } from '@el-lowcode/utils'
 import type { DesignerCtx, BoxProps, DisplayNode } from '../interface'
 
 defineOptions({
@@ -16,12 +16,28 @@ const props = defineProps({
   root: Object
 })
 
+const rootEl = ref()
+
 defineRender(() => {
+  console.log(unrefElement(rootEl));
+  
   return [
-    h(DragLine),
-    h(DragGuidMask),
-    cloneVNode(Render(props.root!) || h('div') as any, { 'lcd-root': '', onMousedown, onMouseover }),
+    // h(DragLine),
+    // h(DragGuidMask),
+    cloneVNode(Render(props.root!) || h('div') as any, { 'lcd-root': '', ref: rootEl, onMousedown, onMouseover }),
   ]
+})
+
+useDraggable(rootEl, {
+  dragover(el, drag) {
+    return !!el.getAttribute('lcd-dragover')
+  },
+  children(el) {
+    return [...el.children].filter((el: any) => el.getAttribute('lcd-is'))
+  },
+  drop(el, drag, type) {
+    console.log(arguments)
+  },
 })
 
 const designer = inject('designerCtx') as DesignerCtx
@@ -82,8 +98,8 @@ function setup(node: DisplayNode) {
   return scope.run(() => {
     let elRef = node.ref, boxRef = ref()
 
-    useDrop(node, boxRef)
-    useDrag(node)
+    // useDrop(node, boxRef)
+    // useDrag(node)
   
     // add attrs
     watchEffect(() => {
@@ -92,6 +108,12 @@ function setup(node: DisplayNode) {
       el.setAttribute('draggable', (!node.isAbs && !node.drag.disabled) + '')
       el.setAttribute('_id', node.id)
       el.setAttribute('lcd-is', node.is)
+      // el.parentElement('lcd-dragover', )
+    })
+
+    watch(() => node.children?.[0]?.el?.parentElement ?? boxRef.value, (el: Element, old) => {
+      if (!el) return
+      el.setAttribute('lcd-dragover', node.id)
     })
 
     let flag = 0
@@ -310,22 +332,28 @@ if (frameElement) {
 let dragNode: DisplayNode | undefined, dragged = shallowRef<DisplayNode>()
 let dragRelatedDir: 'L' | 'R' | 'T' | 'B' | undefined
 let dragRelatedNode: DisplayNode | undefined
+let activitybarId = ''
 
 function dragStart(e: DragEvent) {
   dragNode = resolveNode(e.target as HTMLElement)
   dragged.value = dragNode
   if (!dragNode) return
   designer.draggedId = dragNode?.id
+  activitybarId = designer.workbench.activitybarId
+  // designer.workbench.activitybarId = 'comp-tree'
+  // designer.workbench.sidebarVisible = true
 }
 
 function dragEnd() {
-  dragNode = void 0 
+  dragNode = void 0
   dragged.value = void 0
   dragRelatedNode = void 0
   designer.draggedId = void 0
   dragRelatedDir = void 0
   dragLineStyle.width = ''
   dragLineStyle.height = ''
+  // designer.workbench.activitybarId = activitybarId
+  // designer.workbench.sidebarVisible = true
 }
 
 function dragover() {

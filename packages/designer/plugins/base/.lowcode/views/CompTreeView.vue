@@ -4,8 +4,10 @@
     :Node="designerCtx.DisplayNode"
     draggable
     :dropable="({ to, node }) => to.insertable(node)"
-    @node-click="node => designerCtx.activeId = node?.id"
-    @node-hover="node => designerCtx.hoverId = node?.id"
+    :expandKeys="expandKeys"
+    v-model:selected-keys="selectedKeys"
+    @node-click="node => node?.click()"
+    @node-hover="node => node?.hover()"
     #default="{ node }"
   >
     <div flex aic flex-1 w0 pr4 :op="node.hidden ? 20 : 100">
@@ -22,8 +24,16 @@
 </template>
 
 <script setup>
-import { inject } from 'vue'
+import { inject, reactive, ref, watch } from 'vue'
 import { Tree } from '@el-lowcode/designer'
 
 const designerCtx = inject('designerCtx')
+
+const expandKeys = reactive({})
+const selectedKeys = ref([])
+watch(() => designerCtx.active, node => {
+  if (!node) return
+  Object.assign(expandKeys, Object.fromEntries(node.parents.map(e => [e.id, true])))
+  selectedKeys.value = [node.id]
+})
 </script>

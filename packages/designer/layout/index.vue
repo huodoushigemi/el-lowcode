@@ -184,14 +184,13 @@ const activitybar = useTransformer(designerCtx, 'workbench.activitybarId', {
 const views = computed(() => designerCtx.plugins.map(e => e.contributes.views || {}))
 const viewsCbs = [] as Fn[]
 onUnmounted(() => viewsCbs.forEach(e => e()))
-watch(views, (val, old) => {
+watch(views, (val) => {
   viewsCbs.forEach(e => e())
-  // designerCtx.commands.off()
-
   val.forEach(views => {
     for (const k in views) {
       views[k].forEach(view => {
         viewsCbs.push(designerCtx.commands.on(`workbench.view.${view.id}`, () => {
+          // todo find viewsContainers
           designerCtx.workbench.activitybarId = k
           designerCtx.workbench.sidebarVisible = true
         }))
