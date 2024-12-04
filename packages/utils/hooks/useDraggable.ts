@@ -1,8 +1,8 @@
-import { watchEffect } from 'vue'
+import { reactive, shallowReactive, watchEffect } from 'vue'
 import { MaybeComputedElementRef, unrefElement, useEventListener } from '@vueuse/core'
 
 interface UseDraggableProps {
-  // dragstart(): boolean
+  dragstart?(e: DragEvent): void
   dragover(el: Element, drag: Element): boolean
   children(el: Element): Element[]
   drop(el: Element, drag: Element, related: Element, type?: 'prev' | 'next'): void
@@ -11,52 +11,69 @@ interface UseDraggableProps {
 export function useDraggable(el: MaybeComputedElementRef, props: UseDraggableProps) {
   const root = () => unrefElement(el) as HTMLElement
   let x = 0, y = 0
-  let dragEl: Element | void
-  let dragoverEl: Element | void
   let nearest: [number, HTMLElement, DOMRect, 'T' | 'B' | 'L' | 'R'] | void
 
+  const ret = shallowReactive({
+    dragEl: void 0 as Element | undefined,
+    dragoverEl: void 0 as Element | undefined,
+    data: '',
+    dragend
+  })
+
   useEventListener(root, 'dragstart', e => {
-    // e.composedPath().
-    dragEl = e.target as Element
-    e.dataTransfer!.setDragImage(new Image(), 0, 0)
+    props.dragstart?.(e)
+    ret.dragEl = e.target as Element
   })
 
   useEventListener(root, 'dragover', (e: DragEvent) => {
+    const container = root()
+    const path = e.composedPath()
+    ret.dragoverEl = path.slice(0, path.indexOf(container) + 1).find(e => e instanceof Element ? props.dragover(e as Element, ret.dragEl!) : void 0) as HTMLElement
+    if (!ret.dragoverEl) return
+
     e.stopPropagation()
     e.preventDefault()
     if (e.x == x && e.y == y) return
     x = e.x; y = e.y
 
-    const container = root()
-    const path = e.composedPath()
-    dragoverEl = path.slice(0, path.indexOf(container)).find(e => e instanceof Element ? props.dragover(e as Element, dragEl!) : void 0) as HTMLElement
-    if (!dragoverEl) return
-    const children = props.children(dragoverEl).filter(el => props.children(el))
-    const [, el, rect, dir] = nearest = nearestEl(e.x, e.y, children, dragoverEl)!
+    const children = props.children(ret.dragoverEl).filter(el => props.children(el))
+    const [, el, rect, dir] = nearest = nearestEl(e.x, e.y, children, ret.dragoverEl)!
+    const rect2 = el ? rect : ret.dragoverEl.getBoundingClientRect()
     const size = 6, v = dir == 'T' || dir == 'B'
-    Object.assign(cursor.style, {
+    Object.assign(cursor.style, el ? {
       transform: `translate(${rect.x - (v ? 0 : size / 2) + (v || dir == 'L' ? 0 : rect.width)}px, ${rect.y - (v ? size / 2 : 0) + (!v || dir == 'T' ? 0 : rect.height)}px)`,
       width: v ? `${rect.width}px` : `${size}px`,
       height: v ? `${size}px` : `${rect.height}px`,
+    } : {
+      transform: `translate(${rect2.x}px, ${rect2.y}px)`,
+      width: `${rect2.width}px`,
+      height: `${rect2.height}px`,
     })
   })
 
   useEventListener(root, 'drop', e => {
     e.stopPropagation()
     e.preventDefault()
-    props.drop(dragoverEl!, dragEl!, nearest[1], nearest[3] == 'T' || nearest[3] == 'L' ? 'prev' : 'next')
+    const type = { T: 'prev', B: 'next', L: 'prev', R: 'next' }[nearest[3]]
+    props.drop(ret.dragoverEl!, ret.dragEl!, nearest[1], type)
+    dragend()
   })
 
-  useEventListener('dragend', () => {
+  useEventListener('dragend', dragend)
+
+  function dragend() {
     Object.assign(cursor.style, { transform: '', width: '0px', height: '0px' })
-    dragEl = nearest = dragoverEl = void 0
-  })
+    ret.dragEl = ret.dragoverEl = nearest = void 0
+    ret.data = ''
+  }
 
   // drop cursor
-  const cursorContainer = Object.assign(document.createElement('div'), { style: 'position: fixed; top: 0; left: 0; pointer-events: none' })
+  const cursorContainer = Object.assign(document.createElement('div'), { style: 'position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100000' })
   const cursor = Object.assign(document.createElement('div'), { style: 'background: #e6a23c66' })
   cursorContainer.append(cursor)
   document.body.append(cursorContainer)
+
+  return ret
 }
 
 function nearestEl(x, y, els: Element[], container: Element) {

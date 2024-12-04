@@ -250,6 +250,7 @@ export default [
     label: 'wang-editor',
     category: '额外扩展',
     icon: 'https://api.iconify.design/mdi:language-html5.svg',
+    hidden: true,
     props: [
       { lp: ['toolbar', 'toolbar.show'], type: 'switch', displayValue: true },
       { lp: 'disabled', type: 'switch' },
@@ -333,7 +334,7 @@ export default [
     props: props => [
       { lp: 'lang', options: [['JSON', 'json'], ['Html', 'html'], ['Css', 'css'], ['JS', 'javascript'], ['Java', 'java'], ['Python', 'python'], ['Go', 'go'], ['SQL', 'sql'], ['Diff', 'diff'], ['Bash', 'bash']] },
       { lp: 'theme', options: ['a11y-light', 'a11y-dark', 'atom-one-light', 'atom-one-dark', 'github', 'github-dark', 'vs', 'vs2015'] },
-      { lp: 'code', el: { is: 'MonacoEditor', language: props.lang, autofocus: true, style: { height: '400px' } } },
+      { lp: 'code', el: { is: 'MonacoEditor', language: props.lang, style: { height: '400px' } } },
     ],
     defaultProps: () => ({
       lang: 'json',

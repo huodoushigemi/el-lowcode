@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { cloneVNode, computed, defineComponent, effectScope, h, inject, mergeProps, reactive, ref, shallowRef, watch, watchEffect } from 'vue'
-import type { Ref } from 'vue'
 import { isArray, isObject } from '@vue/shared'
-import {unrefElement, useEventListener } from '@vueuse/core'
+import { useEventListener } from '@vueuse/core'
 import { processProps } from 'el-lowcode'
 import { createRender } from '@el-lowcode/render'
 import { mapValues, unFn, useDraggable } from '@el-lowcode/utils'
@@ -20,26 +19,9 @@ const rootEl = ref()
 
 defineRender(() => {
   return [
-    // h(DragLine),
-    // h(DragGuidMask),
+    h(DragGuidMask),
     cloneVNode(Render(props.root!) || h('div') as any, { 'lcd-root': '', ref: rootEl, onMousedown, onMouseover }),
   ]
-})
-
-useDraggable(rootEl, {
-  dragover(el, drag) {
-    const id = el.getAttribute('lcd-dragover')
-    if (!id) return false
-    const node1 = designer.keyedNode[id], node2 = resolveNode(drag)!
-    return node1.insertable(node2)
-  },
-  children(el) {
-    return [...el.children].filter((el: any) => el.getAttribute('lcd-is'))
-  },
-  drop(el, drag, related, type) {
-    const dragNode = resolveNode(drag)!
-    type == 'prev' ? resolveNode(related)!.before(dragNode) : resolveNode(related)!.after(dragNode)
-  },
 })
 
 const designer = inject('designerCtx') as DesignerCtx
@@ -100,9 +82,6 @@ function setup(node: DisplayNode) {
   return scope.run(() => {
     let elRef = node.ref, boxRef = ref()
 
-    // useDrop(node, boxRef)
-    // useDrag(node)
-  
     // add attrs
     watchEffect(() => {
       const el = node.el
@@ -110,7 +89,6 @@ function setup(node: DisplayNode) {
       el.setAttribute('draggable', (!node.isAbs && !node.drag.disabled) + '')
       el.setAttribute('_id', node.id)
       el.setAttribute('lcd-is', node.is)
-      // el.parentElement('lcd-dragover', )
     })
 
     watch(() => node.children?.[0]?.el?.parentElement ?? boxRef.value, (el: Element, old) => {
@@ -125,17 +103,12 @@ function setup(node: DisplayNode) {
       attrs: {
         ref: elRef,
         key: count++,
-        // _id: node.id,
-        // draggable: true,
-        // 'lcd-is': node.is,
         onVnodeBeforeMount: () => flag++,
         onVnodeUnmounted: () => {
           if (--flag) return
           propsCtx.delete(node)
           scope?.stop()
           node = scope = boxRef = boxRef.value = elRef = elRef.value = ret = void 0
-          node = void 0
-          console.log('um');
         },
       },
     }
@@ -145,6 +118,28 @@ function setup(node: DisplayNode) {
     return ret
   })
 }
+
+const draggable = useDraggable(rootEl, {
+  dragstart(e) {
+    e.dataTransfer!.setDragImage(new Image(), 0, 0)
+  },
+  dragover(el) {
+    const id = el.getAttribute('lcd-dragover')
+    if (!dragNode || !id) return false
+    const node = designer.keyedNode[id]
+    return node.insertable(dragNode)
+  },
+  children(el) {
+    return [...el.children].filter((el: any) => el.getAttribute('lcd-is'))
+  },
+  drop(el, drag, related, type) {
+    type == 'prev' ? resolveNode(related)!.before(dragNode!) :
+    type == 'next' ? resolveNode(related)!.after(dragNode!) :
+    designer.keyedNode[el.getAttribute('lcd-dragover')!].insertBefore(dragNode!)
+    dragNode!.click()
+    dragEnd()
+  },
+})
 
 function onMousedown(e: MouseEvent) {
   if (e.button != 0) return
@@ -179,161 +174,16 @@ function sortAbsolute(arr: BoxProps[]) {
   }
 }
 
-function useDrop(node: DisplayNode, emptyRef: Ref<HTMLElement>) {
-  const firstEl = () => node.children![0]?.el ?? emptyRef.value
-  const target = () => node.children ? firstEl()?.parentElement : void 0
-  let x = 0, y = 0
-  useEventListener(target, 'dragover', e => {
-    if (!dragNode) return
-    if (!node.insertable(dragNode)) return
-
-    e.preventDefault()
-    e.stopPropagation()
-
-    if (e.x == x && e.y == y) return
-    x = e.x
-    y = e.y
-    
-    dragRelatedDir = void 0
-    dragRelatedNode = void 0
-
-    const el = e.currentTarget as HTMLElement
-    
-    // 自由布局
-    if (node.isAbsLayout) {
-      const rect = el.getBoundingClientRect()
-      Object.assign(dragLineStyle, {
-        transform: `translate(${rect.x}px, ${rect.y}px)`,
-        width: `${rect.width}px`,
-        height: `${rect.height}px`,
-      })
-    }
-    // 排序布局
-    else {
-      const draggables = [...el.children].filter(e => e.getAttribute('lcd-is')) as HTMLElement[]
-
-      // 查找距离 xy 最近的元素
-      const rects = draggables.map(e => e.getBoundingClientRect())
-      let closestDistance = Infinity, style = {}
-      rects.forEach((rect, i) => {
-        let x = 0, y = 0, d = 0
-        // L
-        x = rect.x; y = rect.y + rect.height / 2
-        d = Math.sqrt(Math.pow(x - e.x, 2) + Math.pow(y - e.y, 2))
-        if (d < closestDistance) {
-          dragRelatedDir = 'L'
-          dragRelatedNode = resolveNode(draggables[i])
-          closestDistance = d
-          style = { left: rect.x - 3, top: rect.y, width: 6, height: rect.height }
-        }
-        // R
-        x = rect.x + rect.width; y = rect.y + rect.height / 2
-        d = Math.sqrt(Math.pow(x - e.x, 2) + Math.pow(y - e.y, 2))
-        if (d < closestDistance) {
-          dragRelatedDir = 'R'
-          dragRelatedNode = resolveNode(draggables[i])
-          closestDistance = d
-          style = { left: x - 3, top: rect.y, width: 6, height: rect.height }
-        }
-        // T
-        x = rect.x + rect.width / 2; y = rect.y
-        d = Math.sqrt(Math.pow(x - e.x, 2) + Math.pow(y - e.y, 2))
-        if (d < closestDistance) {
-          dragRelatedDir = 'T'
-          dragRelatedNode = resolveNode(draggables[i])
-          closestDistance = d
-          style = { left: rect.x, top: rect.top - 3, width: rect.width, height: 6 }
-        }
-        // B
-        x = rect.x + rect.width / 2; y = rect.y + rect.height
-        d = Math.sqrt(Math.pow(x - e.x, 2) + Math.pow(y - e.y, 2))
-        if (d < closestDistance) {
-          dragRelatedDir = 'B'
-          dragRelatedNode = resolveNode(draggables[i])
-          closestDistance = d
-          style = { left: rect.x, top: y - 3, width: rect.width, height: 6 }
-        }
-      })
-
-      if (!rects.length) {
-        if (emptyRef.value) {
-          const { x, y, width, height } = emptyRef.value.getBoundingClientRect()
-          style = { left: x, top: y, width, height }
-        } else {
-          const nill = Object.assign(firstEl().ownerDocument.createElement('div'), { style: 'min-width: 3px; min-height: 3px' })
-          firstEl().before(nill)
-          const { x, y, width, height } = nill.getBoundingClientRect()
-          nill.remove()
-          style = { left: x, top: y, width, height }
-        }
-      }
-
-      Object.assign(dragLineStyle, {
-        transform: `translate(${style.left}px, ${style.top}px)`,
-        width: `${style.width}px`,
-        height: `${style.height}px`,
-      })
-    }
-  })
-
-  useEventListener(target, 'drop', async (e) => {
-    e.stopPropagation()
-    e.preventDefault()
-    if (dragNode && dragNode == dragRelatedNode) return dragEnd()
-    if (!dragNode) return
-
-    const el = e.currentTarget as HTMLElement
-    const doc = el.ownerDocument
-    
-    // 自由布局
-    if (node.isAbsLayout) {
-      // 获取初始坐标
-      const nill = doc.createElement('div')
-      firstEl().before(nill)
-      const { x, y } = nill.getBoundingClientRect()
-      nill.remove()
-      // 计算坐标
-      dragNode.isAbs = true
-      dragNode.x = e.x - x
-      dragNode.y = e.y - y
-      node.insertBefore(dragNode)
-    }
-    // 排序布局
-    else {
-      const before = dragRelatedDir == 'L' || dragRelatedDir == 'T'
-      dragRelatedNode
-        ? dragRelatedNode[before ? 'before' : 'after'](dragNode)
-        : node.insertBefore(dragNode)
-    }
-
-    dragNode.click()
-
-    dragEnd()
-  })
-}
-
-function useDrag(node: DisplayNode) {
-  useEventListener(() => node.el && !node.isAbs && !node.drag.disabled ? node.el : void 0, 'dragstart', e => {
-    e.stopPropagation()
-    dragStart(e)
-    e.dataTransfer!.setDragImage(new Image(), 0, 0)
-  })
-}
-
 // 
 useEventListener('dragstart', dragStart)
 useEventListener('dragend', dragEnd)
-useEventListener('dragover', dragover)
 if (frameElement) {
   const doc = frameElement.ownerDocument
-  useEventListener(doc, 'dragend', dragEnd)
   useEventListener(doc, 'dragstart', dragStart)
-  useEventListener( doc, 'dragover', dragover)
+  useEventListener(doc, 'dragend', dragEnd)
 }
 
 let dragNode: DisplayNode | undefined, dragged = shallowRef<DisplayNode>()
-let dragRelatedDir: 'L' | 'R' | 'T' | 'B' | undefined
-let dragRelatedNode: DisplayNode | undefined
 let activitybarId = ''
 
 function dragStart(e: DragEvent) {
@@ -341,25 +191,18 @@ function dragStart(e: DragEvent) {
   dragged.value = dragNode
   if (!dragNode) return
   designer.draggedId = dragNode?.id
-  activitybarId = designer.workbench.activitybarId
+  // activitybarId = designer.workbench.activitybarId
   // designer.workbench.activitybarId = 'comp-tree'
   // designer.workbench.sidebarVisible = true
 }
 
 function dragEnd() {
+  draggable.dragend()
   dragNode = void 0
   dragged.value = void 0
-  dragRelatedNode = void 0
   designer.draggedId = void 0
-  dragRelatedDir = void 0
-  dragLineStyle.width = ''
-  dragLineStyle.height = ''
   // designer.workbench.activitybarId = activitybarId
   // designer.workbench.sidebarVisible = true
-}
-
-function dragover() {
-  Object.assign(dragLineStyle, mapValues(dragLineStyle, () => void 0))
 }
 
 function resolveNode(el: Element) {
@@ -375,13 +218,6 @@ function resolveNode(el: Element) {
     return new designer.DisplayNode(data)
   }
 }
-
-const dragLineStyle = reactive({ transform: '',  width: '', height: '' })
-const DragLine = defineComponent({
-  setup() {
-    return () => h('div', { style: { ...dragLineStyle, position: 'fixed', top: 0, left: 0, zIndex: 100000, pointerEvents: 'none', background: '#e6a23c66' } })
-  }
-})
 
 const dragMaskRects = computed(() => {
   const { to } = dragged.value?.drag || {}
