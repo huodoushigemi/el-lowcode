@@ -14,7 +14,7 @@ const initial = (children: any = []) => ({
   is: 'Page',
   state: { count: 0 },
   children,
-  plugins: ['/plugins/web'],
+  plugins: ['/plugins/web', '/plugins/ai'],
   designer: {
     canvas: { style: { width: '768px', height: '1024px' } }
   }
@@ -37,6 +37,7 @@ onMounted(() => {
     "/plugins/shoelace",
     "/plugins/mdui",
     "/plugins/threejs",
+    "/plugins/ai",
 
     // "/plugins/threejs",
     // "/plugins/threejs",

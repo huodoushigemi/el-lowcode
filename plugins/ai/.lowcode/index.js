@@ -21,7 +21,7 @@ export const contributes = {
   ],
   views: {
     'ai': [
-      { id: 'ai.d2c', renderer: create(defineAsyncComponent(() => import('./D2C.vue'))) },
+      { id: 'ai.d2c', name: 'D2C', renderer: create(defineAsyncComponent(() => import('./D2C.vue'))) },
     ],
   },
 }

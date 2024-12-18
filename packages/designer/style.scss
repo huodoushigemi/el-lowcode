@@ -116,7 +116,7 @@
 }
 
 .vs-input {
-  @apply block h26 py6 px6 c-inherit bg-#3c3c3c;
+  @apply block h26 py6 px6 c-inherit bg-#3c3c3c text-13;
   &:focus, &.focused {
     outline: 1px solid var(--vs-focus-b-c);
   }
