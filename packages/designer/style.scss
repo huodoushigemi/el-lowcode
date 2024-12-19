@@ -100,6 +100,7 @@
 
   &:disabled {
     filter: grayscale(1);
+    @apply pointer-events-none op60;
   }
 
   &:not([disabled]):hover {

@@ -9,6 +9,7 @@ export * from './file'
 export * from './execExp'
 export * from './uid'
 export * from './hooks'
+export * from './html2schema'
 
 type SFCWithInstall<T> = T & ObjectPlugin
 type Comp = Component & { name: string } & ObjectPlugin
