@@ -14,57 +14,74 @@
 
     <br />
 
-    <!-- <button class="vs-btn" @click="fileSelect({ accept: 'image/*' }).then(e => image2html(e[0]))">
-      <div class="mask-icon mr2 w24 h18" style="--mask-image: url(https://api.iconify.design/majesticons:image-line.svg);" />
-      upload
-    </button> -->
-
-    <div ref="dropZone" class="relative flex aic jcc b-1 rd-8 cursor-pointer" :style="`height: 192px; background: center / cover no-repeat  url(${image});`" @click="fileSelect({ accept: 'image/*' }).then(e => files = e)">
-      <div v-if="isOverDropZone" class="absolute inset-0 op40 bg-#808080/10 rd-8" style="outline: 4px solid #808080;" />
-      <div v-if="!files?.length">Drop file here or&ensp;<span c-blue>click to upload</span></div>
+    <div class="flex flex-col">
+      <template v-for="msg in msgs">
+        <div v-if="msg.self">
+          <img :src="msg.image" style="width: -webkit-fill-available; max-height: 192px; object-fit: contain;" />
+        </div>
+        <div v-else>
+          <wc-mdit :content="msg.content" css="pre { max-height: 192px; overflow: auto; }" />
+          <button class="vs-btn" @click="showModal(msg.content)">preview</button>
+          <button class="vs-btn" @click="replaceCanvas(msg.content)">-></button>
+        </div>
+      </template>
     </div>
 
-    <div>
-      <button class="vs-btn" :disabled="!html" @click="showModal(html)">preview</button>
-      <!-- <button class="vs-btn" :disabled="html" @click="image2html(files[0]).then(e => designer.root = html2schema(e))">-></button> -->
-      <button class="vs-btn" :disabled="!html" @click="replaceCanvas">-></button>
-      <!-- <button class="vs-btn" @click=" html2schema(image2html(files[0]))">d2c</button> -->
-      <button class="vs-btn" @click=" image2html(files[0]).then(e => html = e)">d2c</button>
+    <div ref="dropZone" class="relative flex aic jcc b-1 rd-8 cursor-pointer" :style="`height: 128px; background: center / cover no-repeat  url(${image});`" @click="fileSelect({ accept: 'image/*' }).then(e => send(e[0]))">
+      <div v-if="isOverDropZone" class="absolute inset-0 op40 bg-#808080/10 rd-8" style="outline: 4px solid #808080;" />
+      <div >Drop image here or&ensp;<span c-blue>click to upload</span></div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, inject, reactive, ref, watchEffect } from 'vue'
-import { computedAsync, useDropZone, useLocalStorage } from '@vueuse/core'
+import { computed, inject, reactive, ref } from 'vue'
+import { toReactive, useDropZone, useLocalStorage, useSessionStorage } from '@vueuse/core'
 import { GoogleGenerativeAI } from 'https://unpkg.com/@google/generative-ai@0.21.0/dist/index.mjs'
 import { fileSelect, chooseImg, fileToBase64, html2schema } from '@el-lowcode/utils'
+import 'wc-mdit'
 
 const designer = inject('designerCtx')
 
-const form = reactive(useLocalStorage('ai:options', {
+const form = toReactive(useLocalStorage('ai:options', {
   key: 'AIzaSyDrMDJQ2qAeyEMvrXpQm6AiLaVpuoN2cVE',
-  model: 'gemini-1.5-flash',
+  model: 'gemini-2.0-flash-exp',
 }))
 
 const model = computed(() => (new GoogleGenerativeAI(form.key)).getGenerativeModel({ model: form.model }))
 
-const dropZone = ref()
-const { files, isOverDropZone } = useDropZone(dropZone, { dataTypes: e => e.some(e => e.includes('image')), preventDefaultForUnhandled: true })
-const image = computedAsync(() => files.value?.[0] ? fileToBase64(files.value[0]) : '')
-const html  = ref('')
+const msgs = useSessionStorage('ai.d2c:msgs', [])
 
-async function image2html(file) {
-  const result = await model.value.generateContent([
-    '将图片转为 HTML + Tailwind',
-    { inlineData: { data: await file2base64(file), mimeType: file.type } }
-  ])
-  const text = (await result.response).text()
-  return text.replace(/(^.*```html\s)?/, '').replace(/<\/html\>\s```.*/, '</html>')
+const dropZone = ref()
+const { isOverDropZone } = useDropZone(dropZone, { dataTypes: e => e.some(e => e.includes('image')), onDrop: e => e?.[0] && send(e[0]) })
+
+async function send(file, content = '将图片转为 HTML + Tailwind') {
+  msgs.value.push({
+    self: 1,
+    image: await fileToBase64(file),
+    content,
+  })
+  
+  const controller = new AbortController()
+  // const { stream } = await model.value.generateContentStream([content, { inlineData: { data: await file2base64(file), mimeType: file.type } }], controller)
+  // const row = {
+  //   controller,
+  //   content: ''
+  // }
+  // msgs.value.push(row)
+
+  // for (const res in await stream) {
+  //   row.content += res.text()
+  // }
+  // row.controller = void 0
+
+  const ret = await model.value.generateContent([content, { inlineData: { data: await file2base64(file), mimeType: file.type } }], controller)
+  const text = (await ret.response).text()
+  msgs.value.push({ content: text })
 }
 
-function replaceCanvas() {
-  Object.assign(designer.root, html2schema(html.value))
+function replaceCanvas(content) {
+  Object.assign(designer.root, html2schema(extractHtml(content)))
 }
 
 function file2base64(file) {
@@ -75,14 +92,14 @@ function file2base64(file) {
   })
 }
 
-function showModal(html) {
-  // const sw = screen.width, sh = screen.height
-  // const w = Math.min(parseInt(json.designer?.canvas?.style?.width || sw), sw)
-  // const h = Math.min(parseInt(json.designer?.canvas?.style?.height || sh), sh)
-  
-  const win = window.open('', '_blank')
-  // `popup,width=${w},height=${h},left=${sw - w >> 1},top=${sh - h >> 1}`
+function showModal(content) {
+  const html = extractHtml(content)
+  const file = new File([html], '', { type: 'text/html' })
+  const url = URL.createObjectURL(file)
+  window.open(url, '_blank')
+}
 
-  win.document.documentElement.innerHTML = html
+function extractHtml(content) {
+  return content.replace(/(^.*```html\s)?/, '').replace(/<\/html\>\s```.*/, '</html>')
 }
 </script>
