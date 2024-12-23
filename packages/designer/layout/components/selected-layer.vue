@@ -101,6 +101,7 @@ const rootEl = () => designerCtx.rootNode.el?.ownerDocument.body
 
 useMutationObserver(rootEl, fu, { subtree: true, childList: true, attributes: true, characterData: true })
 useResizeObserver(rootEl, fu)
+useResizeObserver(() => designerCtx.active?.el, fu)
 // useResizeObserver(() => designerCtx.active?.el, fu)
 </script>
 

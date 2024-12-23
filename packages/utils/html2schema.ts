@@ -10,8 +10,8 @@ export function html2schema(html: string) {
       const parent = queue[queue.length - 1]
       parent.children ??= []
       if (node.nodeType == 3) {
-        if (!node.parentElement?.children.length) parent.children = node.textContent
-        else parent.children.push({ is: 'span', children: node.textContent })
+        if (!node.parentElement?.children.length) parent.children = node.textContent?.trim()
+        else parent.children.push({ is: 'span', children: node.textContent?.trim() })
       }
       else if (node.nodeType == 1) {
         const el = node as HTMLElement
