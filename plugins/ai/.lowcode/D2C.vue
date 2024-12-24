@@ -1,11 +1,11 @@
 <template>
   <div flex="~ col" class="py6 hfull">
-    <div class="flex flex-col flex-1 overflow-auto scroll-smooth">
+    <div ref="scrollRef" class="flex flex-col flex-1 overflow-auto scroll-smooth">
       <div class="px20 mb6 space-y-12">
         <div>
           MODEL
           <select class="vs-input py4 mt4" v-model="form.model">
-            <option v-for="val in ['gemini-1.5-flash', 'gemini-2.0-flash-exp']" :value="val">{{ val }}</option>
+            <option v-for="val in ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-pro']" :value="val">{{ val }}</option>
           </select>
         </div>
     
@@ -21,21 +21,20 @@
             <i-carbon:user-avatar-filled-alt class="w24 h24 mr4" />
             Me
           </div>
-          <!-- <p>{{ msg.content }}</p> -->
           <wc-mdit :content="msg.content" css="pre { padding: 8px; max-height: 192px; overflow: auto; background: #0a0a0a66; }" .options="{ breaks: true }" />
           <img :src="msg.image" class="block" style="width: -webkit-fill-available; max-height: 192px; object-fit: contain;" />
         </div>
         <div v-else class="p14" style="background: var(--vs-li-hover-bg)">
           <div class="flex aic">
-            <i-ri:bilibili-fill class="w24 h24 mr8"/>AI Assistant
+            <i-ri:bilibili-fill class="w24 h24 mr8"/>
+            AI Assistant
           </div>
-          <wc-mdit :content="msg.content" css="pre { padding: 8px; max-height: 192px; overflow: auto; background: #0a0a0a66; }" />
+          <i-eos-icons:three-dots-loading v-if="!msg.content" style="width: 48px; height: 48px" />
+          <wc-mdit v-else="msg.content" :content="msg.content" :css="`pre { padding: 8px; max-height: 192px; overflow: auto; background: #0a0a0a66; } ${!msg.done && blinkCaret}`" />
           <div class="vs-actions flex space-x-4">
-            <i-pajamas:live-preview class="vs-ai vs-li mla" title="View" @click="showModal(msg.content)" />
-            <i-tdesign:file-import class="vs-ai vs-li" title="Import to designer" @click="replaceCanvas(msg.content)" />
+            <i-pajamas:live-preview v-if="msg.done" class="vs-ai vs-li mla" title="View" @click="showModal(msg.content)" />
+            <i-tdesign:file-import v-if="msg.done" class="vs-ai vs-li" title="Import to designer" @click="replaceCanvas(msg.content)" />
           </div>
-          <!-- <button class="vs-btn" @click="showModal(msg.content)">preview</button>
-          <button class="vs-btn" @click="replaceCanvas(msg.content)">-></button> -->
         </div>
       </template>
     </div>
@@ -48,10 +47,10 @@
 </template>
 
 <script setup>
-import { computed, inject, reactive, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { toReactive, useDropZone, useLocalStorage, useSessionStorage } from '@vueuse/core'
 import { GoogleGenerativeAI } from 'https://unpkg.com/@google/generative-ai@0.21.0/dist/index.mjs'
-import { fileSelect, chooseImg, fileToBase64, html2schema } from '@el-lowcode/utils'
+import { fileSelect, fileToBase64, html2schema } from '@el-lowcode/utils'
 import 'wc-mdit'
 
 const designer = inject('designerCtx')
@@ -74,23 +73,27 @@ async function send(file, content = '将图片转为 HTML + Tailwind\n- 使用 C
     image: await fileToBase64(file),
     content,
   })
+  msgs.value.push({
+    controller: new AbortController(),
+    content: '',
+    done: 0
+  })
   
-  const controller = new AbortController()
-  // const { stream } = await model.value.generateContentStream([content, { inlineData: { data: await file2base64(file), mimeType: file.type } }], controller)
-  // const row = {
-  //   controller,
-  //   content: ''
-  // }
-  // msgs.value.push(row)
-
-  // for (const res in await stream) {
-  //   row.content += res.text()
-  // }
-  // row.controller = void 0
-
-  const ret = await model.value.generateContent([content, { inlineData: { data: await file2base64(file), mimeType: file.type } }], controller)
-  const text = (await ret.response).text()
-  msgs.value.push({ content: text })
+  setTimeout(() => scrollRef.value.scrollTop = scrollRef.value.scrollHeight, 0)
+  
+  const row = msgs.value[msgs.value.length - 1]
+  
+  try {
+    const { stream } = await model.value.generateContentStream([content, { inlineData: { data: await file2base64(file), mimeType: file.type } }], row.controller)
+    
+    for await (const res of stream) {
+      row.content += res.text()
+      stickyBottom()
+    }
+  } finally {
+    row.controller = void 0
+    row.done = 1
+  }
 }
 
 function replaceCanvas(content) {
@@ -113,6 +116,39 @@ function showModal(content) {
 }
 
 function extractHtml(content) {
-  return content.replace(/(^.*```html\s)?/, '').replace(/<\/html\>\s```.*/, '</html>')
+  return content.replace(/(^[\s\S]*```html\s)?/, '').replace(/<\/html\>\s```[\s\S]*/, '</html>')
+}
+
+// 光标闪烁的竖线
+const blinkCaret = `
+.markdown-body > *:last-child::after,
+.markdown-body:empty::after {
+  content: ' ';
+  display: inline-block;
+  margin: 0 2px;
+  width: 4px;
+  line-height: 1em;
+  opacity: 0.8;
+  animation: blink-caret .75s infinite;
+}
+
+@keyframes blink-caret {
+  from, to { background: transparent; }
+  50% { background: currentColor; }
+}
+`
+
+
+const scrollRef = ref()
+
+// 置底
+async function stickyBottom() {
+  const isSticky = scrollRef.value?.scrollHeight - (scrollRef.value?.scrollTop + scrollRef.value?.clientHeight) < 60
+  await Promise.resolve()
+  if (isSticky) setTimeout(() => {
+    scrollRef.value.style.scrollBehavior = 'unset'
+    scrollRef.value.scrollTop = scrollRef.value.scrollHeight
+    scrollRef.value.style.scrollBehavior = ''
+  }, 0)
 }
 </script>
