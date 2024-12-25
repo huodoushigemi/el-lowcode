@@ -17,7 +17,7 @@
 
       <template v-for="msg in msgs">
         <div v-if="msg.self" class="p14 mt8" style="background: var(--vs-li-inactiveSelectionBg)">
-          <div class="flex aic mb12">
+          <div class="flex aic">
             <i-carbon:user-avatar-filled-alt class="w24 h24 mr4" />
             Me
           </div>

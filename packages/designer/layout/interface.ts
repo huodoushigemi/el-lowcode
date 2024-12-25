@@ -153,7 +153,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get isAbsLayout() { return !!this.data['data-absolute-layout'] }
   set isAbsLayout(bool) { this.data['data-absolute-layout'] = bool || void 0 }
 
-  get text() { return isString(this.data.children) ? this.data.children : void 0 }
+  get text() { return isString(this.data.children) && !isExp(this.data.children) ? this.data.children : void 0 }
 
   // get slots() {
   //   if (this.config?.slots) return solveOptions(this.config.slots)
