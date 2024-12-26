@@ -1,16 +1,43 @@
-import { computed, defineComponent, getCurrentInstance, provide, reactive, ref, renderSlot, toRef, watch } from 'vue'
+import { computed, defineComponent, getCurrentInstance, onUnmounted, provide, reactive, ref, renderSlot, toRef, watch, watchEffect } from 'vue'
+import { deepClone, execExp, useRequest } from '@el-lowcode/utils'
+
+const dsType = {
+  fetch: (e, vars) => {
+    const isInit = execExp(e.isInit, vars)
+    return useRequest(async () => {
+      const { options: { uri, method, params, dataHandler, ...options } } = deepClone(e, v => execExp(v, vars))
+      const url = method == 'GET' ? `${uri}?${new URLSearchParams(params).toString()}` : uri
+      const body = method == 'GET' ? void 0 : JSON.stringify(params)
+      const ret = await fetch(url, { method, body, ...options }).then(e => e.json())
+      return dataHandler ? dataHandler(ret) : ret
+    }, { manual: !isInit })
+  }
+}
 
 export const ConfigProvider = defineComponent({
   inheritAttrs: false,
   props: {
     plugins: Array,
     state: Object,
+    dataSource: Object,
     css: String,
   },
   setup(props, { slots }) {
-    provide('pageCtx', reactive({
-      state: computed(() => reactive(JSON.parse(JSON.stringify(props.state))))
-    }))
+    const pageCtx = reactive({
+      state: computed(() => {
+        return reactive(JSON.parse(JSON.stringify(props.state)))
+      }),
+      ds: computed(() => {
+        const { list } = props.dataSource || {}
+        return reactive(Object.fromEntries(list.map(e => [e.id, dsType[e.type]?.(e, pageCtx)])))
+      })
+    })
+
+    provide('pageCtx', pageCtx)
+
+    const css = document.createElement('style')
+    watchEffect(() => css.innerText = props.css)
+    onUnmounted(() => css.remove())
 
     const ins = getCurrentInstance()
     const loading = ref(false)
