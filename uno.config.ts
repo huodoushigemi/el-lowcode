@@ -70,8 +70,8 @@ export default defineConfig({
     'font-bold',
     'cursor-cell',
     'animate-spin',
-    'w24', 'w18',
-    'h24', 'h18',
+    'w24', 'w22', 'w20', 'w18',
+    'h24', 'h22', 'h20', 'h18',
   ],
   shortcuts: {
     'bg-hover': 'hover:bg-[--el-fill-color-light] active:bg-[--el-fill-color-dark]! rd-6 [&.is-active]:bg-[--el-fill-color-light]',

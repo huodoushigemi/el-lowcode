@@ -5,8 +5,8 @@
       <th class="cursor-pointer" @click="onAdd"><div class="mask-icon mxa w24 h24" style="--mask-image: url(https://api.iconify.design/bi:plus.svg)" /></th>
     </tr>
     <tr v-for="e in modelValue" class="vs-li cursor-pointer" @click="vis = true; model = e">
-      <td>{{ e.id }}</td>
-      <td @click.stop="remove(modelValue, e)"><div class="mask-icon mxa w24 h24" style="--mask-image: url(https://api.iconify.design/ic:sharp-delete-outline.svg)" /></td>
+      <td class="hover:c-blue">{{ e.id }}</td>
+      <td class="hover:c-red" @click.stop="remove(modelValue, e)"><div class="mask-icon mxa w20 h20" style="--mask-image: url(https://api.iconify.design/ic:sharp-delete-outline.svg)" /></td>
     </tr>
     <tr v-if="!modelValue?.length">
       <td colspan="2" class="p20 op40 text-center">Empty</td>
