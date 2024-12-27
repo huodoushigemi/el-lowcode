@@ -107,6 +107,7 @@ import Collapse from '../components/Collapse.vue'
 import EditTable from '../components/EditTable.vue'
 import Tabs from '../components/Tabs.vue'
 import MonacoEditor from './components/monaco-editor.vue'
+import ElFormRender from 'el-form-render'
 
 const srcdoc = computedAsync(() => import.meta.env.PROD ? import('./components/iframe-temp.html?transform').then(e => e.default) : void 0)
 const srcurl = computedAsync(() => import.meta.env.DEV ? import('./components/iframe-temp.html?url').then(e => e.default) : void 0)
@@ -120,6 +121,7 @@ app.component('Collapse', Collapse)
 app.component('EditTable', EditTable)
 app.component('Tabs', Tabs)
 app.component('MonacoEditor', MonacoEditor)
+app.use(ElFormRender)
 
 const log = (...arg) => (console.log(...arg), arg[0])
 

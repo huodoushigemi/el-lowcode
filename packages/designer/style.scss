@@ -24,6 +24,10 @@
   --vs-menu-li-hover-c: #03395d;
   --vs-menu-li-hover-bg: #03395d;
 
+  --vs-table-b-c: rgba(204, 204, 204, 0.13);
+  --vs-table-tr-bg: rgba(204, 204, 204, 0.04);
+  --vs-table-th-bg: rgba(204, 204, 204, 0.04);
+
   --vs-btn-c: #fff;
   --vs-btn-bg: #0e639c;
   --vs-btn-hover-bg: #1177bb;
@@ -155,6 +159,29 @@
   @apply flex aic px6 h26 bg-[--vs-menu-li-bg] text-nowrap hover:bg-[--vs-menu-li-hover-bg] cursor-pointer;
   &[disabled=true] {
     @apply op40 pointer-events-none;
+  }
+}
+
+.vs-table {
+  @apply border-collapse text-left b-[--vs-table-b-c];
+  > tr:first-child {
+    @apply b-b-1 b-b-solid b-b-[--vs-table-b-c] bg-[--vs-table-th-bg];
+  }
+  > tr {
+    @apply odd-not-hover:bg-[--vs-table-tr-bg];
+    > th, > td {
+      @apply px10;
+    }
+
+    > th {
+      @apply lh-28;
+    }
+    > td {
+      @apply h24 lh-24;
+    }
+    &:not(.no-b) > th + th, &:not(.no-b) > td + td {
+      @apply b-l-1 b-l-solid b-l-[--vs-table-b-c];
+    }
   }
 }
 

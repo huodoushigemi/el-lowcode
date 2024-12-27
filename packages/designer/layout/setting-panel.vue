@@ -7,7 +7,7 @@
   <el-tabs v-if="config" class="tabs">
     <el-tab-pane label="attrs" :key="node.id">
       <el-form-render :model="model" label-width="auto" size="small" label-position="top" @submit.prevent>
-         <RenderItems :items="_items" />
+        <RenderItems :items="_items" />
       </el-form-render>
     </el-tab-pane>
 
