@@ -1,6 +1,6 @@
 {
   "name": "el-lowcode",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": false,
   "description": "el-lowcode",
   "license": "MIT",
@@ -19,7 +19,7 @@
     }
   },
   "dependencies": {
-    "@el-lowcode/render": "^1.0.2",
+    "@el-lowcode/render": "^1.0.3",
     "@vue/shared": "^3.2.0"
   },
   "peerDependencies": {
