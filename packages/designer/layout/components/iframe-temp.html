@@ -101,7 +101,7 @@
     <script type="module">
       import { h, createRenderer } from 'vue'
       import Moveable from 'vue3-moveable'
-      import ElLowcode, { ConfigProvider } from 'el-lowcode'
+      import { ConfigProvider } from 'el-lowcode'
       import DragBox from './drag-box2.vue'
       import { rendererOptions } from './rendererOptions'
 
@@ -140,7 +140,6 @@
         ]
       })
 
-      app.use(ElLowcode)
       app.mount(document.body)
 
       app._context.reload = void 0

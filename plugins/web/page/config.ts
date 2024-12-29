@@ -1,4 +1,4 @@
-import { defineComponent, h, inject, ref, resolveComponent, watchEffect } from "vue"
+import { defineComponent, h, ref, resolveComponent, watchEffect } from "vue"
 import DS from './DS.vue'
 
 const State = defineComponent({
@@ -32,8 +32,8 @@ export default {
   props: [
     { lp: 'fit', options: ['contain', 'cover', 'fill', 'scrollY', 'scrollX'] },
     // { is: 'div', class: 'my8', children: '变量' },
-    // { lp: 'state', class: 'font-bold', el: { is: State } }
-    { lp: ['', 'dataSource.list'], size: 'default', el: { is: DS }, script: false }
+    { lp: ['State', 'state'], class: 'font-bold', el: { is: State }, script: false },
+    { lp: ['', 'ds.list'], size: 'default', el: { is: DS }, script: false }
   ],
   defaultProps: () => ({
     children: []

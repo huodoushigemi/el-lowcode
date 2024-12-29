@@ -223,6 +223,16 @@ hr:last-child {
   &.el-select > .el-select__wrapper > .el-select__suffix { display: none; }
 }
 
+.props {
+  & > .el-drawer.rtl {
+    @apply translate-x--256 shadow-none;
+  }
+  &.el-drawer-fade-enter-from > .rtl,
+  &.el-drawer-fade-leave-to > .rtl {
+    @apply translate-x--192 op0;
+  }
+}
+
 .mask-icon {
   background-color: currentColor;
   cursor: pointer;

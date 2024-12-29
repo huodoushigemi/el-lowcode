@@ -4,10 +4,10 @@ import { Obj } from '.'
 
 export const expReg = /^\{\{([\d\D]*)\}\}$/
 
-export const isExp = (exp) => isString(exp) && exp.startsWith('{{') && exp.endsWith('}}')
+export const isExp = exp => isString(exp) && exp.startsWith('{{') && exp.endsWith('}}')
 
-export const unExp = (exp) => isExp(exp) ? exp.replace(expReg, '$1') : exp
-export const wrapExp = (exp) => `{{${unExp(exp)}}}`
+export const unExp = exp => (isExp(exp) ? exp.replace(expReg, '$1') : exp)
+export const wrapExp = exp => `{{${unExp(exp)}}}`
 
 const provideVars = { ref, reactive, watch, watchEffect }
 
@@ -18,7 +18,12 @@ export function initState(state: string) {
 
 export function execExp(any: unknown, ctx: Obj) {
   if (!isExp(any)) return any
-  const vars = { ...ctx, ...provideVars }
-  const func = new Function(...Object.keys(vars), `return ${unExp(any)}`)
-  return func(...Object.values(vars))
+  try {
+    const vars = { ...ctx, ...provideVars }
+    const func = new Function(...Object.keys(vars), `return ${unExp(any)}`)
+    return func(...Object.values(vars))
+  } catch (e) {
+    console.error('exec expression error:', unExp(any), ctx)
+    throw e
+  }
 }

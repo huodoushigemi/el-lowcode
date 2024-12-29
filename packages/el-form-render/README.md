@@ -26,7 +26,7 @@
 ## 🦄 快速开始
 
 ```shell
-npm i el-form-render
+pnpm add el-form-render
 ```
 
 ```html
@@ -36,12 +36,12 @@ npm i el-form-render
   <code><pre>model: {{ JSON.stringify(model, null, '  ') }}</pre></code>
 </template>
 
-<script setup lang="ts">
-import ElFormRender, { Item } from 'el-form-render'
+<script setup>
+import ElFormRender from 'el-form-render'
 
 const model = reactive({})
 
-const items: Item[] = [
+const items = [
   { label: '姓名' prop: 'name' },
 ]
 </script>

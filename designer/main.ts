@@ -46,10 +46,6 @@ import 'element-plus/es/components/switch/style/css'
 import 'element-plus/es/components/segmented/style/css'
 import 'element-plus/es/components/color-picker/style/css'
 
-
-import ElLowcode from 'el-lowcode'
-import ElFormRender from 'el-form-render'
-
 import './style.css'
 import 'virtual:uno.css'
 // import 'uno.css'
@@ -58,8 +54,6 @@ import 'virtual:uno.css'
 
 createApp(() => h(RouterView))
   .use(ElementPlus)
-  .use(ElLowcode)
-  .use(ElFormRender)
   .use(createRouter({
     history: createWebHashHistory(),
     routes

@@ -20,10 +20,10 @@ function verSync(pack) {
 // 发布
 function publish(pack) {
   verSync(pack)
-  execSync(`npm publish --access public`, { cwd: pkgDir(pack, 'dist') })
+  execSync(`npm publish --access public --registry https://registry.npmjs.org/`, { cwd: pkgDir(pack, 'dist') })
 }
 
 publish('render')
 publish('el-form-render')
-publish('crud')
+// publish('crud')
 publish('el-lowcode')

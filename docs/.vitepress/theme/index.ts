@@ -9,8 +9,6 @@ import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import 'virtual:uno.css'
 
-import ElLowcode from 'el-lowcode'
-
 import './custom.scss'
 
 import './crud.config'
@@ -20,7 +18,6 @@ export default {
   async enhanceApp(ctx: EnhanceAppContext) {
     // DefaultTheme.enhanceApp(ctx)
     ctx.app.use(ElementPlus)
-    ctx.app.use(ElLowcode)
     ctx.app.provide(ID_INJECTION_KEY, { prefix: 1024, current: 0 })
 
     if (typeof window != 'undefined') await import('./mocks')

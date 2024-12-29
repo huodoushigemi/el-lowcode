@@ -45,7 +45,7 @@ const _icon = options('icon', ICONS)
 const _endIcon = options('end-icon', ICONS)
 const href = props => grid2([
   { lp: 'href', displayValue: '', el: { placeholder: 'http://……' } },
-  { lp: 'target', type: 'select', options: ['_blank', '_self'], displayValue: '_self', $: { if: !!props.href } },
+  { lp: 'target', type: 'select', options: ['_blank', '_self'], displayValue: '_self', vIf: !!props.href },
 ])
 const btnType = options('type', ['submit', 'reset', 'button'], 'button')
 

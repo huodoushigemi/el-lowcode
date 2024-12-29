@@ -49,14 +49,14 @@ export const useTransformer = (_model, _prop, opt: Pick<Item0, 'defaultValue' | 
       if (opt.displayValue !== undefined && (v === undefined || v === '')) v = unFn(opt.displayValue)
       return v
     },
-    set(val) {
+    set(v) {
       const model = toValue(_model), prop = toValue(_prop)
-      if (opt.silentSet) set(toRaw(model), prop, opt.silentSet(val, model))
-      else if (opt.set) set(model, prop, opt.set(val, model))
-      else set(model, prop, val)
-      if (opt.out) Object.assign(model, opt.out!(val, model))
-      val = get(model, prop)
-      if (opt.displayValue !== undefined && val === unFn(opt.displayValue)) set(model, prop, undefined)
+      if (opt.silentSet) set(toRaw(model), prop, opt.silentSet(v, model))
+      else if (opt.set) set(model, prop, opt.set(v, model))
+      else set(model, prop, v)
+      if (opt.out) Object.assign(model, opt.out(v, model))
+      v = get(model, prop)
+      if (opt.displayValue !== undefined && v === unFn(opt.displayValue)) set(model, prop, undefined)
     },
     get v() { return this.get() },
     set v(v) { this.set(v) },

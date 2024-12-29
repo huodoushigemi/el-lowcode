@@ -79,9 +79,7 @@ export default {
                 is: 'ElFormItemRender',
                 label: '备注',
                 prop: 'remark',
-                $: {
-                  if: "{{state.formData.sex != '1'}}",
-                },
+                vIf: "{{state.formData.sex != '1'}}",
                 children: [
                   {
                     is: 'ElInput',

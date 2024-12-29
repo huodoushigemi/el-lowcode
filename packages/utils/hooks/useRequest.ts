@@ -1,4 +1,10 @@
-import { reactive, watchPostEffect, onBeforeUnmount, toRefs } from 'vue'
+import { reactive, watchPostEffect, onBeforeUnmount, toRef } from 'vue'
+
+function toRefs(obj) {
+  const ret = {}
+  for (const k in obj) ret[k] = toRef(() => obj[k])
+  return ret
+}
 
 type Config<T, A> = Partial<{
   onBefore(params: A): void

@@ -22,16 +22,16 @@ export function vue(ctx: DesignerCtx) {
     return v
   }
   function through(props: BoxProps, queue = [] as BoxProps[]) {
-    const { is, _id, children, $, ...attrs } = ctx.keyedNode[props._id].config?.purify?.(props) ?? props
+    const { is, _id, children, vFor, vIf, ...attrs } = ctx.keyedNode[props._id].config?.purify?.(props) ?? props
     const indent = '  '.repeat(queue.length)
 
     xml += `${indent}<${is}`
 
-    if ($) {
-      // v-if
-      if ($.if) xml += ` v-if=${JSON.stringify(parseExp($.if).replaceAll(`"`, `'`))}`
+    if (vIf) {
       // todo v-for
-      if ($.for) {}
+      if (vFor) {}
+      // v-if
+      if (vIf) xml += ` v-if=${JSON.stringify(parseExp(vIf).replaceAll(`"`, `'`))}`
     }
     
     for (const k in attrs) {
@@ -100,13 +100,11 @@ ${plugins.map(url => `import(/* @vite-ignore */ '${url}/index.js').then(e => app
 export function jsonRender(ctx: DesignerCtx) {
   const omitKey = new Set(['_id', 'data-absolute-layout'])
   return `<template>
-  <ConfigProvider v-bind="schema">
-    <Render v-bind="schema" />
-  </ConfigProvider>
+  <Render v-bind="schema" />
 </template>
 
 <script setup>
-import { ConfigProvider, Render } from 'el-lowcode'
+import { Render } from 'el-lowcode'
 
 const schema = ${JSON.stringify(ctx.root, (k, v) => omitKey.has(k) ? void 0 : v)}
 </script>`

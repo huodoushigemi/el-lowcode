@@ -1,9 +1,8 @@
 import { computed, InjectionKey, mergeProps, ref, shallowRef, toRaw } from 'vue'
 import { isArray, isObject, isPlainObject, isString, normalizeStyle } from '@vue/shared'
 import { Fn, unrefElement } from '@vueuse/core'
-import { Arrable, Assign, deepClone, Fnable, Obj, pick, set, uid } from '@el-lowcode/utils'
+import { Arrable, Assign, deepClone, Fnable, isExp, Obj, pick, set, uid } from '@el-lowcode/utils'
 import { processProps } from 'el-lowcode'
-import { solveOptions } from 'el-form-render'
 import { Node } from './components/Node'
 import { parseTransform } from './components/utils'
 
@@ -127,8 +126,8 @@ export abstract class DisplayNode extends Node<BoxProps> {
     return props
   }
 
-  get itemInFor() { return this.data.$?.for ? this.vars[this.data.$.forArgs?.[0] || 'item'] : this.parent?.itemInFor }
-  get indexInFor() { return this.data.$?.for ? this.vars[this.data.$.forArgs?.[1] || 'index'] : this.parent?.indexInFor }
+  get itemInFor() { return this.data.$?.for ? this.vars[this.data.vFor?.[1] || 'item'] : this.parent?.itemInFor }
+  get indexInFor() { return this.data.$?.for ? this.vars[this.data.vFor?.[2] || 'index'] : this.parent?.indexInFor }
 
   // 自由拖拽
   get isAbs() { return this.data.style?.position == 'absolute' }

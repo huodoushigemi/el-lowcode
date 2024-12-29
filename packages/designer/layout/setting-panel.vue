@@ -26,7 +26,7 @@
 
   <MonacoEditorDialog
     v-model="editModel" language="json"
-    v-model:visible="visible" :dialog="{ is: 'el-drawer', title: config?.label, size: 500 }"
+    v-model:visible="visible" :dialog="{ is: 'el-drawer', modalClass: 'props', title: config?.label, size: 500 }"
   />
 </template>
 
@@ -124,11 +124,11 @@ const commons = computed(() => [
   ] },
   { is: 'hr' },
   { is: 'div', class: 'grid grid-cols-4 space-x--1', children: [
-    { lp: ['v-for', '$.for'], class: 'col-span-2', script: true },
-    { label: 'ㅤ', prop: '$.forArgs.0', script: false, el: { placeholder: 'item' } },
-    { label: 'ㅤ', prop: '$.forArgs.1', script: false, el: { placeholder: 'index' } },
+    { lp: ['v-for', 'vFor.0'], class: 'col-span-2', script: true, out: v => (v ? {} : { vFor: void 0 }) },
+    { lp: ['ㅤ', 'vFor.1'], script: false, el: { placeholder: 'item' } },
+    { lp: ['ㅤ', 'vFor.2'], script: false, el: { placeholder: 'index' } },
   ] },
-  { lp: ['v-if', '$.if'], type: 'switch', displayValue: true },
+  { lp: 'v-if', type: 'switch', displayValue: true },
   { is: 'hr' },
   { is: 'h1', children: 'Event' },
   { lp: 'onClick' },

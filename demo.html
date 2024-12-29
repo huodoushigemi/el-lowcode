@@ -15,7 +15,7 @@
   <script type="module">
     import { createApp, reactive, h, computed, watchEffect } from 'vue'
     import { computedAsync } from '@vueuse/core'
-    import { ConfigProvider, Render } from 'el-lowcode'
+    import { Render } from 'el-lowcode'
 
     const schema = computedAsync(() => {
       const str = new URLSearchParams(location.href.split('?')[1]).get('schema')
@@ -44,10 +44,7 @@
     const loading = h('h1', { style: 'margin-top: 45vh; text-align: center;' }, 'Loading……')
 
     createApp(() => schema.value
-      ? h(ConfigProvider, schema.value, {
-        default: h(Render, schema.value),
-        loading
-      })
+      ? h(Render, schema.value, { loading })
       : loading
     )
       .mount(document.body)

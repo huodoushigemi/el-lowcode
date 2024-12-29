@@ -1,7 +1,7 @@
 {
   "name": "@el-lowcode/render",
   "private": false,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "module": "index.mjs",
   "types": "index.d.ts",
@@ -16,7 +16,6 @@
     "@vue/shared": "^3.2.0"
   },
   "peerDependencies": {
-    "element-plus": "^2.3.8",
     "vue": "^3.2.0"
   }
 }

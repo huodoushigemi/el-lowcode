@@ -8,7 +8,7 @@
       </template>
     </template>
 
-    <div v-if="isScript || script === true" flex justify-between px8 wfull lh-22 bg="[--el-fill-color-light]" cursor-pointer :c="exp || '[--el-text-color-placeholder]'" style="border: var(--el-border)" @click="visible = true">
+    <div v-if="isScript || script === true" flex justify-between px8 wfull lh-24 bg="[--el-fill-color-light]" cursor-pointer :c="exp || '[--el-text-color-placeholder]'" style="outline: var(--el-border); outline-offset: -1px" @click="visible = true">
       <span>{{ `{\{` }}</span>
       <span mx12 truncate class="empty:after:content-['JS_Expression']">{{ exp }}</span>
       <span>{{ `}\}` }}</span>
@@ -35,6 +35,7 @@ import { ElFormItemRender, formItemRenderPropsBase, useTransformer } from 'el-fo
 import { designerCtxKey } from '../interface'
 import MonacoEditor from './monaco-editor.vue'
 import { refWithWatch } from '../../components/hooks'
+import { isExp, unExp, wrapExp } from '@el-lowcode/utils'
 
 const props = defineProps({
   ...formItemProps,
@@ -51,23 +52,20 @@ const value = useTransformer(model, () => props.prop, props)
 
 const designerCtx = inject(designerCtxKey)
 
-const expReg = /^\{\{([\d\D]*)\}\}$/
-
-const isScript = computed(() => isString(value.value) ? expReg.test(value.value) : false)
+const isScript = computed(() => isExp(value.value))
 
 const tsExtraLibs = computed(() => (console.log(JSON.stringify(designerCtx.currentState)), {
   'state.ts': `const state = ${JSON.stringify(designerCtx.currentState)}`
 }))
 
-const interpolation = computed(() => isScript.value ? value.value : '{{}}')
-const code = refWithWatch(() => interpolation.value.match(expReg)[1] || (isOn(props.prop) ? `(e) => {\n  \n}` : ''))
-const exp = computed(() => interpolation.value.match(expReg)[1])
+const interpolation = computed(() => isExp(value.value) ? value.value : '{{}}')
+const code = refWithWatch(() => unExp(interpolation.value) || (isOn(props.prop) ? `(e) => {\n  \n}` : ''))
+const exp = computed(() => unExp(interpolation.value))
 
 const visible = ref(false)
 
 function onSave() {
-  console.log(code.value);
-  value.value = `{{${code.value}}}`
+  value.value = code.value ? wrapExp(code.value) : void 0
   visible.value = false
 }
 </script>

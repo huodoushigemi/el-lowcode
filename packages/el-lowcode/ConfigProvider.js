@@ -1,16 +1,18 @@
-import { computed, defineComponent, getCurrentInstance, onUnmounted, provide, reactive, ref, renderSlot, toRef, watch, watchEffect } from 'vue'
+import { computed, defineComponent, effectScope, getCurrentInstance, onUnmounted, provide, reactive, ref, renderSlot, toRef, watch, watchEffect } from 'vue'
 import { deepClone, execExp, useRequest } from '@el-lowcode/utils'
+import { computedEager, toReactive } from '@vueuse/core'
 
 const dsType = {
   fetch: (e, vars) => {
-    const isInit = execExp(e.isInit, vars)
     return useRequest(async () => {
-      const { options: { uri, method, params, dataHandler, ...options } } = deepClone(e, v => execExp(v, vars))
-      const url = method == 'GET' ? `${uri}?${new URLSearchParams(params).toString()}` : uri
+      const { options: { uri, method, params, ...options }, dataHandler } = deepClone(e, v => execExp(v, vars))
+      const url = method == 'GET' ? `${uri}${uri.includes('?') ? '&' : '?'}${new URLSearchParams(params).toString()}` : uri
       const body = method == 'GET' ? void 0 : JSON.stringify(params)
       const ret = await fetch(url, { method, body, ...options }).then(e => e.json())
       return dataHandler ? dataHandler(ret) : ret
-    }, { manual: !isInit })
+    }, {
+      manual: !execExp(e.isInit, vars)
+    })
   }
 }
 
@@ -19,21 +21,22 @@ export const ConfigProvider = defineComponent({
   props: {
     plugins: Array,
     state: Object,
-    dataSource: Object,
+    ds: Object,
     css: String,
   },
   setup(props, { slots }) {
-    const pageCtx = reactive({
-      state: computed(() => {
-        return reactive(JSON.parse(JSON.stringify(props.state)))
-      }),
-      ds: computed(() => {
-        const { list } = props.dataSource || {}
-        return reactive(Object.fromEntries(list.map(e => [e.id, dsType[e.type]?.(e, pageCtx)])))
-      })
+    const pageCtx = reactive({})
+
+    pageCtx.state = computed(() => {
+      return reactive(JSON.parse(JSON.stringify(props.state)))
     })
 
-    provide('pageCtx', pageCtx)
+    pageCtx.ds = computedEager(() => {
+      const { list = [] } = props.ds || {}
+      return reactive(list.reduce((o, e) => (o[e.id] = computedEager(() => dsType[e.type](e, pageCtx)), o), {}))
+    })
+
+    provide('pageCtx', window.pageCtx = pageCtx)
 
     const css = document.createElement('style')
     watchEffect(() => css.innerText = props.css)

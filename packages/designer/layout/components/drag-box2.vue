@@ -33,10 +33,10 @@ const Render = createRender({
   defaultIs: 'Fragment',
   processProps: (_props: any, vars, { provide }) => {
     if (_props[EMPTY]) return _props
-    if (!_props.is && _props.$?.for) return processProps(_props, vars)
+    if (!_props.is && _props.vFor) return processProps(_props, vars)
     if (vars.__not_index_0_in_for) return processProps(_props, vars)
     
-    if (_props.$?.for) {
+    if (_props.vFor) {
       const node = new designer.DisplayNode(_props)
       node.vars = vars
       if (node.indexInFor > 0) {

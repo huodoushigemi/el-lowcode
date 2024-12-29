@@ -1,5 +1,5 @@
 import { ExtractPropTypes, PropType } from 'vue'
-import { Arrable, Fnable, Obj } from '@el-lowcode/utils'
+import { Fnable, Obj } from '@el-lowcode/utils'
 
 // import { Awaitable } from '@vueuse/core'
 type Awaitable<T> = Promise<T> | T

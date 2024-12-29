@@ -5,7 +5,7 @@ const tabWgt = (is) => ({
   drag: { to: 'md-tabs' },
   props: props => [
     { lp: ['tag', 'is'], type: 'select', options: ['md-primary-tab', 'md-secondary-tab'] },
-    { lp: 'inline-icon', type: 'switch', displayValue: false, $: { if: props.is == 'md-primary-tab' } },
+    { lp: 'inline-icon', type: 'switch', displayValue: false, vIf: props.is == 'md-primary-tab' },
     { lp: 'is-tab', type: 'switch', displayValue: true },
     { lp: 'active', type: 'switch', displayValue: false },
     { lp: 'has-icon', type: 'switch', displayValue: false },

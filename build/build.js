@@ -69,13 +69,15 @@ export async function build(pack) {
         dir: pkgDir(pack, `dist`),
         chunkFileNames: `[name]-[hash].${ext}`,
         entryFileNames: `[name].${ext}`,
-        // name: 'ElFormRender',
     })
   }
 
   await bundle.close()
 
-  fse.copyFileSync(pkgDir(pack, 'package.json'), pkgDir(pack, 'dist/package.json'))
+  ;['package.json', 'README.md'].forEach(name => {
+    const file = pkgDir(pack, name)
+    if (fs.existsSync(file)) fse.copyFileSync(file, pkgDir(pack, 'dist', name))
+  })
 
   buildDts(pack)
 }
@@ -90,11 +92,11 @@ export async function buildFull() {
 
 async function buildDts(pack) {
   try {
-    const comd =`npx vue-tsc -d --emitDeclarationOnly --skipLibCheck --jsx preserve --outDir ${pkgDir(pack, 'dist/types')} ${pkgDir(pack, 'index.ts')}`
+    const comd =`npx vue-tsc -d --emitDeclarationOnly --skipLibCheck --jsx preserve --allowJs --outDir ${pkgDir(pack, 'dist/types')} ${pkgDir(pack, 'index.ts')}`
     log(chalk.blue(comd))
     execSync(comd, { cwd })
   } catch (e) {
-
+    
   }
 
   const bundle = await rollup({
@@ -120,6 +122,6 @@ async function buildDts(pack) {
 // await build('utils')
 await build('render')
 await build('el-form-render')
-await build('crud')
+// await build('crud')
 // await build('designer') // todo > unocss
 await build('el-lowcode')

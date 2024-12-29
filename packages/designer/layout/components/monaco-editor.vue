@@ -27,6 +27,13 @@ import { useDark } from '@vueuse/core'
 import { vLoading } from 'element-plus'
 import { refWithWatch } from '../../components/hooks'
 
+// import * as monaco from 'monaco-editor'
+// monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+//   noLib: true,
+//   module: monaco.languages.typescript.ModuleKind.ESNext,
+//   target: monaco.languages.typescript.ScriptTarget.ESNext,
+// })
+
 const props = defineProps({
   // ...VueMonacoEditor.props as { [k in keyof EditorProps]: any },
   value: String,
@@ -47,6 +54,20 @@ const emit = defineEmits(['save', 'update:modelValue'])
 const isDark = useDark({ storageKey: 'vitepress-theme-appearance' })
 
 async function onMount(_editor, monaco) {
+
+  // console.log(monaco.languages.typescript.typescriptDefaults.getCompilerOptions());
+
+  // monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+  //   noLib: true,
+  //   module: monaco.languages.typescript.ModuleKind.ESNext,
+  //   target: monaco.languages.typescript.ScriptTarget.ESNext,
+  // })
+
+  // monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+  //   noSemanticValidation: false,
+  //   noSyntaxValidation: false
+  // })
+  
   isMount.value = true
   
   editorIns = _editor
