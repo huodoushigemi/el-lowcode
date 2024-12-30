@@ -5,6 +5,7 @@ import { cloneObj } from './index'
 
 const dsType = {
   fetch: (e, vars) => {
+    // todo stop
     return useRequest(async () => {
       const { options: { uri, method, params, ...options }, dataHandler } = cloneObj(reactive(e), vars)
       const url = method == 'GET' ? `${uri}${uri.includes('?') ? '&' : '?'}${new URLSearchParams(params).toString()}` : uri
@@ -38,6 +39,7 @@ export function useConfigProvider(props) {
   const config = reactive({})
 
   config.state = computed(() => {
+    console.log('state')
     return reactive(cloneObj(props.state, config, v => !isRef(v)))
   })
 
