@@ -1,5 +1,6 @@
 import { h, mergeProps } from 'vue'
-import { deepClone, execExp, toArr, unExp, wrapExp } from '@el-lowcode/utils'
+import { isArray, isObject } from '@vue/shared'
+import { deepClone, execExp, isExp, toArr, unExp, wrapExp } from '@el-lowcode/utils'
 import { createRender } from '@el-lowcode/render'
 import { ConfigProvider } from './ConfigProvider'
 
@@ -37,4 +38,19 @@ export function processProps(props, vars) {
   }
 
   return props
+}
+
+export function cloneObj(obj, vars, bool = v => true) {
+  const ret = isArray(obj) ? [] : {}
+  for (const k in obj) {
+    if (isExp(obj[k])) {
+      Object.defineProperty(ret, k, { get() { return execExp(obj[k], vars) }, enumerable: true })
+    }
+    else {
+      const desc = Object.getOwnPropertyDescriptor(obj, k)!
+      if (isObject(desc.value) && bool(desc.value)) ret[k] = cloneObj(desc.value, vars, bool)
+      else Object.defineProperty(ret, k, desc)
+    }
+  }
+  return ret
 }

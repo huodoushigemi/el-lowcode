@@ -1,6 +1,6 @@
 import { isString } from '@vue/shared'
-import { ref, reactive, watch, watchEffect } from 'vue'
-import { Obj } from '.'
+import { ref, reactive, watch, watchEffect, toValue } from 'vue'
+import { Fnable, Obj } from '.'
 
 export const expReg = /^\{\{([\d\D]*)\}\}$/
 
@@ -16,14 +16,14 @@ export function initState(state: string) {
   return exec(...Object.values(provideVars))
 }
 
-export function execExp(any: unknown, ctx: Obj) {
+export function execExp(any: unknown, ctx: Fnable<Obj>) {
   if (!isExp(any)) return any
   try {
-    const vars = { ...ctx, ...provideVars }
+    const vars = { ...toValue(ctx), ...provideVars }
     const func = new Function(...Object.keys(vars), `return ${unExp(any)}`)
     return func(...Object.values(vars))
   } catch (e) {
-    console.error('exec expression error:', unExp(any), ctx)
+    console.error('exec expression error:', unExp(any), toValue(ctx))
     throw e
   }
 }

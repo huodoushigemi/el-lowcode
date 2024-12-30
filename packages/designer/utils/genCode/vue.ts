@@ -122,20 +122,24 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
   
   through(root)
 
-  let js = `<script setup>\nimport { reactive, computed } from 'vue'\nimport { useConfigProvider } from 'el-lowcode'`
+  let js = `<script setup>\nimport { reactive, computed, toRef } from 'vue'\nimport { useConfigProvider } from 'el-lowcode'`
 
   let params = objStringify(JSON.parse(JSON.stringify({ state, ds, css, plugins })), v => {
     return (
-      isExp(v) ? `computed(() => ${unExp(v)})` :
+      isExp(v) ? `toRef(() => ${unExp(v)})` :
       isString(v) ? JSON.stringify(v) :
       v
     )
   })
 
-  // const prettier = await import('https://unpkg.com/prettier@3.4.2/standalone.mjs')
-  // params = await prettier.format(`reactive(${params})`, { semi: false, singleQuote: false })
+  params = `const { state, ds } = useConfigProvider(${params})`
+
+  const prettier = await import('https://unpkg.com/prettier@3.4.2/standalone.mjs')
+  const Babel = await import('https://unpkg.com/prettier@3.4.2/plugins/babel.mjs').then(e => e.default)
+  const Estree = await import('https://unpkg.com/prettier@3.4.2/plugins/estree.mjs').then(e => e.default)
+  params = await prettier.format(params, { parser: 'babel', semi: false, singleQuote: true, plugins: [Babel, Estree] })
   
-  js += `\n\nconst { state, ds } = useConfigProvider(${params})`
+  js += `\n\n${params.trim()}`
 
   if (vars.length) {
     js += `\n\n${vars.map(e => `const ${e[0]} = ${e[1]}`).join('\n\n')}`
