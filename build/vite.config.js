@@ -31,6 +31,7 @@ async function build1(input, outDir) {
           moduleSideEffects: true,
         },
         manualChunks: (id) => {
+          if (['wc-mdit', 'wc-hljs'].find(e => id.includes(`node_modules/${e}/`))) return
           const dep = [...ALL_DEPS, '@vue'].find(e => id.includes(`node_modules/${e}/`))
           if (dep && dep != 'vue') return dep.replaceAll('/', '-')
         },

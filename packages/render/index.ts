@@ -3,10 +3,12 @@ import { hasOwn, isArray, isFunction, isPlainObject } from '@vue/shared'
 import { Fnable, Arrable, mapValues, Obj } from '@el-lowcode/utils'
 
 export type Props = {
+  _id?: string
   is?: any
   vFor?: [string, string?, string?]
   vIf?: string
   vModels?: Record<string, [string, string[], string[]]>
+  vSlot?: string
   children?: Fnable<string | number | Props[] | Record<string, Props>>
   [k: string]: any
 }

@@ -3,6 +3,7 @@ import { isArray, isObject, isPlainObject, isString, normalizeStyle } from '@vue
 import { Fn, unrefElement } from '@vueuse/core'
 import { Arrable, Assign, deepClone, Fnable, isExp, Obj, pick, set, uid } from '@el-lowcode/utils'
 import { processProps } from 'el-lowcode'
+import { Props } from '@el-lowcode/render'
 import { Node } from './components/Node'
 import { parseTransform } from './components/utils'
 
@@ -46,18 +47,7 @@ export interface Snippet {
   schema: () => BoxProps
 }
 
-export interface BoxProps {
-  is?: any
-  _id: string
-  el?: Obj
-  children?: string | number | BoxProps[] | { [k: string]: BoxProps }
-  $?: {
-    for?: string
-    forArgs?: [string, string]
-    if: any
-  }
-  [k: string]: any
-}
+export type BoxProps = Props
 
 export abstract class DisplayNode extends Node<BoxProps> {
   abstract designerCtx: DesignerCtx
@@ -68,7 +58,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
     super(data)
   }
 
-  get id () { return this.data._id }
+  get id () { return this.data._id! }
   get is() { return this.data.is || 'Fragment' }
   get icon() { return this.config?.icon }
   get label () { return (this.vslot && `#${this.vslot}`) || this.data['lcd-label'] || this.config?.label || this.data.is }

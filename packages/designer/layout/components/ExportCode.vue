@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { computed, inject, ref } from 'vue'
+import { computedAsync } from '@vueuse/core'
 import { download } from '@el-lowcode/utils'
 import { DesignerCtx } from '../interface'
 import { genCode } from '../../utils'
@@ -36,7 +37,7 @@ const options = [
 ]
 const curr = computed(() => options.find(e => e.value == type.value)!)
 
-const code = computed(() => curr.value.code())
+const code = computedAsync(() => curr.value.code(), null, { lazy: true, onError: console.error })
 
 function ok() {
   download(code.value, `${+new Date}.${curr.value.ext ?? curr.value.value}`)
