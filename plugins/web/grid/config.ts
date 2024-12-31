@@ -1,6 +1,7 @@
 export default  {
   is: 'Grid',
   label: 'grid',
+  hidden: true,
   category: '容器',
   props: [
     { lp: 'cols', el: { is: 'InputNumber' } },

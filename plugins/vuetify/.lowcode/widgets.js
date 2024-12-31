@@ -389,9 +389,7 @@ export const widgets = [
     vSlots: ['actions'],
     props: [],
     defaultProps: () => ({
-      children: {
-        default: { scope: '$panel', children: [Text('Item')] },
-      },
+      children: [Text('Item')],
     }),
     devProps: () => ({ 'lcd-selectable': false })
   },

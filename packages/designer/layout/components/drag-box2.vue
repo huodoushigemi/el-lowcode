@@ -20,7 +20,7 @@ const rootEl = ref()
 defineRender(() => {
   return [
     h(DragGuidMask),
-    cloneVNode(Render(props.root!) || h('div') as any, { 'lcd-root': '', ref: rootEl, onMousedown, onMouseover }),
+    cloneVNode(Render(props.root!) || h('div') as any, { 'lcd-root': '', ref: rootEl, onMousedown, onMouseover }, true),
   ]
 })
 

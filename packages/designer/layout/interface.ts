@@ -1,4 +1,4 @@
-import { computed, InjectionKey, mergeProps, ref, shallowRef, toRaw } from 'vue'
+import { computed, InjectionKey, mergeProps, reactive, ref, shallowRef, toRaw, toRef } from 'vue'
 import { isArray, isObject, isPlainObject, isString, normalizeStyle } from '@vue/shared'
 import { Fn, unrefElement } from '@vueuse/core'
 import { Arrable, Assign, deepClone, Fnable, isExp, Obj, pick, set, uid } from '@el-lowcode/utils'
@@ -148,37 +148,25 @@ export abstract class DisplayNode extends Node<BoxProps> {
   //   if (this.config?.slots) return solveOptions(this.config.slots)
   //   if (this.config?.vSlots) return solveOptions(this.config.vSlots)
   // }
-
-  // get vSlots() { return isPlainObject(this.$data.children) ? Object.keys(this.$data.children) : void 0 }
-  // set vSlots(v) {
-  //   const vslots =
-  //     isArray(this.data.children) ? { default: { children: this.data.children } } :
-  //     isPlainObject(this.data.children) ? this.data.children :
-  //     {}
-  //   if (!v?.length) {
-  //     this.data.children = vslots.default.children
-  //   } else {
-  //     const defaults = Object.fromEntries(v.map(e => [e, { children: [] }]))
-  //     this.data.children = pick({ ...defaults, ...vslots }, [...v, 'default'])
-  //   }
-  // }
-
+  
   // 插槽化 children
   #vSlots
   get vSlots() {
     return this.#vSlots ??= new Proxy({}, {
       get: (target, p, receiver) => {
-        return p == 'default' && isArray(this.data.children) ? { default: this.data.children } : this.data.children?.[p]
+        return p == 'default' && isArray(this.data.children) ? reactive({ children: toRef(this.data, 'children') }) : this.data.children?.[p]
       },
       set: (target, p, val, receiver) => {
         if (isArray(this.data.children) && p == 'default' && isArray(val)) {
           this.data.children = val
         } else {
           let children = this.data.children as any
-          if (isArray(children)) children = { default: { children } }
+          children = isArray(children) ? { default: { children } } : { ...children }
           children[p] = isArray(val) ? { children: val } : val == true ? { children: [] } : val
           // 最小化 children
-          if (Object.entries(children).every(([k, v]) => k == 'default' || v == null) && Object.entries(children.default).every(([k, v]) => k == 'children' || v == null)) {
+          if (Object.values(children).every(e => e == null)) {
+            children = void 0
+          } else if (Object.entries(children).every(([k, v]) => k == 'default' || v == null) && children.default.vSlot == null) {
             children = children.default.children
           }
           this.data.children = children

@@ -25,12 +25,24 @@ export default {
     { is: 'h1', children: 'Event' },
     { lp: 'onSubmit', script: true }
   ],
-  defaultProps: (ctx) => ({
+  defaultProps: () => ({
     model: '{{(state.formData ??= {}, state.formData)}}',
-    labelWidth: 80,
+    labelWidth: 120,
     style: { overflow: 'hidden' },
     children: [
-      ctx.widgets.ElFormItemRender.defaultProps(ctx)
+      { is: 'ElFormItemRender', label: 'Activity name', prop: 'name', children: [{ is: 'ElInput' }] },
+      { is: 'ElFormItemRender', label: 'Activity zone', prop: 'region', children: [{ is: 'ElSelect', children: [{ is: 'ElOption', label: 'Zone one', value: 'shanghai' }, { is: 'ElOption', label: 'Zone two', value: 'beijing' }] }] },
+      { is: 'ElFormItemRender', label: 'Activity name', prop: 'name', children: [
+        { is: 'ElFormItemRender', prop: 'date1', children: [{ is: 'ElDatePicker', type: 'date' }] },
+        { is: 'span', style: { padding: '0 12px' }, children: '-' },
+        { is: 'ElFormItemRender', prop: 'date2', children: [{ is: 'ElDatePicker', type: 'date' }] },
+      ] },
+      { is: 'ElFormItemRender', label: 'Instant delivery', prop: 'delivery', children: [{ is: 'ElSwitch' }] },
+      { is: 'ElFormItemRender', label: 'Activity location', prop: 'location', children: [{ is: 'ElSegmented', options: [{ label: 'Home', value: 'Home' }, { label: 'Company', value: 'Company' }, { label: 'School', value: 'School' }] }] },
+      { is: 'ElFormItemRender', label: 'Activity type', prop: 'type', children: [{ is: 'ElCheckboxGroup', children: [{ is: 'ElCheckbox', label: 'Online activities', value: 'Online activities' }, { is: 'ElCheckbox', label: 'Promotion activities', value: 'Promotion activities' }, { is: 'ElCheckbox', label: 'Offline activities', value: 'Offline activities' }, { is: 'ElCheckbox', label: 'Simple brand exposure', value: 'Simple brand exposure' }] }] },
+      { is: 'ElFormItemRender', label: 'Resources', prop: 'resource', children: [{ is: 'ElRadioGroup', children: [{ is: 'ElRadio', label: 'Sponsorship', value: 'Sponsorship' }, { is: 'ElRadio', label: 'Venue', value: 'Venue' }] }] },
+      { is: 'ElFormItemRender', label: 'Activity form', prop: 'desc', children: [{ is: 'ElInput', type: 'textarea' }] },
+      { is: 'ElFormItemRender', label: ' ', children: [{ is: 'ElButton', type: 'primary', nativeType: 'submit', children: 'Submit' }, { is: 'ElButton', nativeType: 'reset', children: 'Reset' }] },
     ]
   }),
   JSONSchemaOutput: (props, ctx) => {

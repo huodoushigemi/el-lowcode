@@ -43,6 +43,7 @@ export const useTransformer = (_model, _prop, opt: Pick<Item0, 'defaultValue' | 
   const ret = {
     get() {
       const model = toValue(_model), prop = toValue(_prop)
+      if (prop == null) return
       let v = get(opt.untrackedGet ? toRaw(model) : model, prop)
       if (opt.get) v = opt.get(v, model)
       if (opt.defaultValue !== undefined && (v === undefined || v === '')) set(model, prop, v = unFn(opt.defaultValue))
@@ -51,6 +52,7 @@ export const useTransformer = (_model, _prop, opt: Pick<Item0, 'defaultValue' | 
     },
     set(v) {
       const model = toValue(_model), prop = toValue(_prop)
+      if (prop == null) return
       if (opt.silentSet) set(toRaw(model), prop, opt.silentSet(v, model))
       else if (opt.set) set(model, prop, opt.set(v, model))
       else set(model, prop, v)

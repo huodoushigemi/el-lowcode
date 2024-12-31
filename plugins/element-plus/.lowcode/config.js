@@ -1,8 +1,9 @@
 import DateTime from '../date-time/config'
 import Form from '../form/config'
+import widgets from './widgets'
 
 export default [
-  ...Object.values(import.meta.glob('./config/*', { eager: true, import: 'default' })).flat(),
+  ...widgets,
   DateTime,
   Form,
 ]

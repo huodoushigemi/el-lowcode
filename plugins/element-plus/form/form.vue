@@ -1,16 +1,11 @@
 <template>
-  <ElFormRender ref="form" v-bind="{ ...$props, ...$attrs }" @submit.prevent>
+  <ElFormRender ref="formRef" v-bind="{ ...$props, ...$attrs }" @submit.prevent="onSubmit" @reset="formRef.resetFields()">
     <slot />
-
-    <el-form-item>
-      <el-button type="primary" native-type="submit">Submit</el-button>
-      <el-button @click="($refs.form as FormInstance).resetFields()">Reset</el-button>
-    </el-form-item>
   </ElFormRender>
 </template>
 
 <script setup lang="ts">
-import { ElFormItem, FormInstance } from 'element-plus'
+import { ref } from 'vue'
 import { ElFormRender, formRenderProps } from 'el-form-render'
 
 defineOptions({
@@ -18,4 +13,12 @@ defineOptions({
 })
 
 defineProps(formRenderProps)
+const emit = defineEmits(['submit'])
+
+const formRef = ref()
+
+async function onSubmit() {
+  await formRef.value.validate()
+  emit('submit')
+}
 </script>
