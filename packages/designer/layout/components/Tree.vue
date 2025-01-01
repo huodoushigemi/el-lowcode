@@ -222,6 +222,7 @@ function getNode(e: Event) {
     position: fixed;
     background: var(--vs-focus-b-c);
     z-index: 1;
+    pointer-events: none;
   }
   > .drop-inner {
     background: var(--vs-li-inactiveSelectionBg) !important;

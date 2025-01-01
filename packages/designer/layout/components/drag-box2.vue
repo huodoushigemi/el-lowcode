@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { cloneVNode, computed, defineComponent, effectScope, h, inject, mergeProps, reactive, ref, shallowRef, watch, watchEffect } from 'vue'
+import { cloneVNode, computed, defineComponent, effectScope, h, inject, mergeProps, ref, shallowRef, watch, watchPostEffect } from 'vue'
 import { isArray, isObject } from '@vue/shared'
 import { useEventListener } from '@vueuse/core'
 import { processProps } from 'el-lowcode'
 import { createRender } from '@el-lowcode/render'
-import { mapValues, unFn, useDraggable } from '@el-lowcode/utils'
+import { findret, unFn, useDraggable } from '@el-lowcode/utils'
 import type { DesignerCtx, BoxProps, DisplayNode } from '../interface'
+
+type El = Element
 
 defineOptions({
   inheritAttrs: false
@@ -83,17 +85,20 @@ function setup(node: DisplayNode) {
     let elRef = node.ref, boxRef = ref()
 
     // add attrs
-    watchEffect(() => {
-      const el = node.el
-      if (!el) return
-      el.setAttribute('draggable', (!node.isAbs && !node.drag.disabled) + '')
-      el.setAttribute('_id', node.id)
-      el.setAttribute('lcd-is', node.is)
+    watchPostEffect(() => {
+      node.setAttrs({
+        draggable: (!node.isAbs && !node.drag.disabled) + '',
+        _id: node.id,
+        'lcd-id': node.id,
+        'lcd-is': node.is
+      })
     })
 
-    watch(() => node.children?.[0]?.el?.parentElement ?? boxRef.value, (el: Element, old) => {
-      if (!el) return
-      el.setAttribute('lcd-dragover', node.id)
+    watchPostEffect(() => {
+      [...node.getDropEls(), boxRef.value].forEach(el => {
+        if (!el) return
+        el.setAttribute('lcd-dragover', node.id)
+      })
     })
 
     let flag = 0
@@ -144,8 +149,8 @@ const draggable = useDraggable(rootEl, {
 function onMousedown(e: MouseEvent) {
   if (e.button != 0) return
   e.stopPropagation()
-  const el = e.composedPath().find(e => resolveNode(e as HTMLElement)?.selectable)!
-  const node = resolveNode(el as HTMLElement)!
+  const el = e.composedPath().find(e => resolveNode(e as El)?.selectable)!
+  const node = resolveNode(el as El)!
   if (designer.dragged) return
   node.click()
 }
@@ -153,8 +158,8 @@ function onMousedown(e: MouseEvent) {
 function onMouseover(e: MouseEvent) {
   if (designer.dragged) return
   e.stopPropagation()
-  const el = e.composedPath().find(e => resolveNode(e as HTMLElement)?.selectable)!
-  const node = resolveNode(el as HTMLElement)!
+  const el = e.composedPath().find(e => resolveNode(e as El)?.selectable)!
+  const node = resolveNode(el as El)!
   node.hover()
 }
 
@@ -187,7 +192,7 @@ let dragNode: DisplayNode | undefined, dragged = shallowRef<DisplayNode>()
 let activitybarId = ''
 
 function dragStart(e: DragEvent) {
-  dragNode = resolveNode(e.target as HTMLElement)
+  dragNode = resolveNode(e.target as El)
   dragged.value = dragNode
   if (!dragNode) return
   designer.draggedId = dragNode?.id
@@ -205,18 +210,23 @@ function dragEnd() {
   // designer.workbench.sidebarVisible = true
 }
 
-function resolveNode(el: Element) {
+const parseIds = computed(() => Object.values(designer.widgets).filter(e => e!.parseId))
+const parseId = (el: El) => findret(parseIds.value, e => e!.parseId!(el))
+
+function resolveNode(el: El) {
   if (el.nodeType != 1) return
-  const is = el.getAttribute('lcd-is')
-  const id = el.getAttribute('_id')
+  // snippet
   const snippet = el.getAttribute('lcd-snippet')
-  if (is || id) {
-    return designer.keyedNode[id!] || new designer.DisplayNode(designer.newProps(is!))
-  }
-  else if (snippet) {
-    const data = unFn(designer.snippets.find(e => e.id == snippet)?.schema)
-    return new designer.DisplayNode(data)
-  }
+  if (snippet) return new designer.DisplayNode(unFn(designer.snippets.find(e => e.id == snippet)?.schema))
+  // id
+  let id = el.getAttribute('_id')
+  if (id) return designer.keyedNode[id!]
+  // id
+  id = parseId(el) as any
+  if (id) return (designer.keyedNode[id].parsedEl = el, designer.keyedNode[id])
+  // is
+  const is = el.getAttribute('lcd-is')
+  if (is) return new designer.DisplayNode(designer.newProps(is!))
 }
 
 const dragMaskRects = computed(() => {

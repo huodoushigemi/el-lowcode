@@ -63,3 +63,18 @@ export const prefixedObject = <T extends object, P extends string>(prefix: P, ob
 export const inRange = (v: number, min = 0, max = Infinity) => v >= min && v <= max
 
 export const eq = (a, b) => JSON.stringify(a) == JSON.stringify(b)
+
+// 
+
+export const findret = <E, R>(obj: E[], cb: (e: E) => (R | void)): R | void => { let ret; for (const e of obj) { ret = cb(e); if (ret) return ret }}
+
+export function mergeRects(rects: DOMRect[]) {
+  let x = 0, y = 0, x2 = -Infinity, y2 = -Infinity
+  for (const e of rects) {
+    x = Math.min(x, e.x)
+    x2 = Math.max(x2, e.right)
+    y = Math.min(y, e.y)
+    y2 = Math.max(y2, e.bottom)
+  }
+  return new DOMRect(x, y, x2 - x, y2 - y)
+}

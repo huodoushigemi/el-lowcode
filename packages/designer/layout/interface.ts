@@ -1,7 +1,7 @@
 import { computed, InjectionKey, mergeProps, reactive, ref, shallowRef, toRaw, toRef } from 'vue'
 import { isArray, isObject, isPlainObject, isString, normalizeStyle } from '@vue/shared'
 import { Fn, unrefElement } from '@vueuse/core'
-import { Arrable, Assign, deepClone, Fnable, isExp, Obj, pick, set, uid } from '@el-lowcode/utils'
+import { Arrable, Assign, deepClone, Fnable, isExp, mergeRects, Obj, pick, set, toArr, uid } from '@el-lowcode/utils'
 import { processProps } from 'el-lowcode'
 import { Props } from '@el-lowcode/render'
 import { Node } from './components/Node'
@@ -23,6 +23,11 @@ export interface Widget {
   devProps: (props: Obj, ctx: DesignerCtx) => Obj
   purify?(props: Obj): Obj
   JSONSchemaOutput?(props: Obj, ctx: DesignerCtx): Obj
+  parseId?(el: Element): string | void
+  getEl?(node: DisplayNode): Arrable<Element>
+  // getParent?(node: DisplayNode): Arrable<Element>
+  getDropEl?(node: DisplayNode): Arrable<Element>
+  getRect?(node: DisplayNode): Arrable<DOMRect>
 }
 
 export type UserWidget = Assign<Widget, {
@@ -61,7 +66,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get id () { return this.data._id! }
   get is() { return this.data.is || 'Fragment' }
   get icon() { return this.config?.icon }
-  get label () { return (this.vslot && `#${this.vslot}`) || this.data['lcd-label'] || this.config?.label || this.data.is }
+  get label () { return (this.vslot && `#${this.vslot}`) || this.$data['lcd-label'] || this.config?.label || this.data.is }
   get dir() { return isArray(this.data_children) }
   get vslot() { return isPlainObject(this.parent?.data.children) ? Object.entries(this.parent!.data.children).find(([k, v]) => v == this.data)?.[0] : void 0 }
   get config() {
@@ -90,6 +95,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   ref = ref()
 
   get el(): HTMLElement | undefined {
+    if (this.parsedEl) return this.parsedEl as HTMLElement
     if (this.vslot) return
     let el = unrefElement(this.ref)
     return el?.nodeType == 3
@@ -97,8 +103,22 @@ export abstract class DisplayNode extends Node<BoxProps> {
       : el
   }
 
+  get els() {
+    if (!this.ref.value) return
+    return toArr(this.config?.getEl?.(this) ?? this.el).filter(e => e)
+  }
+
+  #parsedEl = ref<Element>()
+  get parsedEl() { return this.#parsedEl.value }
+  set parsedEl(v) { this.#parsedEl.value = v }
+
+  get parentEl(): HTMLElement | undefined {
+    return this.parent?.vslot ? this.parent.parent?.el : this.parent?.el
+  }
+
+
   #vars = shallowRef()
-  get vars() { return this.#vars.value }
+  get vars() { return this.#vars.value ?? this.designerCtx.rootNode.vars }
   set vars(v) { this.#vars.value = v }
 
   #$data = computed(() => this.processProps(this.vars))
@@ -191,10 +211,31 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get hidden() { return this.$data['lcd-hidden'] }
   set hidden(bool) { this.data['lcd-hidden'] = bool || void 0 }
 
+  getRect() {
+    const rects = this.getRects()
+    if (!rects.length) return
+    return mergeRects(rects)
+  }
+
+  getRects() {
+    return toArr(this.config?.getRect?.(this) ?? this.els?.map(e => e.getBoundingClientRect()))
+  }
+
+  getDropEls() {
+    return toArr(this.config?.getDropEl?.(this) ?? this.children?.[0]?.el?.parentElement).filter(e => e != null)
+  }
+
   clone() {
     const data = deepClone(this.data, (v, k) => k == '_id' ? uid() : v)
     // @ts-ignore
-    return new this.constructor(data)
+    const node = new this.constructor(data)
+    return node
+  }
+
+  setAttrs(obj) {
+    for (const e of this.els || []) {
+      for (const k in obj) obj[k] == null ? e.removeAttribute(k) : e.setAttribute(k, obj[k])
+    }
   }
 
   override insertable(node: DisplayNode) {

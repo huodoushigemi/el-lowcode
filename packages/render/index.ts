@@ -1,4 +1,4 @@
-import { h, resolveDynamicComponent, VNode, inject } from 'vue'
+import { resolveDynamicComponent, VNode, inject, createVNode } from 'vue'
 import { hasOwn, isArray, isFunction, isPlainObject } from '@vue/shared'
 import { Fnable, Arrable, mapValues, Obj } from '@el-lowcode/utils'
 
@@ -30,25 +30,23 @@ type CreateRender = {
 
 /*#__NO_SIDE_EFFECTS__*/
 export function createRender({ defaultIs = 'div', processProps = (props) => props as unknown as ProcessedProps }: CreateRender) {
-  const __h = (e, vars) => isPlainObject(e) ? Render(e, vars) : e
+  const _h = (e, vars) => isPlainObject(e) ? Render(e, vars) : e
 
-  const _h = (props: Props, vars: Obj) => {
+  const h = (props: Props, vars: Obj) => {
     const { is, vIf, children, ...attrs } = processProps(props, vars, {
       provide: (state) => vars = { ...vars, ...state }
     })
-
-    isFunction(children) ? { x: () => { const ret = children() } } : void 0
     
     return !hasOwn(props, 'vIf') || !!vIf
-      ? h(
+      ? createVNode(
           // @ts-ignore
           resolveDynamicComponent(is || defaultIs),
           attrs,
 
           // children
-          isArray(children) ? { default: () => children.map(e => __h(e, vars)) } :
-          isPlainObject(children) ? mapValues(children, v => (scope) => __h(v, vars)) :
-          isFunction(children) ? { default: () => { const ret = (children as any)(); return isArray(ret) ? ret.map(e => __h(e, vars)) : ret; } } :
+          isArray(children) ? { default: () => children.map(e => _h(e, vars)) } :
+          isPlainObject(children) ? mapValues(children, v => (scope) => _h(v, v.vSlot ? { ...vars, [v.vSlot]: scope } : vars)) :
+          isFunction(children) ? { default: () => { const ret = (children as any)(); return isArray(ret) ? ret.map(e => _h(e, vars)) : ret; } } :
           children
         )
       : null
@@ -61,12 +59,12 @@ export function createRender({ defaultIs = 'div', processProps = (props) => prop
       if (isArray(_vFor)) {
         return _vFor[0].map((item, index) => {
           const for_vars = { [_vFor[1] || 'item']: item, [_vFor[1] || 'index']: index }
-          return _h(props, { ...vars, ...for_vars })
+          return h(props, { ...vars, ...for_vars })
         })
       }
     }
     else {
-      return _h(props, vars)
+      return h(props, vars)
     }
   }
 

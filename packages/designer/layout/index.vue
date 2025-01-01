@@ -164,7 +164,7 @@ const devices = [['iPhone SE', '375,667'], ['iPhone12 Pro', '390,844'], ['iPad M
 console.log(window.designerCtx = designerCtx)
 
 // 时间旅行
-const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 500, capacity: 20 })
+const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 150, capacity: 20 })
 
 designerCtx.commands.on('lcd.toggleDevice', async () => quickPick({ items: devices, value: [canvas.w, canvas.h] }).then(v => (canvas.w = v[0], canvas.h = v[1])))
 designerCtx.commands.on('lcd.clear', () => (designerCtx.rootNode.el?.ownerDocument.defaultView.unmount(), designerCtx.rootNode.remove(), root.value = initial()))

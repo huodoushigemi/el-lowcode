@@ -1,4 +1,22 @@
+import { get, set, uid, findret } from '@el-lowcode/utils'
+
 const SIZES = ['large', 'default', 'small']
+
+const str = (lp, extra) => ({ lp, displayValue: '', ...extra })
+const opts = (lp, options, extra) => ({ lp, options, ...extra })
+const radios = (lp, options, extra) => ({ lp, type: 'radio-group', options, ...extra, el: { type: 'button', ...extra?.el } })
+const checkboxs = (lp, options, extra) => ({ lp, type: 'checkbox-group', options, ...extra, el: { type: 'button', ...extra?.el } })
+const bool = (lp, displayValue = false, extra) => ({ lp, type: 'switch', displayValue, ...extra })
+const num = (lp, displayValue, extra) => ({ lp, type: 'input-number', displayValue, set: v => v == null ? void 0 : v, ...extra })
+const color = lp => ({ lp, type: 'color-picker' })
+
+const grid2 = children => ({ is: 'div', class: 'grid grid-cols-2 gap-x-12', children })
+
+const Text = (s, extra) => ({ is: 'span', children: s, ...extra })
+
+function vmodel(prop) {
+  return { lp: [prop ? `v-model:${prop}` : `v-model`, `vModels.${prop || 'modelValue'}.0`], script: false, el: { spellcheck: false } }
+}
 
 export default [
   {
@@ -6,18 +24,18 @@ export default [
     label: 'button',
     category: '基础组件',
     props: [
-      { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-        { lp: 'type', type: 'select', options: ['default', 'primary', 'success', 'warning', 'danger', 'info'] },
-        { lp: 'plain', type: 'switch' },
-        { lp: 'size', type: 'radio-group', class: 'col-span-2', options: SIZES },
-        { lp: 'text', type: 'switch' },
-        { lp: 'bg', type: 'switch' },
-        { lp: 'round', type: 'switch' },
-        { lp: 'circle', type: 'switch' },
-      ] },
-      { lp: 'link', type: 'switch' },
-      { lp: 'disabled', type: 'switch' },
-      { lp: 'native-type', options: ['submit', 'reset'] },
+      grid2([
+        opts('type', ['default', 'primary', 'success', 'warning', 'danger', 'info']),
+        bool('plain'),
+        radios('size', SIZES, { class: 'col-span-2' }),
+        bool('text'),
+        bool('bg'),
+        bool('round'),
+        bool('circle'),
+      ]),
+      bool('link'),
+      bool('disabled'),
+      opts('native-type', ['submit', 'reset']),
     ],
     defaultProps: () => ({
       children: 'button',
@@ -64,13 +82,13 @@ export default [
     category: '容器',
     vSlots: ['header', 'footer'],
     props: [
-      { lp: 'body-class' },
-      { lp: 'body-style', el: { type: 'textarea', autosize: { minRows: 4, maxRows: 12 } } },
-      { lp: 'shadow', type: 'radio-group', displayValue: 'always', options: ['always', 'never', 'hover'] }
+      str('body-class'),
+      str('body-style', { el: { type: 'textarea', autosize: { minRows: 4, maxRows: 12 } } }),
+      radios('shadow', [['always'], 'never', 'hover']),
     ],
     defaultProps: () => ({
       children: {
-        header: { children: [{ is: 'span', children: 'Title' }] },
+        header: { children: [Text('Title')] },
         default: { children: [] }
       }
     })
@@ -117,18 +135,26 @@ export default [
     label: 'tabs',
     category: '容器',
     drag: { from: 'ElTabPane' },
-    props: props => [
-      { lp: 'tab-position', type: 'radio-group', options: ['top', 'right', 'bottom', 'left'] },
-      { lp: 'stretch', type: 'switch' },
-      { lp: 'type', type: 'radio-group', options: [{ label: 'default', value: undefined }, 'card', 'border-card'] },
+    props: [
+      vmodel(),
+      radios('type', [['—'], 'card', 'border-card']),
+      radios('tab-position', [['top'], 'right', 'bottom', 'left']),
+      bool('stretch'),
       { lp: ['tabs', 'children'], el: { is: 'OptionsInput', props: { V: 'name' }, new: i => ({ is: 'ElTabPane', label: `tab${i + 1}`, children: [] }) } }
     ],
     defaultProps: (ctx) => ({
       children: [
-        ctx.newProps('ElTabPane', { label: 'tab1' }),
-        ctx.newProps('ElTabPane', { label: 'tab2' }),
+        { ...ctx.newProps('ElTabPane'), label: 'tab1' },
+        { ...ctx.newProps('ElTabPane'), label: 'tab2' },
       ]
-    })
+    }),
+    devProps: props => ({
+      beforeLeave: props.beforeLeave || (() => true)
+    }),
+    getDropEl: ({ el }) => [
+      el.querySelector(`.el-tabs__nav`),
+      el.querySelector(`.el-tabs__content`)
+    ],
   },
   {
     is: 'ElTabPane',
@@ -137,16 +163,20 @@ export default [
     drag: { to: 'ElTabs' },
     vSlots: ['label'],
     props: [
-      { lp: 'label' },
-      { lp: 'name' },
-      { lp: 'disabled', type: 'switch' },
-      { lp: 'lazy', type: 'switch' },
+      str('label'),
+      str('name'),
+      bool('disabled'),
+      bool('lazy'),
     ],
     defaultProps: () => ({
-      children: [
-        { is: 'h1', children: (Math.random() * 100).toFixed() }
+      children: []
+    }),
+    getEl({ data, parentEl, index }) {
+      return [
+        parentEl.querySelector(`#tab-${data.name || index}`),
+        parentEl.querySelector(`#pane-${data.name || index}`)
       ]
-    })
+    },
   },
 
   {
@@ -157,10 +187,10 @@ export default [
     vSlots: ['label'],
     props: (props, ctx) => ([
       { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-        { lp: ['标签', 'label'] },
-        { lp: ['key', 'prop'], script: false, el: { clearable: false } },
+        str(['标签', 'label']),
+        str(['字段', 'prop']),
       ] },
-      { lp: ['必填', 'required'], type: 'switch' },
+      bool(['必填', 'required']),
       // { lp: 'description', el: { type: 'textarea', autosize: { minRows: 2, maxRows: 4 } } },
       { is: 'ElCollapse', class: 'mb18', children: [{ is: 'ElCollapseItem', title: '校验', children: [
           { lp: ['validator', 'rules.validator'], script: true },
@@ -202,18 +232,14 @@ export default [
     vSlots: ['prefix', 'suffix', 'prepend', 'append'],
     props: [
       { lp: ['v-model', 'vModels.modelValue.0'], script: false },
-      { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-        { lp: 'disabled', type: 'switch' },
-        { lp: 'readonly', type: 'switch' },
-        { lp: 'clearable', type: 'switch' },
-        { lp: 'autofocus', type: 'switch' },
-        { lp: 'type', options: ['text', 'textarea', 'password', 'number'], displayValue: 'text' },
-        { lp: 'placeholder' },
-        { lp: 'minlength', type: 'input-number' },
-        { lp: 'maxlength', type: 'input-number' },
-      ] },
-      { lp: 'show-word-limit', type: 'switch' },
-      { lp: 'size', type: 'radio-group', options: SIZES },
+      grid2([
+        bool('disabled'), bool('readonly'),
+        bool('clearable'), bool('autofocus'),
+        opts('type', [['text'], 'textarea', 'password', 'number']), str('placeholder'),
+        num('minlength'), num('maxlength'),
+      ]),
+      bool('show-word-limit'),
+      radios('size', SIZES)
     ],
     defaultProps: () => ({
       defaultValue: '',
@@ -230,16 +256,13 @@ export default [
     category: '数据输入',
     vSlots: ['prefix', 'suffix'],
     props: [
-      { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-        { lp: 'disabled', type: 'switch' },
-        { lp: 'readonly', type: 'switch' },
-        { lp: 'min', type: 'input-number' },
-        { lp: 'max', type: 'input-number' },
-        { lp: 'step', type: 'input-number' },
-        { lp: 'precision', type: 'input-number' },
-        { lp: 'controls', type: 'switch', displayValue: true },
-      ] },
-      { lp: 'size', type: 'radio-group', options: SIZES },
+      grid2([
+        bool('disabled'), bool('readonly'),
+        num('min'), num('max'),
+        num('step'), num('precision'),
+        bool('controls', true)
+      ]),
+      radios('size', SIZES),
     ],
     defaultProps: () => ({
       defaultValue: 0,
@@ -259,18 +282,17 @@ export default [
     category: '数据输入',
     drag: { from: 'ElOption' },
     vSlots: ['prefix'],
-    props: (props, ctx) => [
+    props: (props) => [
       { lp: ['v-model', 'vModels.modelValue.0'], script: false },
-      { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-        { lp: 'disabled', type: 'switch' },
-        { lp: 'clearable', type: 'switch' },
-        { lp: 'allow-create', type: 'switch' },
-      ] },
-      { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-        { lp: 'multiple', type: 'switch' },
-        props.multiple && { lp: ['multiple-limit', 'multipleLimit'], type: 'input-number' },
-      ] },
-      { lp: 'placeholder' },
+      grid2([
+        bool('disabled'), bool('clearable'),
+        bool('allow-create'),
+      ]),
+      grid2([
+        bool('multiple'),
+        props.multiple && num('multiple-limit')
+      ]),
+      str('placeholder'),
       { lp: ['options', 'children'], el: { is: 'OptionsInput', new: i => ({ is: 'ElOption', label: `opt ${i + 1}`, value: `${i + 1}` }) }  }
     ],
     defaultProps: () => ({
@@ -296,12 +318,12 @@ export default [
     category: '数据输入',
     drag: { to: 'ElSelect', disabled: true },
     hidden: true,
-    props: (props, ctx) => [
-      { lp: 'label' },
-      { lp: 'value' },
-      { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-        { lp: 'disabled', type: 'switch' },
-      ] }
+    props: () => [
+      str('label'),
+      str('value'),
+      grid2([
+        bool('disabled')
+      ]),
     ]
   },
 
@@ -310,14 +332,12 @@ export default [
     label: 'switch',
     category: '数据输入',
     props: [
-      { lp: 'disabled', type: 'switch' },
-      { lp: 'width', type: 'input-number' },
-      { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-        { lp: 'active-text' },
-        { lp: 'inactive-text' },
-        { lp: 'active-value' },
-        { lp: 'inactive-value' },
-      ] },
+      bool('disabled'),
+      num('width'),
+      grid2([
+        str('active-text'), str('inactive-text'),
+        str('active-value'), str('inactive-value'),
+      ]),
     ],
     defaultProps: () => ({
       defaultValue: false,
@@ -333,13 +353,11 @@ export default [
     category: '数据输入',
     drag: { from: ['ElCheckbox', 'ElCheckboxButton'] },
     props: [
-      { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-        { lp: 'disabled', type: 'switch' },
-        { lp: 'button', type: 'switch', el: { activeValue: 'button', inactiveValue: undefined } },
-        { lp: 'min', type: 'input-number', el: { min: 0 } },
-        { lp: 'max', type: 'input-number', el: { min: 0 } },
-        { lp: 'fill', type: 'color-picker' },
-      ] },
+      grid2([
+        bool('disabled'), bool('button', void 0, { el: { activeValue: 'button', inactiveValue: undefined } }),
+        num('min'), num('max'),
+        color('fill')
+      ]),
       { lp: ['options', 'children'], el: { is: 'OptionsInput', new: i => ({ is: 'ElCheckbox', label: `opt ${i + 1}`, value: `${i + 1}` }) }  }
     ],
     defaultProps: () => ({
@@ -366,7 +384,7 @@ export default [
     category: '数据输入',
     drag: { to: 'ElCheckboxGroup' },
     hidden: true,
-    props: [{ lp: 'label' },{ lp: 'value' }],
+    props: [str('label'), str('value')],
   },
 
   {
@@ -375,11 +393,10 @@ export default [
     category: '数据输入',
     drag: { from: ['ElRadio', 'ElRadioButton'] },
     props: [
-      { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-        { lp: 'disabled', type: 'switch' },
-        { lp: 'button', type: 'switch', el: { activeValue: 'button', inactiveValue: undefined } },
-        { lp: 'fill', type: 'color-picker' },
-      ] },
+      grid2([
+        bool('disabled'), bool('button', void 0, { el: { activeValue: 'button', inactiveValue: undefined } }),
+        color('fill')
+      ]),
       { lp: ['options', 'children'], el: { is: 'OptionsInput', new: i => ({ is: 'ElRadio', label: `opt ${i + 1}`, value: `${i + 1}` }) }  }
     ],
     defaultProps: () => ({
@@ -400,7 +417,7 @@ export default [
     category: '数据输入',
     drag: { to: 'ElRadioGroup' },
     hidden: true,
-    props: [{ lp: 'label' }, { lp: 'value' }],
+    props: [str('label'), str('value')],
   },
 
   {
@@ -408,15 +425,12 @@ export default [
     label: 'slider',
     category: '数据输入',
     props: [
-      { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-        { lp: 'disabled', type: 'switch' },
-        { lp: 'show-tooltip', type: 'switch', displayValue: true },
-        { lp: 'min', type: 'input-number' },
-        { lp: 'max', type: 'input-number' },
-        { lp: 'step', type: 'input-number' },
-        { lp: 'show-input', type: 'switch' },
-        { lp: 'show-stops', type: 'switch' },
-      ] },
+      grid2([
+        bool('disabled'), bool('show-tooltip', true),
+        num('min'), num('max'),
+        num('step'),
+        bool('show-input'), bool('show-stops'),
+      ])
     ],
     defaultProps: () => ({
       defaultValue: 0,
@@ -434,12 +448,12 @@ export default [
     label: 'rate',
     category: '数据输入',
     props: [
-      { lp: 'disabled', type: 'switch' },
-      { lp: 'max', type: 'input-number', displayValue: 5 },
+      bool('disabled'),
+      num('max', 5),
+      color('void-color'),
       // { lp: ['low-threshold', 'el.lowThreshold'], type: 'input-number', displayValue: 2 },
       // { lp: ['high-threshold', 'el.highThreshold'], type: 'input-number', displayValue: 4 },
-      { lp: 'void-color', type: 'color-picker' },
-      { lp: 'size', type: 'radio-group', options: SIZES },
+      radios('size', SIZES),
     ],
     defaultProps: () => ({
       defaultValue: 0,
@@ -455,14 +469,14 @@ export default [
     label: 'date',
     category: '数据输入',
     props: [
-      { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-        { lp: 'disabled', type: 'switch' },
-        { lp: 'readonly', type: 'switch' },
-        { lp: 'clearable', type: 'switch' },
-        { lp: 'type', options: ['year', 'month', 'date', 'datetime', 'week'], style: 'grid-column: 1 / 2' },
-        { lp: ['show-format', 'format'], options: ['YYYY-MM-DD', 'YYYY/MM/DD'], displayValue: 'YYYY-MM-DD' },
-        { lp: 'placeholder' },
-      ] },
+      grid2([
+        bool('disabled'),
+        bool('readonly'),
+        bool('clearable'),
+        opts('type', ['year', 'month', 'date', 'datetime', 'week'], { style: 'grid-column: 1 / 2' }),
+        opts(['show-format', 'format'], [['YYYY-MM-DD'], 'YYYY/MM/DD']),
+        str('placeholder'),
+      ])
     ],
     defaultProps: () => ({
       defaultValue: '',
@@ -479,13 +493,13 @@ export default [
     label: 'time',
     category: '数据输入',
     props: [
-      { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-        { lp: 'disabled', type: 'switch' },
-        { lp: 'readonly', type: 'switch' },
-        { lp: 'clearable', type: 'switch' },
-        { lp: ['show-format', 'format'], displayValue: 'HH:mm:ss', options: ['HH:mm:ss', 'hh:mm:ss', 'HH时mm分ss秒', 'hh时mm分ss秒'] },
-        { lp: 'placeholder' },
-      ] },
+      grid2([
+        bool('disabled'),
+        bool('readonly'),
+        bool('clearable'),
+        opts(['show-format', 'format'], [['HH:mm:ss'], 'hh:mm:ss', 'HH时mm分ss秒', 'hh时mm分ss秒']),
+        str('placeholder'),
+      ])
     ],
     defaultProps: () => ({
       defaultValue: '',
@@ -501,12 +515,10 @@ export default [
     label: 'segmented',
     category: '数据输入',
     props: [
-      // { lp: ['value', 'modelValue'] },
-      { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-        { lp: 'disabled', type: 'switch' },
-        { lp: 'block', type: 'switch' },
-      ] },
-      { lp: 'size', type: 'segmented', options: SIZES },
+      grid2([
+        bool('disabled'), bool('block'),
+      ]),
+      radios('size', SIZES),
       { lp: 'options', el: { is: 'OptionsInput', new: i => ({ label: `opt ${i + 1}`, value: `${i + 1}` }) }  }
     ],
     defaultProps: () => ({
@@ -522,10 +534,9 @@ export default [
     label: 'color',
     category: '数据输入',
     props: [
-      { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
-        { lp: 'disabled', type: 'switch' },
-        { lp: 'show-alpha', type: 'switch' },
-      ] },
+      grid2([
+        bool('disabled'), bool('show-alpha'),
+      ])
     ],
     defaultProps: () => ({
       defaultValue: '',
@@ -540,13 +551,12 @@ export default [
     label: 'descriptions',
     category: '数据展示',
     drag: { from: 'ElDescriptionsItem' },
+    vSlots: ['title', 'extra'],
     props: [
-      { lp: 'title' },
-      { lp: 'extra' },
-      { lp: 'border', type: 'switch' },
-      { lp: 'column', type: 'input-number' },
-      { lp: 'direction', type: 'radio-group', options: ['vertical', 'horizontal'] },
-      { lp: 'size', type: 'radio-group', options: SIZES, displayValue: 'default' },
+      bool('border'),
+      num('column'),
+      radios('direction', ['vertical', 'horizontal']),
+      radios('size', SIZES),
       { lp: ['cols', 'children'], el: { is: 'OptionsInput', props: { V: 'children' }, new: i => ({ is: 'ElDescriptionsItem', label: `title${i + 1}`, children: `content${i + 1}` }) } },
     ],
     defaultProps: () => ({
@@ -568,12 +578,23 @@ export default [
     drag: { to: 'ElDescriptions' },
     vSlots: ['label'],
     props: [
-      { lp: 'label' },
-      { lp: ['value', 'children'] },
-      { lp: 'span', type: 'input-number', displayValue: 1 },
-      { lp: 'align', displayValue: 'left', type: 'radio-group', options: ['left', 'center', 'right'] },
-      { lp: 'label-align', displayValue: 'left', type: 'radio-group', options: ['left', 'center', 'right'] },
+      str('label'),
+      str(['value', 'children']),
+      grid2([
+        num(['colspan', 'span'], 1), num('rowspan', 1),
+        str(['label-class', 'labelClassName']), str('class-name')
+      ]),
+      radios('label-align', [['left'], 'center', 'right']),
+      radios('align', [['left'], 'center', 'right']),
     ],
+    devProps: props => ({
+      'lcd-label': `- ${(props.children?.label?.children?.[0].children || props.label)}`,
+      labelClassName: `${props.labelClassName} ${props._id}`,
+      className: `${props.className} ${props._id}`,
+    }),
+    getRect({ id, root }) {
+      return Array.from(root.el.querySelectorAll(`.${id}`)).map(e => e.getBoundingClientRect())
+    }
   },
 
   {
@@ -583,10 +604,10 @@ export default [
     drag: { from: 'ElTableColumn' },
     vSlots: ['append'],
     props: [
-      { lp: 'data' },
+      str('data'),
       { lp: ['cols', 'children'], el: { is: 'OptionsInput', props: { V: 'prop' }, new: i => ({ is: 'ElTableColumn', label: `title${i + 1}`, prop: `key${i + 1}` }) } },
-      { lp: 'stripe', type: 'switch' },
-      { lp: 'border', type: 'switch' },
+      bool('stripe'),
+      bool('border'),
     ],
     defaultProps: () => ({
       children: [
@@ -594,7 +615,7 @@ export default [
         { is: 'ElTableColumn', label: 'Age', prop: 'age' },
         { is: 'ElTableColumn', label: 'Sex', prop: 'sex' },
       ]
-    })
+    }),
   },
   {
     is: 'ElTableColumn',
@@ -604,14 +625,25 @@ export default [
     drag: { to: 'ElTable', disabled: true },
     vSlots: ['header'],
     props: [
-      { lp: ['title', 'label'] },
-      { lp: ['key', 'prop'] },
-      { lp: 'width', type: 'input-number' },
-      { lp: 'fixed', options: ['left', 'right'] },
-      { lp: 'align', options: ['left', 'center', 'right'] },
-      { lp: 'render-header', script: true },
-      { lp: 'formatter', script: true, displayValue: '(row, col, val, i) => val' },
+      str(['title', 'label']),
+      str(['key', 'prop']),
+      num('width'),
+      radios('fixed', [['—'], 'left', 'right']),
+      radios('align', ['left', 'center', 'right']),
+      str('render-header', { script: true }),
+      str('formatter', { script: true, displayValue: '(row, col, val, i) => val' }),
     ],
+    devProps: props => ({
+      'lcd-label': `- ${(props.children?.header?.children?.[0].children || props.label)}`,
+      labelClassName: `${props.labelClassName || ''} lcd-id:${props._id}`
+    }),
+    parseId(el) {
+      return el.className.includes(`lcd-id:`) ? el.className.replace(/.*?lcd-id\:(.+?) .*/, '$1') : void 0
+    },
+    // getEl({ id, parentEl }) {
+    //   console.log(parentEl.querySelector(`.el-table__header ._${id}`))
+    //   return parentEl.querySelector(`.el-table__header ._${id}`)
+    // }
   },
 
   {
@@ -619,13 +651,13 @@ export default [
     label: 'statistic',
     category: '数据展示',
     props: [
-      { lp: 'title' },
-      { lp: 'value', type: 'input-number' },
-      { lp: 'precision', type: 'input-number', displayValue: 0 },
-      { lp: 'prefix' },
-      { lp: 'suffix' }, 
-      { lp: 'decimal-separator', displayValue: '.' },
-      { lp: 'group-separator', displayValue: ',' },
+      str('title'),
+      num('value'),
+      num('precision'),
+      str('prefix'),
+      str('suffix'),
+      str('decimal-separator', { displayValue: '.' }),
+      str('group-separator', { displayValue: ',' }),
     ],
     defaultProps: () => ({
       title: 'Daily active users',
@@ -638,13 +670,13 @@ export default [
     label: 'tag',
     category: '数据展示',
     props: [
-      { lp: ['text', 'children'] },
-      { lp: 'effect', type: 'radio-group', options: ['dark', 'light'] },
-      { lp: 'size', type: 'radio-group', options: SIZES },
-      { lp: 'type', type: 'radio-group', options: ['success', 'info', 'warning', 'danger'], el: { type: '' } },
-      { lp: ['border', 'hit'], type: 'switch' },
-      { lp: ['bg', 'color'], type: 'color-picker' },
-      { lp: 'round', type: 'switch' },
+      str(['text', 'children']),
+      radios('effect', ['dark', 'light']),
+      radios('size', SIZES),
+      radios('type', [['—'], 'success', 'info', 'warning', 'danger']),
+      bool(['border', 'hit']),
+      color(['bg', 'color']),
+      bool('round'),
     ],
     defaultProps: () => ({
       children: 'Tag',
@@ -657,11 +689,11 @@ export default [
     category: '数据展示',
     vSlots: ['default'],
     props: [
-      { lp: ['value', 'percentage'], type: 'input-number' },
-      { lp: 'stroke-width', type: 'input-number', displayValue: 6 },
-      { lp: 'type', type: 'radio-group', displayValue: 'line', options: ['line', 'circle', 'dashboard'] },
-      { lp: 'text-inside', type: 'switch' },
-      { lp: 'color', type: 'color-picker' },
+      num(['value', 'percentage']),
+      num('stroke-width', 6),
+      radios('type', [['line'], 'circle', 'dashboard']),
+      bool('text-inside'),
+      color('color'),
     ],
     defaultProps: () => ({
       percentage: 50,
@@ -675,18 +707,18 @@ export default [
     category: '反馈组件',
     vSlots: ['title', 'default'],
     props: [
-      { lp: 'title' },
-      { lp: 'description' },
-      { lp: 'show-icon', type: 'switch' },
-      { lp: 'center', type: 'switch' },
-      { lp: 'type', type: 'radio-group', options: ['success', 'warning', 'info', 'error'] },
+      str('title'),
+      str('description'),
+      bool('show-icon'),
+      bool('center'),
+      radios('type', ['success', 'warning', 'info', 'error'])
     ],
     defaultProps: () => ({
       type: 'success',
       showIcon: true,
       children: {
-        title: { children: [{ is: 'span', children: 'Success alert' }] },
-        default: { children: [{ is: 'span', children: 'More text description' }] },
+        title: { children: [Text('Success alert')] },
+        default: { children: [Text('More text description')] },
       }
     })
   },
@@ -697,16 +729,16 @@ export default [
     category: '反馈组件',
     vSlots: ['content'],
     props: [
-      { lp: 'content' },
-      { lp: 'effect', type: 'radio-group', options: ['dark', 'light'] },
-      { lp: 'trigger', type: 'radio-group', options: ['hover', 'click', 'focus'] },
-      { lp: 'offset', type: 'input-number' },
+      str('conten'),
+      radios('effect', ['dark', 'light']),
+      radios('trigger', ['hover', 'click', 'focus']),
+      num('offset'),
     ],
     defaultProps: () => ({
       content: 'content',
       children: {
-        content: { children: [{ is: 'span', children: 'content' }] },
-        default: { children: [{ is: 'span', children: 'text' }] }
+        content: { children: [Text('content')] },
+        default: { children: [Text('text')] }
       }
     })
   },
@@ -715,13 +747,10 @@ export default [
     is: 'ElDivider',
     label: 'divider',
     props: [
-      { lp: ['text', 'children'] },
-      { lp: 'direction', type: 'radio-group', displayValue: 'horizontal', options: ['horizontal', 'vertical'] },
-      { lp: 'border-style', type: 'radio-group', displayValue: 'solid', options: ['solid', 'dashed'] },
-      { lp: 'content-position', type: 'radio-group', options: ['left', 'right', 'center'] },
+      str(['text', 'children']),
+      radios('direction', [['horizontal'], 'vertical']),
+      radios('border-style', [['solid'], 'dashed']),
+      radios('content-position', ['left', 'right', 'center']),
     ],
-    defaultProps: () => ({
-      
-    })
   }
 ]
