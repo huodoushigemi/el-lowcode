@@ -66,7 +66,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   get id () { return this.data._id! }
-  get is() { return this.data.is }
+  get is() { return this.data.is || 'Fragment' }
   get icon() { return this.config?.icon }
   get label () { return (this.vslot && `#${this.vslot}`) || this.$data['lcd-label'] || this.config?.label || this.data.is }
   get dir() { return isArray(this.data_children) }
