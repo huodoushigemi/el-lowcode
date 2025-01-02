@@ -77,48 +77,53 @@ const propsCtx = new WeakMap()
 function setup(node: DisplayNode) {
   if (propsCtx.has(node)) return propsCtx.get(node)
   
-  let scope = effectScope()
-  
-  return scope.run(() => {
-    let elRef = node.ref, emptyRef = node.emptyRef
-    
-    // add attrs
-    const addAttrs = () => {
-      node.setAttrs({
-        draggable: (!node.isAbs && !node.drag.disabled) + '',
-        _id: node.id,
-        'lcd-id': node.id,
-        'lcd-is': node.is
-      })
-      
-      node.dropEls.forEach(el => el.setAttribute('lcd-dragover', node.id))
-    }
+  let scope, dropEls
 
-    watchPostEffect(addAttrs)
+  function start() {
+    stop()
+    scope = effectScope()
+    scope.run(() => {
+      // add attrs
+      const addAttrs = () => {
+        node.setAttrs({
+          draggable: (!node.isAbs && !node.drag.disabled) + '',
+          'lcd-id': node.id,
+        })
+        
+        dropEls?.forEach(el => el.removeAttribute('lcd-dragover'))
+        if (!isArray(node.data.children)) return
+        dropEls = node.dropEls
+        dropEls.forEach(el => el.setAttribute('lcd-dragover', node.id))
+      }
 
-    let flag = 0
+      watchPostEffect(addAttrs)
+    })
+  }
 
-    let ret = {
-      emptyRef,
-      attrs: {
-        ref: elRef,
-        key: count++,
-        onVnodeBeforeMount: () => flag++,
-        onVnodeUnmounted: () => {
-          if (--flag) return
-          propsCtx.delete(node)
-          scope?.stop()
-          node = scope = emptyRef = emptyRef.value = elRef = elRef.value = ret = void 0
-        },
-        onVnodeMounted: () => setTimeout(addAttrs, 0),
-        onVnodeUpdated: addAttrs,
-      },
-    }
+  function stop() {
+    if (!scope?.active) return
+    scope?.stop()
+    dropEls?.forEach(el => el.removeAttribute('lcd-dragover'))
+  }
 
-    propsCtx.set(node, ret)
+  start()
 
-    return ret
-  })
+  let flag = 0
+
+  const ret = {
+    emptyRef: node.emptyRef,
+    attrs: {
+      ref: node.ref,
+      key: count++,
+      onVnodeBeforeMount: () => flag++,
+      onVnodeMounted: () => setTimeout(start, 0),
+      onVnodeBeforeUnmount: stop,
+      onVnodeUnmounted: () => --flag || (propsCtx.delete(node)),
+    },
+  }
+
+  propsCtx.set(node, ret)
+  return ret
 }
 
 const draggable = useDraggable(document.body, {
@@ -207,9 +212,6 @@ function dragEnd() {
   // designer.workbench.sidebarVisible = true
 }
 
-const parseIds = computed(() => Object.values(designer.widgets).filter(e => e!.parseId))
-const parseId = (el: El) => findret(parseIds.value, e => e!.parseId!(el))
-
 function resolveNode(el: El) {
   if (el.nodeType != 1) return
   // snippet
@@ -218,9 +220,6 @@ function resolveNode(el: El) {
   // id
   let id = el.getAttribute('lcd-id')
   if (id) return designer.keyedNode[id!]
-  // id
-  id = parseId(el) as any
-  if (id) return (designer.keyedNode[id].parsedEl = el, designer.keyedNode[id])
   // is
   const is = el.getAttribute('lcd-is')
   if (is) return new designer.DisplayNode(designer.newProps(is!))

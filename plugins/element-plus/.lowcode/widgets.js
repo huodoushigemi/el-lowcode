@@ -142,7 +142,7 @@ export default [
       radios('type', [['—'], 'card', 'border-card']),
       radios('tab-position', [['top'], 'right', 'bottom', 'left']),
       bool('stretch'),
-      { lp: ['tabs', 'children'], el: { is: 'OptionsInput', props: { V: 'name' }, new: i => ({ is: 'ElTabPane', label: `tab${i + 1}`, children: [] }) } }
+      // { lp: ['tabs', 'children'], el: { is: 'OptionsInput', props: { V: 'name' }, new: i => ({ is: 'ElTabPane', label: `tab${i + 1}`, children: [] }) } }
     ],
     defaultProps: (ctx) => ({
       children: [
@@ -181,7 +181,7 @@ export default [
     is: 'ElFormItemRender',
     label: 'field',
     category: '表单',
-    drag: { from: [], ancestor: ['ElForm', 'ElForm-c', 'ElForm-lcd'] },
+    drag: { ancestor: ['ElForm', 'ElForm-c', 'ElForm-lcd'] },
     vSlots: ['label'],
     props: (props, ctx) => ([
       { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
@@ -555,17 +555,17 @@ export default [
       num('column'),
       radios('direction', ['vertical', 'horizontal']),
       radios('size', SIZES),
-      { lp: ['cols', 'children'], el: { is: 'OptionsInput', props: { V: 'children' }, new: i => ({ is: 'ElDescriptionsItem', label: `title${i + 1}`, children: `content${i + 1}` }) } },
+      // { lp: ['cols', 'children'], el: { is: 'OptionsInput', props: { V: 'children' }, new: i => ({ is: 'ElDescriptionsItem', label: `title${i + 1}`, children: `content${i + 1}` }) } },
     ],
     defaultProps: () => ({
       column: 3,
       border: true,
       children: [
-        { is: 'ElDescriptionsItem', label: `Username`, children: `kooriookami` },
-        { is: 'ElDescriptionsItem', label: `Telephone`, children: `18100000000` },
-        { is: 'ElDescriptionsItem', label: `Place`, children: `Suzhou` },
-        { is: 'ElDescriptionsItem', label: `Remarks`, children: `School` },
-        { is: 'ElDescriptionsItem', label: `Address`, children: `No.1188, Wuzhong Avenue, Wuzhong District, Suzhou, Jiangsu Province` },
+        { is: 'ElDescriptionsItem', children: { label: { children: [Text('Username')] }, default: { children: [Text('kooriookami')] } } },
+        { is: 'ElDescriptionsItem', children: { label: { children: [Text('Telephone')] }, default: { children: [Text('18100000000')] } } },
+        { is: 'ElDescriptionsItem', children: { label: { children: [Text('Place')] }, default: { children: [Text('Suzhou')] } } },
+        { is: 'ElDescriptionsItem', children: { label: { children: [Text('Remarks')] }, default: { children: [Text('School')] } } },
+        { is: 'ElDescriptionsItem', children: { label: { children: [Text('Address')] }, default: { children: [Text('No.1188, Wuzhong Avenue, Wuzhong District, Suzhou, Jiangsu Province')] } } },
       ]
     }),
     getDropEl({ el }) {
@@ -580,7 +580,7 @@ export default [
     vSlots: ['label'],
     props: [
       str('label'),
-      str(['value', 'children']),
+      // str(['value', 'children']),
       grid2([
         num(['colspan', 'span'], 1), num('rowspan', 1),
         str(['label-class', 'labelClassName']), str('class-name')
@@ -589,7 +589,7 @@ export default [
       radios('align', [['left'], 'center', 'right']),
     ],
     devProps: props => ({
-      'lcd-label': `- ${(props.children?.label?.children?.[0].children || props.label)}`,
+      'lcd-label': `cell`,
       labelClassName: `${props.labelClassName || ''} lcd-id:${props._id}`,
       className: `${props.className || ''} lcd-id:${props._id}`,
     }),
@@ -646,7 +646,7 @@ export default [
       str('formatter', { script: true, displayValue: '{{(row, col, val, i) => val}}' }),
     ],
     devProps: props => ({
-      'lcd-label': `Col - ${(props.children?.header?.children?.[0].children || props.label)}`,
+      'lcd-label': `cell`,
       labelClassName: `${props.labelClassName || ''} lcd-id:${props._id}`,
     }),
     getEl({ id, parent$ }) {

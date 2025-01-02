@@ -23,7 +23,6 @@ export interface Widget {
   devProps: (props: Obj, ctx: DesignerCtx) => Obj
   purify?(props: Obj): Obj
   JSONSchemaOutput?(props: Obj, ctx: DesignerCtx): Obj
-  parseId?(el: Element): string | void
   getEl?(node: DisplayNode): Arrable<Element>
   // getParent?(node: DisplayNode): Arrable<Element>
   getDropEl?(node: DisplayNode): Arrable<Element>
@@ -67,7 +66,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   get id () { return this.data._id! }
-  get is() { return this.data.is || 'Fragment' }
+  get is() { return this.data.is }
   get icon() { return this.config?.icon }
   get label () { return (this.vslot && `#${this.vslot}`) || this.$data['lcd-label'] || this.config?.label || this.data.is }
   get dir() { return isArray(this.data_children) }
@@ -95,43 +94,40 @@ export abstract class DisplayNode extends Node<BoxProps> {
     )
   }
 
-  ref = shallowRef()
-  emptyRef = shallowRef()
+  ref = ref<HTMLElement>()
+  emptyRef = shallowRef<Element>()
 
-  get el(): HTMLElement | undefined {
-    if (this.parsedEl) return this.parsedEl as HTMLElement
-    if (this.config?.getEl) {
-      const ret = toArr(this.config?.getEl?.(this))[0] as HTMLElement
-      if (ret) return ret
-    }
-    // if (this.parsedEl) return this.parsedEl as HTMLElement
-    if (this.vslot) return
-    let el = unrefElement(this.ref)
-    return el?.nodeType == 3
-      ? el.nextElementSibling == 3 ? void 0 : el.nextElementSibling
-      : el
+  get el(): Element | undefined {
+    return this.els?.[0]
   }
 
   get els() {
-    // if (!this.ref.value) return
-    void [...this.parent$?.children$ || []]
-    
-    return toArr(this.config?.getEl?.(this) ?? this.el).filter(e => e)
+    if (this.vslot) return
+    void this.ref.value
+    if (this.config?.getEl) {
+      const ret = toArr(this.config?.getEl?.(this)).filter(e => e != null)
+      if (ret.length != this.parsedEls?.length || !this.parsedEls.every(e => ret.includes(e))) this.parsedEls = ret
+      return this.parsedEls
+    }
+    const ret = unrefElement(this.ref)
+    return ret ? [ret] : void 0
   }
 
-  #parsedEl = shallowRef<Element>()
-  get parsedEl() { return this.#parsedEl.value }
-  set parsedEl(v) { this.#parsedEl.value = v }
+  #parsedEls = shallowRef<Element[]>()
+  get parsedEls() { return this.#parsedEls.value }
+  set parsedEls(v) { this.#parsedEls.value = v }
 
-  // ignore v-slots
-  get parent$(): typeof this | undefined { return this.parent?.vslot ? this.parent.parent : this.parent }
+  // ignore v-slot:default
+  get id$() { return this.vslot == 'default' ? this.parent!.id : this.id }
+  get is$() { return this.vslot == 'default' ? this.parent!.is : this.is }
+  get parent$(): typeof this | undefined { return this.parent?.vslot == 'default' ? this.parent.parent : this.parent }
   get children$(): typeof this[] | undefined { return isPlainObject(this.data.children) ? this.children?.find(e => e.vslot == 'default')?.children : this.children }
 
-  get dropEls() {
+  get dropEls(): Element[] {
     return toArr(
       this.config?.getDropEl?.(this) ??
       this.emptyRef.value ??
-      this.children$?.[0]?.els[0]?.parentElement
+      this.children$?.[0]?.el?.parentElement
     ).filter(e => e != null)
   }
 
@@ -181,11 +177,6 @@ export abstract class DisplayNode extends Node<BoxProps> {
   set isAbsLayout(bool) { this.data['data-absolute-layout'] = bool || void 0 }
 
   get text() { return isString(this.data.children) && !isExp(this.data.children) ? this.data.children : void 0 }
-
-  // get slots() {
-  //   if (this.config?.slots) return solveOptions(this.config.slots)
-  //   if (this.config?.vSlots) return solveOptions(this.config.vSlots)
-  // }
   
   // 插槽化 children
   #vSlots
@@ -200,7 +191,9 @@ export abstract class DisplayNode extends Node<BoxProps> {
         } else {
           let children = this.data.children as any
           children = isArray(children) ? { default: { children } } : { ...children }
-          children[p] = isArray(val) ? { children: val } : val == true ? { children: [] } : val
+          // 
+          if (val == null) delete children[p]
+          else children[p] = isArray(val) ? { children: val } : val == true ? { children: [] } : val
           // 最小化 children
           if (Object.values(children).every(e => e == null)) {
             children = void 0
@@ -216,11 +209,11 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   get drag(): WidgetDrag {
     if (this.vslot == 'default') return this.parent!.drag
-    const drag = { ...this.config?.drag, ...this.data['lcd-drag'], ...this.$data['lcd-drag'] }
+    const drag = { ...this.config?.drag, ...this.$data['lcd-drag'] }
     drag.disabled ||= !this.selectable
     return drag
   }
-  get selectable() { return this.$data['lcd-selectable'] !== false && this.data['lcd-selectable'] !== false }
+  get selectable() { return this.$data['lcd-selectable'] !== false }
 
   get lock() { return this.$data['lcd-lock'] }
   set lock(bool) { this.data['lcd-lock'] = bool || void 0 }
@@ -253,7 +246,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   override insertable(node: DisplayNode) {
     if (!isArray(this.data.children)) return false
-    if (node.drag.to && !node.drag.to.includes(this.is)) return false
+    if (node.drag.to && !node.drag.to.includes(this.is$)) return false
     if (this.drag.from && !this.drag.from.includes(node.is)) return false
     if (node.drag.ancestor && !this.path.some(e => node.drag.ancestor!.includes(e.is))) return false
     if (this.lock) return false
