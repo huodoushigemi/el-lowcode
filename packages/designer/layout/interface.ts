@@ -1,7 +1,7 @@
 import { computed, InjectionKey, mergeProps, reactive, ref, shallowRef, toRaw, toRef } from 'vue'
 import { isArray, isObject, isPlainObject, isString, normalizeStyle } from '@vue/shared'
 import { Fn, unrefElement } from '@vueuse/core'
-import { Arrable, Assign, deepClone, Fnable, isExp, mergeRects, Obj, pick, set, toArr, uid } from '@el-lowcode/utils'
+import { Arrable, Assign, deepClone, Fnable, getRects, isExp, mergeRects, Obj, pick, set, toArr, uid } from '@el-lowcode/utils'
 import { processProps } from 'el-lowcode'
 import { Props } from '@el-lowcode/render'
 import { Node } from './components/Node'
@@ -27,7 +27,7 @@ export interface Widget {
   getEl?(node: DisplayNode): Arrable<Element>
   // getParent?(node: DisplayNode): Arrable<Element>
   getDropEl?(node: DisplayNode): Arrable<Element>
-  getRect?(node: DisplayNode): Arrable<DOMRect>
+  getRect?(node: DisplayNode): Arrable<DOMRect | Element>
 }
 
 export type UserWidget = Assign<Widget, {
@@ -56,6 +56,9 @@ export type BoxProps = Props
 
 export abstract class DisplayNode extends Node<BoxProps> {
   abstract designerCtx: DesignerCtx
+
+  get root() { return this.designerCtx.rootNode as typeof this }
+  get isRoot() { return this.designerCtx.rootNode == this }
 
   constructor(data) {
     const raw = toRaw(data)
@@ -92,10 +95,16 @@ export abstract class DisplayNode extends Node<BoxProps> {
     )
   }
 
-  ref = ref()
+  ref = shallowRef()
+  emptyRef = shallowRef()
 
   get el(): HTMLElement | undefined {
     if (this.parsedEl) return this.parsedEl as HTMLElement
+    if (this.config?.getEl) {
+      const ret = toArr(this.config?.getEl?.(this))[0] as HTMLElement
+      if (ret) return ret
+    }
+    // if (this.parsedEl) return this.parsedEl as HTMLElement
     if (this.vslot) return
     let el = unrefElement(this.ref)
     return el?.nodeType == 3
@@ -104,18 +113,27 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   get els() {
-    if (!this.ref.value) return
+    // if (!this.ref.value) return
+    void [...this.parent$?.children$ || []]
+    
     return toArr(this.config?.getEl?.(this) ?? this.el).filter(e => e)
   }
 
-  #parsedEl = ref<Element>()
+  #parsedEl = shallowRef<Element>()
   get parsedEl() { return this.#parsedEl.value }
   set parsedEl(v) { this.#parsedEl.value = v }
 
-  get parentEl(): HTMLElement | undefined {
-    return this.parent?.vslot ? this.parent.parent?.el : this.parent?.el
-  }
+  // ignore v-slots
+  get parent$(): typeof this | undefined { return this.parent?.vslot ? this.parent.parent : this.parent }
+  get children$(): typeof this[] | undefined { return isPlainObject(this.data.children) ? this.children?.find(e => e.vslot == 'default')?.children : this.children }
 
+  get dropEls() {
+    return toArr(
+      this.config?.getDropEl?.(this) ??
+      this.emptyRef.value ??
+      this.children$?.[0]?.els[0]?.parentElement
+    ).filter(e => e != null)
+  }
 
   #vars = shallowRef()
   get vars() { return this.#vars.value ?? this.designerCtx.rootNode.vars }
@@ -196,9 +214,8 @@ export abstract class DisplayNode extends Node<BoxProps> {
     })
   }
 
-  get isRoot() { return !this.parent }
-
   get drag(): WidgetDrag {
+    if (this.vslot == 'default') return this.parent!.drag
     const drag = { ...this.config?.drag, ...this.data['lcd-drag'], ...this.$data['lcd-drag'] }
     drag.disabled ||= !this.selectable
     return drag
@@ -217,12 +234,8 @@ export abstract class DisplayNode extends Node<BoxProps> {
     return mergeRects(rects)
   }
 
-  getRects() {
-    return toArr(this.config?.getRect?.(this) ?? this.els?.map(e => e.getBoundingClientRect()))
-  }
-
-  getDropEls() {
-    return toArr(this.config?.getDropEl?.(this) ?? this.children?.[0]?.el?.parentElement).filter(e => e != null)
+  getRects(): DOMRect[] {
+    return getRects(this.config?.getRect?.(this) ?? this.els)
   }
 
   clone() {

@@ -1,4 +1,4 @@
-import { get, set, uid, findret } from '@el-lowcode/utils'
+import { mergeRects } from '@el-lowcode/utils'
 
 const SIZES = ['large', 'default', 'small']
 
@@ -9,6 +9,8 @@ const checkboxs = (lp, options, extra) => ({ lp, type: 'checkbox-group', options
 const bool = (lp, displayValue = false, extra) => ({ lp, type: 'switch', displayValue, ...extra })
 const num = (lp, displayValue, extra) => ({ lp, type: 'input-number', displayValue, set: v => v == null ? void 0 : v, ...extra })
 const color = lp => ({ lp, type: 'color-picker' })
+
+const hr = () => ({ is: 'hr', class: '-mx8' })
 
 const grid2 = children => ({ is: 'div', class: 'grid grid-cols-2 gap-x-12', children })
 
@@ -151,10 +153,9 @@ export default [
     devProps: props => ({
       beforeLeave: props.beforeLeave || (() => true)
     }),
-    getDropEl: ({ el }) => [
-      el.querySelector(`.el-tabs__nav`),
-      el.querySelector(`.el-tabs__content`)
-    ],
+    getDropEl: ({ el }) => {
+      return el.querySelector(`.el-tabs__nav`)
+    }
   },
   {
     is: 'ElTabPane',
@@ -171,11 +172,8 @@ export default [
     defaultProps: () => ({
       children: []
     }),
-    getEl({ data, parentEl, index }) {
-      return [
-        parentEl.querySelector(`#tab-${data.name || index}`),
-        parentEl.querySelector(`#pane-${data.name || index}`)
-      ]
+    getEl({ data, parent$, index }) {
+      return parent$.el.querySelector(`#tab-${data.name || index}`)
     },
   },
 
@@ -231,7 +229,7 @@ export default [
     category: '数据输入',
     vSlots: ['prefix', 'suffix', 'prepend', 'append'],
     props: [
-      { lp: ['v-model', 'vModels.modelValue.0'], script: false },
+      vmodel(),
       grid2([
         bool('disabled'), bool('readonly'),
         bool('clearable'), bool('autofocus'),
@@ -569,7 +567,10 @@ export default [
         { is: 'ElDescriptionsItem', label: `Remarks`, children: `School` },
         { is: 'ElDescriptionsItem', label: `Address`, children: `No.1188, Wuzhong Avenue, Wuzhong District, Suzhou, Jiangsu Province` },
       ]
-    })
+    }),
+    getDropEl({ el }) {
+      return [...el.querySelectorAll('tr')]
+    }
   },
   {
     is: 'ElDescriptionsItem',
@@ -589,11 +590,14 @@ export default [
     ],
     devProps: props => ({
       'lcd-label': `- ${(props.children?.label?.children?.[0].children || props.label)}`,
-      labelClassName: `${props.labelClassName} ${props._id}`,
-      className: `${props.className} ${props._id}`,
+      labelClassName: `${props.labelClassName || ''} lcd-id:${props._id}`,
+      className: `${props.className || ''} lcd-id:${props._id}`,
     }),
-    getRect({ id, root }) {
-      return Array.from(root.el.querySelectorAll(`.${id}`)).map(e => e.getBoundingClientRect())
+    getEl({ id, parent$ }) {
+      return [...parent$.el.querySelectorAll(`.lcd-id\\:${id}`)]
+    },
+    getRect({ id, parent$ }) {
+      return mergeRects([...parent$.el.querySelectorAll(`.lcd-id\\:${id}`)])
     }
   },
 
@@ -602,12 +606,17 @@ export default [
     label: 'table',
     category: '数据展示',
     drag: { from: 'ElTableColumn' },
-    vSlots: ['append'],
-    props: [
-      str('data'),
-      { lp: ['cols', 'children'], el: { is: 'OptionsInput', props: { V: 'prop' }, new: i => ({ is: 'ElTableColumn', label: `title${i + 1}`, prop: `key${i + 1}` }) } },
-      bool('stripe'),
-      bool('border'),
+    vSlots: ['append', 'empty'],
+    props: props => [
+      str('data', { script: true, displayValue: `{{[]}}` }),
+      // { lp: ['cols', 'children'], el: { is: 'OptionsInput', props: { V: 'prop' }, new: i => ({ is: 'ElTableColumn', label: `title${i + 1}`, prop: `key${i + 1}` }) } },
+      grid2([
+        bool('border'), bool('stripe'),
+      ]),
+      radios('size', SIZES),
+      hr(),
+      bool(['summary', 'showSummary']),
+      props.showSummary && str('summary-method', { script: true, displayValue: `{{({ data, columns }) => {\n  \n}}}` }),
     ],
     defaultProps: () => ({
       children: [
@@ -622,27 +631,29 @@ export default [
     label: 'table-column',
     category: '数据展示',
     hidden: true,
-    drag: { to: 'ElTable', disabled: true },
-    vSlots: ['header'],
+    drag: { to: 'ElTable' },
+    vSlots: ['header', 'default'],
     props: [
       str(['title', 'label']),
       str(['key', 'prop']),
-      num('width'),
+      grid2([
+        num('width'),
+        bool(['overflow-tooltip', 'showOverflowTooltip']),
+      ]),
+      radios('type', [['—'], 'index', 'selection']),
       radios('fixed', [['—'], 'left', 'right']),
       radios('align', ['left', 'center', 'right']),
-      str('render-header', { script: true }),
-      str('formatter', { script: true, displayValue: '(row, col, val, i) => val' }),
+      str('formatter', { script: true, displayValue: '{{(row, col, val, i) => val}}' }),
     ],
     devProps: props => ({
-      'lcd-label': `- ${(props.children?.header?.children?.[0].children || props.label)}`,
-      labelClassName: `${props.labelClassName || ''} lcd-id:${props._id}`
+      'lcd-label': `Col - ${(props.children?.header?.children?.[0].children || props.label)}`,
+      labelClassName: `${props.labelClassName || ''} lcd-id:${props._id}`,
     }),
-    parseId(el) {
-      return el.className.includes(`lcd-id:`) ? el.className.replace(/.*?lcd-id\:(.+?) .*/, '$1') : void 0
-    },
-    // getEl({ id, parentEl }) {
-    //   console.log(parentEl.querySelector(`.el-table__header ._${id}`))
-    //   return parentEl.querySelector(`.el-table__header ._${id}`)
+    getEl({ id, parent$ }) {
+      return parent$.el.querySelector(`.el-table__header th.lcd-id\\:${id}`)
+    }
+    // getRect({ id, parent$ }) {
+    //   return [...parent$.el.querySelectorAll(`.lcd-id\\:${id}`)]
     // }
   },
 

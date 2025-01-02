@@ -32,7 +32,7 @@ export default {
   props: [
     { lp: 'fit', options: ['contain', 'cover', 'fill', 'scrollY', 'scrollX'] },
     // { is: 'div', class: 'my8', children: '变量' },
-    { lp: ['State', 'state'], class: 'font-bold', el: { is: State }, script: false },
+    // { lp: ['State', 'state'], class: 'font-bold', el: { is: State }, script: false },
     { lp: ['', 'ds.list'], size: 'default', el: { is: DS }, script: false }
   ],
   defaultProps: () => ({

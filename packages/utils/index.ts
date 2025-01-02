@@ -68,9 +68,15 @@ export const eq = (a, b) => JSON.stringify(a) == JSON.stringify(b)
 
 export const findret = <E, R>(obj: E[], cb: (e: E) => (R | void)): R | void => { let ret; for (const e of obj) { ret = cb(e); if (ret) return ret }}
 
-export function mergeRects(rects: DOMRect[]) {
-  let x = 0, y = 0, x2 = -Infinity, y2 = -Infinity
-  for (const e of rects) {
+export function getRects(arr: Arrable<DOMRect | Element> | void): DOMRect[] {
+  return toArr(arr as any).map(e => e.nodeType == 1 ? e.getBoundingClientRect() : e)
+}
+
+export function mergeRects(arr: (DOMRect | Element)[]) {
+  const rects = getRects(arr)
+  let x = rects[0].x, y = rects[0].y, x2 = rects[0].right, y2 = rects[0].bottom
+  for (let i = 1; i < rects.length; i++) {
+    const e = rects[i]
     x = Math.min(x, e.x)
     x2 = Math.max(x2, e.right)
     y = Math.min(y, e.y)

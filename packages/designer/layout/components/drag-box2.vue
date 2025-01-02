@@ -17,12 +17,10 @@ const props = defineProps({
   root: Object
 })
 
-const rootEl = ref()
-
 defineRender(() => {
   return [
     h(DragGuidMask),
-    cloneVNode(Render(props.root!) || h('div') as any, { 'lcd-root': '', ref: rootEl, onMousedown, onMouseover }, true),
+    cloneVNode(Render(props.root!) || h('div') as any, { 'lcd-root': '', onMousedown, onMouseover }),
   ]
 })
 
@@ -56,7 +54,7 @@ const Render = createRender({
 
       if (isArray(children)) {
         if (!children.length) {
-          children = [{ ref: ctx.boxRef, is: 'div', class: 'empty-placeholder', [EMPTY]: 1 } as any]
+          children = [{ ref: ctx.emptyRef, is: 'div', class: 'empty-placeholder', [EMPTY]: 1 } as any]
         }
         else {
           sortAbsolute(children)
@@ -82,29 +80,26 @@ function setup(node: DisplayNode) {
   let scope = effectScope()
   
   return scope.run(() => {
-    let elRef = node.ref, boxRef = ref()
-
+    let elRef = node.ref, emptyRef = node.emptyRef
+    
     // add attrs
-    watchPostEffect(() => {
+    const addAttrs = () => {
       node.setAttrs({
         draggable: (!node.isAbs && !node.drag.disabled) + '',
         _id: node.id,
         'lcd-id': node.id,
         'lcd-is': node.is
       })
-    })
+      
+      node.dropEls.forEach(el => el.setAttribute('lcd-dragover', node.id))
+    }
 
-    watchPostEffect(() => {
-      [...node.getDropEls(), boxRef.value].forEach(el => {
-        if (!el) return
-        el.setAttribute('lcd-dragover', node.id)
-      })
-    })
+    watchPostEffect(addAttrs)
 
     let flag = 0
 
     let ret = {
-      boxRef,
+      emptyRef,
       attrs: {
         ref: elRef,
         key: count++,
@@ -113,8 +108,10 @@ function setup(node: DisplayNode) {
           if (--flag) return
           propsCtx.delete(node)
           scope?.stop()
-          node = scope = boxRef = boxRef.value = elRef = elRef.value = ret = void 0
+          node = scope = emptyRef = emptyRef.value = elRef = elRef.value = ret = void 0
         },
+        onVnodeMounted: () => setTimeout(addAttrs, 0),
+        onVnodeUpdated: addAttrs,
       },
     }
 
@@ -124,7 +121,7 @@ function setup(node: DisplayNode) {
   })
 }
 
-const draggable = useDraggable(rootEl, {
+const draggable = useDraggable(document.body, {
   dragstart(e) {
     e.dataTransfer!.setDragImage(new Image(), 0, 0)
   },
@@ -135,7 +132,7 @@ const draggable = useDraggable(rootEl, {
     return node.insertable(dragNode)
   },
   children(el) {
-    return [...el.children].filter((el: any) => el.getAttribute('lcd-is'))
+    return designer.keyedNode[el.getAttribute('lcd-dragover')!].children$!.map(e => e.el!)
   },
   drop(el, drag, related, type) {
     type == 'prev' ? resolveNode(related)!.before(dragNode!) :
@@ -219,7 +216,7 @@ function resolveNode(el: El) {
   const snippet = el.getAttribute('lcd-snippet')
   if (snippet) return new designer.DisplayNode(unFn(designer.snippets.find(e => e.id == snippet)?.schema))
   // id
-  let id = el.getAttribute('_id')
+  let id = el.getAttribute('lcd-id')
   if (id) return designer.keyedNode[id!]
   // id
   id = parseId(el) as any

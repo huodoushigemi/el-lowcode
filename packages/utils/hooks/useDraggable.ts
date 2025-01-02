@@ -29,14 +29,17 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
     const container = root()
     const path = e.composedPath()
     ret.dragoverEl = path.slice(0, path.indexOf(container) + 1).find(e => e instanceof Element ? props.dragover(e as Element, ret.dragEl!) : void 0) as HTMLElement
-    if (!ret.dragoverEl) return
+    if (!ret.dragoverEl) {
+      Object.assign(cursor.style, { transform: '', width: '', height: ''})
+      return
+    }
 
     e.stopPropagation()
     e.preventDefault()
     if (e.x == x && e.y == y) return
     x = e.x; y = e.y
 
-    const children = props.children(ret.dragoverEl).filter(el => props.children(el))
+    const children = props.children(ret.dragoverEl)
     const [, el, rect, dir] = nearest = nearestEl(e.x, e.y, children, ret.dragoverEl)!
     const rect2 = el ? rect : ret.dragoverEl.getBoundingClientRect()
     const size = 6, v = dir == 'T' || dir == 'B'
@@ -78,9 +81,11 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
 
 function nearestEl(x, y, els: Element[], container: Element) {
   const s1 = getComputedStyle(container)
-  const dir = s1.display.includes('flex')
-    ? s1.flexDirection.includes('row') ? 'h' : 'v'
-    : void 0
+  const dir = 
+    s1.display.includes('flex') ? s1.flexDirection.includes('row') ? 'h' : 'v' :
+    s1.display.includes('grid') ? 'h' : // todo
+    s1.display.includes('table-row') ? 'h' :
+    void 0
   if (dir == 'h') {
     return els.reduce((t, e) => { const dis = distance(x, y, e, e.getBoundingClientRect(), 'h'); return t[0] < dis[0] ? t : dis }, [Infinity] as ReturnType<typeof distance>)
   }

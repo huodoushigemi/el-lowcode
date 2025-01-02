@@ -209,7 +209,7 @@ watch(() => active!.value?.index, async () => {
   moveable.value?.updateRect()
 })
 function onDragStart(e) {
-  designerCtx.draggedId = e.target.getAttribute('_id')
+  designerCtx.draggedId = e.target.getAttribute('lcd-id')
 }
 function onDrag(e) {
   e.target.style.transform = e.transform
