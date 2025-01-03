@@ -26,7 +26,8 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
   const indent = () => '  '.repeat(deep)
   
   function through(props: BoxProps, queue = [] as BoxProps[]) {
-    props = ctx.keyedNode[props._id!].config?.purify?.(props) ?? props
+    const node = ctx.keyedNode[props._id!]
+    props = { ...props, ...node.config?.purify?.(props) }
 
     const atChildren = queue[queue.length - 1]?.children
 
@@ -152,7 +153,7 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
 }
 
 export function jsonRender(ctx: DesignerCtx) {
-  const omitKey = new Set(['_id', 'data-absolute-layout'])
+  const omitKey = new Set(['_id', 'lcd-absolute-layout'])
   return `<template>
   <Render v-bind="schema" />
 </template>

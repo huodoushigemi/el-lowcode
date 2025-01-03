@@ -22,7 +22,8 @@
 
             <selected-layer />
             <!-- resize -->
-            <Moveable
+             <!-- todo -->
+            <!-- <Moveable
               v-if="active && !active.isRoot && active.el && !active?.inline && active.is != 'span'"
               ref="moveable"
               :key="active.id"
@@ -41,7 +42,7 @@
               :useMutationObserver="true"
               @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd"
               @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd"
-            />
+            /> -->
           </div>
         </infinite-viewer>
 

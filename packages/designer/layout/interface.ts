@@ -94,7 +94,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
     )
   }
 
-  ref = ref<HTMLElement>()
+  ref = shallowRef<HTMLElement>()
   emptyRef = shallowRef<Element>()
 
   get el(): Element | undefined {
@@ -132,7 +132,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   #vars = shallowRef()
-  get vars() { return this.#vars.value ?? this.designerCtx.rootNode.vars }
+  get vars() { return this.#vars.value ?? (this.isRoot ? void 0 : this.root.vars) }
   set vars(v) { this.#vars.value = v }
 
   #$data = computed(() => this.processProps(this.vars))
@@ -173,8 +173,8 @@ export abstract class DisplayNode extends Node<BoxProps> {
   set grid(v) { v ? set(this.data, 'style.display', this.inline ? 'inline-grid' : 'grid') : void 0 }
 
   // 自由布局
-  get isAbsLayout() { return !!this.data['data-absolute-layout'] }
-  set isAbsLayout(bool) { this.data['data-absolute-layout'] = bool || void 0 }
+  get isAbsLayout() { return !!this.data['lcd-absolute-layout'] }
+  set isAbsLayout(bool) { this.data['lcd-absolute-layout'] = bool || void 0 }
 
   get text() { return isString(this.data.children) && !isExp(this.data.children) ? this.data.children : void 0 }
   

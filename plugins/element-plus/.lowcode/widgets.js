@@ -746,11 +746,16 @@ export default [
       num('offset'),
     ],
     defaultProps: () => ({
-      content: 'content',
-      children: {
-        content: { children: [Text('content')] },
-        default: { children: [Text('text')] }
-      }
+      content: 'xxx',
+      children: [Text('text')],
+      // todo
+      // children: {
+      //   content: { children: [Text('content')] },
+      //   default: { children: [Text('text')] }
+      // }
+    }),
+    purify: () => ({
+      is: 'ElTooltip'
     })
   },
 

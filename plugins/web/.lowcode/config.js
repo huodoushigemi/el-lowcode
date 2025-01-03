@@ -48,11 +48,11 @@ export default [
     category: '容器',
     props: [],
     defaultProps: () => ({
-      'data-absolute-layout': true,
+      'lcd-absolute-layout': true,
       style: { height: '300px' },
       children: [],
     }),
-    purify: (props) => ({ ...props, is: 'div', 'data-absolute-layout': void 0 })
+    purify: () => ({ is: 'div' })
   },
   
   {

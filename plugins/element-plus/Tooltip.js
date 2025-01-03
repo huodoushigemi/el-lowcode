@@ -6,7 +6,9 @@ const Tooltip = defineComponent({
   name: 'ElTooltip-lcd',
   props: omit(ElTooltip.props, ['id', 'class', 'style']),
   setup(props, { attrs, slots }) {
-    return () => h('div', attrs, h(ElTooltip, props, h('div', void 0, slots)))
+    // return () => h('div', { style: 'display: contents' }, h(ElTooltip, props, h('div', void 0, slots)))
+    // todo
+    return () => h('div', { style: 'display: contents' }, h(ElTooltip, props, slots))
   }
 })
 

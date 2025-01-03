@@ -5,6 +5,7 @@ interface UseDraggableProps {
   dragstart?(e: DragEvent): void
   dragover(el: Element, drag: Element): boolean
   children(el: Element): Element[]
+  getRect?(el: Element): DOMRect
   drop(el: Element, drag: Element, related: Element, type?: 'prev' | 'next'): void
 }
 
@@ -12,6 +13,8 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
   const root = () => unrefElement(el) as HTMLElement
   let x = 0, y = 0
   let nearest: [number, HTMLElement, DOMRect, 'T' | 'B' | 'L' | 'R'] | void
+
+  const getRect = (el: Element) => props.getRect ? props.getRect(el) : el.getBoundingClientRect()
 
   const ret = shallowReactive({
     dragEl: void 0 as Element | undefined,
@@ -40,7 +43,7 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
     x = e.x; y = e.y
 
     const children = props.children(ret.dragoverEl)
-    const [, el, rect, dir] = nearest = nearestEl(e.x, e.y, children, ret.dragoverEl)!
+    const [, el, rect, dir] = nearest = nearestEl(e.x, e.y, children, ret.dragoverEl, getRect)!
     const rect2 = el ? rect : ret.dragoverEl.getBoundingClientRect()
     const size = 6, v = dir == 'T' || dir == 'B'
     Object.assign(cursor.style, el ? {
@@ -79,7 +82,7 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
   return ret
 }
 
-function nearestEl(x, y, els: Element[], container: Element) {
+function nearestEl(x, y, els: Element[], container: Element, getRect: (el: Element) => DOMRect) {
   const s1 = getComputedStyle(container)
   const dir = 
     s1.display.includes('flex') ? s1.flexDirection.includes('row') ? 'h' : 'v' :
@@ -87,14 +90,14 @@ function nearestEl(x, y, els: Element[], container: Element) {
     s1.display.includes('table-row') ? 'h' :
     void 0
   if (dir == 'h') {
-    return els.reduce((t, e) => { const dis = distance(x, y, e, e.getBoundingClientRect(), 'h'); return t[0] < dis[0] ? t : dis }, [Infinity] as ReturnType<typeof distance>)
+    return els.reduce((t, e) => { const dis = distance(x, y, e, getRect(e), 'h'); return t[0] < dis[0] ? t : dis }, [Infinity] as ReturnType<typeof distance>)
   }
   else if (dir == 'v') {
-    return els.reduce((t, e) => { const dis = distance(x, y, e, e.getBoundingClientRect(), 'v'); return t[0] < dis[0] ? t : dis }, [Infinity] as ReturnType<typeof distance>)
+    return els.reduce((t, e) => { const dis = distance(x, y, e, getRect(e), 'v'); return t[0] < dis[0] ? t : dis }, [Infinity] as ReturnType<typeof distance>)
   }
   else {
     return els.reduce((t, e) => {
-      const dis = distance(x, y, e, e.getBoundingClientRect(), getComputedStyle(e).display.includes('inline') ? 'h' : 'v');
+      const dis = distance(x, y, e, getRect(e), getComputedStyle(e).display.includes('inline') ? 'h' : 'v');
       return t[0] < dis[0] ? t : dis
     }, [Infinity] as ReturnType<typeof distance>)
   }

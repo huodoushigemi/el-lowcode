@@ -139,6 +139,9 @@ const draggable = useDraggable(document.body, {
   children(el) {
     return designer.keyedNode[el.getAttribute('lcd-dragover')!].children$!.map(e => e.el!)
   },
+  getRect(el) {
+    return resolveNode(el)!.getRect()!
+  },
   drop(el, drag, related, type) {
     type == 'prev' ? resolveNode(related)!.before(dragNode!) :
     type == 'next' ? resolveNode(related)!.after(dragNode!) :
@@ -159,7 +162,6 @@ function onMousedown(e: MouseEvent) {
 
 function onMouseover(e: MouseEvent) {
   if (designer.dragged) return
-  e.stopPropagation()
   const el = e.composedPath().find(e => resolveNode(e as El)?.selectable)!
   const node = resolveNode(el as El)!
   node.hover()

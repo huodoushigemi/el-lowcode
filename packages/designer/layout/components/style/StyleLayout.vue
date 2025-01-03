@@ -1,6 +1,6 @@
 <template>
   <div wfull>
-    <el-segmented v-model="layout" :options="[{ label: '—', value: void 0 }, { label: 'flex', value: 'flex' }, { label: 'grid', value: 'grid' }, { label: 'free', value: 'data-absolute-layout' }]" block />
+    <el-segmented v-model="layout" :options="[{ label: '—', value: void 0 }, { label: 'flex', value: 'flex' }, { label: 'grid', value: 'grid' }, { label: 'free', value: 'lcd-absolute-layout' }]" block />
 
     <StyleFlexLayout v-if="layout == 'flex'" :obj="obj" mt16 />
     <StyleGridLayout v-if="layout == 'grid'" :obj="obj" mt12 />
@@ -23,7 +23,7 @@ const props = defineProps({
 })
 
 const layout = useTransformer(() => props.obj, 'style.display', {
-  get: v => props.obj['data-absolute-layout'] ? 'data-absolute-layout' : v,
-  set: v => v == 'data-absolute-layout' ? (props.obj['data-absolute-layout'] = true, void 0) : (props.obj['data-absolute-layout'] = void 0, v),
+  get: v => props.obj['lcd-absolute-layout'] ? 'lcd-absolute-layout' : v,
+  set: v => v == 'lcd-absolute-layout' ? (props.obj['lcd-absolute-layout'] = true, void 0) : (props.obj['lcd-absolute-layout'] = void 0, v),
 })
 </script>
