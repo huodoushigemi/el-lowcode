@@ -1,3 +1,5 @@
+import { unrefElement } from '@vueuse/core'
+
 export default {
   is: 'ElDateTime-lcd',
   label: 'datetime',
@@ -19,5 +21,8 @@ export default {
   JSONSchemaOutput: (props) => ({
     type: 'string',
     format: 'date-time',
-  })
+  }),
+  getEl({ ref }) {
+    return unrefElement(ref)?.nextSibling
+  }
 }

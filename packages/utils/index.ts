@@ -1,4 +1,4 @@
-import type { App, Component, ObjectPlugin } from 'vue'
+import { toRaw, type App, type Component, type ObjectPlugin } from 'vue'
 import { isArray, isObject } from '@vue/shared'
 import { AnyFn } from '@vueuse/core'
 import type { AddPrefixToKeys, Arrable, Fnable, Obj } from './types'
@@ -40,6 +40,12 @@ export function get(obj: any, path: string | ((...args) => any)) {
 
 export function set<T>(obj: any, path: string, val: T) {
   return path.split('.').reduce((o, k, i, ks) => i == ks.length - 1 ? (o[k] = val) : (o[k] ??= numReg.test(ks[i + 1]) ? [] : {}), obj)
+}
+
+export function del(obj: any, path: string) {
+  const arr = path.split('.')
+  if (arr.length > 1) delete get(obj, arr.slice(0, -1).join('.'))?.[arr[arr.length - 1]]
+  else delete obj[arr[0]]
 }
 
 export function deepClone(obj?: Record<string | number, any>, iteratee = (v, k) => v, bool = (v) => true) {

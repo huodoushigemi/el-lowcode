@@ -1,7 +1,7 @@
 import { Ref, ref, toRaw, toValue } from 'vue'
 import { isArray } from '@vue/shared'
 import { camelize, isPromise, isString } from '@vue/shared'
-import { get, set, unFn } from '@el-lowcode/utils'
+import { del, get, set, unFn } from '@el-lowcode/utils'
 import { Item, Item0, NormalizedOpt, Opt } from './props'
 
 const solveLP = (lp: Item['lp']) => isArray(lp) ? lp : (lp ? [lp, camelize(lp!)] : [])
@@ -58,7 +58,7 @@ export const useTransformer = (_model, _prop, opt: Pick<Item0, 'defaultValue' | 
       else set(model, prop, v)
       if (opt.out) Object.assign(model, opt.out(v, model))
       v = get(model, prop)
-      if (opt.displayValue !== undefined && v === unFn(opt.displayValue)) set(model, prop, undefined)
+      if (opt.displayValue !== undefined && v === unFn(opt.displayValue)) del(toRaw(model), prop)
     },
     get v() { return this.get() },
     set v(v) { this.set(v) },

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { cloneVNode, computed, defineComponent, effectScope, h, inject, mergeProps, ref, shallowRef, watch, watchPostEffect } from 'vue'
-import { isArray, isObject } from '@vue/shared'
+import { cloneVNode, computed, defineComponent, effectScope, h, inject, mergeProps, shallowRef, watchPostEffect } from 'vue'
+import { isArray } from '@vue/shared'
 import { useEventListener } from '@vueuse/core'
 import { processProps } from 'el-lowcode'
 import { createRender } from '@el-lowcode/render'
-import { findret, unFn, useDraggable } from '@el-lowcode/utils'
+import { unFn, useDraggable } from '@el-lowcode/utils'
 import type { DesignerCtx, BoxProps, DisplayNode } from '../interface'
 
 type El = Element
@@ -20,7 +20,7 @@ const props = defineProps({
 defineRender(() => {
   return [
     h(DragGuidMask),
-    cloneVNode(Render(props.root!) || h('div') as any, { 'lcd-root': '', onMousedown, onMouseover }),
+    cloneVNode(Render(props.root!) || h('div') as any, { 'lcd-root': '' }, true),
   ]
 })
 
@@ -30,23 +30,24 @@ const wm = new WeakMap()
 const EMPTY = Symbol()
 
 const Render = createRender({
-  defaultIs: 'Fragment',
   processProps: (_props: any, vars, { provide }) => {
     if (_props[EMPTY]) return _props
     if (!_props.is && _props.vFor) return processProps(_props, vars)
     if (vars.__not_index_0_in_for) return processProps(_props, vars)
     
-    if (_props.vFor) {
-      const node = new designer.DisplayNode(_props)
-      node.vars = vars
-      if (node.indexInFor > 0) {
-        provide({ __not_index_0_in_for: true })
-        return node.processProps(vars)
-      }
+    if (_props.vFor && vars[_props.vFor[2] || 'index'] > 0) {
+      provide({ __not_index_0_in_for: true })
+      return mergeProps(processProps(_props, vars), { style: 'pointer-events: none;' })
     }
     
     // return wm.get(_props)?.value || wm.set(_props, computed(() => {
       const node = designer.keyedNode[_props._id] // todo
+
+      if (node.vSlotName && (node.parent!.config?.getScopeIndex?.(node, vars) ?? 0) != 0) {
+        provide({ __not_index_0_in_for: true })
+        return mergeProps(processProps(_props, vars), { style: 'pointer-events: none;' })
+      }
+
       node.vars = vars
       let { children, ...props } = node.$data
 
@@ -54,7 +55,7 @@ const Render = createRender({
 
       if (isArray(children)) {
         if (!children.length) {
-          children = [{ ref: ctx.emptyRef, is: 'div', class: 'empty-placeholder', [EMPTY]: 1 } as any]
+          children = [{ ref: ctx.emptyRef, is: 'div', 'lcd-id': props._id, class: 'empty-placeholder', [EMPTY]: 1 } as any]
         }
         else {
           sortAbsolute(children)
@@ -63,7 +64,7 @@ const Render = createRender({
 
       // 合并属性
       props.children = children
-      props = mergeProps(props, ctx.attrs)
+      props = mergeProps(ctx.attrs, props)
 
       return props
     // })).get(_props).value
@@ -76,52 +77,36 @@ const propsCtx = new WeakMap()
 
 function setup(node: DisplayNode) {
   if (propsCtx.has(node)) return propsCtx.get(node)
-  
-  let scope, dropEls
 
-  function start() {
-    stop()
-    scope = effectScope()
-    scope.run(() => {
-      // add attrs
-      const addAttrs = () => {
-        node.setAttrs({
-          draggable: (!node.isAbs && !node.drag.disabled) + '',
-          'lcd-id': node.id,
-        })
-        
-        dropEls?.forEach(el => el.removeAttribute('lcd-dragover'))
-        if (!isArray(node.data.children)) return
-        dropEls = node.dropEls
-        dropEls.forEach(el => el.setAttribute('lcd-dragover', node.id))
-      }
+  if (node.vSlotName) {
+    const ret = { emptyRef: node.emptyRef }
+    propsCtx.set(node, ret)
+    return ret
+  }
 
-      watchPostEffect(addAttrs)
+  const addAttrs = () => {
+    ;([{ ...node.parent?.children as any }, node.els])
+    if (node.detached) return scope?.stop()
+
+    const xxx = () => node.setAttrs({
+      draggable: (!node.isAbs && !node.drag.disabled) + '',
+      'lcd-id': node.id
     })
+
+    xxx()
+    setTimeout(xxx, 0) // fix: el-table-column | el-descriptions-item | el-tab-pane
   }
 
-  function stop() {
-    if (!scope?.active) return
+  let scope
+  function start() {
     scope?.stop()
-    dropEls?.forEach(el => el.removeAttribute('lcd-dragover'))
+    scope = effectScope()
+    scope.run(() => watchPostEffect(addAttrs))
   }
-
+  
   start()
 
-  let flag = 0
-
-  const ret = {
-    emptyRef: node.emptyRef,
-    attrs: {
-      ref: node.ref,
-      key: count++,
-      onVnodeBeforeMount: () => flag++,
-      onVnodeMounted: () => setTimeout(start, 0),
-      onVnodeBeforeUnmount: stop,
-      onVnodeUnmounted: () => --flag || (propsCtx.delete(node)),
-    },
-  }
-
+  const ret = { emptyRef: node.emptyRef, attrs: { ref: node.ref, key: count++ } }
   propsCtx.set(node, ret)
   return ret
 }
@@ -130,42 +115,58 @@ const draggable = useDraggable(document.body, {
   dragstart(e) {
     e.dataTransfer!.setDragImage(new Image(), 0, 0)
   },
-  dragover(el) {
-    const id = el.getAttribute('lcd-dragover')
-    if (!dragNode || !id) return false
-    const node = designer.keyedNode[id]
-    return node.insertable(dragNode)
+  dragover(el, _, { path }) {
+    draggable.dragoverEl?.removeAttribute('lcd-dragover')
+    if (!dragNode) return false
+    if (el.getAttribute('lcd-id')) {
+      let node = resolveNode(el)!
+      let container = node.dropEls.find(e => path.includes(e))
+      if (!container || !node.insertable(dragNode)) {
+        node = node.parent!
+        container = node?.dropEls.find(e => path.includes(e))
+        if (!container || !node.insertable(dragNode)) return
+      }
+      container.setAttribute('lcd-dragover', node.id)
+      return container
+    }
   },
   children(el) {
-    return designer.keyedNode[el.getAttribute('lcd-dragover')!].children$!.map(e => e.el!)
+    const ret = designer.keyedNode[el.getAttribute('lcd-dragover')!].children$!.map(e => e.el!)
+    return ret
   },
   getRect(el) {
     return resolveNode(el)!.getRect()!
   },
-  drop(el, drag, related, type) {
-    type == 'prev' ? resolveNode(related)!.before(dragNode!) :
-    type == 'next' ? resolveNode(related)!.after(dragNode!) :
+  drop(el, _, type) {
+    if (el == dragNode!.el) return dragEnd()
+    // 
+    type == 'prev' ? resolveNode(el)!.before(dragNode!) :
+    type == 'next' ? resolveNode(el)!.after(dragNode!) :
     designer.keyedNode[el.getAttribute('lcd-dragover')!].insertBefore(dragNode!)
+    // 
     dragNode!.click()
+    draggable.dragoverEl?.removeAttribute('lcd-dragover')
     dragEnd()
   },
 })
 
-function onMousedown(e: MouseEvent) {
+useEventListener(document.body, 'mousedown', e => {
   if (e.button != 0) return
   e.stopPropagation()
   const el = e.composedPath().find(e => resolveNode(e as El)?.selectable)!
+  if (!el) return
   const node = resolveNode(el as El)!
   if (designer.dragged) return
   node.click()
-}
+})
 
-function onMouseover(e: MouseEvent) {
+useEventListener(document.body, 'mouseover', e => {
   if (designer.dragged) return
   const el = e.composedPath().find(e => resolveNode(e as El)?.selectable)!
+  if (!el) return
   const node = resolveNode(el as El)!
   node.hover()
-}
+})
 
 // 将 absolute 的元素移动到前面
 function sortAbsolute(arr: BoxProps[]) {
@@ -294,6 +295,10 @@ const DragGuidMask = defineComponent({
   &:hover {
     background: unset;
   }
+}
+[lcd-absolute-layout] > .empty-placeholder {
+  width: 100%;
+  height: 100%;
 }
 [lcd-lock] > * {
   pointer-events: none;

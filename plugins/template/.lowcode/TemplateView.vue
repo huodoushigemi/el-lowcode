@@ -29,7 +29,7 @@ const templateModules = Object.values(import.meta.glob('./template/*.js'))
 const { data: templates, loading } = useRequest(() => Promise.all(templateModules.map(e => e().then(e => e.default))))
 
 function onEdit(item) {
-  designerCtx.root = JSON.parse(JSON.stringify(item.schema))
+  designerCtx.root = JSON.parse(JSON.stringify(unFn(item.schema)))
 }
 
 const cache = new WeakMap()

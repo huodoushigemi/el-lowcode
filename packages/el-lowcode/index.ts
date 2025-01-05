@@ -6,10 +6,7 @@ import { ConfigProvider } from './ConfigProvider'
 
 export * from './ConfigProvider'
 
-const _Render = createRender({
-  defaultIs: 'Fragment',
-  processProps
-})
+const _Render = createRender({ processProps })
 
 export const Render = ({ state, dataSource, css, plugins, ...props }, { slots }) => {
   return h(ConfigProvider, { state, dataSource, css, plugins }, {
@@ -26,15 +23,15 @@ export function processProps(props, vars) {
   props.children = execExp(children, vars)
 
   if (vModels) {
-    const spread = {}
+    const spread1 = {}, spread2 = {}
     for (const key in vModels) {
       const val = toArr(vModels[key])
       const [exp, modifiers, event] = [val[0], val[1], val[2] || [`onUpdate:${key}`, `{{v => v}}`]]
-      spread[key] = execExp(wrapExp(exp), vars)
-      spread[event[0]] = execExp(`{{v => ${unExp(exp)} = (${unExp(event[1])})(v)}}`, vars)
-      if (modifiers) spread[key == 'modelValue' ? 'modelModifiers' : `${key}Modifiers`] = modifiers
+      spread2[key] = execExp(wrapExp(exp), vars)
+      spread1[event[0]] = execExp(`{{v => ${unExp(exp)} = (${unExp(event[1])})(v)}}`, vars)
+      if (modifiers) spread1[key == 'modelValue' ? 'modelModifiers' : `${key}Modifiers`] = modifiers
     }
-    props = mergeProps(spread, props)
+    props = mergeProps(spread1, props, spread2)
   }
 
   return props

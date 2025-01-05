@@ -20,13 +20,14 @@ export interface Widget {
   vSlots: any[]
   props?: any[] | ((props: Obj, ctx: DesignerCtx, arg: { node: DisplayNode }) => any[])
   defaultProps?(ctx: DesignerCtx): Obj
-  devProps: (props: Obj, ctx: DesignerCtx) => Obj
+  devProps: (props: Obj, node: DisplayNode) => Obj
   purify?(props: Obj): Obj
   JSONSchemaOutput?(props: Obj, ctx: DesignerCtx): Obj
   getEl?(node: DisplayNode): Arrable<Element>
   // getParent?(node: DisplayNode): Arrable<Element>
   getDropEl?(node: DisplayNode): Arrable<Element>
   getRect?(node: DisplayNode): Arrable<DOMRect | Element>
+  getScopeIndex?(node: DisplayNode, vars: Obj): number
 }
 
 export type UserWidget = Assign<Widget, {
@@ -66,11 +67,11 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   get id () { return this.data._id! }
-  get is() { return this.data.is || 'Fragment' }
+  get is() { return this.data.is }
   get icon() { return this.config?.icon }
-  get label () { return (this.vslot && `#${this.vslot}`) || this.$data['lcd-label'] || this.config?.label || this.data.is }
+  get label () { return (this.vSlotName && `#${this.vSlotName}`) || this.$data['lcd-label'] || this.config?.label || this.data.is }
   get dir() { return isArray(this.data_children) }
-  get vslot() { return isPlainObject(this.parent?.data.children) ? Object.entries(this.parent!.data.children).find(([k, v]) => v == this.data)?.[0] : void 0 }
+  get vSlotName() { return isPlainObject(this.parent?.data.children) ? Object.entries(this.parent!.data.children).find(([k, v]) => v == this.data)?.[0] : void 0 }
   get config() {
     if (!this.designerCtx.widgets[this.is]) console.error(`${this.is}: Unable to find a matching el_lowcode configuration of ${this.is}`, this.data)
     return this.designerCtx.widgets[this.is]
@@ -102,15 +103,20 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   get els() {
-    if (this.vslot) return
+    if (this.vSlotName) return
+    if (this.detached) return
     void this.ref.value
-    if (this.config?.getEl) {
+    if (this.config?.getEl && this.parent?.el) {
       const ret = toArr(this.config?.getEl?.(this)).filter(e => e != null)
       if (ret.length != this.parsedEls?.length || !this.parsedEls.every(e => ret.includes(e))) this.parsedEls = ret
       return this.parsedEls
     }
     const ret = unrefElement(this.ref)
-    return ret ? [ret] : void 0
+    return (
+      ret?.nodeType == 1 ? [ret] :
+      ret?.nodeType == 3 && ret.nextElementSibling?.nodeType == 1 ? [ret.nextElementSibling!] :
+      void 0
+    )
   }
 
   #parsedEls = shallowRef<Element[]>()
@@ -118,10 +124,10 @@ export abstract class DisplayNode extends Node<BoxProps> {
   set parsedEls(v) { this.#parsedEls.value = v }
 
   // ignore v-slot:default
-  get id$() { return this.vslot == 'default' ? this.parent!.id : this.id }
-  get is$() { return this.vslot == 'default' ? this.parent!.is : this.is }
-  get parent$(): typeof this | undefined { return this.parent?.vslot == 'default' ? this.parent.parent : this.parent }
-  get children$(): typeof this[] | undefined { return isPlainObject(this.data.children) ? this.children?.find(e => e.vslot == 'default')?.children : this.children }
+  get id$() { return this.vSlotName == 'default' ? this.parent!.id : this.id }
+  get is$() { return this.vSlotName == 'default' ? this.parent!.is : this.is }
+  get parent$(): typeof this | undefined { return this.parent?.vSlotName == 'default' ? this.parent.parent : this.parent }
+  get children$(): typeof this[] | undefined { return isPlainObject(this.data.children) ? this.children?.find(e => e.vSlotName == 'default')?.children : this.children }
 
   get dropEls(): Element[] {
     return toArr(
@@ -143,15 +149,10 @@ export abstract class DisplayNode extends Node<BoxProps> {
     // 移除值为 undefuned 的属性
     props = JSON.parse(JSON.stringify(props))
     props.children = children
-    props = processProps(props, vars)
-    // todo $
-    if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(this.data, this.designerCtx)) as any
-    if (this.indexInFor > 0) props = mergeProps(props, { style: 'pointer-events: none;' }) as any
+    props = vars ? processProps(props, vars) : props
+    if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(this.data, this)) as any
     return props
   }
-
-  get itemInFor() { return this.data.$?.for ? this.vars[this.data.vFor?.[1] || 'item'] : this.parent?.itemInFor }
-  get indexInFor() { return this.data.$?.for ? this.vars[this.data.vFor?.[2] || 'index'] : this.parent?.indexInFor }
 
   // 自由拖拽
   get isAbs() { return this.data.style?.position == 'absolute' }
@@ -183,35 +184,38 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get vSlots() {
     return this.#vSlots ??= new Proxy({}, {
       get: (target, p, receiver) => {
-        return p == 'default' && isArray(this.data.children) ? reactive({ children: toRef(this.data, 'children') }) : this.data.children?.[p]
+        return isPlainObject(this.data.children) ? this.data.children![p] : void 0
       },
       set: (target, p, val, receiver) => {
-        if (isArray(this.data.children) && p == 'default' && isArray(val)) {
-          this.data.children = val
-        } else {
-          let children = this.data.children as any
-          children = isArray(children) ? { default: { children } } : { ...children }
-          // 
-          if (val == null) delete children[p]
-          else children[p] = isArray(val) ? { children: val } : val == true ? { children: [] } : val
-          // 最小化 children
-          if (Object.values(children).every(e => e == null)) {
-            children = void 0
-          } else if (Object.entries(children).every(([k, v]) => k == 'default' || v == null) && children.default.vSlot == null) {
-            children = children.default.children
-          }
-          this.data.children = children
+        let children = this.data.children as any
+        children =
+          isPlainObject(children) ? { ...children } :
+          isArray(children) ? { default: { children } } :
+          children != null ? { default: [{ is: 'span', children }] } :
+          {}
+        // 
+        if (val == null) delete children[p]
+        else children[p] = isArray(val) ? { children: val } : val == true ? { children: [] } : val
+        // 最小化 children
+        if (Object.values(children).every(e => e == null)) {
+          children = void 0
+        } else if (Object.entries(children).every(([k, v]) => k == 'default' || v == null) && children.default.vSlot == null) {
+          // children = children.default.children
         }
+        this.data.children = children
         return true
       },
     })
   }
 
-  get drag(): WidgetDrag {
-    if (this.vslot == 'default') return this.parent!.drag
+  #drag = computed(() => {
+    if (this.vSlotName == 'default') return this.parent!.drag
     const drag = { ...this.config?.drag, ...this.$data['lcd-drag'] }
     drag.disabled ||= !this.selectable
     return drag
+  })
+  get drag(): WidgetDrag {
+    return this.#drag.value
   }
   get selectable() { return this.$data['lcd-selectable'] !== false }
 
@@ -235,6 +239,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
     const data = deepClone(this.data, (v, k) => k == '_id' ? uid() : v)
     // @ts-ignore
     const node = new this.constructor(data)
+    node.vars = this.#vars
     return node
   }
 
@@ -259,7 +264,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   override doRemove() {
-    this.vslot ? (delete this.parent!.data.children![this.vslot]) : super.doRemove()
+    this.vSlotName ? (delete this.parent!.data.children![this.vSlotName]) : super.doRemove()
   }
 
   override click() {

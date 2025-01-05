@@ -26,6 +26,8 @@ export abstract class Node<T = any> {
 
   get disabled() { return false }
 
+  get detached() { return this.isRoot ? false : this.parent ? this.parent.detached : true }
+
   constructor(data) {
     this.#data = shallowRef(data)
   }

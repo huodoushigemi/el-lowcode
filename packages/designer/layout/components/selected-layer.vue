@@ -2,8 +2,8 @@
   <div class="selected-layer" absolute inset-0 pointer-events-none select-none z-9 @mouseover="designerCtx.hoverId = active!.id">
     <!-- hover rect -->
     <template v-for="(rect, i) in designerCtx.hover?.getRects()">
-      <div v-if="designerCtx.hover != active && !designerCtx.dragged" absolute outline="1 dashed [--vs-focus-b-c] offset--1" op75 :style="calcStyle(rect)" />
-      <div v-if="i == 0" class="absolute -translate-y-full px8 max-w8em text-12 truncate c-white op75 bg-[--vs-focus-b-c]" :style="{ ...calcStyle(rect), width: '', height: '' }">
+      <div v-if="designerCtx.hover != active && !designerCtx.dragged" absolute outline="1 dashed [--vs-focus-b-c] offset--1" op50 :style="calcStyle(rect)" />
+      <div v-if="i == 0" class="absolute -translate-y-full px8 max-w8em text-12 truncate c-white op50 bg-[--vs-focus-b-c]" :style="{ ...calcStyle(rect), width: '', height: '' }">
         {{ designerCtx.hover?.label }}
       </div>
     </template>

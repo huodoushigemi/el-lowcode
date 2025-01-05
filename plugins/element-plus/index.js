@@ -6,7 +6,6 @@ import { ElFormRender } from 'el-form-render'
 
 import DateTime from './date-time'
 import Form from './form'
-import Tooltip from './Tooltip'
 
 export default {
   install(app) {
@@ -15,6 +14,5 @@ export default {
 
     app.use(DateTime)
     app.use(Form)
-    app.use(Tooltip)
   }
 }

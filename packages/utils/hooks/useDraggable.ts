@@ -1,12 +1,12 @@
-import { reactive, shallowReactive, watchEffect } from 'vue'
+import { shallowReactive } from 'vue'
 import { MaybeComputedElementRef, unrefElement, useEventListener } from '@vueuse/core'
 
 interface UseDraggableProps {
   dragstart?(e: DragEvent): void
-  dragover(el: Element, drag: Element): boolean
+  dragover(el: Element, drag: Element, ctx: { path: EventTarget[] }): boolean | Element | void
   children(el: Element): Element[]
   getRect?(el: Element): DOMRect
-  drop(el: Element, drag: Element, related: Element, type?: 'prev' | 'next'): void
+  drop(el: Element, drag: Element, type?: 'prev' | 'next' | 'inner'): void
 }
 
 export function useDraggable(el: MaybeComputedElementRef, props: UseDraggableProps) {
@@ -31,7 +31,12 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
   useEventListener(root, 'dragover', (e: DragEvent) => {
     const container = root()
     const path = e.composedPath()
-    ret.dragoverEl = path.slice(0, path.indexOf(container) + 1).find(e => e instanceof Element ? props.dragover(e as Element, ret.dragEl!) : void 0) as HTMLElement
+    for (let i = 0; i < path.length; i++) {
+      const el = path[i] as Element
+      const v = el.nodeType == 1 ? props.dragover(el, ret.dragEl!, { path }) : void 0
+      ret.dragoverEl = v == true ? el : (v || void 0)
+      if (el == container || ret.dragoverEl) break
+    }
     if (!ret.dragoverEl) {
       Object.assign(cursor.style, { transform: '', width: '', height: ''})
       return
@@ -61,7 +66,7 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
     e.stopPropagation()
     e.preventDefault()
     const type = { T: 'prev', B: 'next', L: 'prev', R: 'next' }[nearest[3]]
-    props.drop(ret.dragoverEl!, ret.dragEl!, nearest[1], type)
+    props.drop(nearest[1] ?? ret.dragoverEl!, ret.dragEl!, type ?? 'inner')
     dragend()
   })
 

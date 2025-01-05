@@ -22,13 +22,14 @@
 
 - [x] 支持 `Form` `H5` `BI` 开发
 - [x] 支持表单导出 `JSON Schema`
-- [ ] CRUD 生成器
+- [x] `CRUD` 生成器
+- [x] 支持指令 `v-for` `v-if` `v-model` `v-slot`
 - [x] 支持任意一处使用 `JavaScript` 编写自定义代码
 - [x] 支持远程插件扩展
 - [x] 提供在线示例模板
 - [x] 生成静态代码
 - [x] 数据源
-- [ ] 支持 `uniapp`、`小程序`
+- [ ] 支持 `uniapp` `小程序`
 - [ ] 多主题切换
 - [ ] Excel 智能解析
 - [x] D2C（AI 图转码）
@@ -36,4 +37,3 @@
 
 
 <!--  `DDL` -->
-<!-- - [x] `vFor` `vIf` `vModels` -->

@@ -23,13 +23,12 @@ export type ProcessedProps = {
 }
 
 type CreateRender = {
-  /** @default 'div' */
   defaultIs?: any
   processProps?: (props: Props, vars: Obj, aaa) => ProcessedProps
 }
 
 /*#__NO_SIDE_EFFECTS__*/
-export function createRender({ defaultIs = 'div', processProps = (props) => props as unknown as ProcessedProps }: CreateRender) {
+export function createRender({ defaultIs, processProps = (props) => props as unknown as ProcessedProps }: CreateRender) {
   const _h = (e, vars) => isPlainObject(e) ? Render(e, vars) : e
 
   const h = (props: Props, vars: Obj) => {
@@ -39,16 +38,30 @@ export function createRender({ defaultIs = 'div', processProps = (props) => prop
     
     return !hasOwn(props, 'vIf') || !!vIf
       ? createVNode(
-          // @ts-ignore
           resolveDynamicComponent(is || defaultIs),
           attrs,
 
-          // children
           isArray(children) ? { default: () => children.map(e => _h(e, vars)) } :
-          isPlainObject(children) ? mapValues(children, v => (scope) => _h(v, v.vSlot ? { ...vars, [v.vSlot]: scope } : vars)) :
+          isPlainObject(children) ? mapValues(children, v => (scope) => Temp(v, vars, scope)) :
           isFunction(children) ? { default: () => { const ret = (children as any)(); return isArray(ret) ? ret.map(e => _h(e, vars)) : ret; } } :
           children
         )
+      : null
+  }
+
+  const Temp = (props: Props, vars: Obj, scope) => {
+    if (props.vSlot) vars = { ...vars, [props.vSlot]: scope }
+
+    const { vIf, children } = processProps(props, vars, {
+      provide: (state) => vars = { ...vars, ...state }
+    })
+
+    return !hasOwn(props, 'vIf') || !!vIf
+      ? (
+        isArray(children) ? children.map(e => _h(e, vars)) :
+        isPlainObject(children) ? Render(children, vars) :
+        children
+      )
       : null
   }
 

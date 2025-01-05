@@ -1,4 +1,7 @@
-import { mergeRects } from '@el-lowcode/utils'
+import { h, resolveComponent, resolveDynamicComponent } from 'vue'
+import { uid, mergeRects } from '@el-lowcode/utils'
+import { unrefElement } from '@vueuse/core'
+import Tooltip from '../Tooltip'
 
 const SIZES = ['large', 'default', 'small']
 
@@ -49,12 +52,12 @@ export default [
     label: 'link',
     category: '基础组件',
     props: [
-      { lp: ['text', 'children'] },
-      { lp: 'href' },
-      { lp: 'target', type: 'radio-group', options: ['_self', '_blank'] },
-      { lp: 'disabled', type: 'switch' },
-      { lp: 'underline', type: 'switch', displayValue: true },
-      { lp: 'type', type: 'select', options: ['default', 'primary', 'success', 'warning', 'danger', 'info'] },
+      str(['text', 'children']),
+      str('href'),
+      radios('target', ['_self', '_blank']),
+      bool('disabled'),
+      bool('underline', true),
+      opts('type', ['default', 'primary', 'success', 'warning', 'danger', 'info']),
     ],
     defaultProps: () => ({
       children: 'link',
@@ -67,11 +70,11 @@ export default [
     is: 'ElText',
     label: 'text',
     category: '基础组件',
+    hidden: true,
     props: [
-      { lp: 'children' },
-      { lp: 'type', type: 'select', options: ['', 'primary', 'success', 'warning', 'danger', 'info'] },
-      { lp: 'size', type: 'radio-group', options: SIZES },
-      { lp: 'tag' },
+      str('children'),
+      opts('type', ['', 'primary', 'success', 'warning', 'danger', 'info']),
+      radios('size', SIZES),
     ],
     defaultProps: () => ({
       children: '文本'
@@ -102,15 +105,15 @@ export default [
     category: '容器',
     drag: { from: 'ElCarouselItem' },
     props: [
-      { lp: 'height' },
-      { lp: 'initial-index', type: 'input-number' },
-      { lp: 'interval', type: 'input-number', displayValue: 3000 },
-      { lp: 'trigger', type: 'radio-group', displayValue: 'hover', options: ['hover', 'click'] },
-      { lp: ['card', 'type'], type: 'switch', el: { activeValue: 'card', inactiveValue: undefined } },
-      { lp: 'loop', type: 'switch', displayValue: true },
-      { lp: 'direction', type: 'radio-group', displayValue: 'horizontal', options: ['horizontal', 'vertical'] },
-      { lp: 'autoplay', type: 'switch', displayValue: true },
-      { lp: 'motion-blur', type: 'switch' },
+      str('height'),
+      num('initial-index'),
+      num('interval', 3000),
+      radios('trigger', [['hover'], 'click']),
+      bool(['card', 'type'], void 0, { el: { activeValue: 'card', inactiveValue: undefined } }),
+      bool('loop'),
+      radios('direction', [['horizontal'], 'vertical']),
+      bool('autoplay', true),
+      bool('motion-blur'),
       { lp: ['items', 'children'], el: { is: 'OptionsInput', props: { V: 'name' }, new: i => ({ is: 'ElCarouselItem', children: [{ is: 'h1', children: `item ${i + 1}` }] }) } }
     ],
     defaultProps: () => ({
@@ -150,8 +153,8 @@ export default [
         { ...ctx.newProps('ElTabPane'), label: 'tab2' },
       ]
     }),
-    devProps: props => ({
-      beforeLeave: props.beforeLeave || (() => true)
+    devProps: (props, children) => ({
+      beforeLeave: props.beforeLeave || (() => true),
     }),
     getDropEl: ({ el }) => {
       return el.querySelector(`.el-tabs__nav`)
@@ -172,6 +175,9 @@ export default [
     defaultProps: () => ({
       children: []
     }),
+    devProps: (_, { parent }) => ({
+      key: ({ ...parent.children }, uid()), // fix: drag bar does not update
+    }),
     getEl({ data, parent$, index }) {
       return parent$.el.querySelector(`#tab-${data.name || index}`)
     },
@@ -183,7 +189,7 @@ export default [
     category: '表单',
     drag: { ancestor: ['ElForm', 'ElForm-c', 'ElForm-lcd'] },
     vSlots: ['label'],
-    props: (props, ctx) => ([
+    props: () => ([
       { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
         str(['标签', 'label']),
         str(['字段', 'prop']),
@@ -196,7 +202,6 @@ export default [
           { lp: ['pattern-hint', 'rules.message'] }
         ]
       }]},
-      // { lp: ['size', 'el.size'], type: 'radio-group', options: ENUM_SIZE },
     ]),
     defaultProps: (ctx) => ({
       is: 'ElFormItemRender',
@@ -281,7 +286,7 @@ export default [
     drag: { from: 'ElOption' },
     vSlots: ['prefix'],
     props: (props) => [
-      { lp: ['v-model', 'vModels.modelValue.0'], script: false },
+      vmodel(),
       grid2([
         bool('disabled'), bool('clearable'),
         bool('allow-create'),
@@ -483,7 +488,10 @@ export default [
     JSONSchemaOutput: (props) => ({
       type: 'string',
       format: 'date',
-    })
+    }),
+    getEl({ ref }) {
+      return unrefElement(ref)?.nextSibling
+    }
   },
 
   {
@@ -505,7 +513,10 @@ export default [
     JSONSchemaOutput: (props) => ({
       type: 'string',
       format: 'time',
-    })
+    }),
+    getEl({ ref }) {
+      return unrefElement(ref)?.nextSibling
+    }
   },
 
   {
@@ -541,7 +552,10 @@ export default [
     }),
     JSONSchemaOutput: (props) => ({
       type: 'string',
-    })
+    }),
+    getEl({ ref }) {
+      return unrefElement(ref)?.nextSibling
+    }
   },
 
   {
@@ -579,8 +593,6 @@ export default [
     drag: { to: 'ElDescriptions' },
     vSlots: ['label'],
     props: [
-      str('label'),
-      // str(['value', 'children']),
       grid2([
         num(['colspan', 'span'], 1), num('rowspan', 1),
         str(['label-class', 'labelClassName']), str('class-name')
@@ -609,7 +621,6 @@ export default [
     vSlots: ['append', 'empty'],
     props: props => [
       str('data', { script: true, displayValue: `{{[]}}` }),
-      // { lp: ['cols', 'children'], el: { is: 'OptionsInput', props: { V: 'prop' }, new: i => ({ is: 'ElTableColumn', label: `title${i + 1}`, prop: `key${i + 1}` }) } },
       grid2([
         bool('border'), bool('stripe'),
       ]),
@@ -634,7 +645,7 @@ export default [
     drag: { to: 'ElTable' },
     vSlots: ['header', 'default'],
     props: [
-      str(['title', 'label']),
+      str('label'),
       str(['key', 'prop']),
       grid2([
         num('width'),
@@ -642,15 +653,19 @@ export default [
       ]),
       radios('type', [['—'], 'index', 'selection']),
       radios('fixed', [['—'], 'left', 'right']),
-      radios('align', ['left', 'center', 'right']),
+      radios('align', [['—'], 'center', 'right']),
       str('formatter', { script: true, displayValue: '{{(row, col, val, i) => val}}' }),
     ],
-    devProps: props => ({
+    devProps: (props, { children }) => ({
+      key: ({ ...children }, uid()), // fix: enable v-slots does not update
       'lcd-label': `cell`,
       labelClassName: `${props.labelClassName || ''} lcd-id:${props._id}`,
     }),
     getEl({ id, parent$ }) {
       return parent$.el.querySelector(`.el-table__header th.lcd-id\\:${id}`)
+    },
+    getScopeIndex(node, vars) {
+      return node.vSlotName == 'default' ? vars[node.data.vSlot]?.$index : 0
     }
     // getRect({ id, parent$ }) {
     //   return [...parent$.el.querySelectorAll(`.lcd-id\\:${id}`)]
@@ -735,7 +750,33 @@ export default [
   },
 
   {
-    is: 'ElTooltip-lcd',
+    is: 'ElDrawer',
+    label: 'drawer',
+    category: '反馈组件',
+    vSlots: ['header', 'footer'],
+    props: [
+      vmodel(),
+      str('size', { displayValue: '30%' }),
+      radios('direction', [['rtl'], 'ltr', 'ttb', 'btt']),
+      bool('with-header', true),
+      bool('destroy-on-close'),
+      bool('close-on-click-modal'),
+    ],
+    defaultProps: () => ({
+      modelValue: true,
+      destroyOnClose: true,
+      children: []
+    }),
+    purify: () => ({
+      modelValue: void 0
+    }),
+    getEl({ ref }) {
+      return unrefElement(ref)?.nextSibling.querySelector('.el-drawer')
+    }
+  },
+
+  {
+    is: 'ElTooltip',
     label: 'tooltip',
     category: '反馈组件',
     vSlots: ['content'],
@@ -746,17 +787,18 @@ export default [
       num('offset'),
     ],
     defaultProps: () => ({
-      content: 'xxx',
-      children: [Text('text')],
-      // todo
-      // children: {
-      //   content: { children: [Text('content')] },
-      //   default: { children: [Text('text')] }
-      // }
+      children: {
+        content: { children: [Text('content')] },
+        default: { children: [Text('text')] }
+      }
     }),
-    purify: () => ({
-      is: 'ElTooltip'
-    })
+    devProps: (props, { children$ }) => ({
+      is: (props, { slots }) => h('div', { style: 'display: contents' }, h(resolveDynamicComponent('ElTooltip'), props, slots)),
+      'lcd-drag': children$.length ? { from: [] } : void 0
+    }),
+    getRect({ el }) {
+      return el ? mergeRects(el.children) : void 0
+    }
   },
 
   {

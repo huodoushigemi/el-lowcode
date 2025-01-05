@@ -56,9 +56,11 @@ export default [
   },
   
   {
-    is: 'Fragment',
+    is: 'undefined',
     hidden: true,
-    props: [],
+    props: [
+      { lp: 'v-slot', script: false, el: { placeholder: ' e.g: scope' } }
+    ],
     devProps: () => ({ 'lcd-selectable': false })
   },
 
