@@ -1,7 +1,7 @@
-import { h, resolveComponent, resolveDynamicComponent } from 'vue'
+import { h, resolveDynamicComponent } from 'vue'
+import { camelize } from '@vue/shared'
 import { uid, mergeRects } from '@el-lowcode/utils'
 import { unrefElement } from '@vueuse/core'
-import Tooltip from '../Tooltip'
 
 const SIZES = ['large', 'default', 'small']
 
@@ -20,7 +20,9 @@ const grid2 = children => ({ is: 'div', class: 'grid grid-cols-2 gap-x-12', chil
 const Text = (s, extra) => ({ is: 'span', children: s, ...extra })
 
 function vmodel(prop) {
-  return { lp: [prop ? `v-model:${prop}` : `v-model`, `vModels.${prop || 'modelValue'}.0`], script: false, el: { spellcheck: false } }
+  const label = prop ? `v-model : ${prop}` : `v-model`
+  prop = prop ? camelize(prop) : 'modelValue'
+  return { lp: [label, `vModels.${prop}.0`], out: (v, model) => (v || (delete model.vModels[prop]), {}), script: false, el: { spellcheck: false } }
 }
 
 export default [
@@ -724,6 +726,39 @@ export default [
     defaultProps: () => ({
       percentage: 50,
       format: '{{v => `${v}%`}}'
+    })
+  },
+  
+
+  {
+    is: 'ElPagination',
+    label: 'pagination',
+    category: '数据展示',
+    props: [
+      vmodel('current-page'),
+      vmodel('page-size'),
+      num('total'),
+      bool('background'),
+      radios('size', SIZES),
+      checkboxs('layout', ['sizes', 'prev', 'pager', 'next', 'jumper', 'total'], { get: v => v.split(','), set: v => v.join(',') }),
+      bool('disabled'),
+    ],
+    defaultProps: () => ({
+      layout: 'prev,pager,next,jumper,total',
+      total: 0
+    })
+  },
+  
+  {
+    is: 'ElSkeleton',
+    label: 'skeleton',
+    category: '数据展示',
+    props: [
+      num('rows', 3),
+      bool('animated')
+    ],
+    defaultProps: () => ({
+      animated: true
     })
   },
 
