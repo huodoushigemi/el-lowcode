@@ -105,7 +105,7 @@ export default [
     is: 'ElCarousel',
     label: 'carousel',
     category: '容器',
-    drag: { from: 'ElCarouselItem' },
+    drag: { from: ['ElCarouselItem'] },
     props: [
       str('height'),
       num('initial-index'),
@@ -131,7 +131,7 @@ export default [
     is: 'ElCarouselItem',
     label: 'carousel-item',
     hidden: true,
-    drag: { to: 'ElCarousel' },
+    drag: { to: ['ElCarousel'] },
     defaultProps: () => ({
       children: []
     })
@@ -141,7 +141,7 @@ export default [
     is: 'ElTabs',
     label: 'tabs',
     category: '容器',
-    drag: { from: 'ElTabPane' },
+    drag: { from: ['ElTabPane'] },
     props: [
       vmodel(),
       radios('type', [['—'], 'card', 'border-card']),
@@ -166,7 +166,7 @@ export default [
     is: 'ElTabPane',
     label: 'tab-pane',
     hidden: true,
-    drag: { to: 'ElTabs' },
+    drag: { to: ['ElTabs'] },
     vSlots: ['label'],
     props: [
       str('label'),
@@ -285,7 +285,7 @@ export default [
     is: 'ElSelect',
     label: 'select',
     category: '数据输入',
-    drag: { from: 'ElOption' },
+    drag: { from: ['ElOption'] },
     vSlots: ['prefix'],
     props: (props) => [
       vmodel(),
@@ -321,7 +321,7 @@ export default [
     is: 'ElOption',
     label: 'option',
     category: '数据输入',
-    drag: { to: 'ElSelect', disabled: true },
+    drag: { to: ['ElSelect'], disabled: true },
     hidden: true,
     props: () => [
       str('label'),
@@ -387,7 +387,7 @@ export default [
     is: 'ElCheckbox',
     label: 'checkbox',
     category: '数据输入',
-    drag: { to: 'ElCheckboxGroup' },
+    drag: { to: ['ElCheckboxGroup'] },
     hidden: true,
     props: [str('label'), str('value')],
   },
@@ -420,7 +420,7 @@ export default [
     is: 'ElRadio',
     label: 'radio',
     category: '数据输入',
-    drag: { to: 'ElRadioGroup' },
+    drag: { to: ['ElRadioGroup'] },
     hidden: true,
     props: [str('label'), str('value')],
   },
@@ -564,7 +564,7 @@ export default [
     is: 'ElDescriptions',
     label: 'descriptions',
     category: '数据展示',
-    drag: { from: 'ElDescriptionsItem' },
+    drag: { from: ['ElDescriptionsItem'] },
     vSlots: ['title', 'extra'],
     props: [
       bool('border'),
@@ -592,7 +592,7 @@ export default [
     is: 'ElDescriptionsItem',
     label: 'item',
     hidden: true,
-    drag: { to: 'ElDescriptions' },
+    drag: { to: ['ElDescriptions'] },
     vSlots: ['label'],
     props: [
       grid2([
@@ -619,7 +619,7 @@ export default [
     is: 'ElTable',
     label: 'table',
     category: '数据展示',
-    drag: { from: 'ElTableColumn' },
+    drag: { from: ['ElTableColumn'] },
     vSlots: ['append', 'empty'],
     props: props => [
       str('data', { script: true, displayValue: `{{[]}}` }),
@@ -644,7 +644,7 @@ export default [
     label: 'table-column',
     category: '数据展示',
     hidden: true,
-    drag: { to: 'ElTable' },
+    drag: { to: ['ElTable'] },
     vSlots: ['header', 'default'],
     props: [
       str('label'),
@@ -788,6 +788,7 @@ export default [
     is: 'ElDrawer',
     label: 'drawer',
     category: '反馈组件',
+    drag: { to: ['Page', 'ElDrawer', 'ElDialog'] },
     vSlots: ['header', 'footer'],
     props: [
       vmodel(),

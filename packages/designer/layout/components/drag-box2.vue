@@ -35,7 +35,7 @@ const Render = createRender({
     if (!_props.is && _props.vFor) return processProps(_props, vars)
     if (vars.__not_index_0_in_for) return processProps(_props, vars)
     
-    if (_props.vFor && vars[_props.vFor[2] || 'index'] > 0) {
+    if (_props.vFor && vars[_props.vFor[2] || 'index'] != 0) {
       provide({ __not_index_0_in_for: true })
       return mergeProps(processProps(_props, vars), { style: 'pointer-events: none;' })
     }

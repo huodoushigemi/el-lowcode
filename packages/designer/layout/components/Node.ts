@@ -1,6 +1,6 @@
-import { computed, Ref, shallowRef } from 'vue'
+import { computed, ComputedRef, Ref, shallowRef } from 'vue'
 import { remove } from '@vue/shared'
-import { treeUtils } from '@el-lowcode/utils'
+import { keyBy, treeUtils } from '@el-lowcode/utils'
 
 export abstract class Node<T = any> {
   #data: Ref<T>
@@ -12,7 +12,7 @@ export abstract class Node<T = any> {
   abstract get data_children(): any[] | undefined
   get icon(): any { return void 0 }
 
-  get root() { let node = this; while(node.parent) node = node.parent; return node }
+  get root() { let node = this; while (node.parent) node = node.parent; return node }
   get isRoot() { return !this.parent }
 
   #parent = shallowRef<typeof this>()
@@ -67,6 +67,15 @@ export abstract class Node<T = any> {
 
   get descendants() {
     return treeUtils.flat(this.children || [])
+  }
+
+  #keyed?: ComputedRef<Record<string, this>>
+  get keyed() {
+    return (this.root.#keyed ??= computed(() => keyBy(treeUtils.flat([this.root]), 'id'))).value
+  }
+
+  find(data: T) {
+    return this.root.#wm!.get(data)
   }
 
   remove() {

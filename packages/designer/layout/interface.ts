@@ -145,12 +145,9 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get $data() { return this.#$data.value as BoxProps }
 
   processProps(vars?: Record<string, any>) {
-    let { children, ...props } = this.data
-    // 移除值为 undefuned 的属性
-    props = JSON.parse(JSON.stringify(props))
-    props.children = children
+    let props = this.data
     props = vars ? processProps(props, vars) : props
-    if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(this.data, this)) as any
+    if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(props, this)) as any
     return props
   }
 
