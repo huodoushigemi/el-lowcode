@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue'
+import { PropType, onBeforeUnmount, ref, watch } from 'vue'
 import tippy, { Props } from 'tippy.js'
 
 const props = defineProps({
@@ -19,7 +19,7 @@ let ins
 
 watch(() => [props.target, el.value], ([target, content]) => {
   if (!content) return
-  target = props.target ?? content.parentElement
+  target ??= content.parentElement
   
   ins?.destroy()
   ins = tippy(target, {

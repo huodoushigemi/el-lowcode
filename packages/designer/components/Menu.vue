@@ -8,7 +8,8 @@ const ROOT = Symbol() as InjectionKey<MenuNode>
 const useRoot = () => inject(ROOT)
 
 interface State {
-  hover?: MenuNode
+  hover?: MenuNode,
+  tippy?: object
 }
 
 abstract class MenuNode extends Node {
@@ -47,9 +48,10 @@ const LI = defineComponent({
     return () => (
       <div class={['vs-menu-li', node.hovered && 'focused']} onMouseenter={e => node.onHover(e)}>
         { node.label }
+        { slots.default && <div class='flex aic mla'><i-mdi-chevron-right class='ml20' /></div> }
         { slots.default && (
-          <Tippy class='vs-menu min-w100' extra={{ interactive: true, offset: [0, 4], delay: [100, 300], duration: 0, placement: 'right-start' }}>
-            { slots.default() }
+          <Tippy class='vs-menu' extra={{ interactive: true, offset: [0, 4], delay: [100, 300], duration: 0, placement: 'right-start', ...node.state.tippy }}>
+            { renderSlot(slots, 'default', void 0, () => [<div class='px12 op20'>Empty</div>]) }
           </Tippy>
         ) }
       </div>
@@ -61,17 +63,19 @@ const Render = createRender({ defaultIs: LI })
 </script>
 
 <script setup lang="tsx">
-import { computed, defineComponent, inject, InjectionKey, provide, reactive, shallowReactive } from 'vue'
+import { computed, defineComponent, inject, InjectionKey, provide, reactive, renderSlot, shallowReactive, shallowRef, toRef, ToRefs } from 'vue'
 import { createRender } from '@el-lowcode/render'
 import { Node } from '../layout/components/Node'
 import Tippy from '../layout/components/tippy.vue'
 
 const props = defineProps({
-  items: Array
+  items: Array,
+  tippy: Object,
 })
 
-const state = shallowReactive<State>({
-  hover: void 0
+const state = reactive<ToRefs<State>>({
+  hover: shallowRef(),
+  tippy: toRef(() => props.tippy)
 }) as State
 
 class MN extends MenuNode {

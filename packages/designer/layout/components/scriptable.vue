@@ -1,5 +1,5 @@
 <template>
-  <el-form-item-render class="el-form-item--label-truncate" v-bind="{ ...$props, ...$attrs }">
+  <el-form-item-render class="el-form-item--label-truncate" :data-prop="prop" v-bind="{ ...$props, ...$attrs }">
 
     <template v-if="_script" #label="{ label }">
       <template v-if="label">

@@ -4,7 +4,7 @@
     <i-mdi:cursor-move v-if="model && designerCtx.root != model" bg-hover w28 h28 p4 mr8 :bg="node.isAbs ? '#404040' : ''" @click="node.isAbs = true" />
     <i-material-symbols-light:code bg-hover w28 h28 p4 @click="visible = true" />
   </div>
-  <el-tabs v-if="config" class="tabs">
+  <el-tabs v-if="config" class="tabs" @mouseover="onMouseover">
     <el-tab-pane label="attrs" :key="node.id">
       <el-form-render :model="model" label-width="auto" size="small" label-position="top" @submit.prevent>
         <RenderItems :items="_items" />
@@ -24,6 +24,10 @@
     </el-tab-pane>
   </el-tabs>
 
+  <Tippy :target="itemEl" :extra="{ interactive: true, offset: [0, 4], delay: [100, 300], duration: 0, placement: 'left-start', appendTo: body }">
+    <Menu :items="flat(node.vars)" :tippy="{ delay: 100, placement: 'left-start' }" />
+  </Tippy>
+
   <MonacoEditorDialog
     v-model="editModel" language="json"
     v-model:visible="visible" :dialog="{ is: 'el-drawer', modalClass: 'props', title: config?.label, size: 500 }"
@@ -34,7 +38,7 @@
 import { computed, inject, ref } from 'vue'
 import { isArray, parseStringStyle, stringifyStyle, isOn, isPlainObject } from '@vue/shared'
 import { createRender } from '@el-lowcode/render'
-import { mapValues, omit, pick, unFn } from '@el-lowcode/utils'
+import { findret, mapValues, omit, pick, unFn } from '@el-lowcode/utils'
 import { ElFormRender, normalizeItem } from 'el-form-render'
 import { designerCtxKey } from './interface'
 import Scriptable from './components/scriptable.vue'
@@ -44,6 +48,7 @@ import BoxModel from './components/style/BoxModel.vue'
 import StyleFlexLayout from './components/style/StyleFlexLayout.vue'
 import StyleText from './components/style/StyleText.vue'
 import StyleLayout from './components/style/StyleLayout.vue'
+import Tippy from './components/tippy.vue'
 
 const visible = ref(false)
 const internalProps = ['_id', 'is', 'children']
@@ -137,6 +142,25 @@ const commons = computed(() => [
   { lp: ['onMounted','onVnodeMounted'] },
   { lp: ['onBeforeMount', 'onVnodeBeforeMount'] },
 ])
+
+
+function flat(obj, prefix = [], tree = []) {
+  console.log({...obj});
+  
+  for (const k in obj) {
+    const e = { label: k, value: `{{${[...prefix, k].join('.')}}}` }
+    tree.push(e)
+    isPlainObject(obj[k]) && flat(obj[k], [...prefix, k], e.children = [])
+  }
+  return tree
+}
+
+const itemEl = ref()
+function onMouseover(e) {
+  // itemEl.value = e.composedPath().find(e => e.getAttribute?.('data-prop'))
+  itemEl.value = document.querySelector('[data-prop]')
+  console.log(itemEl.value);
+}
 </script>
 
 <style scoped lang="scss">
