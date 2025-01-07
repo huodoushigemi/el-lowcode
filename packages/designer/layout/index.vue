@@ -57,7 +57,7 @@
 
       
       <!-- Setting -->
-      <aside w256 b-l="1px solid [--el-border-color]" overflow-overlay>
+      <aside w256 b-l="1px solid [--el-border-color]" overflow-overlay @contextmenu.prevent>
         <setting-panel />
       </aside>
 

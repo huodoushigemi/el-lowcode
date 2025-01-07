@@ -4,7 +4,7 @@
     <i-mdi:cursor-move v-if="model && designerCtx.root != model" bg-hover w28 h28 p4 mr8 :bg="node.isAbs ? '#404040' : ''" @click="node.isAbs = true" />
     <i-material-symbols-light:code bg-hover w28 h28 p4 @click="visible = true" />
   </div>
-  <el-tabs v-if="config" class="tabs" @mouseover="onMouseover">
+  <el-tabs v-if="config" class="tabs" @contextmenu="onContextmenu">
     <el-tab-pane label="attrs" :key="node.id">
       <el-form-render :model="model" label-width="auto" size="small" label-position="top" @submit.prevent>
         <RenderItems :items="_items" />
@@ -24,9 +24,9 @@
     </el-tab-pane>
   </el-tabs>
 
-  <Tippy :target="itemEl" :extra="{ interactive: true, offset: [0, 4], delay: [100, 300], duration: 0, placement: 'left-start', appendTo: body }">
-    <Menu :items="flat(node.vars)" :tippy="{ delay: 100, placement: 'left-start' }" />
-  </Tippy>
+  <div v-if="vis" ref="menuRef">
+    <Menu :items="flat(node.vars)" :tippy="{ delay: 100, placement: 'left-start', appendTo: body }" />
+  </div>
 
   <MonacoEditorDialog
     v-model="editModel" language="json"
@@ -35,8 +35,10 @@
 </template>
 
 <script setup>
-import { computed, inject, ref } from 'vue'
+import tippy from 'tippy.js'
+import { computed, inject, nextTick, onMounted, ref } from 'vue'
 import { isArray, parseStringStyle, stringifyStyle, isOn, isPlainObject } from '@vue/shared'
+import { unrefElement } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
 import { findret, mapValues, omit, pick, unFn } from '@el-lowcode/utils'
 import { ElFormRender, normalizeItem } from 'el-form-render'
@@ -48,7 +50,7 @@ import BoxModel from './components/style/BoxModel.vue'
 import StyleFlexLayout from './components/style/StyleFlexLayout.vue'
 import StyleText from './components/style/StyleText.vue'
 import StyleLayout from './components/style/StyleLayout.vue'
-import Tippy from './components/tippy.vue'
+import Menu from '../components/Menu.vue'
 
 const visible = ref(false)
 const internalProps = ['_id', 'is', 'children']
@@ -155,11 +157,30 @@ function flat(obj, prefix = [], tree = []) {
   return tree
 }
 
-const itemEl = ref()
-function onMouseover(e) {
-  // itemEl.value = e.composedPath().find(e => e.getAttribute?.('data-prop'))
-  itemEl.value = document.querySelector('[data-prop]')
-  console.log(itemEl.value);
+const menuRef = ref(), vis = ref(false)
+let ins
+async function onContextmenu(e) {
+  e.preventDefault()
+  ins?.destroy()
+  /**@type {Element} */
+  const refer = e.composedPath().find(e => e.getAttribute?.('data-prop'))
+  if (!refer) return
+  vis.value = true
+  await nextTick()
+  ins = tippy(refer, {
+    /**@type {Element} */
+    content: unrefElement(menuRef),
+    interactive: true,
+    offset: [0, 1],
+    delay: [100, 300],
+    duration: 0,
+    placement: 'left-start',
+    appendTo: document.body,
+    trigger: 'manual',
+    onHide: () => (vis.value = false)
+    // onClickOutside: () => ins.hide(),
+  })
+  ins.show()
 }
 </script>
 

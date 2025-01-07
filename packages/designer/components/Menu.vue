@@ -50,7 +50,7 @@ const LI = defineComponent({
         { node.label }
         { slots.default && <div class='flex aic mla'><i-mdi-chevron-right class='ml20' /></div> }
         { slots.default && (
-          <Tippy class='vs-menu' extra={{ interactive: true, offset: [0, 4], delay: [100, 300], duration: 0, placement: 'right-start', ...node.state.tippy }}>
+          <Tippy class='vs-menu' extra={{ interactive: true, offset: [-6, 5], delay: [100, 300], duration: 0, placement: 'right-start', ...node.state.tippy }}>
             { renderSlot(slots, 'default', void 0, () => [<div class='px12 op20'>Empty</div>]) }
           </Tippy>
         ) }

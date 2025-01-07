@@ -65,7 +65,7 @@
     "tippy.js": "^6.3.7",
     "tiptap-extension-resize-image": "^1.1.9",
     "uuid": "^9.0.1",
-    "vue": "^3.3.4",
+    "vue": "^3.5.13",
     "vue-draggable-plus": "^0.2.6",
     "vue-echarts": "^7.0.3",
     "vue-request": "^2.0.4",
