@@ -36,11 +36,11 @@
 
 <script setup>
 import tippy from 'tippy.js'
-import { computed, inject, nextTick, reactive, ref, toRaw, unref } from 'vue'
-import { isArray, parseStringStyle, stringifyStyle, isOn, isPlainObject } from '@vue/shared'
+import { computed, inject, nextTick, reactive, ref, toRaw } from 'vue'
+import { parseStringStyle, stringifyStyle, isOn, isPlainObject } from '@vue/shared'
 import { unrefElement } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
-import { findret, mapValues, omit, pick, unFn } from '@el-lowcode/utils'
+import { mapValues, omit, pick, unFn } from '@el-lowcode/utils'
 import { ElFormRender, normalizeItem } from 'el-form-render'
 import { designerCtxKey } from './interface'
 import Scriptable from './components/scriptable.vue'
@@ -150,7 +150,7 @@ function flat(obj, prefix = [], wm = new WeakMap, ret = []) {
   if (wm.has(obj)) return wm.get(obj)
   wm.set(toRaw(obj), ret)
   for (const k in obj) {
-    const e = { label: k, value: `{{${[...prefix, k].join('.')}}}` }
+    const e = { label: k, value: `{{${[...prefix, k].join('.')}}}`, onClick: () => onSelect(e) }
     ret.push(e)
     isPlainObject(obj[k]) && (e.children = flat(obj[k], [...prefix, k], wm))
   }
@@ -158,12 +158,12 @@ function flat(obj, prefix = [], wm = new WeakMap, ret = []) {
 }
 
 const menuRef = ref(), vis = ref(false)
-let ins
+let ins, refer
 async function onContextmenu(e) {
   e.preventDefault()
   ins?.destroy()
   /**@type {Element} */
-  const refer = e.composedPath().find(e => e.getAttribute?.('data-prop'))
+  refer = e.composedPath().find(e => e.getAttribute?.('data-prop'))
   if (!refer) return
   vis.value = true
   await nextTick()
@@ -177,10 +177,15 @@ async function onContextmenu(e) {
     placement: 'left-start',
     appendTo: document.body,
     trigger: 'manual',
-    onHide: () => (vis.value = false)
-    // onClickOutside: () => ins.hide(),
+    onHide: () => (vis.value = false, refer = void 0)
   })
   ins.show()
+}
+
+function onSelect(e) {
+  const t = refer.__transformer
+  t.set(t.get() == e.value ? void 0 : e.value)
+  ins.hide()
 }
 </script>
 

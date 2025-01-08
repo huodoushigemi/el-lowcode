@@ -67,7 +67,8 @@ export function createFormRender<F extends Obj, FI extends Obj>({ Form, formName
           ...objectPick(props, formItemKs),
           [_fields.label]: _label(props),
           [_fields.prop]: _prop(props),
-          [_fields.rules]: _rules(props, model)
+          [_fields.rules]: _rules(props, model),
+          '.__transformer': transformer
         }
         const elProps = mergeProps(
           {
