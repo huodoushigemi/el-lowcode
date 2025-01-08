@@ -645,13 +645,16 @@ export default [
     category: '数据展示',
     hidden: true,
     drag: { to: ['ElTable'] },
-    vSlots: ['header', 'default'],
+    vSlots: {
+      header: { vSlot: '{ column, $index }' },
+      default: { vSlot: '{ row, column, $index }' }
+    },
     props: [
       str('label'),
       str(['key', 'prop']),
       grid2([
         num('width'),
-        bool(['overflow-tooltip', 'showOverflowTooltip']),
+        bool(['tooltip', 'showOverflowTooltip']),
       ]),
       radios('type', [['—'], 'index', 'selection']),
       radios('fixed', [['—'], 'left', 'right']),
@@ -667,7 +670,7 @@ export default [
       return parent$.el.querySelector(`.el-table__header th.lcd-id\\:${id}`)
     },
     getScopeIndex(node, vars) {
-      return node.vSlotName == 'default' ? vars[node.data.vSlot]?.$index : 0
+      return node.vSlotName == 'default' ? (node.data.vSlot?.[0] == '{' ? vars.$index : vars[node.data.vSlot].$index) : 0
     }
     // getRect({ id, parent$ }) {
     //   return [...parent$.el.querySelectorAll(`.lcd-id\\:${id}`)]

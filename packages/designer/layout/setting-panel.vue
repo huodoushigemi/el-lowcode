@@ -25,7 +25,7 @@
   </el-tabs>
 
   <div v-if="vis" ref="menuRef">
-    <Menu :items="flat(node.vars)" :tippy="{ delay: 100, placement: 'left-start', appendTo: body }" />
+    <Menu :items="flat(reactive(node.vars))" :tippy="{ delay: 100, placement: 'left-start', appendTo: body }" />
   </div>
 
   <MonacoEditorDialog
@@ -36,7 +36,7 @@
 
 <script setup>
 import tippy from 'tippy.js'
-import { computed, inject, nextTick, onMounted, ref } from 'vue'
+import { computed, inject, nextTick, reactive, ref, toRaw, unref } from 'vue'
 import { isArray, parseStringStyle, stringifyStyle, isOn, isPlainObject } from '@vue/shared'
 import { unrefElement } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
@@ -146,15 +146,15 @@ const commons = computed(() => [
 ])
 
 
-function flat(obj, prefix = [], tree = []) {
-  console.log({...obj});
-  
+function flat(obj, prefix = [], wm = new WeakMap, ret = []) {
+  if (wm.has(obj)) return wm.get(obj)
+  wm.set(toRaw(obj), ret)
   for (const k in obj) {
     const e = { label: k, value: `{{${[...prefix, k].join('.')}}}` }
-    tree.push(e)
-    isPlainObject(obj[k]) && flat(obj[k], [...prefix, k], e.children = [])
+    ret.push(e)
+    isPlainObject(obj[k]) && (e.children = flat(obj[k], [...prefix, k], wm))
   }
-  return tree
+  return ret
 }
 
 const menuRef = ref(), vis = ref(false)

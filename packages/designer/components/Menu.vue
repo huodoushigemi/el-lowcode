@@ -1,5 +1,5 @@
 <template>
-  <OL :items="items" />
+  <OL :items="items" @contextmenu.prevent />
 </template>
 
 <script lang="tsx">

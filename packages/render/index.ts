@@ -50,7 +50,14 @@ export function createRender({ defaultIs, processProps = (props) => props as unk
   }
 
   const Temp = (props: Props, vars: Obj, scope) => {
-    if (props.vSlot) vars = { ...vars, [props.vSlot]: scope }
+    if (props.vSlot) {
+      if (props.vSlot[0] == '{') {
+        vars = { ...vars }
+        for (const k of props.vSlot.slice(1, -1).split(',')) vars[k.trim()] = scope[k.trim()]
+      } else {
+        vars = { ...vars, [props.vSlot]: scope }
+      }
+    }
 
     const { vIf, children } = processProps(props, vars, {
       provide: (state) => vars = { ...vars, ...state }
