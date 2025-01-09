@@ -25,7 +25,7 @@ abstract class MenuNode extends Node {
 
   onHover(e: MouseEvent) {
     e.stopPropagation()
-    this.state.hover = this
+    this.state.hover = markRaw(this)
   }
 }
 
@@ -44,7 +44,7 @@ const UL = defineComponent({
     const subItem = computedEager(() => root.state.hover?.path.find(e => node.children?.includes(e)))
     const vis = ref(false), subMenuRef = ref()
 
-    watchPostEffect(async (cb) => {
+    watchEffect(async (cb) => {
       const el = unrefElement(subItem.value?.ref)
       if (!el) return
       if (!subItem.value?.data_children) return
@@ -53,13 +53,16 @@ const UL = defineComponent({
       const ins = tippy(document.body, { interactive: true, content: unrefElement(subMenuRef.value), offset: [-6, 5], delay: [100, 300], duration: 0, placement: 'right-start', trigger: 'manual',  appendTo: document.body, ...node.state.tippy })
       ins.setProps({ getReferenceClientRect: () => el.getBoundingClientRect() })
       ins.show()
-      cb(() => ins.destroy())
+      cb(() => {
+        ins.destroy()
+        vis.value = false
+      })
     })
 
     return () => (
       <div class='vs-menu'>
         { renderSlot(slots, 'default', void 0, () => [<div class='px12 op20'>Empty</div>]) }
-        { vis.value && <UL ref={subMenuRef}>{ subItem.value?.data_children?.map(e => Render(e)) }</UL> }
+        { vis.value && <UL ref={subMenuRef} key={subItem.value!.id} value={subItem.value!.id}>{ subItem.value?.data_children?.map(e => Render(e)) }</UL> }
       </div>
     )
   }
@@ -84,7 +87,7 @@ const Render = createRender({ defaultIs: LI })
 </script>
 
 <script setup lang="tsx">
-import { computed, defineComponent, inject, InjectionKey, nextTick, provide, reactive, ref, renderSlot, shallowReactive, shallowRef, toRef, ToRefs, watchPostEffect } from 'vue'
+import { computed, defineComponent, inject, InjectionKey, markRaw, nextTick, provide, reactive, ref, renderSlot, shallowReactive, shallowRef, toRef, ToRefs, watchEffect, watchPostEffect } from 'vue'
 import { createRender } from '@el-lowcode/render'
 import { Node } from '../layout/components/Node'
 // import Tippy from '../layout/components/tippy.vue'
@@ -97,9 +100,14 @@ const props = defineProps({
 })
 
 const state = reactive<ToRefs<State>>({
-  hover: shallowRef(),
+  hover: void 0,
   tippy: toRef(() => props.tippy)
 }) as State
+
+watchEffect(() => {
+  // console.log(state.hover?.path.map(e => e.id));
+  
+})
 
 class MN extends MenuNode {
   // state = state
