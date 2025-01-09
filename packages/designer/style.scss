@@ -160,7 +160,10 @@
 }
 
 .vs-menu-li {
-  @apply flex aic mx5 px6 h26 bg-[--vs-menu-li-bg] text-nowrap hover:bg-[--vs-menu-li-hover-bg] cursor-pointer;
+  @apply flex aic mx5 px6 h26 bg-[--vs-menu-li-bg] text-nowrap cursor-pointer;
+  &.hover, &:hover {
+    @apply bg-[--vs-menu-li-hover-bg]
+  }
   &[disabled=true] {
     @apply op40 pointer-events-none;
   }
@@ -253,4 +256,9 @@ hr:last-child {
   height: 8px !important;
   margin-top: -4px !important;
   margin-left: -4px !important;
+}
+
+// tippy
+.tippy-box[data-animation=scale][data-placement=left-start] {
+  transform-origin: top right !important;
 }

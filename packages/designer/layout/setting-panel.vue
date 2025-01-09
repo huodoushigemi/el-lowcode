@@ -36,6 +36,8 @@
 
 <script setup>
 import tippy from 'tippy.js'
+// import 'tippy.js/dist/tippy.css'
+import 'tippy.js/animations/scale.css'
 import { computed, inject, nextTick, reactive, ref, toRaw } from 'vue'
 import { parseStringStyle, stringifyStyle, isOn, isPlainObject } from '@vue/shared'
 import { unrefElement } from '@vueuse/core'
@@ -173,11 +175,11 @@ async function onContextmenu(e) {
     interactive: true,
     offset: [0, 1],
     delay: [100, 300],
-    duration: 0,
+    animation: 'scale',
     placement: 'left-start',
     appendTo: document.body,
     trigger: 'manual',
-    onHide: () => (vis.value = false, refer = void 0)
+    onHidden: () => (vis.value = false, refer = void 0)
   })
   ins.show()
 }

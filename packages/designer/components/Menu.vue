@@ -18,6 +18,7 @@ abstract class MenuNode extends Node {
   get data_children() { return this.data.children }
 
   abstract state: State
+  ref = ref<HTMLElement>()
 
   #hovered = computed(() => this.state.hover?.path.includes(this))
   get hovered() { return this.#hovered.value }
@@ -31,9 +32,34 @@ abstract class MenuNode extends Node {
 const OL = defineComponent({
   props: ['items'],
   setup(props) {
+    return () => <UL>{ props.items?.map(e => Render(e)) }</UL>
+  }
+})
+
+const UL = defineComponent({
+  props: ['label', 'value'],
+  setup(props, { slots }) {
+    const root = useRoot()!
+    const node = root.keyed[props.value]
+    const subItem = computedEager(() => root.state.hover?.path.find(e => node.children?.includes(e)))
+    const vis = ref(false), subMenuRef = ref()
+
+    watchPostEffect(async (cb) => {
+      const el = unrefElement(subItem.value?.ref)
+      if (!el) return
+      if (!subItem.value?.data_children) return
+      vis.value = true
+      await nextTick()
+      const ins = tippy(document.body, { interactive: true, content: unrefElement(subMenuRef.value), offset: [-6, 5], delay: [100, 300], duration: 0, placement: 'right-start', trigger: 'manual',  appendTo: document.body, ...node.state.tippy })
+      ins.setProps({ getReferenceClientRect: () => el.getBoundingClientRect() })
+      ins.show()
+      cb(() => ins.destroy())
+    })
+
     return () => (
       <div class='vs-menu'>
-        { props.items?.map(e => Render(e)) }
+        { renderSlot(slots, 'default', void 0, () => [<div class='px12 op20'>Empty</div>]) }
+        { vis.value && <UL ref={subMenuRef}>{ subItem.value?.data_children?.map(e => Render(e)) }</UL> }
       </div>
     )
   }
@@ -46,14 +72,9 @@ const LI = defineComponent({
     const node = root.keyed[props.value]
     
     return () => (
-      <div class={['vs-menu-li', node.hovered && 'focused']} onMouseenter={e => node.onHover(e)}>
+      <div class={['vs-menu-li', node.hovered && 'hover']} ref={node.ref} onMouseenter={e => node.onHover(e)}>
         { node.label }
         { slots.default && <div class='flex aic mla'><i-mdi-chevron-right class='ml20' /></div> }
-        { slots.default && (
-          <Tippy class='vs-menu' extra={{ interactive: true, offset: [-6, 5], delay: [100, 300], duration: 0, placement: 'right-start', ...node.state.tippy }}>
-            { renderSlot(slots, 'default', void 0, () => [<div class='px12 op20'>Empty</div>]) }
-          </Tippy>
-        ) }
       </div>
     )
   }
@@ -63,10 +84,12 @@ const Render = createRender({ defaultIs: LI })
 </script>
 
 <script setup lang="tsx">
-import { computed, defineComponent, inject, InjectionKey, provide, reactive, renderSlot, shallowReactive, shallowRef, toRef, ToRefs } from 'vue'
+import { computed, defineComponent, inject, InjectionKey, nextTick, provide, reactive, ref, renderSlot, shallowReactive, shallowRef, toRef, ToRefs, watchPostEffect } from 'vue'
 import { createRender } from '@el-lowcode/render'
 import { Node } from '../layout/components/Node'
-import Tippy from '../layout/components/tippy.vue'
+// import Tippy from '../layout/components/tippy.vue'
+import tippy from 'tippy.js'
+import { computedEager, unrefElement } from '@vueuse/core'
 
 const props = defineProps({
   items: Array,
