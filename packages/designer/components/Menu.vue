@@ -41,7 +41,7 @@ const UL = defineComponent({
   setup(props, { slots }) {
     const root = useRoot()!
     const node = root.keyed[props.value]
-    const subItem = computedEager(() => root.state.hover?.path.find(e => node.children?.includes(e)))
+    const subItem = debouncedRef(computedEager(() => root.state.hover?.path.find(e => node.children?.includes(e))), 200)
     const vis = ref(false), subMenuRef = ref()
 
     watchEffect(async (cb) => {
@@ -88,11 +88,10 @@ const Render = createRender({ defaultIs: LI })
 
 <script setup lang="tsx">
 import { computed, defineComponent, inject, InjectionKey, markRaw, nextTick, provide, reactive, ref, renderSlot, shallowReactive, shallowRef, toRef, ToRefs, watchEffect, watchPostEffect } from 'vue'
+import { computedEager, unrefElement, debouncedRef } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
-import { Node } from '../layout/components/Node'
-// import Tippy from '../layout/components/tippy.vue'
 import tippy from 'tippy.js'
-import { computedEager, unrefElement } from '@vueuse/core'
+import { Node } from '../layout/components/Node'
 
 const props = defineProps({
   items: Array,
@@ -103,11 +102,6 @@ const state = reactive<ToRefs<State>>({
   hover: void 0,
   tippy: toRef(() => props.tippy)
 }) as State
-
-watchEffect(() => {
-  // console.log(state.hover?.path.map(e => e.id));
-  
-})
 
 class MN extends MenuNode {
   // state = state

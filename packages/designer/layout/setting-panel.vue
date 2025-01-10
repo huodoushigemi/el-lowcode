@@ -152,7 +152,7 @@ function flat(obj, prefix = [], wm = new WeakMap, ret = []) {
   if (wm.has(obj)) return wm.get(obj)
   wm.set(toRaw(obj), ret)
   for (const k in obj) {
-    const e = { label: k, value: `{{${[...prefix, k].join('.')}}}`, onClick: () => onSelect(e) }
+    const e = { label: k, value: `{{${[...prefix, k].join('?.')}}}`, onClick: () => onSelect(e) }
     ret.push(e)
     isPlainObject(obj[k]) && (e.children = flat(obj[k], [...prefix, k], wm))
   }

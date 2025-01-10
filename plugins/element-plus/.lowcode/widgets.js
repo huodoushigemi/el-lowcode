@@ -186,6 +186,34 @@ export default [
   },
 
   {
+    is: 'ElCollapse',
+    label: 'collapse',
+    category: '容器',
+    drag: { from: ['ElCollapseItem'] },
+    props: [
+      vmodel(),
+      bool('accordion'),
+    ],
+    defaultProps: () => ({
+      children: [
+        { is: 'ElCollapseItem', children: { title: { children: [Text('Consistency')] }, default: { children: [Text('Consistent with real life: in line with the process and logic of real life, and comply with languages and habits that the users are used to;')] } } },
+        { is: 'ElCollapseItem', children: { title: { children: [Text('Feedback')] }, default: { children: [Text('Operation feedback: enable the users to clearly perceive their operations by style updates and interactive effects;')] } } },
+        { is: 'ElCollapseItem', children: { title: { children: [Text('Efficiency')] }, default: { children: [Text('Simplify the process: keep operating process simple and intuitive;')] } } },
+      ]
+    })
+  },
+  {
+    is: 'ElCollapseItem',
+    label: 'collapse-item',
+    hidden: true,
+    drag: { to: ['ElCollapse'] },
+    vSlots: ['title', 'icon'],
+    props: [
+      bool('disabled')
+    ],
+  },
+
+  {
     is: 'ElFormItemRender',
     label: 'field',
     category: '表单',
@@ -763,6 +791,70 @@ export default [
     defaultProps: () => ({
       animated: true
     })
+  },
+
+  {
+    is: 'ElSteps',
+    label: 'steps',
+    category: '数据展示',
+    drag: { from: ['ElStep'] },
+    props: [
+      num('active', void 0, { el: { min: 0 } }),
+      // num('space', void 0, { el: { min: 0 } }),
+      radios('direction', [['horizontal'], 'vertical']),
+      opts('process-status', ['wait', ['process'], 'finish', 'error', 'success']),
+      bool('align-center'),
+      bool('simple')
+    ],
+    defaultProps: () => ({
+      children: [
+        { is: 'ElStep', children: { title: { children: [Text('Step 1')] } } },
+        { is: 'ElStep', children: { title: { children: [Text('Step 2')] } } },
+        { is: 'ElStep', children: { title: { children: [Text('Step 3')] } } },
+      ]
+    })
+  },
+  {
+    is: 'ElStep',
+    label: 'step',
+    hidden: true,
+    drag: { to: ['ElSteps'] },
+    vSlots: ['icon', 'title', 'description'],
+    props: []
+  },
+
+  {
+    is: 'ElTimeline',
+    label: 'timeline',
+    category: '数据展示',
+    drag: { from: ['ElTimelineItem'] },
+    props: [],
+    defaultProps: () => ({
+      children: [
+        { is: 'ElTimelineItem', timestamp: '2018-04-15', children: [Text('Event start')] },
+        { is: 'ElTimelineItem', timestamp: '2018-04-13', children: [Text('Approved')] },
+        { is: 'ElTimelineItem', timestamp: '2018-04-11', children: [Text('Success')] },
+      ]
+    })
+  },
+  {
+    is: 'ElTimelineItem',
+    label: 'timeline-item',
+    hidden: true,
+    drag: { to: ['ElTimeline'] },
+    vSlots: ['dot'],
+    props: [
+      grid2([
+        str('timestamp'),
+        bool('hide-timestamp'),
+      ]),
+      bool('center'),
+      grid2([
+        opts('type', ['primary', 'success', 'warning', 'danger', 'info']),
+        color('color'),
+      ]),
+      bool(['hollow-dot', 'hollow'])
+    ]
   },
 
   {
