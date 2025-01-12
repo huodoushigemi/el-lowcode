@@ -1,26 +1,11 @@
-import { isArray, isObject, isPlainObject, isString, objectToString, stringifyStyle } from '@vue/shared'
-import { expReg, isExp, omit, unExp } from '@el-lowcode/utils'
+import { isArray, isObject, isPlainObject, isString, stringifyStyle } from '@vue/shared'
+import { isExp, omit, unExp } from '@el-lowcode/utils'
 import { BoxProps, DesignerCtx } from '../../layout/interface'
 import { objStringify } from '../index'
 
 export async function vue(ctx: DesignerCtx): Promise<string> {
   let xml = ``
   const vars = [] as any
-  function parseExp(v) {
-    if (isString(v)) {
-      const matched = v.match(expReg)
-      if (!matched) return v
-      const exp = matched[1].trim()
-      if (exp.includes("\n")) {
-        const varname = `$_var${vars.length}`
-        vars.push([varname, `() => ${exp}`])
-        return `${varname}()`
-      } else {
-        return exp
-      }
-    }
-    return v
-  }
 
   let deep = 0
   const indent = () => '  '.repeat(deep)
@@ -59,16 +44,16 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
     xml += `${indent()}<${is}`
     
     // process v-if
-    if (vIf) xml += ` v-if=${JSON.stringify(parseExp(vIf).replaceAll(`"`, `'`))}`
+    if (vIf) xml += ` v-if="${unExp(vIf)}"`
 
     // process v-model
     for (let k in vModels) {
       let [exp, modifiers, event] = vModels[k]
       if (event) {
-        xml += ` :${k}=${JSON.stringify(unExp(exp))} :${event[0]}=${JSON.stringify(`v => ${unExp(exp)} = (${event[1]})(v)`)}`
+        xml += ` :${k}="${unExp(exp)}" :${event[0]}="${`v => ${unExp(exp)} = (${unExp(event[1])})(v)`}"`
       } else {
         k = k == 'modelValue' ? '' : `:${k}`
-        xml += ` v-model${k}${modifiers?.length ? '.' + modifiers.join('.') : ''}=${JSON.stringify(unExp(exp))}`
+        xml += ` v-model${k}${modifiers?.length ? '.' + modifiers.join('.') : ''}="${unExp(exp)}"`
       }
     }
     
@@ -78,7 +63,7 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
         continue
       }
       else if (isString(v)) {
-        xml += isExp(v) ? ` :${k}=${JSON.stringify(parseExp(v).replaceAll(`"`, `'`))}` : ` ${k}=${JSON.stringify(v)}`
+        xml += isExp(v) ? ` :${k}="${unExp(v)}"` : ` ${k}="${v}"`
       }
       else if (typeof v == 'number') {
         xml += ` :${k}="${v}"`
@@ -87,7 +72,7 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
         xml += v ? ` ${k}` : ` :${k}="false"`
       }
       else if (v) {
-        xml += ` :${k}=${JSON.stringify(objStringify(v, v => isExp(v) ? parseExp(v) : JSON.stringify(v)).replaceAll(`"`, `'`))}`
+        xml += ` :${k}="${objStringify(v, v => isExp(v) ? unExp(v) : JSON.stringify(v).replaceAll('"', "'"))}"`
       }
     }
 
@@ -133,12 +118,7 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
     )
   })
 
-  params = `const { state, ds } = useConfigProvider(${params})`
-
-  const prettier = await import('https://unpkg.com/prettier@3.4.2/standalone.mjs')
-  const Babel = await import('https://unpkg.com/prettier@3.4.2/plugins/babel.mjs').then(e => e.default)
-  const Estree = await import('https://unpkg.com/prettier@3.4.2/plugins/estree.mjs').then(e => e.default)
-  params = await prettier.format(params, { parser: 'babel', semi: false, singleQuote: true, plugins: [Babel, Estree] })
+  params = await format(`const { state, ds } = useConfigProvider(${params})`)
   
   js += `\n\n${params.trim()}`
 
@@ -163,4 +143,11 @@ import { Render } from 'el-lowcode'
 
 const schema = ${JSON.stringify(ctx.root, (k, v) => omitKey.has(k) ? void 0 : v)}
 </script>`
+}
+
+async function format(code) {
+  const prettier = await import('https://unpkg.com/prettier@3.4.2/standalone.mjs')
+  const Babel = await import('https://unpkg.com/prettier@3.4.2/plugins/babel.mjs').then(e => e.default)
+  const Estree = await import('https://unpkg.com/prettier@3.4.2/plugins/estree.mjs').then(e => e.default)
+  return await prettier.format(code, { parser: 'babel', semi: false, singleQuote: true, plugins: [Babel, Estree] })
 }

@@ -4,6 +4,9 @@ import { mergeConfig } from './build/defaultConfig.js'
 // https://vitejs.dev/config/
 export default mergeConfig({
   base: './',
+  define: {
+    'process.env': process.env
+  },
   optimizeDeps: {
     exclude: ['vue'],
   },

@@ -24,16 +24,17 @@
 </template>
 
 <script setup>
-import { inject, reactive, ref, watch } from 'vue'
+import { inject, reactive, ref, watchEffect } from 'vue'
 import { Tree } from '@el-lowcode/designer'
 
 const designerCtx = inject('designerCtx')
 
 const expandKeys = reactive({})
 const selectedKeys = ref([])
-watch(() => designerCtx.active, node => {
+watchEffect(() => {
+  const node = designerCtx.active
   if (!node) return
-  Object.assign(expandKeys, Object.fromEntries(node.parents.map(e => [e.id, true])))
+  node.parents.reduce((o, e) => (o[e.id] = true, o), expandKeys)
   selectedKeys.value = [node.id]
 })
 </script>

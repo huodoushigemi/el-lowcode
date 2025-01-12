@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, toRaw, shallowRef, ref } from 'vue'
+import { computed, reactive, toRaw } from 'vue'
 import { isArray } from '@vue/shared'
 import { toReactive, useVModel } from '@vueuse/core'
 import { keyBy, unFn, vListFocus } from '@el-lowcode/utils'
@@ -56,7 +56,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(['node-click', 'node-hover', 'update:selectedKeys'])
 
-class $_Node extends props.Node {
+class $_Node extends toRaw(props.Node) {
+  get root() { return rootNode as typeof this }
+  get isRoot() { return this.root == this }
   get dir() { return isArray(this.data_children) }
   get expand() { return props.expandKeys[this.id] }
   get expandCount(): number { return this.expand ? this.children!.reduce((t, e) => t + e.expandCount, this.children!.length) : 0 }
@@ -64,30 +66,29 @@ class $_Node extends props.Node {
   get siblingSelected() { return selected.value?.id == this.parent?.id }
 }
 
-const rootNode = computed(() => {
-  const root = new $_Node({ children: props.data })
-  return root
-})
+const rootNode = new $_Node({ get children() { return props.data } })
+console.log(rootNode);
+
 
 const selectedKeys = useVModel(props, 'selectedKeys', void 0, { passive: true, defaultValue: [] })
-const selected = computed(() => selectedKeys.value!.map(e => keyed[e]))
+const selected = computed(() => selectedKeys.value!.map(e => rootNode.keyed[e]))
 
 const dragGuideStyle = reactive({ left: '', top: '', height: '', width: '' })
 
 const expandTree = computed(() => {
-  const ret = [...rootNode.value.children!]
+  const ret = [...rootNode.children!]
   for (let i = 0; i < ret.length; i++) {
     if (ret[i].expand) ret.splice(i + 1, 0, ...ret[i].children!)
   }
   return ret
 })
 
-const keyed = toRaw(toReactive(computed(() => keyBy(rootNode.value.descendants, 'id'))))
-
 function onClick(e: MouseEvent) {
   const node = getNode(e)
   if (node) {
     if (node.dir) props.expandKeys[node.id] = !node.expand
+    console.log(node);
+    
     selectedKeys.value = [node.id]
     emit('node-click', node)
   } else {
@@ -194,7 +195,7 @@ function onDragend() {
 
 function getNode(e: Event) {
   const id = e.composedPath().find(e => e.getAttribute?.('data-id'))?.getAttribute?.('data-id')
-  return keyed[id]
+  return rootNode.keyed[id]
 }
 </script>
 

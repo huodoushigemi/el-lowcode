@@ -1,4 +1,4 @@
-import { computed, MaybeRefOrGetter, reactive, Ref, ref, toRaw, toValue, watch } from 'vue'
+import { computed, markRaw, MaybeRefOrGetter, reactive, Ref, ref, toRaw, toValue, watch } from 'vue'
 import { isArray, isObject, remove } from '@vue/shared'
 import { computedAsync, Fn, tryOnBeforeUnmount } from '@vueuse/core'
 import { useTransformer } from 'el-form-render'
@@ -180,14 +180,14 @@ export async function createPluginCtx(url, module, packageJSON, designerCtx: Des
     commandCbs = val.commands?.flatMap(e => e.cb ? designerCtx.commands.on(e.command, e.cb) : []) || []
   }, { immediate: true })
 
-  return reactive({
+  return markRaw({
     url,
-    contributes,
+    get contributes() { return contributes.value },
     widgets: module.widgets || [],
     snippets: module.snippets,
     activate,
     deactivate,
-    isActive,
+    get isActive() { return isActive.value },
     packageJSON
   })
 }

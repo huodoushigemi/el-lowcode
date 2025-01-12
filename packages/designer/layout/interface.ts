@@ -1,4 +1,4 @@
-import { computed, InjectionKey, mergeProps, reactive, ref, shallowRef, toRaw, toRef } from 'vue'
+import { computed, InjectionKey, mergeProps, reactive, readonly, ref, shallowRef, toRaw, toRef } from 'vue'
 import { isArray, isObject, isPlainObject, isString, normalizeStyle } from '@vue/shared'
 import { Fn, unrefElement } from '@vueuse/core'
 import { Arrable, Assign, deepClone, Fnable, getRects, isExp, mergeRects, Obj, pick, set, toArr, uid } from '@el-lowcode/utils'
@@ -310,7 +310,7 @@ export interface DesignerCtx {
     widgets: Widget[]
     snippets?: Snippet[]
     contributes: Contributes
-    isActive: boolean
+    readonly isActive: boolean
     activate()
     deactivate()
   }[]

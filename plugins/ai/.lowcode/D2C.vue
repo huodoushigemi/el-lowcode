@@ -90,6 +90,9 @@ async function send(file, content = '将图片转为 HTML + Tailwind\n- 使用 C
       row.content += res.text()
       stickyBottom()
     }
+  } catch (e) {
+    row.content = '❌ Error'
+    throw e
   } finally {
     row.controller = void 0
     row.done = 1
