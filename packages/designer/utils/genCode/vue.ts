@@ -53,7 +53,7 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
         xml += ` :${k}="${unExp(exp)}" :${event[0]}="${`v => ${unExp(exp)} = (${unExp(event[1])})(v)`}"`
       } else {
         k = k == 'modelValue' ? '' : `:${k}`
-        xml += ` v-model${k}${modifiers?.length ? '.' + modifiers.join('.') : ''}="${unExp(exp)}"`
+        xml += ` v-model${k}${modifiers?.length ? '.' + modifiers.join('.') : ''}="${unExp(exp).replaceAll('?.', '.')}"`
       }
     }
     
