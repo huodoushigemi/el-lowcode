@@ -3,6 +3,8 @@ import { treeUtils } from '@el-lowcode/utils'
 import { ENUM_SIZE } from '../utils'
 import JsonSchemaDialog from './json-schema-dialog.vue'
 
+const Text = (s, extra) => ({ is: 'span', children: s, ...extra })
+
 export default {
   is: 'ElForm-c',
   label: 'form',
@@ -42,7 +44,7 @@ export default {
       { is: 'ElFormItemRender', label: 'Activity type', prop: 'type', children: [{ is: 'ElCheckboxGroup', children: [{ is: 'ElCheckbox', label: 'Online activities', value: 'Online activities' }, { is: 'ElCheckbox', label: 'Promotion activities', value: 'Promotion activities' }, { is: 'ElCheckbox', label: 'Offline activities', value: 'Offline activities' }, { is: 'ElCheckbox', label: 'Simple brand exposure', value: 'Simple brand exposure' }] }] },
       { is: 'ElFormItemRender', label: 'Resources', prop: 'resource', children: [{ is: 'ElRadioGroup', children: [{ is: 'ElRadio', label: 'Sponsorship', value: 'Sponsorship' }, { is: 'ElRadio', label: 'Venue', value: 'Venue' }] }] },
       { is: 'ElFormItemRender', label: 'Activity form', prop: 'desc', children: [{ is: 'ElInput', type: 'textarea' }] },
-      { is: 'ElFormItemRender', label: ' ', children: [{ is: 'ElButton', type: 'primary', nativeType: 'submit', children: 'Submit' }, { is: 'ElButton', nativeType: 'reset', children: 'Reset' }] },
+      { is: 'ElFormItemRender', label: ' ', children: [{ is: 'ElButton', type: 'primary', nativeType: 'submit', children: [Text('Submit')] }, { is: 'ElButton', nativeType: 'reset', children: [Text('Reset')] }] },
     ]
   }),
   JSONSchemaOutput: (props, ctx) => {

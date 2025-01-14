@@ -1,4 +1,4 @@
-import { computed, markRaw, MaybeRefOrGetter, reactive, Ref, ref, toRaw, toValue, watch } from 'vue'
+import { computed, markRaw, MaybeRefOrGetter, nextTick, reactive, Ref, ref, toRaw, toRef, toValue, triggerRef, watch, watchEffect } from 'vue'
 import { isArray, isObject, remove } from '@vue/shared'
 import { computedAsync, Fn, tryOnBeforeUnmount } from '@vueuse/core'
 import { useTransformer } from 'el-form-render'
@@ -90,43 +90,40 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
   })
 
   // 文本元素 开启编辑模式
-  watch(() => designerCtx.active, (val, old) => {
-    if (val?.text != null && val.el) {
-      val.el.addEventListener('click', e => {
+  watchEffect(cleaup => {
+    const node = designerCtx.active
+    if (!node?.el || !node?.text) return
+    const { el } = node
+    const addEvent = (event, cb, opt?) => { el.addEventListener(event, cb, opt); cleaup(() => el.removeEventListener(event, cb)) }
+    const addAttr = (k, v) => { el.setAttribute(k, v); cleaup(() => el.removeAttribute(k)) }
+
+    addEvent('click', () => {
+      const text = el.innerText
+      addAttr('lcd-text', '')
+      addAttr('contenteditable', 'plaintext-only')
+      addAttr('spellcheck', 'false')
+      cleaup(() => el.ownerDocument.getSelection()?.empty())
+      cleaup(() => el.innerText != text && triggerRef(toRef(node.data, 'children')))
+      
+      addEvent('input', (e) => {
+        e.stopPropagation()
+        toRaw(node.data).children = el.innerText
+      })
+      addEvent('keydown', async (e) => {
+        if (e.key == 'Enter') {
+          e.preventDefault()
+          designerCtx.activeId = void 0
+          await nextTick()
+          designerCtx.activeId = node.id
+        }
+        e.stopPropagation()
+      })
+      addEvent('click', (e) => {
         e.preventDefault()
         e.stopPropagation()
-        val.el!.setAttribute('lcd-text', '')
-        val.el!.setAttribute('contenteditable', 'plaintext-only')
-        val.el!.setAttribute('spellcheck', 'false')
-        val.el!.addEventListener('input', onTextInput)
-        val.el!.addEventListener('keydown', onTextKeyDown)
-        val.el!.addEventListener('click', onClick)
-        val.el!.__lcd_node = val
-      }, { once: true })
-    }
-    if (old?.el) {
-      old.el.removeAttribute('lcd-text')
-      old.el.removeAttribute('contenteditable')
-      old.el.removeAttribute('spellcheck')
-      old.el.removeEventListener('input', onTextInput)
-      old.el.removeEventListener('keydown', onTextKeyDown)
-      old.el.removeEventListener('click', onClick)
-      old.el.__lcd_node = void 0
-    }
+      })
+    }, { once: true })
   })
-  function onTextInput(e) {
-    e.stopPropagation()
-    const node = e.currentTarget.__lcd_node as DisplayNode
-    toRaw(node.data).children = node.el.innerText
-  }
-  function onTextKeyDown(e) {
-    if (e.key == 'Enter') e.preventDefault()
-    e.stopPropagation()
-  }
-  function onClick(e) {
-    e.preventDefault()
-    e.stopPropagation()
-  }
 
   return designerCtx
 }

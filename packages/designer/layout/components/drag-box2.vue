@@ -29,6 +29,8 @@ const designer = inject('designerCtx') as DesignerCtx
 const wm = new WeakMap()
 const EMPTY = Symbol()
 
+window.processProps = processProps
+
 const Render = createRender({
   processProps: (_props: any, vars, { provide }) => {
     if (_props[EMPTY]) return _props

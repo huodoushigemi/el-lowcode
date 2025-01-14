@@ -45,7 +45,7 @@ export default [
       opts('native-type', ['submit', 'reset']),
     ],
     defaultProps: () => ({
-      children: 'button',
+      children: [Text('button')],
     }),
   },
   
@@ -239,11 +239,11 @@ export default [
       prop: `input`,
       children: [ctx.newProps('ElInput')],
     }),
-    purify: props => ({
-      ...props,
-      // defaultValue: void 0,
-      children: [{ ...props.children[0], defaultValue: void 0 }]
-    }),
+    // purify: props => ({
+    //   ...props,
+    //   defaultValue: void 0,
+    //   children: [{ ...props.children[0], defaultValue: void 0 }]
+    // }),
     JSONSchemaOutput: (props, ctx) => {
       const el = props.children[0] || {}
       return {
@@ -689,8 +689,8 @@ export default [
       radios('align', [['—'], 'center', 'right']),
       str('formatter', { script: true, displayValue: '{{(row, col, val, i) => val}}' }),
     ],
-    devProps: (props, { children }) => ({
-      key: ({ ...children }, uid()), // fix: enable v-slots does not update
+    devProps: (props, { parent, children }) => ({
+      key: ({ ...children, ...parent.children }, uid()), // fix: enable v-slots does not update
       'lcd-label': `cell`,
       labelClassName: `${props.labelClassName || ''} lcd-id:${props._id}`,
     }),

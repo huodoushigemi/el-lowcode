@@ -141,17 +141,13 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get vars() { return this.#vars.value ?? (this.isRoot ? void 0 : this.root.vars) }
   set vars(v) { this.#vars.value = v }
 
-  #$data = computed(() => this.processProps(this.vars))
-  get $data() { return this.#$data.value as BoxProps }
-
-  processProps(vars?: Record<string, any>) {
+  #$data = computed(() => {
     let props = this.data
-    props = vars && this.designerCtx.canvas.window
-      ? new this.designerCtx.canvas.window.Function('processProps', 'props', 'vars', 'return processProps(props, vars)')(processProps, props, vars)
-      : props
+    if (this.vars && this.designerCtx.canvas.window) props = this.designerCtx.canvas.window.processProps(props, this.vars)
     if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(props, this)) as any
     return props
-  }
+  })
+  get $data() { return this.#$data.value as BoxProps }
 
   // 自由拖拽
   get isAbs() { return this.data.style?.position == 'absolute' }
