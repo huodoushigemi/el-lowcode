@@ -27,9 +27,9 @@ export function processProps(props, vars) {
     for (const key in vModels) {
       const val = toArr(vModels[key])
       const [exp, modifiers, event] = [val[0], val[1], val[2] || [`onUpdate:${key}`, `{{v => v}}`]]
-      const ids = unExp(exp).split('.'), prop = `'${ids.slice(1).join('.')}'`
-      spread2[key] = execExp(`{{_.get(${ids[0]}, ${prop})}}`, vars)
-      spread1[event[0]] = execExp(`{{v => _.set(${ids[0]}, ${prop}, (${unExp(event[1])})(v))}}`, vars)
+      const ids = unExp(exp).split(/\??\./)
+      spread2[key] = execExp(`{{${ids.join('?.')}}}`, vars)
+      spread1[event[0]] = execExp(`{{v => _.set(${ids[0]}, '${ids.slice(1).join('.')}', (${unExp(event[1])})(v))}}`, vars)
       if (modifiers) spread1[key == 'modelValue' ? 'modelModifiers' : `${key}Modifiers`] = modifiers
     }
     props = mergeProps(spread1, props, spread2)

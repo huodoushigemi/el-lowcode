@@ -146,7 +146,9 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   processProps(vars?: Record<string, any>) {
     let props = this.data
-    props = vars ? processProps(props, vars) : props
+    props = vars && this.designerCtx.canvas.window
+      ? new this.designerCtx.canvas.window.Function('processProps', 'props', 'vars', 'return processProps(props, vars)')(processProps, props, vars)
+      : props
     if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(props, this)) as any
     return props
   }
@@ -292,6 +294,7 @@ export interface DesignerCtx {
   currentState: Obj
   // readonly viewport: HTMLElement
   canvas: {
+    window?: typeof globalThis
     x: number
     y: number
     w: number

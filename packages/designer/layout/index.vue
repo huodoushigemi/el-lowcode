@@ -16,7 +16,7 @@
               class="wfull hfull"
               :src="srcurl"
               :srcdoc="srcdoc"
-              @vue:mounted="({ el }) => el.contentWindow.designerCtx = designerCtx"
+              @vue:mounted="({ el }) => (designerCtx.canvas.window = el.contentWindow, el.contentWindow.designerCtx = designerCtx)"
               @vue:beforeUnmount="({ el }) => el.contentWindow.unmount?.()"
             />
 
