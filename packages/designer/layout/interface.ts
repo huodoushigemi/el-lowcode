@@ -2,7 +2,6 @@ import { computed, InjectionKey, mergeProps, reactive, readonly, ref, shallowRef
 import { isArray, isObject, isPlainObject, isString, normalizeStyle } from '@vue/shared'
 import { Fn, unrefElement } from '@vueuse/core'
 import { Arrable, Assign, deepClone, Fnable, getRects, isExp, mergeRects, Obj, pick, set, toArr, uid } from '@el-lowcode/utils'
-import { processProps } from 'el-lowcode'
 import { Props } from '@el-lowcode/render'
 import { Node } from './components/Node'
 import { parseTransform } from './components/utils'
@@ -14,8 +13,6 @@ export interface Widget {
   drag: WidgetDrag
   hidden?: boolean
   cover?: string // todo
-  // slots: { label?: string; value: string }[]
-  // vSlots: { label?: string; value: string; args?: any[] }[]
   slots: any[]
   vSlots: any[]
   props?: any[] | ((props: Obj, ctx: DesignerCtx, arg: { node: DisplayNode }) => any[])
@@ -143,7 +140,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   #$data = computed(() => {
     let props = this.data
-    if (this.vars && this.designerCtx.canvas.window) props = this.designerCtx.canvas.window.processProps(props, this.vars)
+    if (this.vars && this.designerCtx.canvas.window?.processProps) props = this.designerCtx.canvas.window.processProps(props, this.vars)
     if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(props, this)) as any
     return props
   })

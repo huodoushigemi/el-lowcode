@@ -1,5 +1,5 @@
 import { resolveDynamicComponent, VNode, inject, createVNode } from 'vue'
-import { hasOwn, isArray, isFunction, isPlainObject } from '@vue/shared'
+import { hasOwn, isArray, isFunction, isPlainObject, isHTMLTag, isString } from '@vue/shared'
 import { Fnable, Arrable, mapValues, Obj } from '@el-lowcode/utils'
 
 export type Props = {
@@ -44,7 +44,8 @@ export function createRender({ defaultIs, processProps = (props) => props as unk
           isArray(children) ? { default: () => children.map(e => _h(e, vars)) } :
           isPlainObject(children) ? mapValues(children, v => (scope) => Temp(v, vars, scope)) :
           isFunction(children) ? { default: () => { const ret = (children as any)(); return isArray(ret) ? ret.map(e => _h(e, vars)) : ret; } } :
-          children
+          // todo
+          isString(is) && isHTMLTag(is) ? children : () => children
         )
       : null
   }

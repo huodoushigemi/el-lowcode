@@ -683,7 +683,7 @@ export default {
         direction: 'btt',
       },
     ],
-    plugins: ['/plugins/web', '/plugins/ai', '/plugins/element-plus'],
+    plugins: ['/plugins/web', '/plugins/element-plus'],
     designer: {
       canvas: {
         style: {

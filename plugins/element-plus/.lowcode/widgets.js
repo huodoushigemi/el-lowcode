@@ -1,7 +1,7 @@
 import { h, resolveDynamicComponent } from 'vue'
 import { camelize } from '@vue/shared'
-import { uid, mergeRects } from '@el-lowcode/utils'
 import { unrefElement } from '@vueuse/core'
+import { uid, mergeRects } from '@el-lowcode/utils'
 
 const SIZES = ['large', 'default', 'small']
 
@@ -689,7 +689,7 @@ export default [
       radios('align', [['—'], 'center', 'right']),
       str('formatter', { script: true, displayValue: '{{(row, col, val, i) => val}}' }),
     ],
-    devProps: (props, { parent, children }) => ({
+    devProps: (props, { parent, children, vars }) => ({
       key: ({ ...children, ...parent.children }, uid()), // fix: enable v-slots does not update
       'lcd-label': `cell`,
       labelClassName: `${props.labelClassName || ''} lcd-id:${props._id}`,

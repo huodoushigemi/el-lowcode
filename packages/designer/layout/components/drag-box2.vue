@@ -87,8 +87,8 @@ function setup(node: DisplayNode) {
   }
 
   const addAttrs = () => {
-    ;([{ ...node.parent?.children as any }, node.els])
     if (node.detached) return scope?.stop()
+    ;([{ ...node.parent?.children as any }, node.els])
 
     const xxx = () => node.setAttrs({
       draggable: (!node.isAbs && !node.drag.disabled) + '',
