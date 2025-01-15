@@ -30,7 +30,7 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
       }
     }
     
-    const { is = 'template', _id, vFor, vIf, vModels, vSlot, children, ...attrs } = props
+    const { is = 'template', _id, vFor, vIf, vModels, scope, children, ...attrs } = props
 
     // process v-for
     if (vFor) {
@@ -79,7 +79,7 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
     // process v-slot
     if (isPlainObject(atChildren)) {
       const key = Object.keys(atChildren).find(e => atChildren[e]._id == _id)
-      xml += vSlot ? ` #${key}="${vSlot}"` : ` #${key}`
+      xml += scope ? ` #${key}="${scope}"` : ` #${key}`
     }
 
     xml += `>`

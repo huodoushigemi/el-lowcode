@@ -8,7 +8,7 @@ export type Props = {
   vFor?: [string, string?, string?]
   vIf?: string
   vModels?: Record<string, [string, string[], string[]]>
-  vSlot?: string
+  scope?: string
   children?: Fnable<string | number | Props[] | Record<string, Props>>
   [k: string]: any
 }
@@ -51,12 +51,12 @@ export function createRender({ defaultIs, processProps = (props) => props as unk
   }
 
   const Temp = (props: Props, vars: Obj, scope) => {
-    if (props.vSlot) {
-      if (props.vSlot[0] == '{') {
+    if (props.scope) {
+      if (props.scope[0] == '{') {
         vars = { ...vars }
-        for (const k of props.vSlot.slice(1, -1).split(',')) vars[k.trim()] = scope[k.trim()]
+        for (const k of props.scope.slice(1, -1).split(',')) vars[k.trim()] = scope[k.trim()]
       } else {
-        vars = { ...vars, [props.vSlot]: scope }
+        vars = { ...vars, [props.scope]: scope }
       }
     }
 

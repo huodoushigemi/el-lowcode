@@ -179,6 +179,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
         return isPlainObject(this.data.children) ? this.data.children![p] : void 0
       },
       set: (target, p, val, receiver) => {
+        const config = isPlainObject(this.config?.vSlots) ? this.config.vSlots[p] : void 0
         let children = this.data.children as any
         children =
           isPlainObject(children) ? { ...children } :
@@ -188,10 +189,11 @@ export abstract class DisplayNode extends Node<BoxProps> {
         // 
         if (val == null) delete children[p]
         else children[p] = isArray(val) ? { children: val } : val == true ? { children: [] } : val
+        if (config?.scope && children[p]) children[p].scope = config.scope
         // 最小化 children
         if (Object.values(children).every(e => e == null)) {
           children = void 0
-        } else if (Object.entries(children).every(([k, v]) => k == 'default' || v == null) && children.default.vSlot == null) {
+        } else if (Object.entries(children).every(([k, v]) => k == 'default' || v == null) && children.default.scope == null) {
           // children = children.default.children
         }
         this.data.children = children

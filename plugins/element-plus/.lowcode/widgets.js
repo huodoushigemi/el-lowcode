@@ -674,8 +674,8 @@ export default [
     hidden: true,
     drag: { to: ['ElTable'] },
     vSlots: {
-      header: { vSlot: '{ column, $index }' },
-      default: { vSlot: '{ row, column, $index }' }
+      header: { scope: '{ column, $index }' },
+      default: { scope: '{ row, column, $index }' }
     },
     props: [
       str('label'),
@@ -689,7 +689,7 @@ export default [
       radios('align', [['—'], 'center', 'right']),
       str('formatter', { script: true, displayValue: '{{(row, col, val, i) => val}}' }),
     ],
-    devProps: (props, { parent, children, vars }) => ({
+    devProps: (props, { parent, children }) => ({
       key: ({ ...children, ...parent.children }, uid()), // fix: enable v-slots does not update
       'lcd-label': `cell`,
       labelClassName: `${props.labelClassName || ''} lcd-id:${props._id}`,
@@ -698,7 +698,7 @@ export default [
       return parent$.el.querySelector(`.el-table__header th.lcd-id\\:${id}`)
     },
     getScopeIndex(node, vars) {
-      return node.vSlotName == 'default' ? (node.data.vSlot?.[0] == '{' ? vars.$index : vars[node.data.vSlot].$index) : 0
+      return node.vSlotName == 'default' ? (node.data.scope?.[0] == '{' ? vars.$index : vars[node.data.scope].$index) : 0
     }
     // getRect({ id, parent$ }) {
     //   return [...parent$.el.querySelectorAll(`.lcd-id\\:${id}`)]

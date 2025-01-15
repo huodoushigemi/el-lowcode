@@ -59,7 +59,7 @@ export default [
     is: 'undefined',
     hidden: true,
     props: [
-      { lp: 'v-slot', script: false, el: { placeholder: ' e.g: scope' } }
+      { lp: ['v-slot', 'scope'], script: false, el: { placeholder: ' e.g: scope' } }
     ],
     devProps: () => ({ 'lcd-selectable': false })
   },

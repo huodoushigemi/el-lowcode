@@ -22,10 +22,10 @@
               <div class="vs-menu-li" @click="active.remove()" hover="c-red"><i-solar:trash-bin-minimalistic-linear mr6 />删除</div>
               <hr />
               <!-- v-slots -->
-              <div v-if="active.config?.vSlots" class="vs-menu-li">
+              <div v-if="vSlots" class="vs-menu-li">
                 <i-fa6-solid:check-to-slot mr6 />v-slots
                 <Tippy class="vs-menu" :extra="{ interactive: true, offset: [-6, 5], delay: [0, 150], duration: 0, placement: 'right-start', hideOnClick: false }">
-                  <div v-for="slot in active.config?.vSlots" class="vs-menu-li" @click="active.vSlots[slot] = active.vSlots[slot] ? void 0 : []"><i-mdi:check mr6 :op="active.vSlots[slot] ? 100 : 0" />{{ slot }}</div>
+                  <div v-for="slot in vSlots" class="vs-menu-li" @click="active.vSlots[slot] = active.vSlots[slot] ? void 0 : []"><i-mdi:check mr6 :op="active.vSlots[slot] ? 100 : 0" />{{ slot }}</div>
                 </Tippy>
               </div>
               <!-- slots -->
@@ -60,6 +60,7 @@
 
 <script setup lang="ts">
 import { getCurrentInstance, inject, computed, ref } from 'vue'
+import { isPlainObject } from '@vue/shared'
 import { unrefElement, useMutationObserver, useResizeObserver } from '@vueuse/core'
 import Moveable from 'vue3-moveable'
 import { designerCtxKey } from '../interface'
@@ -68,6 +69,8 @@ import Tippy from './tippy.vue'
 const designerCtx = inject(designerCtxKey)!
 
 const active = computed(() => designerCtx.active)
+
+const vSlots = computed(() => isPlainObject(active.value?.config?.vSlots) ? Object.keys(active.value?.config?.vSlots) : active.value?.config?.vSlots)
 
 const calcStyle = (rect: DOMRect) => {
   return { top: rect.top + 'px', left: rect.left + 'px', width: rect.width + 'px', height: rect.height + 'px' }
