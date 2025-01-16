@@ -11,7 +11,7 @@ export default {
         header: '组件联动',
         children: [
           {
-            is: 'ElForm-c',
+            is: 'ElFormLcd',
             _id: 'cf70094f-5da9-4770-b6a0-c8787fac72ba',
             labelWidth: 80,
             style: {

@@ -6,7 +6,7 @@ export default {
   is: 'EPie',
   label: '饼图',
   category: '基础图表',
-  props: ({ _id, option }, ctx, { node }) => [
+  props: ({ _id, option }, node) => [
     { lp: ['data', 'option.dataset.source'], script: true },
 
     segm2('series-layout-by', ['column', 'row'], { displayValue: 'column' }),
@@ -15,7 +15,7 @@ export default {
       { is: 'div', label: '系列', children: [
         { is: 'Tabs', key: _id, tabs: option.series, editable: true, props: { label: 'name' }, new: (i) => ({ type: 'pie', name: `series-${i + 1}` }), children: option.series.map((e, i) => (
           { is: 'div', label: e.name, class: 'px8', children: () => [
-            seriePie(e, i, option, ctx, node)
+            seriePie(e, i, option, node)
           ] }
         )) },
       ] },

@@ -5,7 +5,7 @@ export default {
   schema: {
     children: [
       {
-        is: 'ElForm-c',
+        is: 'ElFormLcd',
         _id: '15870304-528c-4f18-b4c2-7529dcb30837',
         labelWidth: 20,
         style: {

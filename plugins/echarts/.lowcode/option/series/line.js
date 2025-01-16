@@ -5,7 +5,7 @@ import { parseEncode, parseXYs } from '../../../normalizeOption'
 
 const _options = (arr) => (arr.map(e => ({ label: e[0], value: e[1] })))
 
-export const serieLine = (model, i, option, ctx, node) => ({ is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children: [
+export const serieLine = (model, i, option, node) => ({ is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children: [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
     segm('type', ['line', 'bar'], { defaultValue: 'line' }),
     { lp: ['key', '$key'], options: parseXYs(node.$data), defaultValue: parseEncode(node.$data, i).y, el: { allowCreate: true, filterable: true, defaultFirstOption: true } },

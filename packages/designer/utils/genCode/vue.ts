@@ -34,11 +34,12 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
 
     // process v-for
     if (vFor) {
-      xml += `${indent()}<template v-for="(${vFor[1]}, ${vFor[2]}) in ${unExp(vFor[0])}">`
+      xml += `${indent()}<template v-for="(${vFor[1] || 'item'}, ${vFor[2] || 'index'}) in ${unExp(vFor[0])}">\n`
       deep += 1
       through({ ...props, vFor: void 0 }, queue)
       deep -= 1
-      xml += `${indent()}</template>`
+      xml += `${indent()}</template>\n`
+      return
     }
     
     xml += `${indent()}<${is}`

@@ -341,7 +341,7 @@ export default {
             ],
           },
         ],
-        is: 'ElForm-c',
+        is: 'ElFormLcd',
         _id: '1e8c282f-a74f-48f8-bf0a-7e2f2c8a6dc9',
         labelPosition: 'top',
         model: '{{state.formData}}',

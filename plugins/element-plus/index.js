@@ -5,7 +5,8 @@ import 'element-plus/theme-chalk/dark/css-vars.css'
 import { ElFormRender } from 'el-form-render'
 
 import DateTime from './date-time'
-import Form from './form'
+import Form from './ElFormLcd.vue'
+import Table from './ElTableLcd.vue'
 
 window.ElementPlus = ElementPlus
 
@@ -15,6 +16,7 @@ export default {
     app.use(ElFormRender)
 
     app.use(DateTime)
-    app.use(Form)
+    app.component(Form.__name, Form)
+    app.component(Table.__name, Table)
   }
 }

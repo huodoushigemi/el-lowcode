@@ -29,7 +29,7 @@ export default {
         header: '',
         children: [
           {
-            is: 'ElForm-c',
+            is: 'ElFormLcd',
             _id: '23e1cb33-98b8-4e6b-a6f5-13b144e26fa7',
             labelWidth: 80,
             style: {

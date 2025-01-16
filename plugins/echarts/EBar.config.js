@@ -6,7 +6,7 @@ export default {
   is: 'EBar',
   label: '柱状图',
   category: '基础图表',
-  props: (props, ctx, { node }) => {
+  props: (props, node) => {
     const { _id, option } = props
 
     return [
@@ -29,7 +29,7 @@ export default {
         { is: 'div', label: '系列', children: [
           { is: 'Tabs', key: _id, tabs: option.series, editable: true, props: { label: 'name' }, new: (i) => ({ name: `series-${i + 1}` }), children: () => option.series.map((e, i) => (
             { is: 'div', label: e.name, class: 'px8', children: () => [
-              e.type == 'line' ? serieLine(e, i, option, ctx, node) : serieBar(e, i, option, ctx, node)
+              e.type == 'line' ? serieLine(e, i, option, node) : serieBar(e, i, option, node)
             ] }
           )) },
         ] },

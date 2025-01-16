@@ -3,7 +3,7 @@ import StyleText from '../../components/StyleText.vue'
 import StyleLine from '../../components/StyleLine.vue'
 import { parseEncode, parseXYs } from '../../../normalizeOption'
 
-export const seriePie = (model, i, option, ctx, node) => ({ is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children: [
+export const seriePie = (model, i, option, node) => ({ is: 'ElFormRender', model, size: 'small', labelPosition: 'top', children: [
   { is: 'div', class: 'grid grid-cols-2 gap-x-8 [&>*]:mb8', children: [
     // opts(['类目', 'encode.itemName']),
     // opts(['类目', 'encode.itemName']),

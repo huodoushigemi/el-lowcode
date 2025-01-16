@@ -1,7 +1,7 @@
-import { h, resolveDynamicComponent } from 'vue'
+import { defineAsyncComponent, h, resolveDynamicComponent } from 'vue'
 import { camelize } from '@vue/shared'
 import { unrefElement } from '@vueuse/core'
-import { uid, mergeRects } from '@el-lowcode/utils'
+import { uid, mergeRects, treeUtils, mapValues, keyBy } from '@el-lowcode/utils'
 
 const SIZES = ['large', 'default', 'small']
 
@@ -16,13 +16,14 @@ const color = lp => ({ lp, type: 'color-picker' })
 const hr = () => ({ is: 'hr', class: '-mx8' })
 
 const grid2 = children => ({ is: 'div', class: 'grid grid-cols-2 gap-x-12', children })
+const grid3 = children => ({ is: 'div', class: 'grid grid-cols-3 gap-x-12', children })
 
 const Text = (s, extra) => ({ is: 'span', children: s, ...extra })
 
-function vmodel(prop) {
+function vmodel(prop, extra) {
   const label = prop ? `v-model : ${prop}` : `v-model`
   prop = prop ? camelize(prop) : 'modelValue'
-  return { lp: [label, `vModels.${prop}.0`], out: (v, model) => (v || (delete model.vModels[prop]), {}), script: false, el: { spellcheck: false } }
+  return { lp: [label, `vModels.${prop}.0`], out: (v, model) => (v || (delete model.vModels[prop]), {}), script: false, ...extra, el: { spellcheck: false } }
 }
 
 export default [
@@ -214,10 +215,61 @@ export default [
   },
 
   {
+    is: 'ElFormLcd',
+    label: 'form',
+    category: '表单',
+    props: [
+      { lp: 'model', script: true },
+      radios('size', SIZES),
+      radios('label-position', ['left', 'right', 'top']),
+      grid2([
+        num('label-width', { el: { mxa: 200 } }),
+        str('label-suffix'),
+        bool('disabled'),
+        bool('inline'),
+        bool('status-icon'),
+        bool('scroll-to-error'),
+      ]),
+      hr(),
+      { is: defineAsyncComponent(() => import('./json-schema-dialog.vue')) },
+      hr(),
+      { is: 'h1', children: 'Event' },
+      { lp: 'onSubmit', script: true }
+    ],
+    defaultProps: () => ({
+      model: '{{(state.formData ??= {}, state.formData)}}',
+      labelWidth: 120,
+      style: { overflow: 'hidden' },
+      children: [
+        { is: 'ElFormItemRender', label: 'Activity name', prop: 'name', children: [{ is: 'ElInput' }] },
+        { is: 'ElFormItemRender', label: 'Activity zone', prop: 'region', children: [{ is: 'ElSelect', children: [{ is: 'ElOption', label: 'Zone one', value: 'shanghai' }, { is: 'ElOption', label: 'Zone two', value: 'beijing' }] }] },
+        { is: 'ElFormItemRender', label: 'Activity name', prop: 'name', children: [
+          { is: 'ElFormItemRender', prop: 'date1', children: [{ is: 'ElDatePicker', type: 'date' }] },
+          { is: 'span', style: { padding: '0 12px' }, children: '-' },
+          { is: 'ElFormItemRender', prop: 'date2', children: [{ is: 'ElDatePicker', type: 'date' }] },
+        ] },
+        { is: 'ElFormItemRender', label: 'Instant delivery', prop: 'delivery', children: [{ is: 'ElSwitch' }] },
+        { is: 'ElFormItemRender', label: 'Activity location', prop: 'location', children: [{ is: 'ElSegmented', options: [{ label: 'Home', value: 'Home' }, { label: 'Company', value: 'Company' }, { label: 'School', value: 'School' }] }] },
+        { is: 'ElFormItemRender', label: 'Activity type', prop: 'type', children: [{ is: 'ElCheckboxGroup', children: [{ is: 'ElCheckbox', label: 'Online activities', value: 'Online activities' }, { is: 'ElCheckbox', label: 'Promotion activities', value: 'Promotion activities' }, { is: 'ElCheckbox', label: 'Offline activities', value: 'Offline activities' }, { is: 'ElCheckbox', label: 'Simple brand exposure', value: 'Simple brand exposure' }] }] },
+        { is: 'ElFormItemRender', label: 'Resources', prop: 'resource', children: [{ is: 'ElRadioGroup', children: [{ is: 'ElRadio', label: 'Sponsorship', value: 'Sponsorship' }, { is: 'ElRadio', label: 'Venue', value: 'Venue' }] }] },
+        { is: 'ElFormItemRender', label: 'Activity form', prop: 'desc', children: [{ is: 'ElInput', type: 'textarea' }] },
+        { is: 'ElFormItemRender', label: ' ', children: [{ is: 'ElButton', type: 'primary', nativeType: 'submit', children: [Text('Submit')] }, { is: 'ElButton', nativeType: 'reset', children: [Text('Reset')] }] },
+      ]
+    }),
+    JSONSchemaOutput: (props, ctx) => {
+      const flatted = treeUtils.flat(props.children).filter(e => e.prop)
+      return {
+        type: 'object',
+        required: flatted.filter(e => e.required).map(e => e.prop),
+        properties: mapValues(keyBy(flatted, 'prop'), e => ctx.widgets[e.is]?.JSONSchemaOutput?.(e, ctx))
+      }
+    }
+  },
+  {
     is: 'ElFormItemRender',
     label: 'field',
     category: '表单',
-    drag: { ancestor: ['ElForm', 'ElForm-c', 'ElForm-lcd'] },
+    drag: { ancestor: ['ElForm', 'ElFormLcd'] },
     vSlots: ['label'],
     props: () => ([
       { is: 'div', class: 'grid grid-cols-2 gap-x-8', children: [
@@ -275,7 +327,7 @@ export default [
       radios('size', SIZES)
     ],
     defaultProps: () => ({
-      defaultValue: '',
+      // defaultValue: '',
     }),
     JSONSchemaOutput: (props) => ({
       minLength: props.minlength,
@@ -298,7 +350,7 @@ export default [
       radios('size', SIZES),
     ],
     defaultProps: () => ({
-      defaultValue: 0,
+      // defaultValue: 0,
       controlsPosition: 'right',
     }),
     JSONSchemaOutput: (props) => ({
@@ -373,7 +425,7 @@ export default [
       ]),
     ],
     defaultProps: () => ({
-      defaultValue: false,
+      // defaultValue: false,
     }),
     JSONSchemaOutput: (props) => ({
       type: 'boolean',
@@ -394,7 +446,7 @@ export default [
       { lp: ['options', 'children'], el: { is: 'OptionsInput', new: i => ({ is: 'ElCheckbox', label: `opt ${i + 1}`, value: `${i + 1}` }) }  }
     ],
     defaultProps: () => ({
-      defaultValue: [],
+      // defaultValue: [],
       children: [
         { is: 'ElCheckbox', label: `opt 1`, value: `1` },
         { is: 'ElCheckbox', label: `opt 2`, value: `2` },
@@ -433,7 +485,7 @@ export default [
       { lp: ['options', 'children'], el: { is: 'OptionsInput', new: i => ({ is: 'ElRadio', label: `opt ${i + 1}`, value: `${i + 1}` }) }  }
     ],
     defaultProps: () => ({
-      defaultValue: '',
+      // defaultValue: '',
       children: [
         { is: 'ElRadio', label: `opt 1`, value: `1` },
         { is: 'ElRadio', label: `opt 2`, value: `2` },
@@ -466,7 +518,7 @@ export default [
       ])
     ],
     defaultProps: () => ({
-      defaultValue: 0,
+      // defaultValue: 0,
     }),
     JSONSchemaOutput: (props) => ({
       type: 'number',
@@ -489,7 +541,7 @@ export default [
       radios('size', SIZES),
     ],
     defaultProps: () => ({
-      defaultValue: 0,
+      // defaultValue: 0,
     }),
     JSONSchemaOutput: (props) => ({
       type: 'number',
@@ -512,7 +564,7 @@ export default [
       ])
     ],
     defaultProps: () => ({
-      defaultValue: '',
+      // defaultValue: '',
       valueFormat: 'YYYY-MM-DD',
     }),
     JSONSchemaOutput: (props) => ({
@@ -538,7 +590,7 @@ export default [
       ])
     ],
     defaultProps: () => ({
-      defaultValue: '',
+      // defaultValue: '',
     }),
     JSONSchemaOutput: (props) => ({
       type: 'string',
@@ -578,7 +630,7 @@ export default [
       ])
     ],
     defaultProps: () => ({
-      defaultValue: '',
+      // defaultValue: '',
     }),
     JSONSchemaOutput: (props) => ({
       type: 'string',
@@ -644,12 +696,12 @@ export default [
   },
 
   {
-    is: 'ElTable',
+    is: 'ElTableLcd',
     label: 'table',
     category: '数据展示',
     drag: { from: ['ElTableColumn'] },
     vSlots: ['append', 'empty'],
-    props: props => [
+    props: (props, node) => [
       str('data', { script: true, displayValue: `{{[]}}` }),
       grid2([
         bool('border'), bool('stripe'),
@@ -658,8 +710,14 @@ export default [
       hr(),
       bool(['summary', 'showSummary']),
       props.showSummary && str('summary-method', { script: true, displayValue: `{{({ data, columns }) => {\n  \n}}}` }),
+      hr(),
+      grid3([
+        vmodel('selected', { class: 'col-span-2' }),
+        opts('row-key', Object.keys(node.$data?.data?.[0] || {}), { el: { filterable: true, allowCreate: true, defaultFirstOption: true }  })
+      ])
     ],
     defaultProps: () => ({
+      rowKey: 'id',
       children: [
         { is: 'ElTableColumn', label: 'Name', prop: 'name' },
         { is: 'ElTableColumn', label: 'Age', prop: 'age' },

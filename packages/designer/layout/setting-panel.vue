@@ -90,7 +90,7 @@ const node = computed(() => designerCtx.active ?? designerCtx.rootNode)
 const model = computed(() => node.value.data)
 const config = computed(() => node.value?.config)
 
-const _items = computed(() => unFn(config.value?.props, model.value, designerCtx, { node: node.value }))
+const _items = computed(() => unFn(config.value?.props, model.value, node.value))
 
 const styles = computed(() => [
   { is: 'div', class: 'grid grid-cols-3', children: [

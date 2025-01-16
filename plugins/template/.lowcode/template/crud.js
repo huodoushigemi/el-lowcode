@@ -5,8 +5,8 @@ export default {
     _id: '01a072dd458dc300',
     is: 'Page',
     state: {
-      count: 0,
       search: {},
+      selected: [],
       view: {
         vis: false,
         data: null,
@@ -57,8 +57,8 @@ export default {
           default: {
             children: [
               {
-                is: 'ElForm-c',
-                model: '{{(state.search ??= {}, state.search)}}',
+                is: 'ElFormLcd',
+                model: '{{state.search}}',
                 labelWidth: "{{'auto'}}",
                 style: {
                   overflow: 'hidden',
@@ -182,13 +182,14 @@ export default {
                     ],
                     _id: 'bc0f55d8d53c1a0e',
                     type: 'danger',
-                    disabled: true,
+                    disabled: '{{!state.selected.length}}',
+                    onClick: "{{async (e) => {\n  await ElementPlus.ElMessageBox.confirm(`确认删除${state.selected.map(e => `【${e.name}】`).join('')}共 ${state.selected.length} 条数据？`, '提示', { type: 'warning' })\n  ElementPlus.ElMessage.success('操作成功')\n  state.data = state.data.filter(row => !state.selected.find(e => row.id == e.id))\n  state.selected = []\n}}}",
                   },
                 ],
                 _id: 'bc0f55d8d53c1a09',
               },
               {
-                is: 'ElTable',
+                is: 'ElTableLcd',
                 children: [
                   {
                     is: 'ElTableColumn',
@@ -297,6 +298,10 @@ export default {
                 style: {
                   marginTop: '18px',
                 },
+                rowKey: 'id',
+                vModels: {
+                  selected: ['{{state?.selected}}'],
+                },
               },
             ],
             _id: 'adb9c70164118630',
@@ -312,7 +317,7 @@ export default {
           default: {
             children: [
               {
-                is: 'ElForm-c',
+                is: 'ElFormLcd',
                 model: '{{state?.edit?.data}}',
                 labelWidth: "{{'auto'}}",
                 style: {

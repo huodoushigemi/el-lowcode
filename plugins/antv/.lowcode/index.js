@@ -5,8 +5,7 @@ export const widgets = [
     is: 'antv-pivot-sheet',
     label: '交叉表',
     category: '表格',
-    props: (props, ctx) => {
-      const node = ctx.keyedNode[props._id]
+    props: (props, node) => {
       const ks = Object.keys(node?.$data.dataCfg.data?.[0] || {})
       
       return [
