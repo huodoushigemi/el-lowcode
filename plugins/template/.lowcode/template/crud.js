@@ -72,7 +72,6 @@ export default {
                     children: [
                       {
                         is: 'ElDatePicker',
-                        defaultValue: '',
                         valueFormat: 'YYYY-MM-DD',
                         _id: 'adb9c70164118639',
                       },
@@ -330,7 +329,6 @@ export default {
                     children: [
                       {
                         is: 'ElInput',
-                        defaultValue: '',
                         _id: 'c5e316fa5ecc7829',
                       },
                     ],
@@ -344,7 +342,6 @@ export default {
                     children: [
                       {
                         is: 'ElDatePicker',
-                        defaultValue: '',
                         valueFormat: 'YYYY-MM-DD',
                         _id: 'c5e316fa5ecc782d',
                       },
@@ -400,7 +397,6 @@ export default {
                     children: [
                       {
                         is: 'ElInput',
-                        defaultValue: '',
                         _id: '076a59f4837aba0e',
                         type: 'textarea',
                         autosize: {
@@ -419,7 +415,6 @@ export default {
                     children: [
                       {
                         is: 'ElRadioGroup',
-                        defaultValue: '',
                         children: [
                           {
                             is: 'ElRadio',

@@ -1,4 +1,4 @@
-import { isArray, isObject, isPlainObject, isString, stringifyStyle } from '@vue/shared'
+import { hyphenate, isArray, isObject, isOn, isPlainObject, isString, stringifyStyle } from '@vue/shared'
 import { isExp, omit, unExp } from '@el-lowcode/utils'
 import { BoxProps, DesignerCtx } from '../../layout/interface'
 import { objStringify } from '../index'
@@ -42,7 +42,7 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
       return
     }
     
-    xml += `${indent()}<${is}`
+    xml += `${indent()}<${hyphenate(is)}` 
     
     // process v-if
     if (vIf) xml += ` v-if="${unExp(vIf)}"`
@@ -58,13 +58,20 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
       }
     }
     
-    for (const k in attrs) {
-      const v = attrs[k]
+    for (let k in attrs) {
+      let v = attrs[k]
+      // k = isOn(k) ? `@${hyphenate(k).slice(3)}` : k
       if (k.includes('lcd-')) {
         continue
       }
       else if (isString(v)) {
-        xml += isExp(v) ? ` :${k}="${unExp(v)}"` : ` ${k}="${v}"`
+        if (isExp(v)) {
+          k = isOn(k) ? `@${hyphenate(k).slice(3)}` : `:${k}`
+          v = v.replaceAll('\n', `\n${indent()}`)
+          xml += ` ${k}="${unExp(v)}"`
+        } else {
+          xml += ` ${k}="${v}"`
+        }
       }
       else if (typeof v == 'number') {
         xml += ` :${k}="${v}"`
@@ -102,7 +109,7 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
       }
     }
     // process end tag
-    xml = children != null ? `${xml}</${is}>\n` : `${xml.slice(0, -1)} />\n`
+    xml = children != null ? `${xml}</${hyphenate(is)}>\n` : `${xml.slice(0, -1)} />\n`
   }
 
   const { designer, state, ds, css, plugins, ...root } = JSON.parse(JSON.stringify(ctx.root))
