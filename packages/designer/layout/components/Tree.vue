@@ -56,22 +56,19 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(['node-click', 'node-hover', 'update:selectedKeys'])
 
-class $_Node extends toRaw(props.Node) {
+class $_Node extends props.Node {
   get root() { return rootNode as typeof this }
   get isRoot() { return this.root == this }
   get dir() { return isArray(this.data_children) }
   get expand() { return props.expandKeys[this.id] }
   get expandCount(): number { return this.expand ? this.children!.reduce((t, e) => t + e.expandCount, this.children!.length) : 0 }
   get selected() { return selectedKeys.value?.includes(this.id) }
-  get siblingSelected() { return selected.value?.id == this.parent?.id }
 }
 
 const rootNode = new $_Node({ get children() { return props.data } })
-console.log(rootNode);
-
 
 const selectedKeys = useVModel(props, 'selectedKeys', void 0, { passive: true, defaultValue: [] })
-const selected = computed(() => selectedKeys.value!.map(e => rootNode.keyed[e]))
+const selected = computed(() => selectedKeys.value!.map(e => rootNode.keyed[e]).filter(e => e))
 
 const dragGuideStyle = reactive({ left: '', top: '', height: '', width: '' })
 

@@ -1,3 +1,5 @@
+import { camelize } from '@vue/shared'
+
 const ICONS = ['search', 'arrow_forward', 'downloading', 'attach_file']
 const SIZES = ['normal', 'small', 'large']
 const COLORS = [['—'], 'primary', 'success', 'warning', 'error']
@@ -19,20 +21,12 @@ const _href = { is: 'div', class: 'grid gap-x-12', style: 'grid-template-columns
 // const _color = { is: 'div', children: [radios('color', COLORS), radios('base-color', COLORS)] }
 const _cancelable = bool(['cancelable', 'mandatory'], false, { get: v => !v, set: v => !v })
 
-const vmodel = (k = 'modelValue', evt = `onUpdate:${k}`) => ({
-  lp: `v-model${k == 'modelValue' ? '' : `:${k}`}`,
-  script: false,
-  get: (v, model) => {
-    const k1 = model[k]?.match(/\{\{(.+)\}\}/)?.[1]
-    return k1 && (model[evt]?.includes(`${k1} = v`)) ? k1 : void 0
-  },
-  set: () => (void 0),
-  out: (v, model) => {
-    return v
-      ? { [k]: `{{${v}}}`, [evt]: `{{(v) => {\n  ${v} = v\n}}}` }
-      : { [k]: void 0, [evt]: void 0 }
-  }
-})
+function vmodel(k, extra) {
+  const label = k ? `v-model : ${k}` : `v-model`
+  k = k ? camelize(k) : 'modelValue'
+  return { lp: [label, `vModels.${k}.0`], out: (v, model) => (v || (delete model.vModels[k]), {}), script: false, ...extra, el: { spellcheck: false } }
+}
+
 const Text = (s, extra) => ({ is: 'span', children: s, ...extra })
 
 const optionsInput = (lp, props, fn) => ({ lp, el: { is: 'OptionsInput', props, new: (i) => ({ ...fn?.(i) }) } })

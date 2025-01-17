@@ -22,6 +22,24 @@ const virtualProp = (props, p1, p2) => (p2 in props) || Object.defineProperty(pr
   enumerable: false
 })
 
+function vmodel(prop, extra) {
+  const label = prop ? `v-model : ${prop}` : `v-model`
+  prop = prop ? camelize(prop) : 'modelValue'
+  return { lp: [label, `vModels.${prop}.0`], out: (v, model) => (v || (delete model.vModels[prop]), {}), script: false, ...extra, el: { spellcheck: false } }
+}
+
+function vmodelInput(prop = 'value', extra) {
+  return {
+    lp: ['v-model', `vModels.${prop}`],
+    get: v => v?.[0] || '',
+    set: v => v ? ([v, null, ['onInput', 'e => e.target.value']]) : void 0,
+    out: (v, model) => (v || (delete model.vModels[prop]), {}),
+    script: false,
+    ...extra,
+    el: { spellcheck: false }
+  }
+}
+
 export default [
   {
     is: 'div',
@@ -203,7 +221,8 @@ export default [
     category: '基础组件',
     icon: 'https://api.iconify.design/ri:input-field.svg',
     props: props => [
-      { lp: 'value' },
+      // { lp: 'value' },
+      vmodelInput(),
       { lp: 'name' },
       { lp: 'disabled', type: 'switch' },
       { lp: 'readonly', type: 'switch' },
