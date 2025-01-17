@@ -14,7 +14,6 @@ export default {
             is: 'ElFormItemRender',
             label: '1. 您的年龄？',
             prop: 'radio1',
-            defaultValue: '',
             _id: '07617834-5b02-4136-ba4a-bc45438bc659',
             children: [
               {
@@ -53,7 +52,6 @@ export default {
             is: 'ElFormItemRender',
             label: '2. 会去麦当劳的原因？',
             prop: 'radio4',
-            defaultValue: '',
             _id: '66553703-0971-4f18-a686-95498f0dde63',
             children: [
               {
@@ -98,7 +96,6 @@ export default {
             is: 'ElFormItemRender',
             label: '3. 请问您去消费的频率：',
             prop: 'radio5',
-            defaultValue: '',
             _id: 'f22cf6fb-763b-4ef8-a3f9-37d72354f5e0',
             children: [
               {
@@ -137,7 +134,6 @@ export default {
             is: 'ElFormItemRender',
             label: '4. 您在麦当劳平均一次消费金额是多少？',
             prop: 'radio6',
-            defaultValue: '',
             _id: 'f0796491-b308-4668-b517-ebf300dea846',
             children: [
               {
@@ -176,7 +172,6 @@ export default {
             is: 'ElFormItemRender',
             label: '5. 您一般都消费那些类型的食品？',
             prop: 'radio7',
-            defaultValue: '',
             _id: 'ce11589d-4234-495b-8af2-9490a215c2ed',
             children: [
               {
@@ -215,7 +210,6 @@ export default {
             is: 'ElFormItemRender',
             label: '6. 去麦当劳就餐是否会考虑食品的健康性',
             prop: 'radio12',
-            defaultValue: '',
             _id: '3ed9c774-a861-4738-98fe-f94b75a0ab75',
             children: [
               {
@@ -254,7 +248,6 @@ export default {
             is: 'ElFormItemRender',
             label: '7. 您觉得麦当劳相对于其他快餐店的优势在于？',
             prop: 'checkbox1',
-            defaultValue: [],
             _id: '4af2cfa0-a61a-4354-8537-ab9ba52e03a1',
             children: [
               {

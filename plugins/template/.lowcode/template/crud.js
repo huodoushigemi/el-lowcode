@@ -202,7 +202,6 @@ export default {
                     prop: 'date',
                     _id: '01a072dd458dc303',
                     width: 120,
-                    fixed: 'left',
                   },
                   {
                     is: 'ElTableColumn',

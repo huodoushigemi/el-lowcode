@@ -1,7 +1,7 @@
 export default {
   id: 'choice-question',
   title: '选择填空',
-  cover: () => import('./choice-question.png?url').then(e => e.default),
+  cover: () => import('./choice-question.png?url').then((e) => e.default),
   schema: {
     children: [
       {
@@ -37,7 +37,6 @@ export default {
             _id: '926bd712-0d10-476f-9dac-7bec3b29bbbd',
             label: '',
             prop: 'radio1',
-            defaultValue: '',
             children: [
               {
                 is: 'ElRadioGroup',
@@ -61,7 +60,7 @@ export default {
                   {
                     is: 'ElRadio',
                     _id: '926bd712-0d10-476f-9dac-7bec3b29bbbx-3',
-                    label: 'C. mouse[bird["size"]] 是无效的',
+                    label: "C. mouse[bird['size']] 是无效的",
                     value: 'c',
                   },
                   {
@@ -99,7 +98,6 @@ export default {
             children: [
               {
                 is: 'ElRadioGroup',
-                defaultValue: '',
                 children: [
                   {
                     is: 'ElRadio',
@@ -156,7 +154,6 @@ export default {
             children: [
               {
                 is: 'ElRadioGroup',
-                defaultValue: '',
                 children: [
                   {
                     is: 'ElRadio',
@@ -206,7 +203,7 @@ export default {
             _id: '97d169a7-6bec-4786-a324-34c2514caa95',
             theme: 'a11y-dark',
             lang: 'javascript',
-            code: 'var name = "jimmy";\nvar a = {\n    name: "chimmy",\n    fn : function () {\n        console.log(this.name); \n    }\n}\na.fn();',
+            code: "var name = 'jimmy';\nvar a = {\n    name: 'chimmy',\n    fn : function () {\n        console.log(this.name); \n    }\n}\na.fn();",
             style: {
               'margin-left': '20px',
             },
@@ -218,7 +215,6 @@ export default {
             children: [
               {
                 is: 'ElInput',
-                defaultValue: '',
                 _id: '2b480b38-6605-476b-baa1-998b2ecf8e5a',
                 placeholder: '答',
               },
@@ -248,6 +244,7 @@ export default {
           width: '768px',
           height: '1024px',
         },
+        zoom: 1,
       },
     },
   },

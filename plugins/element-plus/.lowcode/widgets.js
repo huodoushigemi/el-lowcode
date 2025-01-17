@@ -730,7 +730,7 @@ export default [
     label: 'table-column',
     category: '数据展示',
     hidden: true,
-    drag: { to: ['ElTable'] },
+    drag: { to: ['ElTable', 'ElTableLcd'] },
     vSlots: {
       header: { scope: '{ column, $index }' },
       default: { scope: '{ row, column, $index }' }

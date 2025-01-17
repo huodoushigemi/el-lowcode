@@ -22,7 +22,6 @@ export default {
             _id: '70392eb3-506c-4ebb-b246-2bf1d3b1a1b6',
             label: '姓名',
             prop: 'name',
-            defaultValue: '',
             required: true,
             children: [
               {
@@ -36,7 +35,6 @@ export default {
             _id: 'e0b163bb-d4fb-43da-a2fd-191ae12145d4',
             label: '电话',
             prop: 'phone',
-            defaultValue: '',
             required: true,
             rules: {
               pattern: '^1[3456789]\\d{9}$',
@@ -69,7 +67,6 @@ export default {
             _id: '01b6a07d-b97c-4508-bcab-abbe07216779',
             label: '性别',
             prop: 'sex',
-            defaultValue: '',
             children: [
               {
                 is: 'ElRadioGroup',
@@ -96,7 +93,6 @@ export default {
             _id: 'cfbcbb23-139b-442a-bf4f-3847bd088121',
             label: '生日',
             prop: 'time',
-            defaultValue: '',
             children: [
               {
                 is: 'ElDatePicker',
@@ -110,7 +106,6 @@ export default {
             _id: 'e9d93e55-3aca-4661-a67e-2ac1fad1d291',
             label: '地址',
             prop: 'address',
-            defaultValue: '',
             children: [
               {
                 is: 'ElInput',
@@ -123,7 +118,6 @@ export default {
             _id: '83d294fb-ed7c-44e3-b64f-0924ba2c477b',
             label: '备注',
             prop: 'remark',
-            defaultValue: '',
             children: [
               {
                 is: 'ElInput',

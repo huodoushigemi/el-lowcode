@@ -43,7 +43,6 @@ export default {
                 _id: 'db825204-d07c-4e79-97ad-511e5bae7439',
                 label: 'Password',
                 prop: 'pass',
-                defaultValue: '',
                 required: true,
                 description: '',
                 children: [
@@ -58,7 +57,6 @@ export default {
                 _id: 'b9958b03-c0c3-4563-a3a3-f5d325e6f9cb',
                 label: 'Confirm',
                 prop: 'checkPass',
-                defaultValue: '',
                 required: true,
                 rules: {
                   validator:
@@ -77,7 +75,6 @@ export default {
                 _id: 'a303350e-9c38-496f-9a9b-c1a7052171b9',
                 label: 'Age',
                 prop: 'age',
-                defaultValue: '',
                 required: true,
                 rules: {
                   pattern: '^\\d+$',
