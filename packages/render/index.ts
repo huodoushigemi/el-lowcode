@@ -45,7 +45,8 @@ export function createRender({ defaultIs, processProps = (props) => props as unk
           isPlainObject(children) ? mapValues(children, v => (scope) => Temp(v, vars, scope)) :
           isFunction(children) ? { default: () => { const ret = (children as any)(); return isArray(ret) ? ret.map(e => _h(e, vars)) : ret; } } :
           // todo
-          isString(is) && isHTMLTag(is) ? children : () => children
+          children != null && !isHTMLTag(is) ? { default: () => children } :
+          children
         )
       : null
   }
