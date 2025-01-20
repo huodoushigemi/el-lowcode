@@ -53,15 +53,13 @@ const emit = defineEmits(['save', 'update:modelValue'])
 
 const isDark = useDark({ storageKey: 'vitepress-theme-appearance' })
 
+window.al
+
 async function onMount(_editor, monaco) {
-
-  // console.log(monaco.languages.typescript.typescriptDefaults.getCompilerOptions());
-
-  // monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-  //   noLib: true,
-  //   module: monaco.languages.typescript.ModuleKind.ESNext,
-  //   target: monaco.languages.typescript.ScriptTarget.ESNext,
-  // })
+  monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+    lib: ["es2020"],
+    allowNonTsExtensions: true
+  })
 
   // monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
   //   noSemanticValidation: false,
@@ -79,6 +77,7 @@ async function onMount(_editor, monaco) {
   if (props.tsExtraLibs) {
     Object.entries(props.tsExtraLibs).forEach(([k, v]) => {
       languages.typescript.typescriptDefaults.addExtraLib(v, k)
+      languages.typescript.javascriptDefaults.addExtraLib(v, k)
     })
   }
 }
@@ -96,7 +95,7 @@ function onKeydown(e) {
 import { defineAsyncComponent } from 'vue'
 
 const VueMonacoEditor = defineAsyncComponent(async () => {
-  const vs = 'https://unpkg.com/monaco-editor@0.52.0/min/vs'
+  const vs = 'https://unpkg.com/monaco-editor@0.52.2/min/vs'
 
   const { VueMonacoEditor, loader } = await import('@guolao/vue-monaco-editor')
   // loader.config({ monaco })

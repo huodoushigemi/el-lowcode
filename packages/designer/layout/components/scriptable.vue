@@ -18,7 +18,7 @@
 
   <template v-if="script === true || isScript || visible">
     <el-dialog v-model="visible" title="JS Expression" destroy-on-close>
-      <monaco-editor v-model:value="code" @save="onSave" :tsExtraLibs="tsExtraLibs" language="typescript" height="500px" autofocus />
+      <monaco-editor v-model:value="code" @save="onSave" :tsExtraLibs="tsExtraLibs" language="javascript" height="500px" autofocus />
       <template #footer>
         <el-button size="default" @click="visible = false">Cancel</el-button>
         <el-button size="default" type="primary" @click="onSave">Crtl+S</el-button>
@@ -29,13 +29,14 @@
 
 <script setup>
 import { computed, inject, ref } from 'vue'
-import { isOn, isString } from '@vue/shared'
+import { isOn } from '@vue/shared'
 import { ElDialog, ElTag, formContextKey, formItemProps } from 'element-plus'
 import { ElFormItemRender, formItemRenderPropsBase, useTransformer } from 'el-form-render'
 import { designerCtxKey } from '../interface'
 import MonacoEditor from './monaco-editor.vue'
 import { refWithWatch } from '../../components/hooks'
-import { isExp, unExp, wrapExp } from '@el-lowcode/utils'
+import { isExp, pick, unExp, wrapExp } from '@el-lowcode/utils'
+import { objStringify } from '../../utils'
 
 const props = defineProps({
   ...formItemProps,
@@ -54,8 +55,11 @@ const designerCtx = inject(designerCtxKey)
 
 const isScript = computed(() => isExp(value.value))
 
-const tsExtraLibs = computed(() => (console.log(JSON.stringify(designerCtx.currentState)), {
-  'state.ts': `const state = ${JSON.stringify(designerCtx.currentState)}`
+const win = pick(window, ['alert', 'console'])
+
+const tsExtraLibs = computed(() => ({
+  'lcd.vars.d.ts': Object.entries((designerCtx.active ?? designerCtx.rootNode)?.vars || {}).map(([k, v]) => `const ${k} = ${JSON.stringify(v)} as const`).join('\n\n'),
+  'lcd.dom.d.ts': `const window = ${objStringify(win, v => typeof v == 'function' ? '() => {}' : JSON.stringify(v))} as const`,
 }))
 
 const interpolation = computed(() => isExp(value.value) ? value.value : '{{}}')

@@ -716,6 +716,9 @@ export default [
         opts('row-key', Object.keys(node.$data?.data?.[0] || {}), { el: { filterable: true, allowCreate: true, defaultFirstOption: true }  })
       ])
     ],
+    devProps: (props, { el, children$ }) => ({
+      onHeaderDragend: (w, ow, col) => (children$[col.no].data.width = w, el.ownerDocument.defaultView.dispatchEvent(new DragEvent('dragend')))
+    }),
     defaultProps: () => ({
       rowKey: 'id',
       children: [
@@ -748,7 +751,7 @@ export default [
       str('formatter', { script: true, displayValue: '{{(row, col, val, i) => val}}' }),
     ],
     devProps: (props, { parent, children }) => ({
-      key: ({ ...children, ...parent.children }, uid()), // fix: enable v-slots does not update
+      key: ({ ...children }, uid()), // fix: enable v-slots does not update
       'lcd-label': `cell`,
       labelClassName: `${props.labelClassName || ''} lcd-id:${props._id}`,
     }),
