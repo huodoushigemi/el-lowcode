@@ -7,6 +7,7 @@
 - [Empty](https://page-test-huodoushigemi-f2b49a94d51c0541b4c4e0827acda06ce2c6aa7.gitlab.io/#/)
 - [Html](https://page-test-huodoushigemi-f2b49a94d51c0541b4c4e0827acda06ce2c6aa7.gitlab.io/#/?file=https%3A%2F%2Foxbkrsyagojtbckytbjx.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Flcd%2F3e8ed3ac75ec0508a9c28706a08ccf44.lcd.json)
 - [Form](https://page-test-huodoushigemi-f2b49a94d51c0541b4c4e0827acda06ce2c6aa7.gitlab.io/#/?file=https%3A%2F%2Foxbkrsyagojtbckytbjx.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Flcd%2Fab27b0c2bfb2c260d1bb40cb324640eb.lcd.json)
+- [CRUD](https://page-test-huodoushigemi-f2b49a94d51c0541b4c4e0827acda06ce2c6aa7.gitlab.io/#/?file=https%3A%2F%2Foxbkrsyagojtbckytbjx.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Flcd%2Fdbc9d121017699725ffd6bcf5efc7b6c.lcd.json)
 - [Echarts](https://page-test-huodoushigemi-f2b49a94d51c0541b4c4e0827acda06ce2c6aa7.gitlab.io/#/?file=https%3A%2F%2Foxbkrsyagojtbckytbjx.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Flcd%2F24c1320d2531ae760ab19113f1367de1.lcd.json)
 - [Vuetify](https://page-test-huodoushigemi-f2b49a94d51c0541b4c4e0827acda06ce2c6aa7.gitlab.io/#/?file=https%3A%2F%2Foxbkrsyagojtbckytbjx.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Flcd%2F8489e54f5151607f874212d5ed31e0b5.lcd.json)
 - [Waterfall](https://page-test-huodoushigemi-f2b49a94d51c0541b4c4e0827acda06ce2c6aa7.gitlab.io/#/?file=https%3A%2F%2Foxbkrsyagojtbckytbjx.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Flcd%2F1229722f6b852ee722c4faef234d40c7.lcd.json)
