@@ -157,13 +157,12 @@ export abstract class DisplayNode extends Node<BoxProps> {
   set y(v) { set(this.data, 'style.transform', `translate(${this.x}px, ${v}px)`) }
 
   get inline() { return this.el ? window.getComputedStyle(this.el).display.includes('inline') : false }
-  set inline(v) { v ? set(this.data, 'style.display', (this.flex && 'inline-flex') || (this.grid || 'inline-grid')) : void 0 }
+  set inline(v) { set(this.data, 'style.display', [v && 'inline', this.layout].filter(e => e).join('-') || void 0) }
+  
+  get layout() { return this.el ? window.getComputedStyle(this.el).display.replace(/inline-?/, '') || void 0 : void 0 }
+  set layout(v) { set(this.data, 'style.display', [this.inline && 'inline', v].filter(e => e).join('-') || void 0) }
 
-  get flex() { return this.el ? window.getComputedStyle(this.el).display.includes('flex') : false }
-  set flex(v) { v ? set(this.data, 'style.display', this.inline ? 'inline-flex' : 'flex') : void 0 }
-
-  get grid() { return this.el ? window.getComputedStyle(this.el).display.includes('grid') : false }
-  set grid(v) { v ? set(this.data, 'style.display', this.inline ? 'inline-grid' : 'grid') : void 0 }
+  get parentLayout() { return this.el?.parentElement ? window.getComputedStyle(this.el.parentElement).display.replace(/inline-?/, '') : void 0 }
 
   // 自由布局
   get isAbsLayout() { return !!this.data['lcd-absolute-layout'] }
