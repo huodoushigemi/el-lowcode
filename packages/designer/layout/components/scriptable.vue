@@ -18,7 +18,7 @@
 
   <template v-if="script === true || isScript || visible">
     <el-dialog v-model="visible" title="JS Expression" destroy-on-close>
-      <monaco-editor v-model:value="code" @save="onSave" :tsExtraLibs="tsExtraLibs" language="javascript" height="500px" autofocus />
+      <monaco-editor v-model="code" @save="onSave" :tsExtraLibs="tsExtraLibs" language="javascript" height="500px" autofocus />
       <template #footer>
         <el-button size="default" @click="visible = false">Cancel</el-button>
         <el-button size="default" type="primary" @click="onSave">Crtl+S</el-button>
@@ -62,11 +62,10 @@ const tsExtraLibs = computed(() => ({
   'lcd.dom.d.ts': `const window = ${objStringify(win, v => typeof v == 'function' ? '() => {}' : JSON.stringify(v))} as const`,
 }))
 
-const interpolation = computed(() => isExp(value.value) ? value.value : '{{}}')
-const code = refWithWatch(() => unExp(interpolation.value) || (isOn(props.prop) ? `(e) => {\n  \n}` : ''))
-const exp = computed(() => unExp(interpolation.value))
+const exp = computed(() => isExp(value.value) ? unExp(value.value) : '')
 
 const visible = ref(false)
+const code = refWithWatch(() => exp.value || (isOn(props.prop) ? `(e) => {\n  \n}` : ''), visible)
 
 function onSave() {
   value.value = code.value ? wrapExp(code.value) : void 0

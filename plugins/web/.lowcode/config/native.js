@@ -208,7 +208,7 @@ export default [
     category: '基础组件',
     icon: 'https://api.iconify.design/material-symbols:radio-button-unchecked.svg',
     props: [
-
+      { lp: 'type', type: 'radio-group', options: [['—'], 'submit', 'reset'] },
     ],
     defaultProps: () => ({
       children: [{ is: 'span', children: 'button' }]
@@ -216,9 +216,15 @@ export default [
   },
 
   {
+    is: 'form',
+    label: 'form',
+    category: '表单组件',
+  },
+
+  {
     is: 'input',
     label: 'input',
-    category: '基础组件',
+    category: '表单组件',
     icon: 'https://api.iconify.design/ri:input-field.svg',
     props: props => [
       // { lp: 'value' },
@@ -227,7 +233,7 @@ export default [
       { lp: 'disabled', type: 'switch' },
       { lp: 'readonly', type: 'switch' },
       { lp: 'required', type: 'switch' },
-      { lp: 'type', displayValue: 'text', options: ['text', 'number', 'range', 'password', 'radio', 'checkbox', 'color', 'date', 'datetime-local', 'month', 'time', 'reset', 'submit'] },
+      { lp: 'type', displayValue: 'text', options: ['text', 'number', 'range', 'password', 'radio', 'checkbox', 'color', 'date', 'datetime-local', 'month', 'time'] },
       ...[
         [{ lp: 'min', type: 'input-number' }, ['number', 'range']],
         [{ lp: 'max', type: 'input-number' }, ['number', 'range']],
@@ -241,6 +247,33 @@ export default [
     defaultProps: () => ({
 
     })
+  },
+
+  {
+    is: 'select',
+    label: 'select',
+    category: '表单组件',
+    drag: { from: ['option'] },
+    props: [
+      vmodelInput()
+    ],
+    defaultProps: () => ({
+      children: [
+        { is: 'option', value: '1', children: 'One' },
+        { is: 'option', value: '2', children: 'Two' },
+        { is: 'option', value: '3', children: 'Three' },
+      ]
+    })
+  },
+  {
+    is: 'option',
+    label: 'option',
+    category: '表单组件',
+    hidden: true,
+    drag: { from: ['select'] },
+    props: [
+      { lp: 'value' }
+    ],
   },
 
   {
