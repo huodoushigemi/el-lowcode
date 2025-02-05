@@ -5,14 +5,11 @@ import chalk from 'chalk'
 import Vue from '@vitejs/plugin-vue'
 import Jsx from '@vitejs/plugin-vue-jsx'
 import VueMacros from 'unplugin-vue-macros/rollup'
-import ImportMetaGlob from './rollup-plugin-import-meta-glob.js'
 import esbuild from 'rollup-plugin-esbuild'
 import dts from 'rollup-plugin-dts'
-import path from 'path'
 import fs from 'fs'
 import fse from 'fs-extra'
 import { execSync } from 'child_process'
-// import Commonjs from '@rollup/plugin-commonjs'
 
 import Icons from 'unplugin-icons/rollup'
 import IconsResolver from 'unplugin-icons/resolver'
@@ -45,8 +42,6 @@ export async function build(pack) {
     external: Object.keys({ ...pkg.dependencies, ...pkg.peerDependencies }) ?? [],
     plugins: [
       nodeResolve(),
-      // Commonjs({ defaultIsModuleExports: 'auto', include: [/\.cjs/], extensions: ['.js', '.cjs'] }),
-      // ImportMetaGlob({ include: /\.js$/ }),
       importGlobPlugin({ root: process.cwd() }),
       VueMacros({
         plugins: {

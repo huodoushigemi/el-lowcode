@@ -3,6 +3,8 @@ export { default as Tree } from './layout/components/Tree.vue'
 import './style.scss'
 
 export * from './layout/interface'
+export * from './utils/quickPick'
+export * from './utils/showDialog'
 
 export { default }  from './layout/index.vue'
 

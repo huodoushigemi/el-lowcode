@@ -1,5 +1,5 @@
+import { createApp, provide, defineAsyncComponent, h, reactive, watchEffect, triggerRef, toRef, toRaw, nextTick } from 'vue'
 import { isPlainObject } from '@vue/shared'
-import { createApp, provide, defineAsyncComponent, h, reactive, watchEffect } from 'vue'
 import { ElMessageBox, ElSegmented } from 'element-plus'
 import { get, html2schema, set, toArr } from '@el-lowcode/utils'
 import { genCode, showDialog } from '../../../utils'
@@ -17,7 +17,41 @@ function create(AsyncComp) {
 }
 
 export function activate(designerCtx) {
-  
+  // 文本元素 开启编辑模式
+  watchEffect(cleaup => {
+    const node = designerCtx.active
+    if (!node?.el || !node?.text) return
+    const { el } = node
+    const addEvent = (event, cb, opt) => { el.addEventListener(event, cb, opt); cleaup(() => el.removeEventListener(event, cb)) }
+    const addAttr = (k, v) => { el.setAttribute(k, v); cleaup(() => el.removeAttribute(k)) }
+
+    addEvent('click', () => {
+      const text = el.innerText
+      addAttr('lcd-text', '')
+      addAttr('contenteditable', 'plaintext-only')
+      addAttr('spellcheck', 'false')
+      cleaup(() => el.ownerDocument.getSelection()?.empty())
+      cleaup(() => el.innerText != text && triggerRef(toRef(node.data, 'children')))
+      
+      addEvent('input', (e) => {
+        e.stopPropagation()
+        toRaw(node.data).children = el.innerText
+      })
+      addEvent('keydown', async (e) => {
+        if (e.key == 'Enter') {
+          e.preventDefault()
+          designerCtx.activeId = void 0
+          await nextTick()
+          designerCtx.activeId = node.id
+        }
+        e.stopPropagation()
+      })
+      addEvent('click', (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+      })
+    }, { once: true })
+  })
 }
 
 export function deactivate(designer) {
@@ -124,10 +158,9 @@ export const contributes = (designerCtx) => ({
       { label: '上移', icon: 'https://api.iconify.design/solar:arrow-up-linear.svg', disabled: () => !node.prev, onClick: () => node.after(node.prev) },
       { label: '下移', icon: 'https://api.iconify.design/solar:arrow-down-linear.svg', disabled: () => !node.next, onClick: () => node.before(node.next) },
       { label: '拷贝', icon: 'https://api.iconify.design/solar:copy-line-duotone.svg', onClick: () => node.after(node.clone()) },
-      { label: '清空', icon: 'https://api.iconify.design/solar:broom-broken.svg', hover: 'c-red', onClick: () => node.empty() },
-      { label: '删除', icon: 'https://api.iconify.design/solar:trash-bin-minimalistic-linear.svg', hover: 'c-red', onClick: () => node.remove() },
+      { label: '清空', icon: 'https://api.iconify.design/solar:broom-broken.svg', class: 'hover:c-red', onClick: () => node.empty() },
+      { label: '删除', icon: 'https://api.iconify.design/solar:trash-bin-minimalistic-linear.svg', class: 'hover:c-red', onClick: () => node.remove() },
       { is: 'hr' },
-      // todo
       { label: '代码', icon: 'https://api.iconify.design/solar:code-bold.svg', onClick: () => showCode(node) },
       { is: 'hr' },
       { label: 'v-slots', vIf: vSlots(node), icon: 'https://api.iconify.design/fa6-solid:check-to-slot.svg', children: 
@@ -137,6 +170,7 @@ export const contributes = (designerCtx) => ({
         slots(node)?.map(slot => ({ label: slot, checked: () => node.data.slot == slot, onClick: () => node.data.slot = node.data.slot == slot ? void 0 : slot }))
       },
     ],
+    // todo
     'view/title': [
       {
         command: '',
@@ -144,6 +178,7 @@ export const contributes = (designerCtx) => ({
         group: 'navigation' // inline
       }
     ],
+    // todo
     'view/item/context': [
       {
         command: '',
@@ -151,12 +186,15 @@ export const contributes = (designerCtx) => ({
         group: 'navigation'
       }
     ],
+    // todo
     'editor/context': [
 
     ],
+    // todo
     'editor/title': [
       
     ],
+    // todo
     'editor/title/context': [
       
     ],

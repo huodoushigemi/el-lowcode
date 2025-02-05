@@ -68,6 +68,7 @@ export default defineConfig({
     '[&>*]:flex-1',
     'text-32',
     'font-bold',
+    'c-red', 'hover:c-red',
     'cursor-cell',
     'animate-spin',
     'w24', 'w22', 'w20', 'w18',

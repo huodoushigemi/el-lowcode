@@ -1,8 +1,8 @@
-import { computed, markRaw, MaybeRefOrGetter, nextTick, reactive, Ref, ref, toRaw, toRef, toValue, triggerRef, watch, watchEffect } from 'vue'
+import { computed, markRaw, MaybeRefOrGetter, reactive, Ref, ref, toValue, watch } from 'vue'
 import { isArray, isObject, remove } from '@vue/shared'
 import { computedAsync, Fn, tryOnBeforeUnmount } from '@vueuse/core'
 import { useTransformer } from 'el-form-render'
-import { keyBy, mapValues, pick, toArr, treeUtils, unFn } from '@el-lowcode/utils'
+import { keyBy, mapValues, toArr, treeUtils, unFn } from '@el-lowcode/utils'
 import { BoxProps, Contributes, DesignerCtx, DisplayNode, ExtensionContext, UserWidget, Widget } from '../layout/interface'
 
 export * as genCode from './genCode'
@@ -88,42 +88,6 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
   watch(() => designerCtx.dragged, (val, old) => {
     old?.el?.removeAttribute('lcd-dragged')
     val?.el?.setAttribute('lcd-dragged', '')
-  })
-
-  // 文本元素 开启编辑模式
-  watchEffect(cleaup => {
-    const node = designerCtx.active
-    if (!node?.el || !node?.text) return
-    const { el } = node
-    const addEvent = (event, cb, opt?) => { el.addEventListener(event, cb, opt); cleaup(() => el.removeEventListener(event, cb)) }
-    const addAttr = (k, v) => { el.setAttribute(k, v); cleaup(() => el.removeAttribute(k)) }
-
-    addEvent('click', () => {
-      const text = el.innerText
-      addAttr('lcd-text', '')
-      addAttr('contenteditable', 'plaintext-only')
-      addAttr('spellcheck', 'false')
-      cleaup(() => el.ownerDocument.getSelection()?.empty())
-      cleaup(() => el.innerText != text && triggerRef(toRef(node.data, 'children')))
-      
-      addEvent('input', (e) => {
-        e.stopPropagation()
-        toRaw(node.data).children = el.innerText
-      })
-      addEvent('keydown', async (e) => {
-        if (e.key == 'Enter') {
-          e.preventDefault()
-          designerCtx.activeId = void 0
-          await nextTick()
-          designerCtx.activeId = node.id
-        }
-        e.stopPropagation()
-      })
-      addEvent('click', (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-      })
-    }, { once: true })
   })
 
   return designerCtx
