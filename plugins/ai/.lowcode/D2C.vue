@@ -5,7 +5,8 @@
         <div>
           MODEL
           <select class="vs-input py4 mt4" v-model="form.model">
-            <option v-for="val in ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-pro']" :value="val">{{ val }}</option>
+            <!-- <option v-for="val in ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-pro']" :value="val">{{ val }}</option> -->
+            <option v-for="val in models" :value="val">{{ val }}</option>
           </select>
         </div>
     
@@ -30,7 +31,7 @@
             AI Assistant
           </div>
           <i-eos-icons:three-dots-loading v-if="!msg.content" style="width: 48px; height: 48px" />
-          <wc-mdit v-else="msg.content" :content="msg.content" :css="`pre { padding: 8px; max-height: 192px; overflow: auto; background: #0a0a0a66; } ${!msg.done && blinkCaret}`" />
+          <wc-mdit v-else="msg.content" :content="msg.content" :css="`pre { padding: 8px; max-height: 192px; overflow: auto; background: #0a0a0a66; } ${!msg.done && blinkCaret}`" :options="{ highlight }" />
           <div class="vs-actions flex space-x-4">
             <i-pajamas:live-preview v-if="msg.done" class="vs-ai vs-li mla" title="View" @click="showModal(msg.content)" />
             <i-tdesign:file-import v-if="msg.done" class="vs-ai vs-li" title="Import to designer" @click="replaceCanvas(msg.content)" />
@@ -55,8 +56,30 @@ import 'wc-mdit'
 
 const designer = inject('designerCtx')
 
+const ais = {
+  deepseek: {
+    icon: 'https://api-docs.deepseek.com/zh-cn/img/favicon.svg',
+    url: 'https://api.deepseek.com',
+    key: ['7fa38d5c65', 'f437f831f4b2c15cce5393', '-ks'].reverse().join(''),
+    models: ['deepseek-reasoner', 'deepseek-chat']
+  },
+  openai: {
+    icon: 'https://openai.com/2.0/icon.svg',
+    key: ['7fa38d5c65', 'f437f831f4b2c15cce5393', '-ks'].reverse().join(''),
+    models: ['gpt-4o', 'gpt-4o-mini']
+  },
+  // gemini: {
+  //   icon: 'https://openai.com/2.0/icon.svg',
+  //   key: 'AIzaSyDrMDJQ2qAeyEMvrXpQm6AiLaVpuoN2cVE',
+  //   models: ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-pro']
+  // }
+}
+
+const models = Object.values(ais).flatMap(e => e.models)
+
 const form = toReactive(useLocalStorage('ai:options', {
   key: 'AIzaSyDrMDJQ2qAeyEMvrXpQm6AiLaVpuoN2cVE',
+  // key: ['7fa38d5c65', 'f437f831f4b2c15cce5393', '-ks'].reverse().join('')
   model: 'gemini-2.0-flash-exp',
 }))
 
@@ -153,5 +176,33 @@ async function stickyBottom() {
     scrollRef.value.scrollTop = scrollRef.value.scrollHeight
     scrollRef.value.style.scrollBehavior = ''
   }, 0)
+}
+
+function highlight(code, lang) {
+  return `<wc-hljs code="${code}" />`
+}
+
+async function openai(key, url) {
+  const OpenAI = await import('https://unpkg.com/openai@4.82.0/index.mjs').then(e => e.default)
+  const openai = new OpenAI({
+    baseURL: url,
+    apiKey: key,
+    dangerouslyAllowBrowser: true
+  })
+
+  return async function* (messages, model) {
+    const stream = await openai.chat.completions.create({
+      messages: messages ?? [
+        { role: "system", content: "You are a helpful assistant." },
+        { role: 'user', content: [{ type: 'text', content: '' }, { typr: 'image_url', image_url: { url: '' } }] }
+      ],
+      model: model ?? "deepseek-chat",
+      stream: true
+    })
+    for await (const chunk of stream) {
+      yield chunk.choices[0]?.delta?.content || ""
+    }
+  }
+  
 }
 </script>
