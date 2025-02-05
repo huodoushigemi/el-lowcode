@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, onBeforeUnmount, ref, watch } from 'vue'
-import tippy, { Props } from 'tippy.js'
+import { PropType, ref, watch } from 'vue'
+import tippy, { Props, Instance } from 'tippy.js'
 
 const props = defineProps({
   target: Object,
@@ -15,21 +15,18 @@ const props = defineProps({
 
 const el = ref()
 
-let ins
-
-watch(() => [props.target, el.value], ([target, content]) => {
+watch(() => [props.target, el.value], ([target, content], old, cleaup) => {
   if (!content) return
   target ??= content.parentElement
-  
-  ins?.destroy()
-  ins = tippy(target, {
+
+  const ins = tippy(target, {
     content,
     ...props.extra
-  })
+  }) as unknown as Instance
+  
+  cleaup(() => ins.destroy())
 }, {
   immediate: true,
   flush: 'post'
 })
-
-onBeforeUnmount(() => ins?.destroy())
 </script>

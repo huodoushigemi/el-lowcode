@@ -3,7 +3,8 @@
     <!-- hover rect -->
     <template v-for="(rect, i) in designerCtx.hover?.getRects()">
       <div v-if="designerCtx.hover != active && !designerCtx.dragged" absolute outline="1 dashed [--vs-focus-b-c] offset--1" op50 :style="calcStyle(rect)" />
-      <div v-if="i == 0" class="absolute -translate-y-full px8 max-w8em text-12 truncate c-white op50 bg-[--vs-focus-b-c]" :style="{ ...calcStyle(rect), width: '', height: '' }">
+      <div v-if="i == 0" class="absolute -translate-y-full flex aic px8 max-w8em text-12 truncate c-white op50 bg-[--vs-focus-b-c]" :style="{ ...calcStyle(rect), width: '', height: '' }">
+        <i-mdi:cursor-move v-if="designerCtx.hover?.isAbs" class="-ml4 mr4" />
         {{ designerCtx.hover?.label }}
       </div>
     </template>
@@ -11,47 +12,17 @@
     <!-- active rect -->
     <template v-if="active" v-for="rect in active?.getRects()">
       <div absolute outline="1 solid [--vs-focus-b-c] offset--1" :style="calcStyle(rect)" @mousedown.stop>
-        <div v-if="active.parent && !active.isAbs" :key="active.id" class="vs-actions absolute bottom-full right-0 flex text-14 pointer-events-auto bg-#333" :class="!!designerCtx.dragged && 'op0 pointer-events-none!'" style="box-shadow: 0 0 12px #00000080" @mousedown.stop draggable="true" @dragstart="dispatchDrag">
-          <div class="vs-li">
-            <i-mdi:dots-vertical w16 h16 />
-            <Tippy class="vs-menu" :extra="{ interactive: true, offset: [0, 0], delay: [0, 300], duration: 0, placement: 'right-start' }">
-              <div class="vs-menu-li" :disabled="!active.prev" @click="active.after(active.prev!)"><i-solar:arrow-up-linear mr6 />上移</div>
-              <div class="vs-menu-li" :disabled="!active.next" @click="active.before(active.next!)"><i-solar:arrow-down-linear mr6 />下移</div>
-              <div class="vs-menu-li" @click="active.after(active.clone())"><i-solar:copy-line-duotone mr6 />拷贝</div>
-              <div class="vs-menu-li" @click="active.empty()" hover="c-red"><i-solar:broom-broken mr6 />清空</div>
-              <div class="vs-menu-li" @click="active.remove()" hover="c-red"><i-solar:trash-bin-minimalistic-linear mr6 />删除</div>
-              <hr />
-              <!-- v-slots -->
-              <div v-if="vSlots" class="vs-menu-li">
-                <i-fa6-solid:check-to-slot mr6 />v-slots
-                <Tippy class="vs-menu" :extra="{ interactive: true, offset: [-6, 5], delay: [0, 150], duration: 0, placement: 'right-start', hideOnClick: false }">
-                  <div v-for="slot in vSlots" class="vs-menu-li" @click="active.vSlots[slot] = active.vSlots[slot] ? void 0 : []"><i-mdi:check mr6 :op="active.vSlots[slot] ? 100 : 0" />{{ slot }}</div>
-                </Tippy>
-              </div>
-              <!-- slots -->
-              <!-- <div v-if="active.config?.slots" class="vs-menu-li">
-                <i-fa6-solid:check-to-slot mr6 />v-slots
-                <Tippy class="vs-menu" :extra="{ interactive: true, offset: [-6, 5], delay: [0, 150], duration: 0, placement: 'right-start', hideOnClick: false }">
-                  <div v-for="slot in active.config?.slots" class="vs-menu-li" @click="active.vSlots[slot] = active.vSlots[slot] ? void 0 : []"><i-mdi:check mr6 :op="active.vSlots[slot] ? 100 : 0" />{{ slot }}</div>
-                </Tippy>
-              </div> -->
-              <!-- slot -->
-              <div v-if="active.parent?.config?.slots" class="vs-menu-li">
-                <i-fa6-solid:check-to-slot mr6 />slot
-                <Tippy class="vs-menu" :extra="{ interactive: true, offset: [-6, 5], delay: [0, 150], duration: 0, placement: 'right-start', hideOnClick: false }">
-                  <div v-for="slot in active.parent.config.slots" class="vs-menu-li" @click="active.data.slot = active.data.slot == slot ? void 0 : slot"><i-mdi:check mr6 :op="active.data.slot == slot ? 100 : 0" />{{ slot }}</div>
-                </Tippy>
-              </div>
-            </Tippy>
+        <div v-if="active.parent" :key="active.id" class="vs-actions absolute bottom-full right-0 flex text-14 pointer-events-auto bg-#333" :class="!!designerCtx.dragged && 'op0 pointer-events-none!'" style="box-shadow: 0 0 12px #00000080" @mousedown.stop draggable="true" @dragstart="dispatchDrag">
+          <div v-if="active.isAbs" class="vs-li">
+            <i-mdi:cursor-move ref="moveHandle" w16 h16 cursor-move />
+            <Moveable v-if="active.el" :key="active.id" :target="active.el" :dragTarget="unrefElement(moveHandle?.[0])" :draggable="true" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
           </div>
-        </div>
-  
-        <div v-if="active.parent && active.isAbs" class="actions absolute bottom-full right-0 flex text-14 text-nowrap pointer-events-auto c-white bg-[--vs-focus-b-c]" :op="designerCtx.dragged && 0" @mouseenter="designerCtx.hoverId = active.id" @mouseover="designerCtx.hoverId = active.id">
-          <div px12 max-w12em truncate bg="#17d57e">{{ active.label }}</div>
-          <i-bi:arrows-move ref="moveHandle" class="icon" text-16="!" cursor-move />
-          <i-solar:copy-line-duotone class="icon" @click="active.after(active.clone())" />
-  
-          <Moveable v-if="active.el" :key="active.id" :target="active.el" :dragTarget="unrefElement(moveHandle)" :draggable="true" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
+          <Tippy class="vs-li" interactive :offset="[0, 0]" :delay="[0, 300]" placement="right-start" :duration="0">
+            <i-mdi:dots-vertical w16 h16 />
+            <template #content>
+              <Menu ref="menu" :items="active.menus" :tippy="{ delay: 100 }" />
+            </template>
+          </Tippy>
         </div>
       </div>
     </template>
@@ -60,17 +31,15 @@
 
 <script setup lang="ts">
 import { getCurrentInstance, inject, computed, ref } from 'vue'
-import { isPlainObject } from '@vue/shared'
 import { unrefElement, useMutationObserver, useResizeObserver } from '@vueuse/core'
 import Moveable from 'vue3-moveable'
+import { Tippy } from 'vue-tippy'
 import { designerCtxKey } from '../interface'
-import Tippy from './tippy.vue'
+import Menu from '../../components/Menu.vue'
 
 const designerCtx = inject(designerCtxKey)!
 
 const active = computed(() => designerCtx.active)
-
-const vSlots = computed(() => isPlainObject(active.value?.config?.vSlots) ? Object.keys(active.value?.config?.vSlots) : active.value?.config?.vSlots)
 
 const calcStyle = (rect: DOMRect) => {
   return { top: rect.top + 'px', left: rect.left + 'px', width: rect.width + 'px', height: rect.height + 'px' }

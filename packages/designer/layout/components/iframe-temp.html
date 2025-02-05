@@ -118,25 +118,29 @@
             loading: () => h('h1', { style: 'margin: 0; text-align: center; transform: translate(0, 45vh);' }, 'Loading……')
           }),
           // free drag
-          designerCtx.hover?.isAbs && designerCtx.hover.el && h(Moveable, {
-            key: designerCtx.hover.id,
-            target: designerCtx.hover.el,
-            draggable: true,
-            origin: false,
-            hideDefaultLines: true,
-            throttleDrag: 1,
-            snappable: true,
-            elementGuidelines: [designerCtx.active?.parent, ...designerCtx.active?.siblings || []]?.map(e => e?.el),
-            snapDirections: Object.fromEntries(['top', 'left', 'bottom', 'right', 'center', 'middle'].map(e => [e, true])),
-            elementSnapDirections: Object.fromEntries(['top', 'left', 'bottom', 'right', 'center', 'middle'].map(e => [e, true])),
-            onDragStart: e => designerCtx.draggedId = designerCtx.active?.id,
-            onDrag: e => e.target.style.transform = e.transform,
-            onDragEnd: e => {
-              const style = designerCtx.active.data.style ??= {}
-              style.transform = e.target.style.getPropertyValue('transform')
-              designerCtx.draggedId = undefined
-            }
-          }),
+          (() => {
+            const { hover } = designerCtx
+            if (!hover?.isAbs || !hover.el) return
+            return h(Moveable, {
+              key: hover.id,
+              target: hover.el,
+              draggable: true,
+              origin: false,
+              hideDefaultLines: true,
+              throttleDrag: 1,
+              snappable: true,
+              elementGuidelines: [hover.parent, ...hover.siblings || []]?.map(e => e?.el),
+              snapDirections: Object.fromEntries(['top', 'left', 'bottom', 'right', 'center', 'middle'].map(e => [e, true])),
+              elementSnapDirections: Object.fromEntries(['top', 'left', 'bottom', 'right', 'center', 'middle'].map(e => [e, true])),
+              onDragStart: e => designerCtx.activeId = designerCtx.draggedId = hover.id,
+              onDrag: e => e.target.style.transform = e.transform,
+              onDragEnd: e => {
+                const style = hover.data.style ??= {}
+                style.transform = e.target.style.getPropertyValue('transform')
+                designerCtx.draggedId = undefined
+              }
+            })
+          })()
         ]
       })
 

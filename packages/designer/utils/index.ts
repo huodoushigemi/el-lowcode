@@ -7,6 +7,7 @@ import { BoxProps, Contributes, DesignerCtx, DisplayNode, ExtensionContext, User
 
 export * as genCode from './genCode'
 export * from './quickPick'
+export * from './showDialog'
 
 export function objStringify(obj, fn) {
   if (isArray(obj)) {

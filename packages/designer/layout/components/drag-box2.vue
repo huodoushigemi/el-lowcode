@@ -4,7 +4,7 @@ import { isArray } from '@vue/shared'
 import { useEventListener } from '@vueuse/core'
 import { processProps } from 'el-lowcode'
 import { createRender } from '@el-lowcode/render'
-import { unFn, useDraggable } from '@el-lowcode/utils'
+import { findret, unFn, useDraggable } from '@el-lowcode/utils'
 import type { DesignerCtx, BoxProps, DisplayNode } from '../interface'
 
 type El = Element
@@ -115,6 +115,10 @@ function setup(node: DisplayNode) {
 
 const draggable = useDraggable(document.body, {
   dragstart(e) {
+    if (findret(e.composedPath() as El[], e => e.nodeType == 1 ? resolveNode(e) : void 0)?.isAbs) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     e.dataTransfer!.setDragImage(new Image(), 0, 0)
   },
   dragover(el, _, { path }) {
@@ -139,16 +143,26 @@ const draggable = useDraggable(document.body, {
   getRect(el) {
     return resolveNode(el)!.getRect()!
   },
-  drop(el, _, type) {
-    if (el == dragNode!.el) return dragEnd()
-    // 
-    type == 'prev' ? resolveNode(el)!.before(dragNode!) :
-    type == 'next' ? resolveNode(el)!.after(dragNode!) :
-    designer.keyedNode[el.getAttribute('lcd-dragover')!].insertBefore(dragNode!)
-    // 
-    dragNode!.click()
+  drop(el, _, type, e) {
+    if (el == dragNode!.el) return
+    if (!dragNode) return
+    const rel = designer.keyedNode[el.getAttribute('lcd-dragover')!] || resolveNode(el)
+    if (rel.isAbsLayout && type == 'inner') {
+      const rect = el.getBoundingClientRect()
+      dragNode.isAbs = true
+      dragNode.x = e.x - rect.x
+      dragNode.y = e.y - rect.y
+      rel.insertBefore(dragNode)
+    } else {
+      dragNode.isAbs = false
+      type == 'prev' ? rel.before(dragNode) :
+      type == 'next' ? rel.after(dragNode) :
+      type == 'inner' ? rel.insertBefore(dragNode) : void 0
+    }
+    dragNode.click()
+  },
+  dragend() {
     draggable.dragoverEl?.removeAttribute('lcd-dragover')
-    dragEnd()
   },
 })
 
@@ -209,6 +223,8 @@ function dragStart(e: DragEvent) {
 }
 
 function dragEnd() {
+  console.log('dragEnd');
+  
   draggable.dragend()
   dragNode = void 0
   dragged.value = void 0

@@ -1,6 +1,23 @@
 import { toRaw, toRef, triggerRef } from 'vue'
+import { isString } from '@vue/shared'
 import { chooseImg } from '@el-lowcode/utils'
 import TiptapProps from '../TiptapProps.vue'
+
+const str = (lp, extra) => ({ lp, displayValue: '', ...extra })
+const opts = (lp, options, extra) => ({ lp, options, ...extra })
+const radios = (lp, options, extra) => ({ lp, type: 'radio-group', options, ...extra, el: { type: 'button', ...extra?.el } })
+const chekcs = (lp, options, extra) => ({ lp, type: 'checkbox-group', options, ...extra, el: { type: 'button', ...extra?.el } })
+const bool = (lp, displayValue = false, extra) => ({ lp, type: 'switch', displayValue, ...extra })
+const num = (lp, displayValue, extra) => ({ lp, type: 'input-number', displayValue, set: v => v == null ? void 0 : v, ...extra })
+const color = lp => ({ lp, type: 'color-picker' })
+
+const txt = () => ({ lp: ['text', 'children'], hide: o => !isString(o.children) })
+const hr = () => ({ is: 'hr', class: '-mx8' })
+
+const grid2 = children => ({ is: 'div', class: 'grid grid-cols-2 gap-x-12', children })
+const grid3 = children => ({ is: 'div', class: 'grid grid-cols-3 gap-x-12', children })
+
+const Text = (s, extra) => ({ is: 'span', children: s, ...extra })
 
 const createH = (is, hidden = true) => ({
   is,
@@ -9,7 +26,7 @@ const createH = (is, hidden = true) => ({
   icon: 'https://api.iconify.design/mdi:format-header-1.svg',
   props: [
     { lp: ['text', 'children'] },
-    { lp: ['level', 'is'], type: 'radio-group', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }
+    radios(['level', 'is'], ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
   ],
   defaultProps: () => ({
     children: 'Heading'
@@ -64,9 +81,9 @@ export default [
     category: '基础组件',
     icon: 'https://api.iconify.design/mdi:link-variant.svg',
     props: [
-      { lp: ['text', 'children'] },
-      { lp: 'href' },
-      { lp: 'target', type: 'radio-group', options: ['_self', '_blank'] }
+      txt(),
+      str('href'),
+      radios('target', [['_self'], '_blank'])
     ],
     defaultProps: () => ({
       children: 'element-plus',
@@ -84,7 +101,7 @@ export default [
     category: '基础组件',
     icon: 'https://api.iconify.design/material-symbols:format-paragraph.svg',
     props: [
-      { lp: ['text', 'children'] },
+      txt()
     ],
     defaultProps: () => ({
       children: 'Element Plus 基于 Vue 3，面向设计师和开发者的组件库'
@@ -97,13 +114,13 @@ export default [
     category: '基础组件',
     icon: 'https://api.iconify.design/mdi:image-outline.svg',
     props: props => [
-      { lp: 'src', el: { autofocus: true } },
+      str('src'),
       { is: 'button', class: 'vs-btn mb18', onClick: async () => props.src = (await chooseImg({ base64: true, maxSize: 1024 * 200 }))[0], children: [
         { is: 'div', class: 'mask-icon mr4 w24 h18', style: '--mask-image: url(https://api.iconify.design/tdesign:cloud-upload.svg)' }, 'upload'
       ] },
-      { lp: ['fit', 'style.objectFit'], type: 'radio-group', options: ['fill', 'contain', 'cover'] },
-      { lp: ['lazy', 'loading'], type: 'switch', el: { activeValue: 'lazy', inactiveValue: 'eager' } },
-      { lp: 'alt' },
+      radios(['fit', 'style.objectFit'], ['fill', 'contain', 'cover']),
+      bool(['lazy', 'loading'], void 0, { el: { activeValue: 'lazy' } }),
+      str('alt'),
     ],
     defaultProps: () => ({
       src: 'https://element-plus.org/images/element-plus-logo-small.svg',
@@ -117,7 +134,7 @@ export default [
     category: '基础组件',
     icon: 'https://api.iconify.design/mdi:format-text.svg',
     props: [
-      { lp: ['text', 'children'] },
+      txt()
     ],
     defaultProps: () => ({
       children: '文本'
@@ -128,7 +145,7 @@ export default [
     is: 'iframe',
     label: 'iframe',
     props: [
-      { lp: 'src' },
+      str('src')
     ],
     defaultProps: () => ({
       src: 'https://element-plus.org/zh-CN/',
@@ -140,7 +157,7 @@ export default [
     is: 'details',
     label: 'details',
     props: [
-      { lp: ['default-open', 'open'], type: 'switch' }
+      bool(['default-open', 'open'])
       // { lp: ['summary', 'children.0.children'] }
     ],
     defaultProps: () => ({
@@ -208,7 +225,7 @@ export default [
     category: '基础组件',
     icon: 'https://api.iconify.design/material-symbols:radio-button-unchecked.svg',
     props: [
-      { lp: 'type', type: 'radio-group', options: [['—'], 'submit', 'reset'] },
+      radios('type', [['—'], 'submit', 'reset'])
     ],
     defaultProps: () => ({
       children: [{ is: 'span', children: 'button' }]
@@ -219,6 +236,9 @@ export default [
     is: 'form',
     label: 'form',
     category: '表单组件',
+    defaultProps: () => ({
+      children: []
+    })
   },
 
   {
@@ -229,19 +249,19 @@ export default [
     props: props => [
       // { lp: 'value' },
       vmodelInput(),
-      { lp: 'name' },
-      { lp: 'disabled', type: 'switch' },
-      { lp: 'readonly', type: 'switch' },
-      { lp: 'required', type: 'switch' },
-      { lp: 'type', displayValue: 'text', options: ['text', 'number', 'range', 'password', 'radio', 'checkbox', 'color', 'date', 'datetime-local', 'month', 'time'] },
+      str('name'),
+      bool('disabled'),
+      bool('readonly'),
+      bool('required'),
+      opts('type', [['text'], 'number', 'range', 'password', 'radio', 'checkbox', 'color', 'date', 'datetime-local', 'month', 'time']),
       ...[
-        [{ lp: 'min', type: 'input-number' }, ['number', 'range']],
-        [{ lp: 'max', type: 'input-number' }, ['number', 'range']],
-        [{ lp: 'step', type: 'input-number' }, ['number', 'range']],
-        [{ lp: 'minlength', type: 'input-number' }, [void 0, 'password']],
-        [{ lp: 'maxlength', type: 'input-number' }, [void 0, 'password']],
-        [{ lp: 'pattern' }, ['text', 'password']],
-        [{ lp: 'placeholder' }, ['text', 'password']],
+        [num('min'), ['number', 'range']],
+        [num('max'), ['number', 'range']],
+        [num('step'), ['number', 'range']],
+        [num('minlength'), [void 0, 'password']],
+        [num('maxlength'), [void 0, 'password']],
+        [str('pattern'), ['text', 'password']],
+        [str('placeholder'), ['text', 'password']],
       ].flatMap(e => e[1].includes(props.type) ? e[0] : []),
     ],
     defaultProps: () => ({
@@ -272,7 +292,7 @@ export default [
     hidden: true,
     drag: { from: ['select'] },
     props: [
-      { lp: 'value' }
+      str('value')
     ],
   },
 
@@ -331,16 +351,17 @@ export default [
     category: '额外扩展',
     icon: 'https://api.iconify.design/mdi:language-markdown-outline.svg',
     props: [
-      { lp: 'src' },
-      { lp: 'content', el: { is: 'MonacoEditor', language: 'markdown', style: 'height: 400px' } },
-      { is: 'div', class: 'grid grid-cols-2 gap-x-8', style: 'margin-top: 32px', children: [
-        { lp: 'theme', options: ['github', 'github-light', 'github-dark', 'juejin', 'juejin-yu', 'juejin-devui-blue', 'vuepress'] },
-        { lp: ['body-style', 'body-style'] },
-        { lp: ['html', 'options.html'], type: 'switch', displayValue: false },
-        { lp: ['breaks', 'options.breaks'], type: 'switch', displayValue: false },
-        { lp: ['linkify', 'options.linkify'], type: 'switch', displayValue: false },
-        { lp: ['typographer', 'options.typographer'], type: 'switch', displayValue: false },
-      ] }
+      str('src'),
+      str('content', { el: { is: 'MonacoEditor', language: 'markdown', style: 'height: 400px' } }),
+      hr(),
+      grid2([
+        opts('theme', ['github', 'github-light', 'github-dark', 'juejin', 'juejin-yu', 'juejin-devui-blue', 'vuepress']),
+        str(['body-style', 'body-style']),
+        bool(['html', 'options.html']),
+        bool(['breaks', 'options.breaks']),
+        bool(['linkify', 'options.linkify']),
+        bool(['typographer', 'options.typographer']),
+      ]),
     ],
     devProps(props) {
       virtualProp(props, '.options', 'options')
@@ -363,17 +384,15 @@ export default [
     category: '额外扩展',
     icon: 'https://api.iconify.design/mdi:qrcode.svg',
     props: [
-      { lp: 'text' },
-      { lp: ['type', 'options.type'], type: 'radio-group', options: ['svg', ['png', 'image/png']] },
-      { lp: ['margin', 'options.margin'], type: 'input-number', displayValue: 4 },
-      { lp: ['color', 'options.color.dark'], type: 'color-picker', displayValue: '#000000ff', el: { colorFormat: 'hex' } },
-      { lp: ['bg-color', 'options.color.light'], type: 'color-picker', displayValue: '#ffffffff', el: { colorFormat: 'hex' } },
+      str('text'),
+      radios(['type', 'options.type'], ['svg', ['png', 'image/png']]),
+      num(['margin', 'options.margin'], 4),
+      color(['color', 'options.color.dark'], { displayValue: '#000000ff', el: { colorFormat: 'hex' } }),
+      color(['bg-color', 'options.color.light'], { displayValue: '#ffffffff', el: { colorFormat: 'hex' } }),
     ],
     defaultProps: () => ({
       text: 'https://www.baidu.com',
-      options: {
-        type: 'svg'
-      },
+      options: { type: 'svg' },
       style: { width: '128px', height: '128px' }
     })
   },
@@ -384,9 +403,9 @@ export default [
     category: '额外扩展',
     icon: 'https://api.iconify.design/mdi:code-braces.svg',
     props: props => [
-      { lp: 'lang', options: [['JSON', 'json'], ['Html', 'html'], ['Css', 'css'], ['JS', 'javascript'], ['Java', 'java'], ['Python', 'python'], ['Go', 'go'], ['SQL', 'sql'], ['Diff', 'diff'], ['Bash', 'bash']] },
-      { lp: 'theme', options: ['a11y-light', 'a11y-dark', 'atom-one-light', 'atom-one-dark', 'github', 'github-dark', 'vs', 'vs2015'] },
-      { lp: 'code', el: { is: 'MonacoEditor', language: props.lang, style: { height: '400px' } } },
+      opts('lang', [['JSON', 'json'], ['Html', 'html'], ['Css', 'css'], ['JS', 'javascript'], ['Java', 'java'], ['Python', 'python'], ['Go', 'go'], ['SQL', 'sql'], ['Diff', 'diff'], ['Bash', 'bash']]),
+      opts('theme', ['a11y-light', 'a11y-dark', 'atom-one-light', 'atom-one-dark', 'github', 'github-dark', 'vs', 'vs2015']),
+      str('code', { el: { is: 'MonacoEditor', language: props.lang, style: { height: '400px' } } }),
     ],
     defaultProps: () => ({
       lang: 'json',
@@ -394,4 +413,6 @@ export default [
       code: '{\n  "name": "Jack"\n}'
     })
   },
+
+  { is: 'script', hidden: true }
 ]

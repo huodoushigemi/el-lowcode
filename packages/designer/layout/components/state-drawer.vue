@@ -1,6 +1,6 @@
 <template>
   <el-drawer v-model="designerCtx.openState" title="初始状态" w="400!" destroy-on-close :lock-scroll="false">
-    <monaco-editor v-model:value="state" @save="ok" />
+    <monaco-editor v-model="state" @save="ok" />
     <template #footer>
       <div>
         <el-button @click="designerCtx.openState">Cancel</el-button>

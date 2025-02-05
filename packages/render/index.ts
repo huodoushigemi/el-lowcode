@@ -32,7 +32,7 @@ export function createRender({ defaultIs, processProps = (props) => props as unk
   const _h = (e, vars) => isPlainObject(e) ? Render(e, vars) : e
 
   const h = (props: Props, vars: Obj) => {
-    const { is, vIf, children, ...attrs } = processProps(props, vars, {
+    const { is, vIf, children, ...attrs } = (props as ProcessedProps) = processProps(props, vars, {
       provide: (state) => vars = { ...vars, ...state }
     })
     

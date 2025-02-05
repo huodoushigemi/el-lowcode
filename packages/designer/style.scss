@@ -160,7 +160,7 @@
 }
 
 .vs-menu-li {
-  @apply flex aic mx5 px6 h26 bg-[--vs-menu-li-bg] text-nowrap cursor-pointer;
+  @apply relative flex aic mx5 px26 h26 bg-[--vs-menu-li-bg] text-nowrap cursor-pointer;
   &.hover, &:hover {
     @apply bg-[--vs-menu-li-hover-bg]
   }

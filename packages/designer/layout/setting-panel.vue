@@ -1,6 +1,6 @@
 <template>
   <div flex aic p8 text-26 font-medium capitalize>
-    <div mra>{{ config?.label }}</div>
+    <div mra>{{ node.label }}</div>
     <i-mdi:cursor-move v-if="model && designerCtx.root != model" bg-hover w28 h28 p4 mr8 :bg="node.isAbs ? '#404040' : ''" @click="node.isAbs = true" />
     <i-material-symbols-light:code bg-hover w28 h28 p4 @click="visible = true" />
   </div>
@@ -25,7 +25,7 @@
   </el-tabs>
 
   <div v-if="vis" ref="menuRef">
-    <Menu :items="flat(reactive(node.vars))" :tippy="{ delay: 100, placement: 'left-start', appendTo: body }" />
+    <Menu :items="flat(reactive(node.vars))" :tippy="{ delay: 100, placement: 'left-start' }" />
   </div>
 
   <MonacoEditorDialog

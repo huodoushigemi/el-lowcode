@@ -1,5 +1,5 @@
 import { computed, InjectionKey, mergeProps, reactive, readonly, ref, shallowRef, toRaw, toRef } from 'vue'
-import { isArray, isObject, isPlainObject, isString, normalizeStyle } from '@vue/shared'
+import { isArray, isObject, isPlainObject, isString, normalizeStyle, camelize, capitalize, hyphenate } from '@vue/shared'
 import { Fn, unrefElement } from '@vueuse/core'
 import { Arrable, Assign, deepClone, Fnable, getRects, isExp, mergeRects, Obj, pick, set, toArr, uid } from '@el-lowcode/utils'
 import { Props } from '@el-lowcode/render'
@@ -69,9 +69,10 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get label () { return (this.vSlotName && `#${this.vSlotName}`) || this.$data['lcd-label'] || this.config?.label || this.data.is }
   get dir() { return isArray(this.data_children) }
   get vSlotName() { return isPlainObject(this.parent?.data.children) ? Object.entries(this.parent!.data.children).find(([k, v]) => v == this.data)?.[0] : void 0 }
-  get config() {
-    if (!this.designerCtx.widgets[this.is]) console.error(`${this.is}: Unable to find a matching el_lowcode configuration of ${this.is}`, this.data)
-    return this.designerCtx.widgets[this.is]
+  get config() {  
+    // if (!this.designerCtx.widgets[this.is]) console.error(`${this.is}: Unable to find a matching el_lowcode configuration of ${this.is}`, this.data)
+    const { widgets } = this.designerCtx
+    return widgets[this.is] || widgets[hyphenate(this.is)] || widgets[capitalize(camelize(this.is))]
   }
 
   // #data_children = computed(() => {
@@ -140,7 +141,8 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   #$data = computed(() => {
     let props = this.data
-    if (this.vars && this.designerCtx.canvas.window?.processProps) props = this.designerCtx.canvas.window.processProps(props, this.vars)
+    // if (this.vars && this.designerCtx.canvas.window?.processProps) props = this.designerCtx.canvas.window.processProps(props, this.vars)
+    if (this.#vars.value && this.designerCtx.canvas.window?.processProps) props = this.designerCtx.canvas.window.processProps(props, this.#vars.value)
     if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(props, this)) as any
     return props
   })
@@ -148,6 +150,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   // 自由拖拽
   get isAbs() { return this.data.style?.position == 'absolute' }
+  // todo
   set isAbs(bool) { this.data.style = bool ? normalizeStyle([this.data.style, { position: 'absolute', margin: 0 }]) : normalizeStyle([this.data.style, { position: void 0, transform: void 0, margin: void 0 }]) }
 
   get x() { return parseTransform(this.data.style?.transform)[0] }
@@ -199,6 +202,10 @@ export abstract class DisplayNode extends Node<BoxProps> {
         return true
       },
     })
+  }
+
+  get menus() {
+    return this.designerCtx.plugins.flatMap(e => e.contributes.menus?.['node/context']?.(this) ?? [])
   }
 
   #drag = computed(() => {
@@ -260,13 +267,11 @@ export abstract class DisplayNode extends Node<BoxProps> {
     this.vSlotName ? (delete this.parent!.data.children![this.vSlotName]) : super.doRemove()
   }
 
-  override click() {
-    this.designerCtx.activeId = this.id
-  }
+  override hover() { this.designerCtx.hoverId = this.id }
+  override click() { this.designerCtx.activeId = this.id }
 
-  override hover() {
-    this.designerCtx.hoverId = this.id
-  }
+  get hovered() { return this.designerCtx.hover == this }
+  get selected() { return this.designerCtx.hover == this }
 }
 
 export interface DesignerCtx {
@@ -333,6 +338,7 @@ export interface Contributes {
   }[]>
   statusbar?: StatusBarItem[]
   commands?: Command[]
+  menus?: { 'node/context'?: (node: DisplayNode) => any[] }
 }
 
 export interface StatusBarItem {

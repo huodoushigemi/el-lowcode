@@ -27,50 +27,36 @@ import { useDark } from '@vueuse/core'
 import { vLoading } from 'element-plus'
 import { refWithWatch } from '../../components/hooks'
 
-// import * as monaco from 'monaco-editor'
-// monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-//   noLib: true,
-//   module: monaco.languages.typescript.ModuleKind.ESNext,
-//   target: monaco.languages.typescript.ScriptTarget.ESNext,
-// })
 
 const props = defineProps({
   // ...VueMonacoEditor.props as { [k in keyof EditorProps]: any },
-  value: String,
   modelValue: String,
   language: String,
   options: Object,
   // autoFormat: { type: Boolean, default: true },
   tsExtraLibs: Object,
-  autofocus: Boolean
+  autofocus: Boolean,
+  onSave: Function
 })
 
 let editorIns
 
-let _val = refWithWatch(() => props.value || props.modelValue || '')
+let _val = refWithWatch(() => props.modelValue || '')
 
 const emit = defineEmits(['save', 'update:modelValue'])
 
 const isDark = useDark({ storageKey: 'vitepress-theme-appearance' })
-
-window.al
 
 async function onMount(_editor, monaco) {
   monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
     lib: ["es2020"],
     allowNonTsExtensions: true
   })
-
-  // monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-  //   noSemanticValidation: false,
-  //   noSyntaxValidation: false
-  // })
   
   isMount.value = true
   
   editorIns = _editor
   setTimeout(() => {
-    // if (props.autoFormat) editor.getAction('editor.action.formatDocument').run()
     if (props.autofocus) editorIns.focus()
   }, 100);
   const { languages } = monaco
@@ -83,7 +69,7 @@ async function onMount(_editor, monaco) {
 }
 
 function onKeydown(e) {
-  if (e.key.toLowerCase() == 's' && e.ctrlKey) {
+  if (props.onSave && e.key.toLowerCase() == 's' && e.ctrlKey) {
     e.preventDefault()
     e.stopPropagation()
     emit('save', _val.value)

@@ -6,7 +6,8 @@ interface UseDraggableProps {
   dragover(el: Element, drag: Element, ctx: { path: EventTarget[] }): boolean | Element | void
   children(el: Element): Element[]
   getRect?(el: Element): DOMRect
-  drop(el: Element, drag: Element, type?: 'prev' | 'next' | 'inner'): void
+  drop(el: Element, drag: Element, type: 'prev' | 'next' | 'inner', e: DragEvent): void
+  dragend?(): void
 }
 
 export function useDraggable(el: MaybeComputedElementRef, props: UseDraggableProps) {
@@ -25,6 +26,7 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
 
   useEventListener(root, 'dragstart', e => {
     props.dragstart?.(e)
+    if (e.defaultPrevented) return
     ret.dragEl = e.target as Element
   })
 
@@ -66,13 +68,14 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
     e.stopPropagation()
     e.preventDefault()
     const type = { T: 'prev', B: 'next', L: 'prev', R: 'next' }[nearest[3]]
-    props.drop(nearest[1] ?? ret.dragoverEl!, ret.dragEl!, type ?? 'inner')
+    props.drop(nearest[1] ?? ret.dragoverEl!, ret.dragEl!, type ?? 'inner', e)
     dragend()
   })
 
   useEventListener('dragend', dragend)
 
   function dragend() {
+    props.dragend?.()
     Object.assign(cursor.style, { transform: '', width: '0px', height: '0px' })
     ret.dragEl = ret.dragoverEl = nearest = void 0
     ret.data = ''

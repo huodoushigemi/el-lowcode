@@ -1,6 +1,6 @@
 <template>
   <div flex="~ col">
-    <monaco-editor v-model:value="state" flex-1 @save="ok" />
+    <monaco-editor v-model="state" flex-1 @save="ok" />
     <div p8 text-right>
       <el-button size="small" @click="onCancel">Cancel</el-button>
       <el-button size="small" type="primary" @click="ok">Crtl+S</el-button>

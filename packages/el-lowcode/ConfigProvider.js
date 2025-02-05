@@ -1,6 +1,5 @@
 import { computed, defineComponent, getCurrentInstance, isRef, onUnmounted, unref, provide, reactive, renderSlot, toRefs, watch, watchEffect } from 'vue'
 import { execExp, useRequest } from '@el-lowcode/utils'
-import { computedEager } from '@vueuse/core'
 import { cloneObj } from './index'
 
 const dsType = {
@@ -43,9 +42,9 @@ export function useConfigProvider(props) {
     return reactive(cloneObj(props.state, config, v => !isRef(v)))
   })
 
-  config.ds = computedEager(() => {
+  config.ds = computed(() => {
     const { list = [] } = props.ds || {}
-    return reactive(list.reduce((o, e) => (o[e.id] = computedEager(() => dsType[e.type](e, config)), o), {}))
+    return reactive(list.reduce((o, e) => (o[e.id] = computed(() => dsType[e.type](e, config)), o), {}))
   })
 
   const css = document.createElement('style')

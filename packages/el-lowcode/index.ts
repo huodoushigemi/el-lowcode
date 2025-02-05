@@ -1,6 +1,6 @@
 import { h, mergeProps } from 'vue'
 import { isArray, isObject } from '@vue/shared'
-import { deepClone, execExp, isExp, toArr, unExp, wrapExp } from '@el-lowcode/utils'
+import { deepClone, execExp, isExp, toArr, unExp } from '@el-lowcode/utils'
 import { createRender } from '@el-lowcode/render'
 import { ConfigProvider } from './ConfigProvider'
 

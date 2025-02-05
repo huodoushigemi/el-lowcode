@@ -1,17 +1,34 @@
 import { hyphenate, isArray, isObject, isOn, isPlainObject, isString, stringifyStyle } from '@vue/shared'
 import { isExp, omit, unExp } from '@el-lowcode/utils'
-import { BoxProps, DesignerCtx } from '../../layout/interface'
+import { BoxProps, DesignerCtx, DisplayNode } from '../../layout/interface'
 import { objStringify } from '../index'
 
 export async function vue(ctx: DesignerCtx): Promise<string> {
+  const { template, script } = await vue$(ctx.rootNode)
+  return `<template>\n${template}</template>\n\n<script setup>${script}</script>`
+}
+
+export function jsonRender(ctx: DesignerCtx) {
+  const omitKey = new Set(['_id', 'lcd-absolute-layout'])
+  return `<template>
+  <Render v-bind="schema" />
+</template>
+
+<script setup>
+import { Render } from 'el-lowcode'
+
+const schema = ${JSON.stringify(ctx.root, (k, v) => omitKey.has(k) ? void 0 : v)}
+</script>`
+}
+
+export async function vue$(rootNode: DisplayNode) {
   let xml = ``
-  const vars = [] as any
 
   let deep = 0
   const indent = () => '  '.repeat(deep)
   
   function through(props: BoxProps, queue = [] as BoxProps[]) {
-    const node = ctx.keyedNode[props._id!]
+    const node = rootNode.keyed[props._id!]
     props = { ...props, ...node.config?.purify?.(props) }
 
     const atChildren = queue[queue.length - 1]?.children
@@ -102,7 +119,7 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
     }
     else if (isString(children)) {
       if (isExp(children)) {
-        xml += `\n${indent()}  {{ ${unExp(children)} }}\n${indent()}`
+        xml += `\n${indent()}  {{ ${unExp(children).trim()} }}\n${indent()}`
       }
       else {
         xml += children
@@ -112,11 +129,11 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
     xml = children != null ? `${xml}</${hyphenate(is)}>\n` : `${xml.slice(0, -1)} />\n`
   }
 
-  const { designer, state, ds, css, plugins, ...root } = JSON.parse(JSON.stringify(ctx.root))
+  const { designer, state, ds, css, plugins, ...root } = JSON.parse(JSON.stringify(rootNode.data))
   
   through(root)
 
-  let js = `<script setup>\nimport { reactive, computed, toRef } from 'vue'\nimport { useConfigProvider } from 'el-lowcode'`
+  let js = `\nimport { reactive, computed, toRef } from 'vue'\nimport { useConfigProvider } from 'el-lowcode'`
 
   let params = objStringify(JSON.parse(JSON.stringify({ state, ds, css, plugins })), v => {
     return (
@@ -129,28 +146,8 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
   params = await format(`const { state, ds } = useConfigProvider(${params})`)
   
   js += `\n\n${params.trim()}`
-
-  if (vars.length) {
-    js += `\n\n${vars.map(e => `const ${e[0]} = ${e[1]}`).join('\n\n')}`
-  }
-
-  js += `\n</script>`
   
-
-  return `<template>\n${xml}</template>\n\n${js}`
-}
-
-export function jsonRender(ctx: DesignerCtx) {
-  const omitKey = new Set(['_id', 'lcd-absolute-layout'])
-  return `<template>
-  <Render v-bind="schema" />
-</template>
-
-<script setup>
-import { Render } from 'el-lowcode'
-
-const schema = ${JSON.stringify(ctx.root, (k, v) => omitKey.has(k) ? void 0 : v)}
-</script>`
+  return { template: xml, script: js  }
 }
 
 async function format(code) {

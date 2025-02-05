@@ -7,7 +7,7 @@ export const expReg = /^\{\{([\d\D]*)\}\}$/
 export const isExp = exp => isString(exp) && exp.startsWith('{{') && exp.endsWith('}}')
 
 export const unExp = exp => (isExp(exp) ? exp.replace(expReg, '$1') : exp)
-export const wrapExp = exp => `{{${unExp(exp)}}}`
+export const wrapExp = exp => `{{${unExp(exp).trim()}}}`
 
 const _ = { get, set }
 const provideVars = { ref, reactive, watch, watchEffect, _ }

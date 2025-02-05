@@ -7,7 +7,7 @@
           <div>{{ item.label }}</div>
         </div>
       </el-segmented>
-      <MonacoEditor v-model:value="code" class="flex-1" :language="curr.lang ?? curr.value" :options="{ readOnly: true }" @save="ok" />
+      <MonacoEditor v-model="code" class="flex-1" :language="curr.lang ?? curr.value" :options="{ readOnly: true }" @save="ok" />
       <div class="mt18 text-right">
         <el-button @click="vis = true">Esc</el-button>
         <el-button type="primary" @click="ok">Download</el-button>

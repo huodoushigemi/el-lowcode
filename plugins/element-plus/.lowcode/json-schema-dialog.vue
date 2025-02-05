@@ -10,7 +10,7 @@
   </div>
   
   <el-dialog v-model="show" class="[&_.el-dialog\_\_footer]:flex" title="JSON Schema" destroy-on-close>
-    <MonacoEditor :value="jsonSchema" height="512px" :options="{ readOnly: true }" />
+    <MonacoEditor v-model="jsonSchema" height="512px" :options="{ readOnly: true }" />
     <template #footer>
       <el-button size="default" type="primary" plain text bg tag="a" :href="previewUrl" target="_blank" mra decoration-none><i-mdi:eye-outline mr4 text-1.2em /> Preview</el-button>
       <el-button size="default" @click="show = false">Cancel</el-button>

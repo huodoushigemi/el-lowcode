@@ -8,7 +8,7 @@ const SIZES = ['large', 'default', 'small']
 const str = (lp, extra) => ({ lp, displayValue: '', ...extra })
 const opts = (lp, options, extra) => ({ lp, options, ...extra })
 const radios = (lp, options, extra) => ({ lp, type: 'radio-group', options, ...extra, el: { type: 'button', ...extra?.el } })
-const checkboxs = (lp, options, extra) => ({ lp, type: 'checkbox-group', options, ...extra, el: { type: 'button', ...extra?.el } })
+const chekcs = (lp, options, extra) => ({ lp, type: 'checkbox-group', options, ...extra, el: { type: 'button', ...extra?.el } })
 const bool = (lp, displayValue = false, extra) => ({ lp, type: 'switch', displayValue, ...extra })
 const num = (lp, displayValue, extra) => ({ lp, type: 'input-number', displayValue, set: v => v == null ? void 0 : v, ...extra })
 const color = lp => ({ lp, type: 'color-picker' })
@@ -832,7 +832,7 @@ export default [
       num('total'),
       bool('background'),
       radios('size', SIZES),
-      checkboxs('layout', ['sizes', 'prev', 'pager', 'next', 'jumper', 'total'], { get: v => v.split(','), set: v => v.join(',') }),
+      chekcs('layout', ['sizes', 'prev', 'pager', 'next', 'jumper', 'total'], { get: v => v.split(','), set: v => v.join(',') }),
       bool('disabled'),
     ],
     defaultProps: () => ({
