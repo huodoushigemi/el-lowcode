@@ -1,16 +1,19 @@
 <template>
   <div flex="~ col" class="py6 hfull">
     <div ref="scrollRef" class="flex flex-col flex-1 overflow-auto scroll-smooth">
-      <div class="px20 mb6 space-y-12">
+      <div class="flex px20 mb6 space-x-12">
         <div>
           MODEL
           <select class="vs-input py4 mt4" v-model="form.model">
-            <!-- <option v-for="val in ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-pro']" :value="val">{{ val }}</option> -->
-            <option v-for="val in models" :value="val">{{ val }}</option>
+            <template v-for="ai in AI">
+              <option v-for="val in ai.models" :value="val" :style="`background: url(${ai.icon}) center/contain no-repeat`">
+                {{ val }}
+              </option>
+            </template>
           </select>
         </div>
     
-        <div>
+        <div flex="~ 1 col">
           API KEY
           <input class="vs-input mt4" v-model="form.key" />
         </div>
@@ -48,44 +51,28 @@
 </template>
 
 <script setup>
-import { computed, inject, ref } from 'vue'
+import { computed, inject, ref, watchEffect } from 'vue'
+import { isString } from '@vue/shared'
 import { toReactive, useDropZone, useLocalStorage, useSessionStorage } from '@vueuse/core'
-import { GoogleGenerativeAI } from 'https://unpkg.com/@google/generative-ai@0.21.0/dist/index.mjs'
 import { fileSelect, fileToBase64, html2schema } from '@el-lowcode/utils'
 import 'wc-mdit'
+import { AI } from './ai'
 
 const designer = inject('designerCtx')
 
-const ais = {
-  deepseek: {
-    icon: 'https://api-docs.deepseek.com/zh-cn/img/favicon.svg',
-    url: 'https://api.deepseek.com',
-    key: ['7fa38d5c65', 'f437f831f4b2c15cce5393', '-ks'].reverse().join(''),
-    models: ['deepseek-reasoner', 'deepseek-chat']
-  },
-  openai: {
-    icon: 'https://openai.com/2.0/icon.svg',
-    key: ['7fa38d5c65', 'f437f831f4b2c15cce5393', '-ks'].reverse().join(''),
-    models: ['gpt-4o', 'gpt-4o-mini']
-  },
-  // gemini: {
-  //   icon: 'https://openai.com/2.0/icon.svg',
-  //   key: 'AIzaSyDrMDJQ2qAeyEMvrXpQm6AiLaVpuoN2cVE',
-  //   models: ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-pro']
-  // }
-}
-
-const models = Object.values(ais).flatMap(e => e.models)
+const models = Object.values(AI).flatMap(e => e.models)
 
 const form = toReactive(useLocalStorage('ai:options', {
-  key: 'AIzaSyDrMDJQ2qAeyEMvrXpQm6AiLaVpuoN2cVE',
-  // key: ['7fa38d5c65', 'f437f831f4b2c15cce5393', '-ks'].reverse().join('')
-  model: 'gemini-2.0-flash-exp',
+  key: AI.deepseek.key,
+  model: AI.deepseek.models[0],
 }))
 
-const model = computed(() => (new GoogleGenerativeAI(form.key)).getGenerativeModel({ model: form.model }))
+watchEffect(() => {
+  form.key = Object.values(AI).find(e => e.models.includes(form.model)).key
+})
 
-const msgs = useSessionStorage('ai.d2c:msgs', [])
+// const msgs = useSessionStorage('ai.d2c:msgs', [])
+const msgs = ref([])
 
 const dropZone = ref()
 const { isOverDropZone } = useDropZone(dropZone, { dataTypes: e => e.some(e => e.includes('image')), onDrop: e => e?.[0] && send(e[0]) })
@@ -107,10 +94,10 @@ async function send(file, content = '将图片转为 HTML + Tailwind\n- 使用 C
   const row = msgs.value[msgs.value.length - 1]
   
   try {
-    const { stream } = await model.value.generateContentStream([content, { inlineData: { data: await file2base64(file), mimeType: file.type } }], row.controller)
+    const ai = Object.values(AI).find(e => e.models.includes(form.model))
     
-    for await (const res of stream) {
-      row.content += res.text()
+    for await (const text of ai.stream(form, [content, file], row.controller)) {
+      row.content += text
       stickyBottom()
     }
   } catch (e) {
@@ -124,14 +111,6 @@ async function send(file, content = '将图片转为 HTML + Tailwind\n- 使用 C
 
 function replaceCanvas(content) {
   Object.assign(designer.root, html2schema(extractHtml(content)))
-}
-
-function file2base64(file) {
-  return new Promise((resolve) => {
-    const reader = new FileReader()
-    reader.onloadend = () => resolve(reader.result.split(',')[1])
-    reader.readAsDataURL(file)
-  })
 }
 
 function showModal(content) {
@@ -180,29 +159,5 @@ async function stickyBottom() {
 
 function highlight(code, lang) {
   return `<wc-hljs code="${code}" />`
-}
-
-async function openai(key, url) {
-  const OpenAI = await import('https://unpkg.com/openai@4.82.0/index.mjs').then(e => e.default)
-  const openai = new OpenAI({
-    baseURL: url,
-    apiKey: key,
-    dangerouslyAllowBrowser: true
-  })
-
-  return async function* (messages, model) {
-    const stream = await openai.chat.completions.create({
-      messages: messages ?? [
-        { role: "system", content: "You are a helpful assistant." },
-        { role: 'user', content: [{ type: 'text', content: '' }, { typr: 'image_url', image_url: { url: '' } }] }
-      ],
-      model: model ?? "deepseek-chat",
-      stream: true
-    })
-    for await (const chunk of stream) {
-      yield chunk.choices[0]?.delta?.content || ""
-    }
-  }
-  
 }
 </script>
