@@ -144,22 +144,26 @@ const draggable = useDraggable(document.body, {
     return resolveNode(el)!.getRect()!
   },
   drop(el, _, type, e) {
-    if (el == dragNode!.el) return
-    if (!dragNode) return
-    const rel = designer.keyedNode[el.getAttribute('lcd-dragover')!] || resolveNode(el)
-    if (rel.isAbsLayout && type == 'inner') {
-      const rect = el.getBoundingClientRect()
-      dragNode.isAbs = true
-      dragNode.x = e.x - rect.x
-      dragNode.y = e.y - rect.y
-      rel.insertBefore(dragNode)
-    } else {
-      dragNode.isAbs = false
-      type == 'prev' ? rel.before(dragNode) :
-      type == 'next' ? rel.after(dragNode) :
-      type == 'inner' ? rel.insertBefore(dragNode) : void 0
+    try {
+      if (el == dragNode!.el) return
+      if (!dragNode) return
+      const rel = designer.keyedNode[el.getAttribute('lcd-dragover')!] || resolveNode(el)
+      if (rel.isAbsLayout && type == 'inner') {
+        const rect = el.getBoundingClientRect()
+        dragNode.isAbs = true
+        dragNode.x = e.x - rect.x
+        dragNode.y = e.y - rect.y
+        rel.insertBefore(dragNode)
+      } else {
+        dragNode.isAbs = false
+        type == 'prev' ? rel.before(dragNode) :
+        type == 'next' ? rel.after(dragNode) :
+        type == 'inner' ? rel.insertBefore(dragNode) : void 0
+      }
+      dragNode.click()
+    } finally {
+      dragEnd()
     }
-    dragNode.click()
   },
   dragend() {
     draggable.dragoverEl?.removeAttribute('lcd-dragover')
@@ -223,8 +227,6 @@ function dragStart(e: DragEvent) {
 }
 
 function dragEnd() {
-  console.log('dragEnd');
-  
   draggable.dragend()
   dragNode = void 0
   dragged.value = void 0
