@@ -17,14 +17,13 @@ export const AI = {
   },
   gemini: {
     icon: 'https://openai.com/2.0/icon.svg',
-    key: decode('QUl6YVN5RHJNREpRMnFBZXlFTXZyWHBRbTZBaUxhVnB1b04yY1ZF'),
+    key: decode('QUl6YVN5QTItdEF6RXk4X2plTHhqbU1mZGszZ2VtaTY2TFZUXzVF'),
     models: ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-pro'],
     stream: (opt, content, c) => gemini(opt, content, c)
   }
 }
 
 async function* openai(opt, content = [], controller) {
-  fetch2()
   const OpenAI = await import('https://unpkg.com/openai@4.82.0/index.mjs').then(e => e.default)
   const openai = new OpenAI({
     baseURL: opt.url,
@@ -36,34 +35,34 @@ async function* openai(opt, content = [], controller) {
     e instanceof File ? { typr: 'image_url', image_url: { url: await fileToBase64(e) } } :
     void 0
   ))
-  const stream = await openai.chat.completions.create({
-    messages: [{ role: 'user', content }],
-    model: opt.model ?? 'deepseek-chat',
-    stream: true
-  })
-  for await (const chunk of stream) {
-    yield chunk.choices[0]?.delta?.content || ''
+  try {
+    const stream = await openai.chat.completions.create({
+      messages: [{ role: 'user', content }],
+      model: opt.model ?? 'deepseek-chat',
+      stream: true
+    })
+    for await (const chunk of stream) {
+      yield chunk.choices[0]?.delta?.content || ''
+    }
+  } catch (e) {
+    yield e.message
   }
 }
 
 async function* gemini(opt, content = [], controller) {
-  const { GoogleGenerativeAI } = await import('https://unpkg.com/@google/generative-ai@0.21.0/dist/index.mjs').then(e => e.default)
+  const { GoogleGenerativeAI } = await import('https://unpkg.com/@google/generative-ai@0.21.0/dist/index.mjs')
   const model = (new GoogleGenerativeAI(opt.key)).getGenerativeModel({ model: opt.model })
   content = await Promise.all(content.map(async e => 
     isString(e) ? e :
     e instanceof File ? { inlineData: { data: (await fileToBase64(e)).split(',')[1], mimeType: e.type } } :
     void 0
   ))
-  const { stream } = await model.generateContentStream(content, controller)
-  for await (const res of stream) {
-    yield res.text()
-  }
-}
-
-async function fetch2() {
-  const fetch = window.fetch
-  window.fetch = function (...arg) {
-    console.log(arg[1].headers);
-    return fetch(...arg)
+  try {
+    const { stream } = await model.generateContentStream(content, controller)
+    for await (const res of stream) {
+      yield res.text()
+    }
+  } catch (e) {
+    yield e.message
   }
 }

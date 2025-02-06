@@ -1,7 +1,7 @@
 <template>
   <div flex="~ col" class="py6 hfull">
     <div ref="scrollRef" class="flex flex-col flex-1 overflow-auto scroll-smooth">
-      <div class="flex px20 mb6 space-x-12">
+      <div class="flex mb6 space-x-12">
         <div>
           MODEL
           <select class="vs-input py4 mt4" v-model="form.model">
@@ -34,7 +34,7 @@
             AI Assistant
           </div>
           <i-eos-icons:three-dots-loading v-if="!msg.content" style="width: 48px; height: 48px" />
-          <wc-mdit v-else="msg.content" :content="msg.content" :css="`pre { padding: 8px; max-height: 192px; overflow: auto; background: #0a0a0a66; } ${!msg.done && blinkCaret}`" :options="{ highlight }" />
+          <wc-mdit v-else="msg.content" :content="msg.content" :css="`pre { padding: 8px; max-height: 192px; overflow: auto; background: #0a0a0a66; } ${!msg.done && blinkCaret}`" .options="{ highlight, linkify: true }" />
           <div class="vs-actions flex space-x-4">
             <i-pajamas:live-preview v-if="msg.done" class="vs-ai vs-li mla" title="View" @click="showModal(msg.content)" />
             <i-tdesign:file-import v-if="msg.done" class="vs-ai vs-li" title="Import to designer" @click="replaceCanvas(msg.content)" />
@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { computed, inject, ref, watchEffect } from 'vue'
+import { reactive, computed, inject, ref, watch, watchEffect } from 'vue'
 import { isString } from '@vue/shared'
 import { toReactive, useDropZone, useLocalStorage, useSessionStorage } from '@vueuse/core'
 import { fileSelect, fileToBase64, html2schema } from '@el-lowcode/utils'
@@ -67,8 +67,8 @@ const form = toReactive(useLocalStorage('ai:options', {
   model: AI.deepseek.models[0],
 }))
 
-watchEffect(() => {
-  form.key = Object.values(AI).find(e => e.models.includes(form.model)).key
+watch(() => form.model, v => {
+  form.key = Object.values(AI).find(e => e.models.includes(v)).key
 })
 
 // const msgs = useSessionStorage('ai.d2c:msgs', [])
