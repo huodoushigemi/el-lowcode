@@ -162,6 +162,12 @@ export const contributes = (designerCtx) => ({
       { label: '删除', icon: 'https://api.iconify.design/solar:trash-bin-minimalistic-linear.svg', class: 'hover:c-red', onClick: () => node.remove() },
       { is: 'hr' },
       { label: '代码', icon: 'https://api.iconify.design/solar:code-bold.svg', onClick: () => showCode(node) },
+      { label: '导出', icon: 'https://api.iconify.design/material-symbols:imagesmode-outline-rounded.svg', children: [
+        { label: 'PDF', icon: 'https://api.iconify.design/streamline:convert-pdf-2.svg', onClick: () => toPdf(node) },
+        { label: 'PNG', icon: 'https://api.iconify.design/ic:outline-photo-size-select-actual.svg', onClick: () => toPng(node) },
+        { label: 'JPG', icon: 'https://api.iconify.design/ic:outline-photo-size-select-actual.svg', onClick: () => toJpg(node) },
+        { label: 'SVG', icon: 'https://api.iconify.design/tabler:file-type-svg.svg', onClick: () => toSvg(node) },
+      ] },
       { is: 'hr' },
       { label: 'v-slots', vIf: vSlots(node), icon: 'https://api.iconify.design/fa6-solid:check-to-slot.svg', children: 
         vSlots(node)?.map(slot => ({ label: slot, checked: () => !!node.vSlots[slot], onClick: () => node.vSlots[slot] = node.vSlots[slot] ? void 0 : [] }))
@@ -169,6 +175,7 @@ export const contributes = (designerCtx) => ({
       { label: 'slot', vIf: slots(node), icon: 'https://api.iconify.design/fa6-solid:check-to-slot.svg', children:
         slots(node)?.map(slot => ({ label: slot, checked: () => node.data.slot == slot, onClick: () => node.data.slot = node.data.slot == slot ? void 0 : slot }))
       },
+      { is: 'hr' },
     ],
     // todo
     'view/title': [
@@ -232,4 +239,34 @@ async function showCode(node) {
   
   node.parent.data.children.splice(i, 1, ...toArr(json))
   node.parent.children[i].click()
+}
+
+async function toPdf(node) {
+  node.el.ownerDocument.defaultView.print()
+}
+
+async function toPng(node) {
+  htmlToImage(node.el, 'toPng', `${+new Date}.png`)
+}
+
+async function toJpg(node) {
+  htmlToImage(node.el, 'toJpeg', `${+new Date}.jpg`)
+}
+
+async function toSvg(node) {
+  htmlToImage(node.el, 'toSvg', `${+new Date}.svg`)
+}
+
+async function htmlToImage(el, xxx, filename) {
+  // todo modern-screenshot
+  const fn = await import('https://unpkg.com/html-to-image@1.11.11/es/index.js').then(e => e[xxx])
+  const a = document.createElement('a')
+  const { overflow, margin } = el.style
+  el.style.overflow = 'auto'
+  el.style.margin = '0'
+  a.href = await fn(el)
+  el.style.overflow = overflow
+  el.style.margin = margin
+  a.download = filename
+  a.click()
 }

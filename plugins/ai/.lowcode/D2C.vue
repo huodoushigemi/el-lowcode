@@ -175,6 +175,7 @@ function highlight(code, lang) {
 async function ok(e) {
   const btn = e.composedPath().find(e => e.nodeType == Node.ELEMENT_NODE && e.tagName == 'BUTTON' && e.type == 'submit')
   const code = btn?.getAttribute('data-code')
+  if (!code) return
 
   const node = props.lcd.active
   const i = node.index
