@@ -6,15 +6,18 @@ interface ShowDialogOpt {
   is?: 'el-dialog' | 'el-drawer'
 }
 
-export function showDialog(opt: ShowDialogOpt & Obj, slots) {
+type Promise2 = Promise<any> & { resolve(), reject() }
+
+export function showDialog(opt: ShowDialogOpt & Obj, slots): Promise2 {
   opt = { draggable: true, ...opt }
   const vis = ref(true)
-  return new Promise<void>((resolve, reject) => {
+  const xxx = {} as any
+  const ret = new Promise<void>((resolve, reject) => {
     const comp = { ElDialog, ElDrawer }[camelize(capitalize(opt.is || 'el-dialog'))] as typeof ElDialog
 
     const app = createApp(() => h('div', { tabindex: 0, onKeydown },
       h(comp, { modelValue: vis.value, ...opt, is: void 0, onClosed }, {
-        footer: () => [h(ElButton, { onClick: esc }, 'Esc'), h(ElButton, { type: 'primary', onClick: () => resolve() }, 'Ctrl+S')],
+        footer: () => [h(ElButton, { onClick: esc }, 'Esc'), h(ElButton, { type: 'primary', onClick: ok }, 'Ctrl+S')],
         ...(typeof slots == 'function' ? { default: slots } : slots)
       }))
     )
@@ -23,13 +26,17 @@ export function showDialog(opt: ShowDialogOpt & Obj, slots) {
       if (!(e.key.toLowerCase() == 's' && e.ctrlKey)) return
       e.preventDefault()
       e.stopPropagation()
-      resolve()
-      vis.value = false
+      ok()
     }
 
     const el = document.createElement('div')
     app.mount(el)
     document.body.append(el)
+
+    function ok() {
+      resolve()
+      vis.value = false
+    }
 
     function esc() {
       vis.value = false
@@ -40,5 +47,12 @@ export function showDialog(opt: ShowDialogOpt & Obj, slots) {
       el.remove()
       app.unmount()
     }
-  })
+
+    xxx.resolve = ok
+    xxx.reject = esc
+  }) as Promise2
+
+  Object.assign(ret, xxx)
+  
+  return ret
 }

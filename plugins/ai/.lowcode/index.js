@@ -28,15 +28,15 @@ export const contributes = {
   menus: {
     'node/context': node => [
       { label: 'AI 助手', icon: 'https://api.iconify.design/solar:magic-stick-broken.svg', children: [
-        { label: '图转码', icon: 'https://api.iconify.design/mdi:image-outline.svg', onClick: () => d2c(1) }
+        { label: '图转码', icon: 'https://api.iconify.design/mdi:image-outline.svg', onClick: () => d2c(node) }
       ] },
     ]
   }
 }
 
-async function d2c() {
-  await showDialog({ is: 'el-drawer', withHeader: false }, {
-    default: () => h(defineAsyncComponent(() => import('./D2C.vue')), { style: 'margin: 0 -6px' }),
+function d2c(node) {
+  const ps = showDialog({ is: 'el-drawer', withHeader: false }, {
+    default: () => h(defineAsyncComponent(() => import('./D2C.vue')), { lcd: node.designerCtx, style: 'margin: 0 -6px', onOk: ps.resolve }),
     footer: void 0
   })
 }

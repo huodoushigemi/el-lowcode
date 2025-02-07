@@ -2,26 +2,29 @@ import { isString } from '@vue/shared'
 import { fileSelect, fileToBase64 } from '@el-lowcode/utils'
 import { decode } from 'https://unpkg.com/js-base64/base64.mjs'
 
-export const AI = {
-  deepseek: {
-    icon: 'https://api-docs.deepseek.com/zh-cn/img/favicon.svg',
-    key: decode('c2stMzkzNWVjYzUxYzJiNGYxMzhmNzM0ZjU2YzVkODNhZjc='),
-    models: ['deepseek-reasoner', 'deepseek-chat'],
-    stream: (opt, content, c) => openai({ url: 'https://api.deepseek.com', ...opt }, content, c)
-  },
-  openai: {
-    icon: 'https://openai.com/2.0/icon.svg',
+export const AI = [
+  // {
+  //   name: 'DeepSeek',
+  //   icon: 'https://api-docs.deepseek.com/zh-cn/img/favicon.svg',
+  //   key: decode('c2stMzkzNWVjYzUxYzJiNGYxMzhmNzM0ZjU2YzVkODNhZjc='),
+  //   models: ['deepseek-reasoner', 'deepseek-chat'],
+  //   stream: (opt, content, c) => openai({ url: 'https://api.deepseek.com', ...opt }, content, c)
+  // },
+  {
+    name: 'OpenAI',
+    icon: 'https://openai.com/icon.svg',
     key: decode('c2stcHJvai13UlY0Z2lFMndGQk5oMVJNWkpnU09rWG9GYjhyOFVuQUNBVVBwMUJzd0tMTnlGMjJ0bzBQcG5xZXpJVEJEdFRXSUhVNldjOUF5aFQzQmxia0ZKcU1iUGhDM0hTYnZ3QklBZzBadE81eVdJVklONEVMQ2FJcGlBdVdxWjljal81MGlrWGU2TExaZERyZE9jYnhVN3hMdzlobE0wUUE='),
-    models: ['gpt-4o', 'gpt-4o-mini'],
+    models: ['gpt-4o', 'gpt-4o-mini', 'gpt-3.5-turbo'],
     stream: (opt, content, c) => openai(opt, content, c)
   },
-  gemini: {
-    icon: 'https://openai.com/2.0/icon.svg',
+  {
+    name: 'Gemini',
+    icon: 'https://www.google.com.hk/images/branding/googleg/1x/googleg_standard_color_128dp.png',
     key: decode('QUl6YVN5QTItdEF6RXk4X2plTHhqbU1mZGszZ2VtaTY2TFZUXzVF'),
-    models: ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-pro'],
+    models: ['gemini-2.0-flash', 'gemini-1.5-flash'],
     stream: (opt, content, c) => gemini(opt, content, c)
   }
-}
+]
 
 async function* openai(opt, content = [], controller) {
   const OpenAI = await import('https://unpkg.com/openai@4.82.0/index.mjs').then(e => e.default)
