@@ -42,7 +42,7 @@ import { computed, inject, nextTick, reactive, ref, toRaw } from 'vue'
 import { parseStringStyle, stringifyStyle, isOn, isPlainObject } from '@vue/shared'
 import { unrefElement } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
-import { mapValues, omit, pick, unFn } from '@el-lowcode/utils'
+import { mapValues, omit, pick, unFn, wrapExp } from '@el-lowcode/utils'
 import { ElFormRender, normalizeItem } from 'el-form-render'
 import { designerCtxKey } from './interface'
 import Scriptable from './components/scriptable.vue'
@@ -152,7 +152,9 @@ function flat(obj, prefix = [], wm = new WeakMap, ret = []) {
   if (wm.has(obj)) return wm.get(obj)
   wm.set(toRaw(obj), ret)
   for (const k in obj) {
-    const e = { label: k, value: `{{${[...prefix, k].join('?.')}}}`, onClick: () => onSelect(e) }
+    const v = wrapExp([...prefix, k].join('?.'))
+    const checked = () => v.replaceAll('?.', '.') == `${refer.__transformer.get()}`.replaceAll('?.', '.')
+    const e = { label: k, value: v, checked, onClick: () => onSelect(e) }
     ret.push(e)
     isPlainObject(obj[k]) && (e.children = flat(obj[k], [...prefix, k], wm))
   }

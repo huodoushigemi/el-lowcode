@@ -27,8 +27,19 @@ abstract class MenuNode extends Node {
   get checked() { return unFn(this.data.checked) }
   get disabled() { return unFn(this.data.disabled) }
 
+  #loading = ref(false)
+  get loading() { return  this.#loading.value }
+
   onHover(e: MouseEvent) {
     this.state.hover = markRaw(this)
+  }
+
+  click() {
+    const ret = this.data.click?.()
+    if (isPromise(ret)) {
+      this.#loading.value = true
+      ret.finally(() => this.#loading.value = false)
+    }
   }
 }
 
@@ -79,15 +90,16 @@ const UL = defineComponent({
 })
 
 const LI = defineComponent({
-  props: ['node', 'label', 'icon', 'checked', 'disabled'],
+  props: ['node', 'label', 'icon', 'checked', 'disabled', 'click'],
   setup(props, { slots }) {
     const node = unref$(() => props.node as MenuNode)
     
     return () => (
-      <div class={['vs-menu-li', node.hovered && 'hover']} ref={node.ref} disabled={node.disabled} onMouseenter={e => node.onHover(e)}>
-        { node.checked
-            ? <i-mdi-check class='absolute left-0 ml4 w18 h18' />
-            : <Icon class='absolute left-0 ml4 w17 h17' src={props.icon} />
+      <div class={['vs-menu-li', node.hovered && 'hover']} ref={node.ref} disabled={node.disabled} onMouseenter={e => node.onHover(e)} onClick={node.click}>
+        { 
+          node.loading ? <i-svg-spinners-bars-rotate-fade class='absolute left-0 ml4 w18 h18' /> :
+          node.checked ? <i-mdi-check class='absolute left-0 ml4 w18 h18' /> :
+          <Icon class='absolute left-0 ml4 w17 h17' src={props.icon} />
         }
         { props.label }
         { slots.default && <i-mdi-chevron-right class='absolute right-0 mr6' /> }
@@ -114,6 +126,7 @@ import tippy from 'tippy.js'
 import { Node } from '../layout/components/Node'
 import Icon from './Icon.vue'
 import { unref$ } from './hooks'
+import { isPromise } from '@vue/shared'
 
 const props = defineProps({
   items: Array,

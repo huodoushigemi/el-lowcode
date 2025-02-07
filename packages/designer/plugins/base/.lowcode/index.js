@@ -163,10 +163,10 @@ export const contributes = (designerCtx) => ({
       { is: 'hr' },
       { label: '代码', icon: 'https://api.iconify.design/solar:code-bold.svg', onClick: () => showCode(node) },
       { label: '导出', icon: 'https://api.iconify.design/material-symbols:imagesmode-outline-rounded.svg', children: [
-        { label: 'PDF', icon: 'https://api.iconify.design/streamline:convert-pdf-2.svg', onClick: () => toPdf(node) },
-        { label: 'PNG', icon: 'https://api.iconify.design/ic:outline-photo-size-select-actual.svg', onClick: () => toPng(node) },
-        { label: 'JPG', icon: 'https://api.iconify.design/ic:outline-photo-size-select-actual.svg', onClick: () => toJpg(node) },
-        { label: 'SVG', icon: 'https://api.iconify.design/tabler:file-type-svg.svg', onClick: () => toSvg(node) },
+        { label: 'PDF', icon: 'https://api.iconify.design/streamline:convert-pdf-2.svg', click: () => toPdf(node) },
+        { label: 'PNG', icon: 'https://api.iconify.design/ic:outline-photo-size-select-actual.svg', click: () => toPng(node) },
+        { label: 'JPG', icon: 'https://api.iconify.design/ic:outline-photo-size-select-actual.svg', click: () => toJpg(node) },
+        { label: 'SVG', icon: 'https://api.iconify.design/tabler:file-type-svg.svg', click: () => toSvg(node) },
       ] },
       { is: 'hr' },
       { label: 'v-slots', vIf: vSlots(node), icon: 'https://api.iconify.design/fa6-solid:check-to-slot.svg', children: 
@@ -241,23 +241,24 @@ async function showCode(node) {
   node.parent.children[i].click()
 }
 
-async function toPdf(node) {
+function toPdf(node) {
   node.el.ownerDocument.defaultView.print()
 }
 
-async function toPng(node) {
-  htmlToImage(node.el, 'toPng', `${+new Date}.png`)
+function toPng(node) {
+  return htmlToImage(node.el, 'toPng', `${+new Date}.png`)
 }
 
-async function toJpg(node) {
-  htmlToImage(node.el, 'toJpeg', `${+new Date}.jpg`)
+function toJpg(node) {
+  return htmlToImage(node.el, 'toJpeg', `${+new Date}.jpg`)
 }
 
-async function toSvg(node) {
-  htmlToImage(node.el, 'toSvg', `${+new Date}.svg`)
+function toSvg(node) {
+  return htmlToImage(node.el, 'toSvg', `${+new Date}.svg`)
 }
 
 async function htmlToImage(el, xxx, filename) {
+  await new Promise(resolve => setTimeout(resolve, 1000))
   // todo modern-screenshot
   const fn = await import('https://unpkg.com/html-to-image@1.11.11/es/index.js').then(e => e[xxx])
   const a = document.createElement('a')
