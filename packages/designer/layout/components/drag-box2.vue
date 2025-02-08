@@ -137,7 +137,9 @@ const draggable = useDraggable(document.body, {
     }
   },
   children(el) {
-    const ret = designer.keyedNode[el.getAttribute('lcd-dragover')!].children$!.map(e => e.el!)
+    const node = designer.keyedNode[el.getAttribute('lcd-dragover')!]
+    if (node.isAbsLayout) return []
+    const ret = node.children$!.map(e => e.el!)
     return ret
   },
   getRect(el) {

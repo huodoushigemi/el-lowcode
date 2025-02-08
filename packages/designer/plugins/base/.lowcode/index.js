@@ -155,11 +155,11 @@ export const contributes = (designerCtx) => ({
   // todo
   menus: {
     'node/context': node => [
-      { label: '上移', icon: 'https://api.iconify.design/solar:arrow-up-linear.svg', disabled: () => !node.prev, onClick: () => node.after(node.prev) },
-      { label: '下移', icon: 'https://api.iconify.design/solar:arrow-down-linear.svg', disabled: () => !node.next, onClick: () => node.before(node.next) },
-      { label: '拷贝', icon: 'https://api.iconify.design/solar:copy-line-duotone.svg', onClick: () => node.after(node.clone()) },
+      { label: '上移', icon: 'https://api.iconify.design/solar:arrow-up-linear.svg', disabled: () => node.vSlotName || !node.prev, onClick: () => node.after(node.prev) },
+      { label: '下移', icon: 'https://api.iconify.design/solar:arrow-down-linear.svg', disabled: () => node.vSlotName || !node.next, onClick: () => node.before(node.next) },
+      { label: '拷贝', icon: 'https://api.iconify.design/solar:copy-line-duotone.svg', disabled: () => node.vSlotName || !node.parent, onClick: () => node.after(node.clone()) },
       { label: '清空', icon: 'https://api.iconify.design/solar:broom-broken.svg', class: 'hover:c-red', onClick: () => node.empty() },
-      { label: '删除', icon: 'https://api.iconify.design/solar:trash-bin-minimalistic-linear.svg', class: 'hover:c-red', onClick: () => node.remove() },
+      { label: '删除', icon: 'https://api.iconify.design/solar:trash-bin-minimalistic-linear.svg', class: 'hover:c-red', disabled: () => !node.parent, onClick: () => node.remove() },
       { is: 'hr' },
       { label: '代码', icon: 'https://api.iconify.design/solar:code-bold.svg', onClick: () => showCode(node) },
       { label: '导出', icon: 'https://api.iconify.design/material-symbols:imagesmode-outline-rounded.svg', children: [
@@ -246,15 +246,15 @@ function toPdf(node) {
 }
 
 function toPng(node) {
-  return htmlToImage(node.el, 'toPng', `${+new Date}.png`)
+  return htmlToImage(node.el, 'toPng', `${node.is}.${+new Date}.png`)
 }
 
 function toJpg(node) {
-  return htmlToImage(node.el, 'toJpeg', `${+new Date}.jpg`)
+  return htmlToImage(node.el, 'toJpeg', `${node.is}.${+new Date}.jpg`)
 }
 
 function toSvg(node) {
-  return htmlToImage(node.el, 'toSvg', `${+new Date}.svg`)
+  return htmlToImage(node.el, 'toSvg', `${node.is}.${+new Date}.svg`)
 }
 
 async function htmlToImage(el, xxx, filename) {
