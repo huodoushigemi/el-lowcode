@@ -28,6 +28,7 @@ import { isArray } from '@vue/shared'
 import { Activitybar, DesignerCtx } from '../interface'
 import Expand from './Expand.vue'
 
+// import Widgets from './Widgets.vue'
 import Widgets from './CompView.vue'
 
 const is = {

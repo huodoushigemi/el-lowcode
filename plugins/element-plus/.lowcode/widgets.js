@@ -31,6 +31,7 @@ export default [
     is: 'ElButton',
     label: 'button',
     category: '基础组件',
+    cover: await import('./cover/ElButton.png').then(e => e.default),
     props: [
       grid2([
         opts('type', ['default', 'primary', 'success', 'warning', 'danger', 'info']),
@@ -88,6 +89,7 @@ export default [
     is: 'ElCard',
     label: 'card',
     category: '容器',
+    cover: await import('./cover/ElCard.png').then(e => e.default),
     vSlots: ['header', 'footer'],
     props: [
       str('body-class'),
@@ -103,45 +105,10 @@ export default [
   },
 
   {
-    is: 'ElCarousel',
-    label: 'carousel',
-    category: '容器',
-    drag: { from: ['ElCarouselItem'] },
-    props: [
-      str('height'),
-      num('initial-index'),
-      num('interval', 3000),
-      radios('trigger', [['hover'], 'click']),
-      bool(['card', 'type'], void 0, { el: { activeValue: 'card', inactiveValue: undefined } }),
-      bool('loop'),
-      radios('direction', [['horizontal'], 'vertical']),
-      bool('autoplay', true),
-      bool('motion-blur'),
-      { lp: ['items', 'children'], el: { is: 'OptionsInput', props: { V: 'name' }, new: i => ({ is: 'ElCarouselItem', children: [{ is: 'h1', children: `item ${i + 1}` }] }) } }
-    ],
-    defaultProps: () => ({
-      autoplay: true,
-      height: '150px',
-      children: [
-        { is: 'ElCarouselItem', children: [{ is: 'h1', children: `item 1` }] },
-        { is: 'ElCarouselItem', children: [{ is: 'h1', children: `item 2` }] }
-      ]
-    })
-  },
-  {
-    is: 'ElCarouselItem',
-    label: 'carousel-item',
-    hidden: true,
-    drag: { to: ['ElCarousel'] },
-    defaultProps: () => ({
-      children: []
-    })
-  },
-
-  {
     is: 'ElTabs',
     label: 'tabs',
     category: '容器',
+    cover: await import('./cover/Eltabs.png').then(e => e.default),
     drag: { from: ['ElTabPane'] },
     props: [
       vmodel(),
@@ -151,6 +118,7 @@ export default [
       // { lp: ['tabs', 'children'], el: { is: 'OptionsInput', props: { V: 'name' }, new: i => ({ is: 'ElTabPane', label: `tab${i + 1}`, children: [] }) } }
     ],
     defaultProps: (ctx) => ({
+      type: 'border-card',
       children: [
         { ...ctx.newProps('ElTabPane'), label: 'tab1' },
         { ...ctx.newProps('ElTabPane'), label: 'tab2' },
@@ -179,7 +147,7 @@ export default [
       children: []
     }),
     devProps: (_, { parent }) => ({
-      key: ({ ...parent.children }, uid()), // fix: drag bar does not update
+      key: ({ ...parent?.children }, uid()), // fix: drag bar does not update
     }),
     getEl({ data, parent$, index }) {
       return parent$.el.querySelector(`#tab-${data.name || index}`)
@@ -187,9 +155,53 @@ export default [
   },
 
   {
+    is: 'ElCarousel',
+    label: 'carousel',
+    category: '容器',
+    cover: await import('./cover/ElCarousel.png').then(e => e.default),
+    drag: { from: ['ElCarouselItem'] },
+    props: [
+      str('height'),
+      num('initial-index'),
+      num('interval', 3000),
+      radios('trigger', [['hover'], 'click']),
+      radios('direction', [['horizontal'], 'vertical']),
+      bool(['card', 'type'], void 0, { el: { activeValue: 'card', inactiveValue: undefined } }),
+      bool('loop', true),
+      bool('autoplay', true),
+      bool('motion-blur'),
+      // { lp: ['items', 'children'], el: { is: 'OptionsInput', props: { V: 'name' }, new: i => ({ is: 'ElCarouselItem', children: [{ is: 'h1', children: `item ${i + 1}` }] }) } }
+    ],
+    devProps: (props) => ({
+      key: ({ ...props }, uid())
+    }),
+    defaultProps: () => ({
+      type: 'card',
+      autoplay: false,
+      height: '150px',
+      children: [
+        { is: 'ElCarouselItem', style: { background: '#d3dce6' }, children: [{ is: 'h1', style: { textAlign: 'center' }, children: `1` }] },
+        { is: 'ElCarouselItem', style: { background: '#99a9bf' }, children: [{ is: 'h1', style: { textAlign: 'center' }, children: `2` }] },
+        { is: 'ElCarouselItem', style: { background: '#d3dce6' }, children: [{ is: 'h1', style: { textAlign: 'center' }, children: `3` }] },
+      ]
+    })
+  },
+  {
+    is: 'ElCarouselItem',
+    label: 'carousel-item',
+    hidden: true,
+    drag: { to: ['ElCarousel'] },
+    defaultProps: () => ({
+      children: []
+    }),
+    // getEl: ({ ref }) => (console.log(unrefElement(ref)), unrefElement(ref))
+  },
+
+  {
     is: 'ElCollapse',
     label: 'collapse',
     category: '容器',
+    cover: await import('./cover/ElCollapse.png').then(e => e.default),
     drag: { from: ['ElCollapseItem'] },
     props: [
       vmodel(),
@@ -750,7 +762,7 @@ export default [
       radios('align', [['—'], 'center', 'right']),
       str('formatter', { script: true, displayValue: '{{(row, col, val, i) => val}}' }),
     ],
-    devProps: (props, { parent, children }) => ({
+    devProps: (props, { children }) => ({
       key: ({ ...children }, uid()), // fix: enable v-slots does not update
       'lcd-label': `cell`,
       labelClassName: `${props.labelClassName || ''} lcd-id:${props._id}`,

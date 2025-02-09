@@ -162,11 +162,12 @@ export const contributes = (designerCtx) => ({
       { label: '删除', icon: 'https://api.iconify.design/solar:trash-bin-minimalistic-linear.svg', class: 'hover:c-red', disabled: () => !node.parent, onClick: () => node.remove() },
       { is: 'hr' },
       { label: '代码', icon: 'https://api.iconify.design/solar:code-bold.svg', onClick: () => showCode(node) },
-      { label: '导出', icon: 'https://api.iconify.design/material-symbols:imagesmode-outline-rounded.svg', children: [
+      { label: '导出为', icon: 'https://api.iconify.design/material-symbols:imagesmode-outline-rounded.svg', children: [
+        { label: 'PNG', icon: 'https://api.iconify.design/ic:outline-photo-size-select-actual.svg', click: () => toImg(node.el, 'png', node.is) },
+        { label: 'JPG', icon: 'https://api.iconify.design/ic:outline-photo-size-select-actual.svg', click: () => toImg(node.el, 'jpg', node.is) },
+        { label: 'WEBP', icon: 'https://api.iconify.design/ic:outline-photo-size-select-actual.svg', click: () => toImg(node.el, 'webp', node.is) },
         { label: 'PDF', icon: 'https://api.iconify.design/streamline:convert-pdf-2.svg', click: () => toPdf(node) },
-        { label: 'PNG', icon: 'https://api.iconify.design/ic:outline-photo-size-select-actual.svg', click: () => toPng(node) },
-        { label: 'JPG', icon: 'https://api.iconify.design/ic:outline-photo-size-select-actual.svg', click: () => toJpg(node) },
-        { label: 'SVG', icon: 'https://api.iconify.design/tabler:file-type-svg.svg', click: () => toSvg(node) },
+        { label: 'SVG', icon: 'https://api.iconify.design/tabler:file-type-svg.svg', click: () => toImg(node.el, 'svg', node.is) },
       ] },
       { is: 'hr' },
       { label: 'v-slots', vIf: vSlots(node), icon: 'https://api.iconify.design/fa6-solid:check-to-slot.svg', children: 
@@ -235,7 +236,6 @@ async function showCode(node) {
   })[state.lang]()
 
   const i = node.index
-  console.log(node.parent.data);
   
   node.parent.data.children.splice(i, 1, ...toArr(json))
   node.parent.children[i].click()
@@ -245,29 +245,22 @@ function toPdf(node) {
   node.el.ownerDocument.defaultView.print()
 }
 
-function toPng(node) {
-  return htmlToImage(node.el, 'toPng', `${node.is}.${+new Date}.png`)
-}
-
-function toJpg(node) {
-  return htmlToImage(node.el, 'toJpeg', `${node.is}.${+new Date}.jpg`)
-}
-
-function toSvg(node) {
-  return htmlToImage(node.el, 'toSvg', `${node.is}.${+new Date}.svg`)
-}
-
-async function htmlToImage(el, xxx, filename) {
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  // todo modern-screenshot
-  const fn = await import('https://unpkg.com/html-to-image@1.11.11/es/index.js').then(e => e[xxx])
+async function toImg(el, format, filename) {
+  await new Promise(resolve => setTimeout(resolve, 300))
+  let dataUrl = ''
+  if (format == 'svg') {
+    const lib = await import('https://unpkg.com/html-to-image@1.11.11/es/index.js')
+    dataUrl = await lib[{ png: 'toPng', jpg: 'toJpeg', webp: 'toWebp', svg: 'toSvg' }[format]](el, { style: { margin: 0, overflow: 'hidden' } })
+  } else {
+    const lib = await import('https://unpkg.com/modern-screenshot@4.5.5/dist/index.mjs')
+    dataUrl = await lib[{ png: 'domToPng', jpg: 'domToJpeg', webp: 'domToWebp', svg: 'domToForeignObjectSvg' }[format]](el, { style: { margin: 0, overflow: 'hidden' }, scale: devicePixelRatio })
+    if (dataUrl?.nodeType == Node.ELEMENT_NODE) {
+      // todo
+      console.log(dataUrl);
+    }
+  }
   const a = document.createElement('a')
-  const { overflow, margin } = el.style
-  el.style.overflow = 'auto'
-  el.style.margin = '0'
-  a.href = await fn(el)
-  el.style.overflow = overflow
-  el.style.margin = margin
-  a.download = filename
+  a.href = dataUrl
+  a.download = `${filename}.${Date.now()}.${format}`
   a.click()
 }

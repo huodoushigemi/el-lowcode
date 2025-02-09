@@ -1,7 +1,6 @@
-import { toRaw, toRef, triggerRef } from 'vue'
+import { defineAsyncComponent, defineComponent, h, mergeProps, normalizeStyle, toRaw, toRef, triggerRef } from 'vue'
 import { isString } from '@vue/shared'
 import { chooseImg } from '@el-lowcode/utils'
-import TiptapProps from '../TiptapProps.vue'
 
 const str = (lp, extra) => ({ lp, displayValue: '', ...extra })
 const opts = (lp, options, extra) => ({ lp, options, ...extra })
@@ -147,10 +146,20 @@ export default [
     props: [
       str('src')
     ],
+    devProps: (props) => ({
+      is: defineComponent({
+        props: Object.keys(props),
+        render: (props) => h('div', { style: 'position: relative' }, [
+          h('iframe', { ...props }),
+          h('div', { class: 'hover-mask', style: 'position: absolute; inset: 0; cursor: move' }),
+          h('style', { innerHTML: `.hover-mask:hover { background: #80808020 }` })
+        ]),
+      })
+    }),
     defaultProps: () => ({
       src: 'https://element-plus.org/zh-CN/',
-      style: { width: '100%', height: '300px' }
-    })
+      style: { display: 'block', width: '100%', height: '300px', border: '0' }
+    }),
   },
 
   {
@@ -301,9 +310,9 @@ export default [
     label: 'v-html',
     category: '额外扩展',
     icon: 'https://api.iconify.design/mdi:language-html5.svg',
-    props: (props, lcd) => [
+    props: (props, { el }) => [
       // { lp: ['v-html', 'innerHTML'], el: { type: 'textarea', autosize: { maxRows: 6 } } }
-      { is: TiptapProps, el: lcd.keyedNode[props._id].el }
+      { is: defineAsyncComponent(() => import('../TiptapProps.vue')), el }
     ],
     defaultProps: () => ({
       innerHTML: '<h1>v-html 用于渲染富文本</h1><p>这里可用直接编辑，采用了 Tiptap 富文本编辑器</p>'
