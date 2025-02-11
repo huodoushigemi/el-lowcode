@@ -326,6 +326,7 @@ export default [
     is: 'ElInput',
     label: 'input',
     category: '数据输入',
+    cover: await import('./cover/ElInput.png').then(e => e.default),
     vSlots: ['prefix', 'suffix', 'prepend', 'append'],
     props: [
       vmodel(),
@@ -351,6 +352,7 @@ export default [
     is: 'ElInputNumber',
     label: 'number',
     category: '数据输入',
+    cover: await import('./cover/ElInputNumber.png').then(e => e.default),
     vSlots: ['prefix', 'suffix'],
     props: [
       grid2([
@@ -377,6 +379,7 @@ export default [
     is: 'ElSelect',
     label: 'select',
     category: '数据输入',
+    cover: await import('./cover/ElSelect.png').then(e => e.default),
     drag: { from: ['ElOption'] },
     vSlots: ['prefix'],
     props: (props) => [
@@ -428,6 +431,7 @@ export default [
     is: 'ElSwitch',
     label: 'switch',
     category: '数据输入',
+    cover: await import('./cover/ElSwitch.png').then(e => e.default),
     props: [
       bool('disabled'),
       num('width'),
@@ -448,6 +452,7 @@ export default [
     is: 'ElCheckboxGroup',
     label: 'checkboxs',
     category: '数据输入',
+    cover: await import('./cover/ElCheckboxGroup.png').then(e => e.default),
     drag: { from: ['ElCheckbox', 'ElCheckboxButton'] },
     props: [
       grid2([
@@ -488,6 +493,7 @@ export default [
     is: 'ElRadioGroup',
     label: 'radios',
     category: '数据输入',
+    cover: await import('./cover/ElRadioGroup.png').then(e => e.default),
     drag: { from: ['ElRadio', 'ElRadioButton'] },
     props: [
       grid2([
@@ -521,6 +527,7 @@ export default [
     is: 'ElSlider',
     label: 'slider',
     category: '数据输入',
+    cover: await import('./cover/ElSlider.png').then(e => e.default),
     props: [
       grid2([
         bool('disabled'), bool('show-tooltip', true),
@@ -544,6 +551,7 @@ export default [
     is: 'ElRate',
     label: 'rate',
     category: '数据输入',
+    cover: await import('./cover/ElRate.png').then(e => e.default),
     props: [
       bool('disabled'),
       num('max', 5),
@@ -565,6 +573,7 @@ export default [
     is: 'ElDatePicker',
     label: 'date',
     category: '数据输入',
+    cover: await import('./cover/ElDatePicker.png').then(e => e.default),
     props: [
       grid2([
         bool('disabled'),
@@ -592,6 +601,7 @@ export default [
     is: 'ElTimePicker',
     label: 'time',
     category: '数据输入',
+    cover: await import('./cover/ElTimePicker.png').then(e => e.default),
     props: [
       grid2([
         bool('disabled'),
@@ -617,6 +627,7 @@ export default [
     is: 'ElSegmented',
     label: 'segmented',
     category: '数据输入',
+    cover: await import('./cover/ElSegmented.png').then(e => e.default),
     props: [
       grid2([
         bool('disabled'), bool('block'),
@@ -636,6 +647,7 @@ export default [
     is: 'ElColorPicker',
     label: 'color',
     category: '数据输入',
+    cover: await import('./cover/ElColorPicker.png').then(e => e.default),
     props: [
       grid2([
         bool('disabled'), bool('show-alpha'),

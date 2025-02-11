@@ -264,3 +264,5 @@ async function toImg(el, format, filename) {
   a.download = `${filename}.${Date.now()}.${format}`
   a.click()
 }
+
+window.toPng = (el) => toImg(el, 'png', designerCtx.active.is)

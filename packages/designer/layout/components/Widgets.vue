@@ -16,8 +16,8 @@
       </div> -->
       <template v-for="wgt in groupByed[category]">
         <div v-if="!wgt.hidden" class="comp-li vs-ai" flex="~ col" :lcd-is="wgt.is" draggable="true">
-          <img :src="wgt.cover || 'https://img.alicdn.com/tfs/TB1SnwliYr1gK0jSZR0XXbP8XXa-192-144.png_300x300Q90.jpg'" draggable="false" max-h-128 object-scale-down />
-          {{ wgt.label }}
+          <img :src="wgt.cover || 'https://img.alicdn.com/tfs/TB1SnwliYr1gK0jSZR0XXbP8XXa-192-144.png_300x300Q90.jpg'" draggable="false" max-h-256 object-scale-down p6 />
+          <!-- {{ wgt.label }} -->
         </div>
       </template>
     </div>
