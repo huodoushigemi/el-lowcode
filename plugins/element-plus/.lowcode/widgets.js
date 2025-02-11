@@ -26,12 +26,11 @@ function vmodel(prop, extra) {
   return { lp: [label, `vModels.${prop}.0`], out: (v, model) => (v || (delete model.vModels[prop]), {}), script: false, ...extra, el: { spellcheck: false } }
 }
 
-export default [
+export const widgets = [
   {
     is: 'ElButton',
     label: 'button',
     category: '基础组件',
-    cover: await import('./cover/ElButton.png').then(e => e.default),
     props: [
       grid2([
         opts('type', ['default', 'primary', 'success', 'warning', 'danger', 'info']),
@@ -47,6 +46,7 @@ export default [
       opts('native-type', ['submit', 'reset']),
     ],
     defaultProps: () => ({
+      type: 'primary',
       children: [Text('button')],
     }),
   },
@@ -89,7 +89,6 @@ export default [
     is: 'ElCard',
     label: 'card',
     category: '容器',
-    cover: await import('./cover/ElCard.png').then(e => e.default),
     vSlots: ['header', 'footer'],
     props: [
       str('body-class'),
@@ -108,7 +107,6 @@ export default [
     is: 'ElTabs',
     label: 'tabs',
     category: '容器',
-    cover: await import('./cover/Eltabs.png').then(e => e.default),
     drag: { from: ['ElTabPane'] },
     props: [
       vmodel(),
@@ -158,7 +156,6 @@ export default [
     is: 'ElCarousel',
     label: 'carousel',
     category: '容器',
-    cover: await import('./cover/ElCarousel.png').then(e => e.default),
     drag: { from: ['ElCarouselItem'] },
     props: [
       str('height'),
@@ -201,7 +198,6 @@ export default [
     is: 'ElCollapse',
     label: 'collapse',
     category: '容器',
-    cover: await import('./cover/ElCollapse.png').then(e => e.default),
     drag: { from: ['ElCollapseItem'] },
     props: [
       vmodel(),
@@ -326,7 +322,6 @@ export default [
     is: 'ElInput',
     label: 'input',
     category: '数据输入',
-    cover: await import('./cover/ElInput.png').then(e => e.default),
     vSlots: ['prefix', 'suffix', 'prepend', 'append'],
     props: [
       vmodel(),
@@ -352,7 +347,6 @@ export default [
     is: 'ElInputNumber',
     label: 'number',
     category: '数据输入',
-    cover: await import('./cover/ElInputNumber.png').then(e => e.default),
     vSlots: ['prefix', 'suffix'],
     props: [
       grid2([
@@ -379,7 +373,6 @@ export default [
     is: 'ElSelect',
     label: 'select',
     category: '数据输入',
-    cover: await import('./cover/ElSelect.png').then(e => e.default),
     drag: { from: ['ElOption'] },
     vSlots: ['prefix'],
     props: (props) => [
@@ -431,7 +424,6 @@ export default [
     is: 'ElSwitch',
     label: 'switch',
     category: '数据输入',
-    cover: await import('./cover/ElSwitch.png').then(e => e.default),
     props: [
       bool('disabled'),
       num('width'),
@@ -449,10 +441,28 @@ export default [
   },
 
   {
+    is: 'ElSegmented',
+    label: 'segmented',
+    category: '数据输入',
+    props: [
+      grid2([
+        bool('disabled'), bool('block'),
+      ]),
+      radios('size', SIZES),
+      { lp: 'options', el: { is: 'OptionsInput', new: i => ({ label: `opt ${i + 1}`, value: `${i + 1}` }) }  }
+    ],
+    defaultProps: () => ({
+      options: [{ label: `opt 1`, value: `1` }, { label: `opt 2`, value: `2` }, { label: `opt 3`, value: `3` }]
+    }),
+    JSONSchemaOutput: (props) => ({
+      type: 'string'
+    })
+  },
+
+  {
     is: 'ElCheckboxGroup',
     label: 'checkboxs',
     category: '数据输入',
-    cover: await import('./cover/ElCheckboxGroup.png').then(e => e.default),
     drag: { from: ['ElCheckbox', 'ElCheckboxButton'] },
     props: [
       grid2([
@@ -493,7 +503,6 @@ export default [
     is: 'ElRadioGroup',
     label: 'radios',
     category: '数据输入',
-    cover: await import('./cover/ElRadioGroup.png').then(e => e.default),
     drag: { from: ['ElRadio', 'ElRadioButton'] },
     props: [
       grid2([
@@ -527,7 +536,6 @@ export default [
     is: 'ElSlider',
     label: 'slider',
     category: '数据输入',
-    cover: await import('./cover/ElSlider.png').then(e => e.default),
     props: [
       grid2([
         bool('disabled'), bool('show-tooltip', true),
@@ -551,7 +559,6 @@ export default [
     is: 'ElRate',
     label: 'rate',
     category: '数据输入',
-    cover: await import('./cover/ElRate.png').then(e => e.default),
     props: [
       bool('disabled'),
       num('max', 5),
@@ -573,7 +580,6 @@ export default [
     is: 'ElDatePicker',
     label: 'date',
     category: '数据输入',
-    cover: await import('./cover/ElDatePicker.png').then(e => e.default),
     props: [
       grid2([
         bool('disabled'),
@@ -601,7 +607,6 @@ export default [
     is: 'ElTimePicker',
     label: 'time',
     category: '数据输入',
-    cover: await import('./cover/ElTimePicker.png').then(e => e.default),
     props: [
       grid2([
         bool('disabled'),
@@ -624,30 +629,9 @@ export default [
   },
 
   {
-    is: 'ElSegmented',
-    label: 'segmented',
-    category: '数据输入',
-    cover: await import('./cover/ElSegmented.png').then(e => e.default),
-    props: [
-      grid2([
-        bool('disabled'), bool('block'),
-      ]),
-      radios('size', SIZES),
-      { lp: 'options', el: { is: 'OptionsInput', new: i => ({ label: `opt ${i + 1}`, value: `${i + 1}` }) }  }
-    ],
-    defaultProps: () => ({
-      options: [{ label: `opt 1`, value: `1` }, { label: `opt 2`, value: `2` }, { label: `opt 3`, value: `3` }]
-    }),
-    JSONSchemaOutput: (props) => ({
-      type: 'string'
-    })
-  },
-
-  {
     is: 'ElColorPicker',
     label: 'color',
     category: '数据输入',
-    cover: await import('./cover/ElColorPicker.png').then(e => e.default),
     props: [
       grid2([
         bool('disabled'), bool('show-alpha'),
@@ -744,11 +728,18 @@ export default [
       onHeaderDragend: (w, ow, col) => (children$[col.no].data.width = w, el.ownerDocument.defaultView.dispatchEvent(new DragEvent('dragend')))
     }),
     defaultProps: () => ({
+      data: `{{[\n  {\n    id: '1',\n    date: '2016-05-04',\n    name: 'Aleyna Kutzner',\n    city: 'Los Angeles',\n    tag: 'Home',\n  },\n  {\n    id: '2',\n    date: '2016-05-03',\n    name: 'Helen Jacobi',\n    city: 'Los Angeles',\n    tag: 'Office',\n  },\n  {\n    id: '3',\n    date: '2016-05-02',\n    name: 'Brandon Deckert',\n    city: 'Los Angeles',\n    tag: 'Home',\n  },\n  {\n    id: '4',\n    date: '2016-05-01',\n    name: 'Margie Smith',\n    city: 'Los Angeles',\n    tag: 'Office',\n  },\n]}}`,
       rowKey: 'id',
       children: [
-        { is: 'ElTableColumn', label: 'Name', prop: 'name' },
-        { is: 'ElTableColumn', label: 'Age', prop: 'age' },
-        { is: 'ElTableColumn', label: 'Sex', prop: 'sex' },
+        { is: 'ElTableColumn', label: '日期', prop: 'date' },
+        { is: 'ElTableColumn', label: '名称', prop: 'name' },
+        { is: 'ElTableColumn', label: '标签', prop: 'tag', children: {
+          default: {
+            children: [{ is: 'ElTag', children: '{{row.tag}}', type: "{{row.tag == 'Home' ? 'primary' : 'success'}}" }],
+            scope: '{ row, column, $index }',
+          },
+        } },
+        { is: 'ElTableColumn', label: '城市', prop: 'city' },
       ]
     }),
   },
@@ -804,8 +795,19 @@ export default [
       str('group-separator', { displayValue: ',' }),
     ],
     defaultProps: () => ({
-      title: 'Daily active users',
-      value: 268500
+      is: 'div',
+      style: { padding: '20px', borderRadius: '4px', backgroundColor: 'var(--el-bg-color-overlay)' },
+      children: [
+        { is: 'ElStatistic', title: 'Daily active users', value: 268500 },
+        {
+          is: 'div',
+          children: [
+            { is: 'span', children: 'than yesterday' },
+            { is: 'span', children: '24%▲', style: { color: 'var(--el-color-success)', marginLeft: '4px' } },
+          ],
+          style: { display: 'flex', alignItems: 'center', flexWrap: 'wrap', fontSize: '12px', color: 'var(--el-text-color-regular)', marginTop: '16px' },
+        },
+      ],
     })
   },
 
@@ -978,8 +980,10 @@ export default [
       bool('destroy-on-close'),
       bool('close-on-click-modal'),
     ],
+    devProps: props => ({
+      modelValue: props.vModels?.modelValue?.[0] ?? true
+    }),
     defaultProps: () => ({
-      modelValue: true,
       destroyOnClose: true,
       children: []
     }),
@@ -1028,3 +1032,11 @@ export default [
     ],
   }
 ]
+
+await Promise.all(
+  widgets.map(async e => {
+    e.cover = await import(`./cover/${e.is}.png`).then(e => e.default).catch(() => {})
+  })
+)
+
+export default widgets

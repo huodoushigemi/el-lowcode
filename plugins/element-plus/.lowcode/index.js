@@ -21,7 +21,7 @@ export function deactivate(designerCtx) {
 export const contributes = (designerCtx) => ({
   views: {
     'widgets': [
-      { id: 'widgets.element-plus', name: true, icon: true, iconClass: 'my4', is: ['widgets', { list: widgets }] }
+      { id: 'widgets.element-plus', name: true, icon: true, initialSize: 600, iconClass: 'my4', is: ['widgets', { list: widgets }] }
     ],
   }
 })

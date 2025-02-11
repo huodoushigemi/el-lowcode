@@ -12,8 +12,13 @@
       :title="pane.name || pane.id"
       :icon="pane.icon"
       :iconClass="pane.iconClass"
-      class="h0"
-      :style="{ height: `${pane.initialSize}px` }"
+      class="flex-shrink-1"
+      :style="
+        isFull(pane.id) ? 'flex: 1; height: 0;' :
+        (expanded[pane.id] ?? 1) && pane.initialSize ? `flex: 0 0 ${pane.initialSize}px; height: 0;` :
+        (expanded[pane.id] ?? 1) ? 'flex: 1 1; height: 0;' :
+        ''
+      "
     >
       <Pane :pane="pane" />
     </Expand>
@@ -28,8 +33,8 @@ import { isArray } from '@vue/shared'
 import { Activitybar, DesignerCtx } from '../interface'
 import Expand from './Expand.vue'
 
-// import Widgets from './Widgets.vue'
-import Widgets from './CompView.vue'
+import Widgets from './Widgets.vue'
+// import Widgets from './CompView.vue'
 
 const is = {
   widgets: Widgets
@@ -44,6 +49,8 @@ const designer = inject<DesignerCtx>('designerCtx')!
 const list = computed(() => designer.plugins.flatMap(e => e.contributes.views?.[props.activitybar?.id!] || []))
 
 const expanded = ref({})
+
+const isFull = id => (expanded.value[id] ?? 1) && list.value.every(e => e.id == id || expanded.value[e.id] === false)
 
 function mount(el, pane) {
   const { id, renderer } = pane
