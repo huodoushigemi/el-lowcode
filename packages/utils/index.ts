@@ -1,5 +1,5 @@
 import { ref, toRaw, toValue, type App, type Component, type ObjectPlugin } from 'vue'
-import { isArray, isObject, isPromise } from '@vue/shared'
+import { extend, isArray, isObject, isPromise } from '@vue/shared'
 import { AnyFn } from '@vueuse/core'
 import type { AddPrefixToKeys, Arrable, Fnable, Obj } from './types'
 
@@ -76,6 +76,8 @@ export const pick = <T extends object, KS extends (keyof T)[]>(obj: T, arr: KS) 
 export const omit = <T extends object, KS extends (keyof T)[]>(obj: T, arr: KS) => pick(obj, Object.keys(obj).filter((e: any) => !arr.includes(e)) as any) as Omit<T, KS[number]>
 
 export const mapValues = (obj: Obj, fn: AnyFn) => Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fn(v)]))
+
+export const defaults = <T1 extends object, T2 extends object>(obj: T1, src: T2) => (Object.keys(src).map(k => obj[k] === undefined && (obj[k] = src[k])), obj) as T1 & T2
 
 export const prefixedObject = <T extends object, P extends string>(prefix: P, obj: T) => Object.fromEntries(Object.entries(obj).map(([k, v]) => [prefix + k, v])) as AddPrefixToKeys<T, P>
 

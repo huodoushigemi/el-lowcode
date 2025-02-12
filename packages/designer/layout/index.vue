@@ -9,14 +9,14 @@
 
       <div relative flex-1 w0 hfull>
         <!-- v-model:x="canvas.x" v-model:y="canvas.y" -->
-        <infinite-viewer wfull hfull overflow-hidden style="background: var(--vs-panel-bg)" @click="designerCtx.activeId = undefined" v-model:zoom="canvas.zoom" @wheel.prevent.stop>
-          <div ref="viewport" class="viewport" :style="designerCtx.canvas?.style" @click.stop @mouseleave="designerCtx.dragged || (designerCtx.hoverId = undefined)">
+        <infinite-viewer wfull hfull overflow-hidden style="background: var(--vs-panel-bg)" @click="lcd.activeId = undefined" v-model:zoom="canvas.zoom" @wheel.prevent.stop>
+          <div ref="viewport" class="viewport" :style="lcd.canvas?.style" @click.stop @mouseleave="lcd.dragged || (lcd.hoverId = undefined)">
             <iframe
               :key="srcurl + srcdoc + root._id"
               class="wfull hfull"
               :src="srcurl"
               :srcdoc="srcdoc"
-              @vue:mounted="({ el }) => (designerCtx.canvas.window = el.contentWindow, el.contentWindow.designerCtx = designerCtx)"
+              @vue:mounted="({ el }) => (lcd.canvas.window = el.contentWindow, el.contentWindow.designerCtx = lcd)"
               @vue:beforeUnmount="({ el }) => el.contentWindow.unmount?.()"
             />
 
@@ -47,7 +47,7 @@
         </infinite-viewer>
 
         <!-- Breadcrumb -->
-        <div class="absolute top-20 left-35 flex aic text-13 lh-32" @mouseleave="designerCtx.hoverId = void 0">
+        <div class="absolute top-20 left-35 flex aic text-13 lh-32" @mouseleave="lcd.hoverId = void 0">
           <div v-for="(node, i, len) in active?.path" class="vs-breadcrumb-li" @click="node.click()" @mouseenter="node.hover()">
             <div class="max-w150 truncate">{{ node.label }}</div>
             <div v-if="node != active" mx4> > </div>
@@ -65,14 +65,14 @@
     </div>
 
     <Statusbar>
-      <div flex aic bg="#3655b5" class="li ml0! pr8" @click="designerCtx.commands.emit('lcd.toggleDevice')">
+      <div flex aic bg="#3655b5" class="li ml0! pr8" @click="lcd.commands.emit('lcd.toggleDevice')">
         <i-material-symbols:devices-outline wa mr4 h20 />
         {{ devices.find(e => eq(e.value, [canvas.w, canvas.h]))?.label || (`${canvas.w} × ${canvas.h}`) }}
       </div>
-      <i-tdesign:close class="li wa" @click="designerCtx.commands.emit('lcd.clear')" />
-      <i-mdi:undo-variant class="li  wa mr0!" :op="!canUndo && '20'" @click="designerCtx.commands.emit('lcd.undo')" />
-      <i-mdi:redo-variant class="li  wa ml0!" :op="!canRedo && '20'" @click="designerCtx.commands.emit('lcd.redo')" />
-      <i-tdesign:download class="li wa" @click="designerCtx.commands.emit('lcd.download')" />
+      <i-tdesign:close class="li wa" @click="lcd.commands.emit('lcd.clear')" />
+      <i-mdi:undo-variant class="li  wa mr0!" :op="!canUndo && '20'" @click="lcd.commands.emit('lcd.undo')" />
+      <i-mdi:redo-variant class="li  wa ml0!" :op="!canRedo && '20'" @click="lcd.commands.emit('lcd.redo')" />
+      <i-tdesign:download class="li wa" @click="lcd.commands.emit('lcd.download')" />
       <div flex aic text-nowrap class="li ml12!">
         <i-mdi:magnify-expand wa mr2 h18 />
         <input type="range" v-model.number="canvas.zoom" min=".6" max="2.5" step=".01" />
@@ -146,13 +146,13 @@ const initial = () => ({
 
 const root = ref(props.json ?? initial())
 
-const designerCtx = createDesignerCtx(root, () => props.extraPlugins)
-const { canvas } = designerCtx
-const { active } = toRefs(designerCtx)
+const lcd = createDesignerCtx(root, () => props.extraPlugins)
+const { canvas } = lcd
+const { active } = toRefs(lcd)
 
-provide(designerCtxKey, designerCtx)
-provide('designerCtx', designerCtx)
-defineExpose(designerCtx)
+provide(designerCtxKey, lcd)
+provide('designerCtx', lcd)
+defineExpose(lcd)
 
 const devices = [['iPhone SE', '375,667'], ['iPhone12 Pro', '390,844'], ['iPad Mini', '768,1024']].map(e => ({
   label: e[0],
@@ -162,29 +162,29 @@ const devices = [['iPhone SE', '375,667'], ['iPhone12 Pro', '390,844'], ['iPad M
 }))
 // const device = useTransformer(root, 'designer.canvas.style', { get: v => pick(v, ['width', 'height']), set: v => JSON.parse(JSON.stringify(v)) })
 
-console.log(window.designerCtx = designerCtx)
+console.log(window.lcd = window.designerCtx = lcd)
 
 // 时间旅行
 const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 150, capacity: 20 })
 
-designerCtx.commands.on('lcd.toggleDevice', async () => quickPick({ items: devices, value: [canvas.w, canvas.h] }).then(v => (canvas.w = v[0], canvas.h = v[1])))
-designerCtx.commands.on('lcd.clear', () => (designerCtx.rootNode.el?.ownerDocument.defaultView.unmount(), designerCtx.rootNode.remove(), root.value = initial()))
-designerCtx.commands.on('lcd.undo', undo)
-designerCtx.commands.on('lcd.redo', redo)
-designerCtx.commands.on('lcd.download', () => exportCode.value.vis = true)
+lcd.commands.on('lcd.toggleDevice', async () => quickPick({ items: devices, value: [canvas.w, canvas.h] }).then(v => (canvas.w = v[0], canvas.h = v[1])))
+lcd.commands.on('lcd.clear', () => (lcd.rootNode.el?.ownerDocument.defaultView.unmount(), lcd.rootNode.remove(), root.value = initial()))
+lcd.commands.on('lcd.undo', undo)
+lcd.commands.on('lcd.redo', redo)
+lcd.commands.on('lcd.download', () => exportCode.value.vis = true)
 
 const viewport = ref<HTMLElement>()
 const exportCode = ref()
 
-const iframeScroll = computed(() => reactive(useWindowScroll({ window: designerCtx.rootNode.el?.ownerDocument.defaultView })))
+const iframeScroll = computed(() => reactive(useWindowScroll({ window: lcd.rootNode.el?.ownerDocument.defaultView })))
 
-const activitybars = computed(() => designerCtx.plugins.flatMap(e => e.contributes.activitybar || []))
-const activitybar = useTransformer(designerCtx, 'workbench.activitybarId', {
-  get: v => designerCtx.workbench.sidebarVisible ? v : void 0,
-  set: v => (designerCtx.workbench.sidebarVisible = activitybar.value != v, v)
+const activitybars = computed(() => lcd.plugins.flatMap(e => e.contributes.activitybar || []))
+const activitybar = useTransformer(lcd, 'state.activitybar.id', {
+  get: v => lcd.state.sidebar.visible ? v : void 0,
+  set: v => (lcd.state.sidebar.visible = activitybar.value != v, v)
 })
 
-const views = computed(() => designerCtx.plugins.map(e => e.contributes.views || {}))
+const views = computed(() => lcd.plugins.map(e => e.contributes.views || {}))
 const viewsCbs = [] as Fn[]
 onUnmounted(() => viewsCbs.forEach(e => e()))
 watch(views, (val) => {
@@ -192,10 +192,10 @@ watch(views, (val) => {
   val.forEach(views => {
     for (const k in views) {
       views[k].forEach(view => {
-        viewsCbs.push(designerCtx.commands.on(`workbench.view.${view.id}`, () => {
+        viewsCbs.push(lcd.commands.on(`state.view.${view.id}`, () => {
           // todo find viewsContainers
-          designerCtx.workbench.activitybarId = k
-          designerCtx.workbench.sidebarVisible = true
+          lcd.state.activitybar.id = k
+          lcd.state.sidebar.visible = true
         }))
       })
     }
@@ -210,18 +210,18 @@ watch(() => active!.value?.index, async () => {
   moveable.value?.updateRect()
 })
 function onDragStart(e) {
-  designerCtx.draggedId = e.target.getAttribute('lcd-id')
+  lcd.draggedId = e.target.getAttribute('lcd-id')
 }
 function onDrag(e) {
   e.target.style.transform = e.transform
 }
 function onDragEnd(e) {
-  const style = designerCtx.dragged!.data!.style ??= {}
+  const style = lcd.dragged!.data!.style ??= {}
   ;['transform'].forEach(k => style[k] = e.target.style.getPropertyValue(k))
-  designerCtx.draggedId = undefined
+  lcd.draggedId = undefined
 }
 function onResize({ target, width, height, transform, drag }) {
-  const style = designerCtx.dragged!.data!.style ??= {}
+  const style = lcd.dragged!.data!.style ??= {}
   const setw = width != target.offsetWidth
   const seth = height != target.offsetHeight
   const sett = drag.translate[0] != 0 && drag.translate[1] != 0
@@ -230,8 +230,8 @@ function onResize({ target, width, height, transform, drag }) {
   sett && (toRaw(style).transform = target.style.transform = transform)
 }
 function onResizeEnd(e) {
-  triggerRef(toRef(designerCtx.dragged!.data, 'style'))
-  designerCtx.draggedId = undefined
+  triggerRef(toRef(lcd.dragged!.data, 'style'))
+  lcd.draggedId = undefined
 }
 
 // 快捷键

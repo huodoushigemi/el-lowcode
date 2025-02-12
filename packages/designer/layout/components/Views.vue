@@ -34,6 +34,7 @@ import { Activitybar, DesignerCtx } from '../interface'
 import Expand from './Expand.vue'
 
 import Widgets from './Widgets.vue'
+import { get, set } from '@el-lowcode/utils'
 // import Widgets from './CompView.vue'
 
 const is = {
@@ -44,28 +45,32 @@ const props = defineProps({
   activitybar: Object as PropType<Activitybar>,
 })
 
-const designer = inject<DesignerCtx>('designerCtx')!
+const lcd = inject<DesignerCtx>('designerCtx')!
 
-const list = computed(() => designer.plugins.flatMap(e => e.contributes.views?.[props.activitybar?.id!] || []))
+const list = computed(() => lcd.plugins.flatMap(e => e.contributes.views?.[props.activitybar?.id!] || []))
 
 const expanded = ref({})
 
 const isFull = id => (expanded.value[id] ?? 1) && list.value.every(e => e.id == id || expanded.value[e.id] === false)
 
-function mount(el, pane) {
+function mount(el, pane, state) {
   const { id, renderer } = pane
-  renderer?.mount(el, designer)
+  renderer?.mount(el, lcd, state)
 }
 
-function unmount(el, pane) {
+function unmount(el, pane, state) {
   const { id, renderer } = pane
-  renderer?.unmount?.(el, designer)
+  renderer?.unmount?.(el, lcd, state)
 }
 
-const Pane = ({ pane }) => h(is[isArray(pane.is) ? pane.is[0] : pane.is] || 'div', {
-  ...isArray(pane.is) ? pane.is[1] : void 0,
-  class: 'vs-expand-body',
-  onVnodeMounted: ({ el }) => mount(el, pane),
-  onVnodeUnmounted: ({ el }) => unmount(el, pane),
-})
+const Pane = ({ pane }) => {
+  const state = get(lcd.state, pane.id) ?? (set(lcd.state, pane.id, {}), get(lcd.state, pane.id))
+  return h(is[isArray(pane.is) ? pane.is[0] : pane.is] || 'div', {
+    ...isArray(pane.is) ? pane.is[1] : void 0,
+    class: 'vs-expand-body',
+    state,
+    onVnodeMounted: ({ el }) => mount(el, pane, state),
+    onVnodeUnmounted: ({ el }) => unmount(el, pane, state),
+  })
+}
 </script>

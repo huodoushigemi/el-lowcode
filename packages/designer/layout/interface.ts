@@ -290,7 +290,6 @@ export interface DesignerCtx {
   rootNode: DisplayNode
   keyedNode: Record<string, DisplayNode>
 
-  currentState: Obj
   // readonly viewport: HTMLElement
   canvas: {
     window?: typeof globalThis
@@ -324,6 +323,8 @@ export interface DesignerCtx {
   }
 
   dict: Record<string, any> & { plugins: string[] }
+
+  state: Obj
 }
 
 export interface Contributes {

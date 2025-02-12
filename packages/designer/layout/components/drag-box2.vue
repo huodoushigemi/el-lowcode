@@ -223,9 +223,9 @@ function dragStart(e: DragEvent) {
   dragged.value = dragNode
   if (!dragNode) return
   designer.draggedId = dragNode?.id
-  // activitybarId = designer.workbench.activitybarId
-  // designer.workbench.activitybarId = 'comp-tree'
-  // designer.workbench.sidebarVisible = true
+  // activitybarId = designer.state.activitybarId
+  // designer.state.activitybarId = 'comp-tree'
+  // designer.state.sidebarVisible = true
 }
 
 function dragEnd() {
@@ -233,8 +233,8 @@ function dragEnd() {
   dragNode = void 0
   dragged.value = void 0
   designer.draggedId = void 0
-  // designer.workbench.activitybarId = activitybarId
-  // designer.workbench.sidebarVisible = true
+  // designer.state.activitybarId = activitybarId
+  // designer.state.sidebarVisible = true
 }
 
 function resolveNode(el: El) {
