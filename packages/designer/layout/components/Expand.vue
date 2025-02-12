@@ -41,10 +41,7 @@ const open = useVModel(props, 'modelValue', void 0, { passive: true, defaultValu
   &-header.expanded {
     &::after{
       content: '';
-      position: absolute;
-      top: 100%;
-      width: 100%;
-      height: 3px;
+      @apply absolute top-100% wfull h3 z-1;
       box-shadow: #000 0 6px 6px -6px inset;
     }
   }
