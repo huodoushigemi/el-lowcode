@@ -1,5 +1,5 @@
-import { toRaw, type App, type Component, type ObjectPlugin } from 'vue'
-import { isArray, isObject } from '@vue/shared'
+import { ref, toRaw, toValue, type App, type Component, type ObjectPlugin } from 'vue'
+import { isArray, isObject, isPromise } from '@vue/shared'
 import { AnyFn } from '@vueuse/core'
 import type { AddPrefixToKeys, Arrable, Fnable, Obj } from './types'
 
@@ -30,7 +30,20 @@ export const toArr = <T>(arr?: Arrable<T>) => Array.isArray(arr) ? arr : (arr ==
 
 type UnFn <T> = T extends (...args) => infer R ? R : T
 type UnP<T> = T extends (...args: infer P) => any ? P : []
-export const unFn = <T extends Fnable<any>>(fn: T, ...args: UnP<T>): UnFn<T> => typeof fn === 'function' ? fn(...args) : fn
+export const unFn = <T extends Fnable<any>>(fn: T, ...args: UnP<T>): UnFn<T> => typeof fn == 'function' ? fn(...args) : fn
+
+const wm = new WeakMap()
+export function unVal(v, ...args) {
+  v = unFn(v, ...args)
+  if (isPromise(v)) {
+    if (wm.has(v)) return wm.get(v).value
+    const ret = ref()
+    wm.set(v, ret)
+    v.then(e => ret.value = e)
+    return ret.value
+  }
+  return toValue(v)
+}
 
 export function get(obj: any, path: string | ((...args) => any)) {
   if (typeof path === 'function') return path(obj)

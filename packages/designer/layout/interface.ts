@@ -143,7 +143,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
     let props = this.data
     // if (this.vars && this.designerCtx.canvas.window?.processProps) props = this.designerCtx.canvas.window.processProps(props, this.vars)
     if (this.#vars.value && this.designerCtx.canvas.window?.processProps) props = this.designerCtx.canvas.window.processProps(props, this.#vars.value)
-    if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(props, this)) as any
+    if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(this.data, this)) as any
     return props
   })
   get $data() { return this.#$data.value as BoxProps }

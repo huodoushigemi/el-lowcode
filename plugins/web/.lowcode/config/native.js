@@ -245,9 +245,10 @@ export default [
     is: 'form',
     label: 'form',
     category: '表单组件',
-    defaultProps: () => ({
-      children: []
-    })
+    props: [
+      str('on-submit')
+    ],
+    defaultProps: await import('./form.schema').then(e => e.default)
   },
 
   {

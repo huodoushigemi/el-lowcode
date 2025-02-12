@@ -2,7 +2,7 @@ import native from './config/native'
 import page from '../page/config'
 import grid from '../grid/config'
 
-export default [
+const widgets = [
   ...native,
 
   page,
@@ -75,3 +75,11 @@ export default [
     })
   }
 ]
+
+await Promise.all(
+  widgets.map(async e => {
+    e.cover = await import(`./cover/${e.is}.png`).then(e => e.default).catch(() => {})
+  })
+)
+
+export default widgets

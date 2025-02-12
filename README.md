@@ -24,7 +24,7 @@
 - [x] 支持 `Form` `H5` `BI` 开发
 - [x] 支持表单导出 `JSON Schema`
 - [x] `CRUD` 生成器
-- [x] 支持指令 `v-for` `v-if` `v-model` `v-slot`
+- [x] 支持指令 `v-for` `v-if` `v-model` `v-slot` `v-html`
 - [x] 支持任意一处使用 `JavaScript` 编写自定义代码
 - [x] 支持远程插件扩展
 - [x] 提供在线示例模板

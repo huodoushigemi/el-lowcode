@@ -1,15 +1,15 @@
 <template>
   <div flex="~ ">
     <div class="vs-list" b-r-1 overflow-auto>
-      <div v-for="(arr, type) in groupByed" :class="['flex-shrink-0 px12 py8 vs-li truncate', category == type && 'selected']" @mouseenter="category = type">
-        {{ type == 'undefined' ? '其他' : type }}
+      <div v-for="(arr, type) in groupByed" :class="['flex-shrink-0 px12 py8 vs-li truncate', state.category == type && 'selected']" @mouseenter="state.category = type">
+        {{ { undefined: '其他', '': '所有' }[type] ?? type }}
       </div>
     </div>
     <div self-start flex-1 hfull overflow-auto style="background: var(--vs-li-hover-bg);">
       <div grid="~ cols-2" gap-6 gap-y-10 p8>
-        <template v-for="wgt in groupByed[category]">
+        <template v-for="wgt in groupByed[state.category]">
           <div v-if="!wgt.hidden" class="comp-li ha" flex="~ col" :lcd-is="wgt.is" draggable="true">
-            <img class="comp-cover" :src="wgt.cover || 'https://img.alicdn.com/tfs/TB1SnwliYr1gK0jSZR0XXbP8XXa-192-144.png_300x300Q90.jpg'" draggable="false" />
+            <img class="comp-cover" :src="unVal(wgt.cover) || 'https://img.alicdn.com/tfs/TB1SnwliYr1gK0jSZR0XXbP8XXa-192-144.png_300x300Q90.jpg'" draggable="false" />
             <div capitalize mt2>{{ wgt.label }}</div>
           </div>
         </template>
@@ -20,17 +20,14 @@
 
 <script setup>
 import { ref, computed, watchEffect, reactive } from 'vue'
-import { groupBy } from '@el-lowcode/utils'
+import { groupBy, unVal } from '@el-lowcode/utils'
 
 const props = defineProps({
-  state: { type: Object, default: () => (reactive({})) },
+  state: { type: Object, default: () => reactive({ category: '' }) },
   list: Array
 })
 
-const groupByed = computed(() => groupBy((props.list || []), 'category'))
-const category = ref('')
-
-watchEffect(() => category.value = Object.keys(groupByed.value)[0])
+const groupByed = computed(() => ({ '': props.list, ...groupBy((props.list || []), 'category') }))
 </script>
 
 <style lang="scss" scoped>
