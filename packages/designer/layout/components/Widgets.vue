@@ -8,7 +8,7 @@
     <div self-start flex-1 hfull overflow-auto style="background: var(--vs-li-hover-bg);">
       <div :grid="`~ cols-${state.cols}`" gap-6 gap-y-10 p8 style="grid-auto-flow: row dense">
         <template v-for="wgt in groupByed[state.category]">
-          <div v-if="!wgt.hidden" :class="`comp-li col-span-${wgt.coverSpan}`" flex="~ col" :lcd-is="wgt.is" draggable="true">
+          <div v-if="!wgt.hidden" :class="`comp-li col-span-${min(wgt.coverSpan, state.cols)}`" flex="~ col" :lcd-is="wgt.is" draggable="true">
             <div class="comp-cover">
               <img :src="unVal(wgt.cover) || 'https://img.alicdn.com/tfs/TB1SnwliYr1gK0jSZR0XXbP8XXa-192-144.png_300x300Q90.jpg'" wfull hfull draggable="false" />
             </div>
@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { computed, reactive } from 'vue'
+import { computed } from 'vue'
 import { defaults, groupBy, unVal } from '@el-lowcode/utils'
 
 const props = defineProps({
@@ -32,6 +32,8 @@ const props = defineProps({
 const state =  defaults(props.state, { category: '', cols: 2 })
 
 const groupByed = computed(() => ({ '': props.list, ...groupBy((props.list || []), 'category') }))
+
+const min = (...arg) => Math.min(...arg)
 </script>
 
 <style lang="scss" scoped>
