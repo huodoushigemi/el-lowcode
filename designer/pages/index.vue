@@ -14,7 +14,7 @@ const initial = (children: any = []) => ({
   is: 'Page',
   state: { count: 0 },
   children,
-  plugins: ['/plugins/web', '/plugins/ai'],
+  plugins: ['/plugins/web', '/plugins/ai', '/plugins/element-plus'],
   designer: {
     // canvas: { style: { width: '768px', height: '1024px' } },
     canvas: { style: { width: '375px', height: '667px' } }

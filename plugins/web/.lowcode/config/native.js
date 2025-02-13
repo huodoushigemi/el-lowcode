@@ -245,6 +245,7 @@ export default [
     is: 'form',
     label: 'form',
     category: '表单组件',
+    coverSpan: 2,
     props: [
       str('on-submit')
     ],
@@ -311,6 +312,7 @@ export default [
     label: 'v-html',
     category: '额外扩展',
     icon: 'https://api.iconify.design/mdi:language-html5.svg',
+    coverSpan: 2,
     props: (props, { el }) => [
       // { lp: ['v-html', 'innerHTML'], el: { type: 'textarea', autosize: { maxRows: 6 } } }
       { is: defineAsyncComponent(() => import('../TiptapProps.vue')), el }
@@ -360,6 +362,7 @@ export default [
     label: 'markdown-it',
     category: '额外扩展',
     icon: 'https://api.iconify.design/mdi:language-markdown-outline.svg',
+    coverSpan: 2,
     props: [
       str('src'),
       str('content', { el: { is: 'MonacoEditor', language: 'markdown', style: 'height: 400px' } }),
@@ -412,6 +415,7 @@ export default [
     label: 'highlight',
     category: '额外扩展',
     icon: 'https://api.iconify.design/mdi:code-braces.svg',
+    coverSpan: 2,
     props: props => [
       opts('lang', [['JSON', 'json'], ['Html', 'html'], ['Css', 'css'], ['JS', 'javascript'], ['Java', 'java'], ['Python', 'python'], ['Go', 'go'], ['SQL', 'sql'], ['Diff', 'diff'], ['Bash', 'bash']]),
       opts('theme', ['a11y-light', 'a11y-dark', 'atom-one-light', 'atom-one-dark', 'github', 'github-dark', 'vs', 'vs2015']),

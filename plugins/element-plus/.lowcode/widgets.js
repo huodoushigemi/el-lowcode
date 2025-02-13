@@ -11,7 +11,7 @@ const radios = (lp, options, extra) => ({ lp, type: 'radio-group', options, ...e
 const chekcs = (lp, options, extra) => ({ lp, type: 'checkbox-group', options, ...extra, el: { type: 'button', ...extra?.el } })
 const bool = (lp, displayValue = false, extra) => ({ lp, type: 'switch', displayValue, ...extra })
 const num = (lp, displayValue, extra) => ({ lp, type: 'input-number', displayValue, set: v => v == null ? void 0 : v, ...extra })
-const color = lp => ({ lp, type: 'color-picker' })
+const color = lp => ({ lp, type: 'color-picker', el: { size: 'small' } })
 
 const hr = () => ({ is: 'hr', class: '-mx8' })
 
@@ -89,6 +89,7 @@ export const widgets = [
     is: 'ElCard',
     label: 'card',
     category: '容器',
+    coverSpan: 2,
     vSlots: ['header', 'footer'],
     props: [
       str('body-class'),
@@ -107,6 +108,7 @@ export const widgets = [
     is: 'ElTabs',
     label: 'tabs',
     category: '容器',
+    coverSpan: 2,
     drag: { from: ['ElTabPane'] },
     props: [
       vmodel(),
@@ -156,6 +158,7 @@ export const widgets = [
     is: 'ElCarousel',
     label: 'carousel',
     category: '容器',
+    coverSpan: 2,
     drag: { from: ['ElCarouselItem'] },
     props: [
       str('height'),
@@ -197,6 +200,7 @@ export const widgets = [
   {
     is: 'ElCollapse',
     label: 'collapse',
+    coverSpan: 2,
     category: '容器',
     drag: { from: ['ElCollapseItem'] },
     props: [
@@ -652,6 +656,7 @@ export const widgets = [
     is: 'ElDescriptions',
     label: 'descriptions',
     category: '数据展示',
+    coverSpan: 2,
     drag: { from: ['ElDescriptionsItem'] },
     vSlots: ['title', 'extra'],
     props: [
@@ -679,6 +684,7 @@ export const widgets = [
   {
     is: 'ElDescriptionsItem',
     label: 'item',
+    coverSpan: 2,
     hidden: true,
     drag: { to: ['ElDescriptions'] },
     vSlots: ['label'],
@@ -707,6 +713,7 @@ export const widgets = [
     is: 'ElTableLcd',
     label: 'table',
     category: '数据展示',
+    coverSpan: 2,
     drag: { from: ['ElTableColumn'] },
     vSlots: ['append', 'empty'],
     props: (props, node) => [
@@ -785,6 +792,7 @@ export const widgets = [
     is: 'ElStatistic',
     label: 'statistic',
     category: '数据展示',
+    coverSpan: 2,
     props: [
       str('title'),
       num('value'),
@@ -948,6 +956,7 @@ export const widgets = [
     is: 'ElAlert',
     label: 'alert',
     category: '反馈组件',
+    coverSpan: 2,
     vSlots: ['title', 'default'],
     props: [
       str('title'),
@@ -970,6 +979,7 @@ export const widgets = [
     is: 'ElDrawer',
     label: 'drawer',
     category: '反馈组件',
+    coverSpan: 2,
     drag: { to: ['Page', 'ElDrawer', 'ElDialog'] },
     vSlots: ['header', 'footer'],
     props: [
@@ -1022,6 +1032,32 @@ export const widgets = [
   },
 
   {
+    is: 'ElPopover',
+    label: 'popover',
+    category: '反馈组件',
+    vSlots: ['reference'],
+    props: [
+      str('title'),
+      radios('effect', ['dark', 'light']),
+      radios('trigger', ['hover', 'click', 'focus']),
+      num('offset'),
+    ],
+    defaultProps: () => ({
+      children: {
+        default: { children: [Text('content')] },
+        reference: { children: [Text('reference')] }
+      }
+    }),
+    devProps: (props, { children$ }) => ({
+      is: (props, { slots }) => h('div', { style: 'display: contents' }, h(resolveDynamicComponent('ElPopover'), props, slots)),
+      'lcd-drag': children$.length ? { from: [] } : void 0
+    }),
+    getRect({ el }) {
+      return el ? mergeRects(el.children) : void 0
+    }
+  },
+
+  {
     is: 'ElDivider',
     label: 'divider',
     props: [
@@ -1030,7 +1066,33 @@ export const widgets = [
       radios('border-style', [['solid'], 'dashed']),
       radios('content-position', ['left', 'right', 'center']),
     ],
-  }
+  },
+
+  {
+    is: 'ElWatermark',
+    label: 'watermark',
+    props: [
+      { lp: 'rotate', type: 'slider', displayValue: -22, el: { min: -180, max: 180 } },
+      str('image'),
+      grid2([
+        num(['gap-x', 'gap.0'], void 0, { defaiudefaultValue: 100 }),
+        num(['gap-y', 'gap.1'], void 0, { defaiudefaultValue: 100 }),
+      ]),
+      hr(),
+      str('content'),
+      grid2([
+        num(['font-size', 'font.fontSize'], 16),
+        color(['color', 'font.color'], { displayValue: 'rgba(0,0,0,.15)' }),
+      ])
+    ],
+    defaultProps: () => ({
+      content: 'Element Plus',
+      font: { color: '#80808080' }
+    }),
+    getEl({ ref }) {
+      return unrefElement(ref)?.firstElementChild
+    },
+  },
 ]
 
 await Promise.all(

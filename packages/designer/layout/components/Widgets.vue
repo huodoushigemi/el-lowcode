@@ -6,10 +6,12 @@
       </div>
     </div>
     <div self-start flex-1 hfull overflow-auto style="background: var(--vs-li-hover-bg);">
-      <div :grid="`~ cols-${state.cols}`" gap-6 gap-y-10 p8>
+      <div :grid="`~ cols-${state.cols}`" gap-6 gap-y-10 p8 style="grid-auto-flow: row dense">
         <template v-for="wgt in groupByed[state.category]">
-          <div v-if="!wgt.hidden" class="comp-li ha" flex="~ col" :lcd-is="wgt.is" draggable="true">
-            <img class="comp-cover" :src="unVal(wgt.cover) || 'https://img.alicdn.com/tfs/TB1SnwliYr1gK0jSZR0XXbP8XXa-192-144.png_300x300Q90.jpg'" draggable="false" />
+          <div v-if="!wgt.hidden" :class="`comp-li col-span-${wgt.coverSpan}`" flex="~ col" :lcd-is="wgt.is" draggable="true">
+            <div class="comp-cover">
+              <img :src="unVal(wgt.cover) || 'https://img.alicdn.com/tfs/TB1SnwliYr1gK0jSZR0XXbP8XXa-192-144.png_300x300Q90.jpg'" wfull hfull draggable="false" />
+            </div>
             <div capitalize mt2>{{ wgt.label }}</div>
           </div>
         </template>
@@ -27,7 +29,7 @@ const props = defineProps({
   list: Array
 })
 
-const state =  defaults(props.state, { category: '', cols: 1 })
+const state =  defaults(props.state, { category: '', cols: 2 })
 
 const groupByed = computed(() => ({ '': props.list, ...groupBy((props.list || []), 'category') }))
 </script>
@@ -36,11 +38,15 @@ const groupByed = computed(() => ({ '': props.list, ...groupBy((props.list || []
 .comp-li {
   @apply justify-center items-center cursor-move;
   &:hover .comp-cover {
+    // @apply [&>img]:scale-125;
     outline: 1px solid var(--vs-focus-b-c);
     outline-offset: -1px;
   }
   .comp-cover {
-    @apply px4 py6 wfull hfull max-h256 min-h36 object-scale-down bg-#000/40;
+    @apply px4 py6 wfull hfull max-h256 min-h36 bg-#000/40 overflow-hidden;
+    & > img {
+      @apply transition-all object-scale-down;
+    }
   }
 }
 </style>
