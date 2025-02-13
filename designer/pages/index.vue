@@ -32,7 +32,6 @@ onMounted(() => {
     "/plugins/vuetify",
     "/plugins/antv",
     "/plugins/decorates",
-    "/plugins/chatgpt",
     "/plugins/ant-design-vue",
     "/plugins/naive-ui",
     "/plugins/shoelace",

@@ -12,13 +12,6 @@
 - [Vuetify](https://page-test-huodoushigemi-f2b49a94d51c0541b4c4e0827acda06ce2c6aa7.gitlab.io/#/?file=https://oxbkrsyagojtbckytbjx.supabase.co/storage/v1/object/public/lcd/8489e54f5151607f874212d5ed31e0b5.lcd.json)
 - [Waterfall](https://page-test-huodoushigemi-f2b49a94d51c0541b4c4e0827acda06ce2c6aa7.gitlab.io/#/?file=https://oxbkrsyagojtbckytbjx.supabase.co/storage/v1/object/public/lcd/1229722f6b852ee722c4faef234d40c7.lcd.json)
 
-<!-- ## [Docs](http://httpsgiteecomepalserver.gitee.io/el-lowcode)
-
-- [x] 表单引擎
-- [x] crud引擎 -->
-
-<!-- 设计器 -->
-
 ## Feature
 
 - [x] 支持 `Form` `H5` `BI` 开发

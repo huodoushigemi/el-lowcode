@@ -47,6 +47,8 @@ const props = defineProps({
 
 const lcd = inject<DesignerCtx>('designerCtx')!
 
+const state = id => get(lcd.state, `views.${id}`) ?? (set(lcd.state, `views.${id}`, {}), get(lcd.state, `views.${id}`))
+
 const list = computed(() => lcd.plugins.flatMap(e => e.contributes.views?.[props.activitybar?.id!] || []))
 
 const expanded = ref({})
@@ -64,13 +66,12 @@ function unmount(el, pane, state) {
 }
 
 const Pane = ({ pane }) => {
-  const state = get(lcd.state, pane.id) ?? (set(lcd.state, pane.id, {}), get(lcd.state, pane.id))
   return h(is[isArray(pane.is) ? pane.is[0] : pane.is] || 'div', {
     ...isArray(pane.is) ? pane.is[1] : void 0,
     class: 'vs-expand-body',
-    state,
-    onVnodeMounted: ({ el }) => mount(el, pane, state),
-    onVnodeUnmounted: ({ el }) => unmount(el, pane, state),
+    state: state(pane.id),
+    onVnodeMounted: ({ el }) => mount(el, pane, state(pane.id)),
+    onVnodeUnmounted: ({ el }) => unmount(el, pane, state(pane.id)),
   })
 }
 </script>
