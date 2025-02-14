@@ -305,16 +305,7 @@ export interface DesignerCtx {
   widgets: Record<string, Widget | undefined>
   snippets: Snippet[]
 
-  plugins: {
-    url: string
-    packageJSON: Record<string, any>
-    widgets: Widget[]
-    snippets?: Snippet[]
-    contributes: Contributes
-    readonly isActive: boolean
-    activate()
-    deactivate()
-  }[]
+  plugins: PluginModule[]
 
   commands: {
     on(command: string, cb: (...args: any[]) => any): Fn
@@ -340,6 +331,17 @@ export interface Contributes {
   statusbar?: StatusBarItem[]
   commands?: Command[]
   menus?: { 'node/context'?: (node: DisplayNode) => any[] }
+}
+
+export interface PluginModule {
+  url: string
+  packageJSON: Record<string, any>
+  widgets: Widget[]
+  snippets?: Snippet[]
+  contributes: Contributes
+  readonly isActive: boolean
+  activate()
+  deactivate()
 }
 
 export interface StatusBarItem {

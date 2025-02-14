@@ -62,20 +62,17 @@ const UL = defineComponent({
     let ins
     watchEffect(async (cb) => {
       if (!subItem?.children) {
-        vis.value = false
-        ins?.destroy()
         return
       }
-      if (vis.value) return
       vis.value = true
       await nextTick()
       ins = tippy(document.body, { interactive: true, content: unrefElement(subMenuRef.value), offset: [-6, 5], delay: [100, 300], duration: 0, placement: 'right-start', trigger: 'mouseenter click', ...node.state.tippy, appendTo: unrefElement(el)! })
       ins.setProps({ getReferenceClientRect: () => subItem!.el!.getBoundingClientRect() })
       ins.show()
-      // cb(() => {
-      //   ins.destroy()
-      //   vis.value = false
-      // })
+      cb(() => {
+        ins.destroy()
+        vis.value = false
+      })
     })
 
     return () => (

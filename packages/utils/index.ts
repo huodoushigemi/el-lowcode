@@ -1,6 +1,6 @@
-import { ref, toRaw, toValue, type App, type Component, type ObjectPlugin } from 'vue'
-import { extend, isArray, isObject, isPromise } from '@vue/shared'
-import { AnyFn } from '@vueuse/core'
+import { ref, unref, type App, type Component, type ObjectPlugin } from 'vue'
+import { isArray, isFunction, isObject, isPromise } from '@vue/shared'
+import { AnyFn, computedAsync } from '@vueuse/core'
 import type { AddPrefixToKeys, Arrable, Fnable, Obj } from './types'
 
 export * from './types'
@@ -34,15 +34,13 @@ export const unFn = <T extends Fnable<any>>(fn: T, ...args: UnP<T>): UnFn<T> => 
 
 const wm = new WeakMap()
 export function unVal(v, ...args) {
-  v = unFn(v, ...args)
-  if (isPromise(v)) {
+  if (isFunction(v) || isPromise(v)) {
     if (wm.has(v)) return wm.get(v).value
-    const ret = ref()
+    const ret = computedAsync(() => unFn(v, ...args), void 0, { onError: e => console.error(e) })
     wm.set(v, ret)
-    v.then(e => ret.value = e)
     return ret.value
   }
-  return toValue(v)
+  return unref(v)
 }
 
 export function get(obj: any, path: string | ((...args) => any)) {

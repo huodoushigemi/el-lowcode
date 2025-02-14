@@ -953,6 +953,29 @@ export const widgets = [
   },
 
   {
+    is: 'ElCalendar',
+    label: 'calendar',
+    category: '数据展示',
+    vSlots: {
+      'date-cell': { scope: '{ data }' },
+      'header': { scope: '{ date }' }
+    },
+    props: [
+      // vmodel(),
+      // bool('range'),
+      str('modelValue'),
+      str('onUpdate:modelValue', { script: true, displayValue: '{{v => state.calendar = v?.}}' }),
+    ],
+    defaultProps: () => ({
+      'modelValue': `{{state.calendar ? new window.Date(state.calendar) : undefined}}`,
+      'onUpdate:modelValue': `{{v => state.calendar = v?.toLocaleDateString()}}`,
+      children: {
+        'date-cell': { scope: '{ data }', children: [Text(`{{data.day.split('-').slice(1).join('-') + (data.isSelected ? '✔️' : '')}}`)] }
+      }
+    }),
+  },
+
+  {
     is: 'ElAlert',
     label: 'alert',
     category: '反馈组件',
@@ -1073,7 +1096,7 @@ export const widgets = [
     label: 'watermark',
     props: [
       { lp: 'rotate', type: 'slider', displayValue: -22, el: { min: -180, max: 180 } },
-      str('image'),
+      str('image', { el: { placeholder: 'http://xxx.png' } }),
       grid2([
         num(['gap-x', 'gap.0'], void 0, { defaiudefaultValue: 100 }),
         num(['gap-y', 'gap.1'], void 0, { defaiudefaultValue: 100 }),
@@ -1089,9 +1112,12 @@ export const widgets = [
       content: 'Element Plus',
       font: { color: '#80808080' }
     }),
-    getEl({ ref }) {
-      return unrefElement(ref)?.firstElementChild
-    },
+    getRect({ el }) {
+      return el?.firstElementChild
+    }
+    // getEl({ ref }) {
+    //   return unrefElement(ref)?.firstElementChild
+    // },
   },
 ]
 

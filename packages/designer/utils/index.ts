@@ -1,9 +1,9 @@
 import { computed, markRaw, MaybeRefOrGetter, reactive, Ref, ref, toValue, watch } from 'vue'
 import { isArray, isObject, remove } from '@vue/shared'
-import { computedAsync, Fn, tryOnBeforeUnmount } from '@vueuse/core'
+import { Fn, tryOnBeforeUnmount } from '@vueuse/core'
 import { useTransformer } from 'el-form-render'
-import { findret, keyBy, mapValues, toArr, treeUtils, unFn } from '@el-lowcode/utils'
-import { BoxProps, Contributes, DesignerCtx, DisplayNode, ExtensionContext, UserWidget, Widget } from '../layout/interface'
+import { keyBy, mapValues, toArr, treeUtils, unFn, unVal } from '@el-lowcode/utils'
+import { BoxProps, Contributes, DesignerCtx, DisplayNode, ExtensionContext, PluginModule, UserWidget, Widget } from '../layout/interface'
 
 export * as genCode from './genCode'
 export * from './quickPick'
@@ -28,18 +28,6 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     ...root.value.plugins || []
   ])
 
-  const xxx = {} as Record<string, Ref<DesignerCtx['plugins'][0]>>
-
-  // load plugins
-  watch(allUrls, urls => {
-    urls.forEach(url => (xxx[url] ??= computedAsync(async () => {
-      const packageJSON = await fetch(`${url}/.lowcode/package.json`).then(e => e.json())
-      const plugin = await createPluginCtx(url, await import(/* @vite-ignore */ `${url}/.lowcode/index.js`), packageJSON, lcd)
-      lcd.plugins.push(plugin)
-      return plugin
-    }, void 0, { onError: e => console.error(e) })))
-  }, { immediate: true })
-
   const lcd: DesignerCtx = reactive({
     // viewport,
     // canvas: computed(() => root.value.designer?.canvas || { zoom: 1 }),
@@ -60,7 +48,6 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     hover: computed(() => lcd.hoverId ? lcd.keyedNode[lcd.hoverId] : void 0),
     dragged: computed(() => lcd.draggedId ? lcd.keyedNode[lcd.draggedId] : void 0),
     plugins: [],
-    pluginsLoading: computed(() => allUrls.value.every(url => !!xxx[url].value)),
     newProps: computed(() => is => Object.assign({ is } as BoxProps, lcd.widgets[is]!.defaultProps?.(lcd))),
     widgets: computed(() => keyBy(lcd.plugins.flatMap(e => e.widgets?.map(normalWidget) || []), 'is')),
     // snippets: computed(() => keyBy(designerCtx.plugins.flatMap(e => e.snippets || []), 'id')),
@@ -82,12 +69,17 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     // activitybar: computed(() => findret(lcd.plugins, e => e.contributes.activitybar?.find(e => e.id == lcd.state.activitybarId))),
   })
 
-  ;(async () => {
-    const packageJSON = await import(`../plugins/base/.lowcode/package.json`)
-    lcd.plugins.unshift(
-      await createPluginCtx('', await import('../plugins/base/.lowcode/index'), packageJSON, lcd)
-    )
-  })()
+  const basePlugin = () => {
+    const module = import('../plugins/base/.lowcode/index')
+    const json = import('../plugins/base/.lowcode/package.json')
+    return createPluginCtx('base', module, json, lcd)
+  }
+
+  const plugins = () => loadPlugins(allUrls, lcd).value
+  
+  lcd.plugins = computed(() => {
+    return [unVal(basePlugin), ...unVal(plugins) || []].filter(e => e)
+  }) as any
 
   watch(() => lcd.dragged, (val, old) => {
     old?.el?.removeAttribute('lcd-dragged')
@@ -111,13 +103,29 @@ function normalWidget(widget: UserWidget): Widget {
   }
 }
 
-export async function createPluginCtx(url, module, packageJSON, designerCtx: DesignerCtx) {
+function loadPlugins(urls: Ref<string[]>, lcd: DesignerCtx): Ref<DesignerCtx['plugins']> {
+  const cache = {} as Record<string, Promise<DesignerCtx['plugins'][0]>>
+  const loaded = {}
+  const ps = computed(() => urls.value.map(url => {
+    return cache[url] ??= (async () => {
+      const module = import(/* @vite-ignore */ `${url}/.lowcode/index.js`)
+      const json = fetch(`${url}/.lowcode/package.json`).then(e => e.json())
+      const ret = await createPluginCtx(url, module, json, lcd)
+      loaded[url] = 1
+      return ret
+    })()
+  }))
+  return computed(() => ps.value.map(e => unVal(e)).filter(e => e))
+}
+
+export async function createPluginCtx(url: string, module, packageJSON, lcd: DesignerCtx): Promise<PluginModule> {
+  ;[module, packageJSON] = await Promise.all([module, packageJSON])
   const extCtx: ExtensionContext = {
     subscriptions: []
   }
   const isActive = ref(false)
   const contributes = computed<Contributes>(() => {
-    const contributes = { ...unFn(module.contributes, designerCtx) || {} }
+    const contributes = { ...unFn(module.contributes, lcd) || {} }
     contributes.views = mapValues(contributes.views || {}, v => {
       return v.map(view => ({
         ...view,
@@ -128,11 +136,11 @@ export async function createPluginCtx(url, module, packageJSON, designerCtx: Des
     return contributes
   })
   const activate = async () => {
-    await module.activate?.(designerCtx, extCtx)
+    await module.activate?.(lcd, extCtx)
     isActive.value = true
   }
   const deactivate = async () => {
-    await module.deactivate?.(designerCtx)
+    await module.deactivate?.(lcd)
     isActive.value = false
     extCtx.subscriptions.forEach(fn => typeof fn == 'function' ? fn() : fn.dispose())
   }
@@ -142,8 +150,8 @@ export async function createPluginCtx(url, module, packageJSON, designerCtx: Des
   let commandCbs = [] as Fn[]
   extCtx.subscriptions.push(() => commandCbs.forEach(cb => cb()))
   watch(contributes, (val, old) => {
-    old?.commands?.forEach(e => e.cb && designerCtx.commands.off(e.command, e.cb))
-    commandCbs = val.commands?.flatMap(e => e.cb ? designerCtx.commands.on(e.command, e.cb) : []) || []
+    old?.commands?.forEach(e => e.cb && lcd.commands.off(e.command, e.cb))
+    commandCbs = val.commands?.flatMap(e => e.cb ? lcd.commands.on(e.command, e.cb) : []) || []
   }, { immediate: true })
 
   return markRaw({
