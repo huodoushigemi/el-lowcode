@@ -9,11 +9,12 @@
 
       <div relative flex-1 w0 hfull>
         <!-- v-model:x="canvas.x" v-model:y="canvas.y" -->
-        <infinite-viewer wfull hfull overflow-hidden style="background: var(--vs-panel-bg)" @click="lcd.activeId = undefined" v-model:zoom="canvas.zoom" @wheel.prevent.stop>
+        <IV wfull hfull :disabled="lcd.state.infiniteViewer.disabled" style="background: var(--vs-panel-bg)" @click="lcd.activeId = undefined" v-model:zoom="canvas.zoom">
           <div ref="viewport" class="viewport" :style="lcd.canvas?.style" @click.stop @mouseleave="lcd.dragged || (lcd.hoverId = undefined)">
             <iframe
               :key="srcurl + srcdoc + root._id"
               class="wfull hfull"
+              style="user-select: none"
               :src="srcurl"
               :srcdoc="srcdoc"
               @vue:mounted="({ el }) => (lcd.canvas.window = el.contentWindow, el.contentWindow.designerCtx = lcd)"
@@ -44,7 +45,7 @@
               @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd"
             /> -->
           </div>
-        </infinite-viewer>
+        </IV>
 
         <!-- Breadcrumb -->
         <div class="absolute top-20 left-35 flex aic text-13 lh-32" @mouseleave="lcd.hoverId = void 0">
@@ -83,8 +84,8 @@
 </template>
 
 <script setup lang="ts">
-import { watch, computed, provide, ref, getCurrentInstance, PropType, reactive, onUnmounted, toRaw, triggerRef, toRef, toRefs, nextTick } from 'vue'
-import { computedAsync, Fn, useDebouncedRefHistory, useWindowScroll } from '@vueuse/core'
+import { watch, computed, provide, ref, getCurrentInstance, PropType, reactive, onUnmounted, toRaw, triggerRef, toRef, toRefs, nextTick, h, defineComponent, renderSlot, cloneVNode, watchEffect } from 'vue'
+import { computedAsync, Fn, useDebouncedRefHistory, useElementSize, useResizeObserver, useWindowScroll } from '@vueuse/core'
 import Moveable from 'vue3-moveable'
 
 import { eq, get, pick, set, uid } from '@el-lowcode/utils'
@@ -123,6 +124,17 @@ app.component('EditTable', EditTable)
 app.component('Tabs', Tabs)
 app.component('MonacoEditor', MonacoEditor)
 app.use(ElFormRender)
+
+const IV = defineComponent({
+  setup(props, { slots }) {
+    const elRef = ref()
+    const o1 = reactive(useElementSize(elRef))
+    const o2 = reactive(useElementSize(viewport))
+    return () => lcd.state.infiniteViewer.disabled
+      ? h('div', { class: `flex ${o2.width <= o1.width && 'jcc'} ${o2.height <= o1.height && 'aic'} scrollbar-hidden overflow-auto`, ref: elRef }, slots.default!())
+      : h(InfiniteViewer, { class: 'overflow-hidden', onWheel: e => (e.preventDefault(), e.stopPropagation()) }, () => slots.default?.())
+  },
+})
 
 const log = (...arg) => (console.log(...arg), arg[0])
 
@@ -289,6 +301,13 @@ function onKeydown(e: KeyboardEvent) {
     position: relative;
     height: 100%;
     background: var(--el-fill-color-extra-light);
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    width: 0;
+    &-thumb {
+      display: none;
+    }
   }
   
   .el-collapse {

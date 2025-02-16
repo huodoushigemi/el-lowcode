@@ -64,6 +64,9 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
       sidebar: {
         visible: true
       },
+      infiniteViewer: {
+        disabled: 1
+      }
       // workbench.action.toggleSidebarVisibility
     }
     // activitybar: computed(() => findret(lcd.plugins, e => e.contributes.activitybar?.find(e => e.id == lcd.state.activitybarId))),
@@ -75,10 +78,8 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     return createPluginCtx('base', module, json, lcd)
   }
 
-  const plugins = () => loadPlugins(allUrls, lcd).value
-  
   lcd.plugins = computed(() => {
-    return [unVal(basePlugin), ...unVal(plugins) || []].filter(e => e)
+    return [unVal(basePlugin), ...unVal(loadPlugins, allUrls, lcd)?.value || []].filter(e => e)
   }) as any
 
   watch(() => lcd.dragged, (val, old) => {
@@ -105,17 +106,12 @@ function normalWidget(widget: UserWidget): Widget {
 
 function loadPlugins(urls: Ref<string[]>, lcd: DesignerCtx): Ref<DesignerCtx['plugins']> {
   const cache = {} as Record<string, Promise<DesignerCtx['plugins'][0]>>
-  const loaded = {}
-  const ps = computed(() => urls.value.map(url => {
-    return cache[url] ??= (async () => {
-      const module = import(/* @vite-ignore */ `${url}/.lowcode/index.js`)
-      const json = fetch(`${url}/.lowcode/package.json`).then(e => e.json())
-      const ret = await createPluginCtx(url, module, json, lcd)
-      loaded[url] = 1
-      return ret
-    })()
-  }))
-  return computed(() => ps.value.map(e => unVal(e)).filter(e => e))
+  const ps = () => urls.value.map(url => cache[url] ??= (() => {
+    const module = import(/* @vite-ignore */ `${url}/.lowcode/index.js`)
+    const json = fetch(`${url}/.lowcode/package.json`).then(e => e.json())
+    return createPluginCtx(url, module, json, lcd)
+  })())
+  return computed(() => ps().map(e => unVal(e)).filter(e => e))
 }
 
 export async function createPluginCtx(url: string, module, packageJSON, lcd: DesignerCtx): Promise<PluginModule> {

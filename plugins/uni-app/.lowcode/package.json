@@ -1,0 +1,9 @@
+{
+  "name": "uni-app",
+  "displayName": "uni-app",
+  "description": "uni-app 是一个使用 Vue.js 开发小程序、H5、App的统一前端框架",
+  "icon": "https://hellouniapp.dcloud.net.cn/static/uni.png",
+  "homepage": "https://gitee.com/httpsgiteecomepalserver/el-lowcode/tree/main/public/plugins/uni-app",
+  "author": "xxx",
+  "disabled": true
+}

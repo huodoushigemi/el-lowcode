@@ -1,5 +1,6 @@
-import { createApp, provide, defineAsyncComponent, h, reactive, watchEffect, triggerRef, toRef, toRaw, nextTick } from 'vue'
+import { createApp, provide, defineAsyncComponent, h, reactive, watchEffect, triggerRef, toRef, toRaw, nextTick, watchSyncEffect } from 'vue'
 import { isPlainObject } from '@vue/shared'
+import { useEventListener } from '@vueuse/core'
 import { ElMessageBox, ElSegmented } from 'element-plus'
 import { get, html2schema, set, toArr } from '@el-lowcode/utils'
 import { genCode, showDialog } from '../../../utils'
@@ -16,10 +17,10 @@ function create(AsyncComp) {
   }
 }
 
-export function activate(designerCtx) {
+export function activate(lcd) {
   // 文本元素 开启编辑模式
   watchEffect(cleaup => {
-    const node = designerCtx.active
+    const node = lcd.active
     if (!node?.el || !node?.text) return
     const { el } = node
     const addEvent = (event, cb, opt) => { el.addEventListener(event, cb, opt); cleaup(() => el.removeEventListener(event, cb)) }
@@ -40,9 +41,9 @@ export function activate(designerCtx) {
       addEvent('keydown', async (e) => {
         if (e.key == 'Enter') {
           e.preventDefault()
-          designerCtx.activeId = void 0
+          lcd.activeId = void 0
           await nextTick()
-          designerCtx.activeId = node.id
+          lcd.activeId = node.id
         }
         e.stopPropagation()
       })
@@ -52,6 +53,51 @@ export function activate(designerCtx) {
       })
     }, { once: true })
   })
+
+  // 共享 Vue 内存，以便实现数据响应
+  watchSyncEffect(() => {
+    if (!lcd.canvas.window) return
+    const win = lcd.canvas.window
+    win.Vue = window.Vue
+    win.VueDemi = window.VueVueDemi
+    win.Moveable = window.Moveable
+  })
+
+  // 
+  useEventListener(() => lcd.state.infiniteViewer.disabled ? void 0 : lcd.canvas.window?.document, 'wheel', e => {
+    const { frameElement, WheelEvent } = lcd.canvas.window
+    if (e.altKey) {
+      if (
+        e.deltaY < 0 && window.scrollY == 0 ||
+        e.deltaY > 0 && window.scrollY + 1 >= (document.documentElement.scrollHeight - window.innerHeight)
+      ) {
+        e.preventDefault()
+        e.stopPropagation()
+      }
+      return
+    }
+    e.preventDefault()
+    e.stopPropagation()
+    
+    const rect = frameElement.getBoundingClientRect()
+    const x = e.x + rect.x, y = e.y + rect.y
+    
+    const event = new WheelEvent(e.type, {
+      ...pick(e, [
+        'deltaMode', 'deltaX', 'deltaY', 'deltaZ',
+        'button', 'buttons',
+        'screenX', 'screenY',
+        'detail', 'which',
+        'altKey', 'ctrlKey', 'metaKey', 'shiftKey',
+        // 'modifierAltGraph', 'modifierCapsLock', 'modifierFn', 'modifierFnLock', 'modifierHyper', 'modifierNumLock', 'modifierScrollLock', 'modifierSuper', 'modifierSymbol', 'modifierSymbolLock',
+        'bubbles', 'cancelable', 'composed'
+      ]),
+      // view: parent,
+      clientX: x, clientY: y,
+    })
+    
+    frameElement.dispatchEvent(event)
+  }, { passive: false, capture: true })
 }
 
 export function deactivate(designer) {

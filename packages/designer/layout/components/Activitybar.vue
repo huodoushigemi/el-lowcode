@@ -1,5 +1,13 @@
 <template>
   <div class="activitybar" flex="~ col" w48>
+    <a
+      class="activitybar_icon w48 h48 c-inherit"
+      hover="op70"
+      :style="`-webkit-mask-image: url(https://api.iconify.design/codicon:github.svg)`"
+      href="https://github.com/huodoushigemi/el-lowcode"
+      target="_blank"
+    />
+    
     <div v-for="bar in list" :class="modelValue == bar.id ? 'op100' : 'op40'" hover="op100" :title="bar.title" @click="emit('update:modelValue', bar.id)">
       <div v-if="modelValue == bar.id" absolute w1 h48 style="background: var(--vscode-activityBar-activeBorder, #fff)" />
 

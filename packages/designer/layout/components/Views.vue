@@ -35,7 +35,6 @@ import Expand from './Expand.vue'
 
 import Widgets from './Widgets.vue'
 import { get, set } from '@el-lowcode/utils'
-// import Widgets from './CompView.vue'
 
 const is = {
   widgets: Widgets

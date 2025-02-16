@@ -26,6 +26,7 @@ const json = window.__LCD_JSON__ ?? initial()
 
 onMounted(() => {
   designer.value!.dict.plugins.push(...[
+    "/plugins/uni-app",
     "/plugins/web",
     "/plugins/element-plus",
     "/plugins/echarts",

@@ -4,6 +4,8 @@ import { isExp, wrapExp } from './execExp'
 
 export function html2schema(html: string): any[] {
   const dom = parse(html)
+  console.log(dom);
+  
   const schema = { is: 'div', children: [] } as any
   const queue = [schema]
   walk(dom, function aaa(node, parentNode) {
@@ -15,7 +17,7 @@ export function html2schema(html: string): any[] {
       let content = node.content?.trim()
       content = isExp(content) ? wrapExp(content) : content?.trim()
       if (parentNode?.children.length == 1) {
-        parent.children = content
+        parent.children = isVslot(parentNode) ? [{ is: 'span', children: content }] : content
         return
       }
       else {
@@ -24,12 +26,12 @@ export function html2schema(html: string): any[] {
     }
     
     // v-slot
-    if (node.name == 'template' && node.attrs.some(e => e.name[0] == '#')) {
-      const name = node.attrs.find(e => e[0] == '#')?.name.slice(1) ?? 'default'
+    if (isVslot(node)) {
+      const name = node.attrs.find(e => e.name[0] == '#')?.name.slice(1) ?? 'default'
       parent.children = isArray(parent.children) ? { default: { children: parent.children } } : (parent.children ?? {})
-      parent.children[name] = child = { scope: attrs[`#${name}`] }
+      parent.children[name] = child = { scope: attrs[`#${name}`] || void 0 }
     }
-    else if (parentNode?.children.some(e => e.name == 'template' && e.attrs.some(e => e.name[0] == '#'))) {
+    else if (parentNode?.children.some(e => isVslot(e))) {
       if (node.name == 'template') {
         if (!node.children.length) return
         parentNode.children.splice(parentNode.children.indexOf(node), 1, ...node.children)
@@ -86,10 +88,18 @@ export function html2schema(html: string): any[] {
       return false
     }
 
+    if (node.voidElement === false) {
+      child.children = []
+    }
+
     queue.push(child)
     return () => queue.pop()
   })
-  return schema.children
+  return JSON.parse(JSON.stringify(schema.children))
+}
+
+function isVslot(node: IDom, parent?: IDom) {
+  return node.name == 'template' && node.attrs.some(e => e.name[0] == '#')
 }
 
 function walk(arr: IDom[], enter: (node: IDom, parent?: IDom) => any, parent?: IDom) {

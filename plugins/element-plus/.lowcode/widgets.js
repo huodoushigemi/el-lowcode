@@ -1094,6 +1094,7 @@ export const widgets = [
   {
     is: 'ElWatermark',
     label: 'watermark',
+    drag: { to: ['Page', 'div', 'ElDrawer', 'ElDialog'] },
     props: [
       { lp: 'rotate', type: 'slider', displayValue: -22, el: { min: -180, max: 180 } },
       str('image', { el: { placeholder: 'http://xxx.png' } }),

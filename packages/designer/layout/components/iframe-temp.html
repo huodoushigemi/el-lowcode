@@ -12,57 +12,12 @@
       .el-card, .el-button { transition: none !important; }
     </style>
 
-    <!-- 共享 Vue 内存，以便实现数据响应 --> 
-    <script>
-      if (window.parent) {
-        window.Vue = window.parent.Vue
-        window.VueDemi = window.parent.VueDemi
-        window.Moveable = window.parent.Moveable
-      }
-    </script>
-
-
-
     <!-- 解决 iframe 不触发事件 -->
     <script type="module">
       import { useEventListener } from '@vueuse/core'
       import { pick } from '@el-lowcode/utils'
 
       if (window.parent) {
-        document.addEventListener('wheel', e => {
-          if (e.altKey) {
-            if (
-              e.deltaY < 0 && window.scrollY == 0 ||
-              e.deltaY > 0 && window.scrollY + 1 >= (document.documentElement.scrollHeight - window.innerHeight)
-            ) {
-              e.preventDefault()
-              e.stopPropagation()
-            }
-            return
-          }
-          e.preventDefault()
-          e.stopPropagation()
-          
-          const rect = frameElement.getBoundingClientRect()
-          const x = e.x + rect.x, y = e.y + rect.y
-
-          const event = new WheelEvent(e.type, {
-            ...pick(e, [
-              'deltaMode', 'deltaX', 'deltaY', 'deltaZ',
-              'button', 'buttons',
-              'screenX', 'screenY',
-              'detail', 'which',
-              'altKey', 'ctrlKey', 'metaKey', 'shiftKey',
-              // 'modifierAltGraph', 'modifierCapsLock', 'modifierFn', 'modifierFnLock', 'modifierHyper', 'modifierNumLock', 'modifierScrollLock', 'modifierSuper', 'modifierSymbol', 'modifierSymbolLock',
-              'bubbles', 'cancelable', 'composed'
-            ]),
-            // view: parent,
-            clientX: x, clientY: y,
-          })
-          
-          frameElement.dispatchEvent(event)
-        }, { passive: false, capture: true })
-
         useEventListener(['mousedown', 'mousemove', 'mouseup'], e => {
           if (e.button == 1) {
             e.preventDefault()
@@ -95,8 +50,6 @@
       }
     </script>
 
-    
-  
     <!-- 渲染 JSON -->
     <script type="module">
       import { h, createRenderer } from 'vue'
