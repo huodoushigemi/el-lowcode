@@ -1014,7 +1014,7 @@ export const widgets = [
       bool('close-on-click-modal'),
     ],
     devProps: props => ({
-      modelValue: props.vModels?.modelValue?.[0] ?? true
+      // modelValue: props.vModels?.modelValue?.[0] ?? true
     }),
     defaultProps: () => ({
       destroyOnClose: true,
