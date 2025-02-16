@@ -3,7 +3,7 @@
     <a
       class="activitybar_icon w48 h48 c-inherit"
       hover="op70"
-      :style="`-webkit-mask-image: url(https://api.iconify.design/codicon:github.svg)`"
+      style="-webkit-mask-image: url(https://api.iconify.design/codicon:github.svg)"
       href="https://github.com/huodoushigemi/el-lowcode"
       target="_blank"
     />

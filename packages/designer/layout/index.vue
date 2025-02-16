@@ -77,7 +77,7 @@
       <div flex aic text-nowrap class="li ml12!">
         <i-mdi:magnify-expand wa mr2 h18 />
         <input type="range" v-model.number="canvas.zoom" min=".6" max="2.5" step=".01" />
-        <InputNumber :model-value="Math.round(canvas.zoom * 100)" @update:model-value="v => canvas.zoom = +((v || 0) / 100).toFixed(2)" noUnit :min="60" :max="250" class="w50 h20" />
+        <InputNumber :model-value="Math.round(canvas.zoom * 100)" @update:model-value="v => canvas.zoom = +((v || 0) / 100).toFixed(2)" noUnit :min="60" :max="250" class="w50 h20!" />
       </div>
     </Statusbar>
   </div>

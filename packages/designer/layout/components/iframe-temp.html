@@ -12,6 +12,15 @@
       .el-card, .el-button { transition: none !important; }
     </style>
 
+    <!-- 共享 Vue 内存，以便实现数据响应 --> 
+    <script>
+      if (window.parent) {
+        window.Vue = window.parent.Vue
+        window.VueDemi = window.parent.VueDemi
+        window.Moveable = window.parent.Moveable
+      }
+    </script>
+
     <!-- 解决 iframe 不触发事件 -->
     <script type="module">
       import { useEventListener } from '@vueuse/core'

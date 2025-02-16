@@ -55,13 +55,13 @@ export function activate(lcd) {
   })
 
   // 共享 Vue 内存，以便实现数据响应
-  watchSyncEffect(() => {
-    if (!lcd.canvas.window) return
-    const win = lcd.canvas.window
-    win.Vue = window.Vue
-    win.VueDemi = window.VueVueDemi
-    win.Moveable = window.Moveable
-  })
+  // watchSyncEffect(() => {
+  //   if (!lcd.canvas.window) return
+  //   const win = lcd.canvas.window
+  //   win.Vue = window.Vue
+  //   win.VueDemi = window.VueVueDemi
+  //   win.Moveable = window.Moveable
+  // })
 
   // 
   useEventListener(() => lcd.state.infiniteViewer.disabled ? void 0 : lcd.canvas.window?.document, 'wheel', e => {

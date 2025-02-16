@@ -1,8 +1,8 @@
 <template>
-  <div px12 overflow-overlay>
+  <div class="px12" overflow-overlay>
     <i-mingcute:loading-line v-if="loading" class="hfull block mxa text-32 animate-spin" style="margin-top: 64px" />
 
-    <ElCard v-else v-for="item in templates" shadow="hover" body-class="p0!" my12>
+    <ElCard v-else v-for="item in templates" shadow="hover" body-class="p0!" class="my12">
       <ElImage v-if="item.cover" :src="fnAsync(item.cover)" :preview-src-list="[fnAsync(item.cover)]" />
       <div class="py8 px12">
         <div class="font-bold">{{ item.title }}</div>
