@@ -12,6 +12,7 @@
         <IV wfull hfull :disabled="lcd.state.infiniteViewer.disabled" style="background: var(--vs-panel-bg)" @click="lcd.activeId = undefined" v-model:zoom="canvas.zoom">
           <div ref="viewport" class="viewport" :style="lcd.canvas?.style" @click.stop @mouseleave="lcd.dragged || (lcd.hoverId = undefined)">
             <iframe
+              v-if="!lcd.pluginsLoading"
               :key="srcurl + srcdoc + root._id"
               class="wfull hfull"
               style="user-select: none"

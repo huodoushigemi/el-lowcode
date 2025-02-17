@@ -150,8 +150,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   // 自由拖拽
   get isAbs() { return this.data.style?.position == 'absolute' }
-  // todo
-  set isAbs(bool) { this.data.style = bool ? normalizeStyle([this.data.style, { position: 'absolute', margin: 0 }]) : normalizeStyle([this.data.style, { position: void 0, transform: void 0, margin: void 0 }]) }
+  set isAbs(bool) { this.data.style = bool ? normalizeStyle([this.data.style, { position: 'absolute', margin: 0 }]) : (this.data.style && normalizeStyle([this.data.style, { position: void 0, transform: void 0, margin: void 0 }])) }
 
   get x() { return parseTransform(this.data.style?.transform)[0] }
   set x(v) { set(this.data, 'style.transform', `translate(${v}px, ${this.y}px)`) }

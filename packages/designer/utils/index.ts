@@ -48,6 +48,7 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     hover: computed(() => lcd.hoverId ? lcd.keyedNode[lcd.hoverId] : void 0),
     dragged: computed(() => lcd.draggedId ? lcd.keyedNode[lcd.draggedId] : void 0),
     plugins: [],
+    pluginsLoading: computed(() => lcd.plugins.length < allUrls.value.length + 1),
     newProps: computed(() => is => Object.assign({ is } as BoxProps, lcd.widgets[is]!.defaultProps?.(lcd))),
     widgets: computed(() => keyBy(lcd.plugins.flatMap(e => e.widgets?.map(normalWidget) || []), 'is')),
     // snippets: computed(() => keyBy(designerCtx.plugins.flatMap(e => e.snippets || []), 'id')),

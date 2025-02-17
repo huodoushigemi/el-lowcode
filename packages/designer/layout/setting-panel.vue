@@ -157,6 +157,17 @@ function flat(obj, prefix = [], wm = new WeakMap, ret = []) {
     const e = { label: k, value: v, checked, onClick: () => onSelect(e) }
     ret.push(e)
     isPlainObject(obj[k]) && (e.children = flat(obj[k], [...prefix, k], wm))
+    // add state
+    if (!+prefix && k == 'state') {
+      e.children ??= []
+      e.children.unshift({ icon: 'https://api.iconify.design/material-symbols:add-2-rounded.svg', label: 'ADD', onClick: () => alert('TODO') })
+    }
+    // add data-source
+    if (!+prefix && k == 'ds') {
+      // todo
+      // e.children ??= []
+      // e.children.unshift({ icon: 'https://api.iconify.design/material-symbols:add-2-rounded.svg', label: 'ADD', onClick: () => alert(111) })
+    }
   }
   return ret
 }
