@@ -1,5 +1,4 @@
 import { createApp, defineAsyncComponent, defineComponent, h, inject, ref } from 'vue'
-import { ElMessage } from 'element-plus'
 import IShare from '~icons/tdesign/share'
 import ILoading from '~icons/eos-icons/bubble-loading'
 import IEye from '~icons/mdi/eye-outline'

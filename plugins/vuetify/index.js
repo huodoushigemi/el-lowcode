@@ -6,6 +6,8 @@ const lib = [
     // todo
     innerHTML: `
       .v-progress-linear { position: absolute; }
+      .v-expansion-panels { flex-direction: column; align-items: center; }
+      .v-expansion-panel { width: 100% }
     `
   }]
 ]

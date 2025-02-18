@@ -12,7 +12,7 @@
             <div class="comp-cover">
               <img :src="unVal(wgt.cover) || 'https://img.alicdn.com/tfs/TB1SnwliYr1gK0jSZR0XXbP8XXa-192-144.png_300x300Q90.jpg'" wfull hfull draggable="false" />
             </div>
-            <div capitalize mt2>{{ wgt.label }}</div>
+            <div text-center capitalize mt2>{{ wgt.label }}</div>
           </div>
         </template>
       </div>
@@ -36,9 +36,9 @@ const groupByed = computed(() => ({ '': props.list, ...groupBy((props.list || []
 const min = (...arg) => Math.min(...arg)
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .comp-li {
-  @apply justify-center items-center cursor-move;
+  @apply justify-center cursor-move;
   &:hover .comp-cover {
     // @apply [&>img]:scale-125;
     outline: 1px solid var(--vs-focus-b-c);

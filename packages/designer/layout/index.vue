@@ -300,7 +300,9 @@ function onKeydown(e: KeyboardEvent) {
 .designer {
   .viewport {
     position: relative;
-    height: 100%;
+    flex-shrink: 0;
+    width: 768px;
+    height: 1024px;
     background: var(--el-fill-color-extra-light);
   }
 

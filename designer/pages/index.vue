@@ -14,7 +14,7 @@ const initial = (children: any = []) => ({
   is: 'Page',
   state: { count: 0 },
   children,
-  plugins: ['/plugins/web', '/plugins/ai', '/plugins/element-plus'],
+  plugins: ['/plugins/web', '/plugins/element-plus'],
   designer: {
     // canvas: { style: { width: '768px', height: '1024px' } },
     canvas: { style: { width: '375px', height: '667px' } }
@@ -100,7 +100,10 @@ watchEffect(async () => {
   <Designer
     ref="designer"
     :json="json"
-    :extra-plugins="['/plugins/template']"
+    :extra-plugins="[
+      '/plugins/template',
+      '/plugins/ai'
+    ]"
     h100vh
   />
 </template>

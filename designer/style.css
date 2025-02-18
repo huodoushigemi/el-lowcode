@@ -4,9 +4,3 @@ html, body {
   margin: 0;
   padding: 0;
 }
-
-*, *::after, *::before {
-  border-color: var(--el-border-color);
-  border-style: solid;
-  border-width: 0;
-}

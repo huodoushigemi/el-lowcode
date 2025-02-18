@@ -1,5 +1,6 @@
 :root {
   --vs-c: #ccc;
+  --vs-b-c: #454545;
   --vs-focus-b-c: #007fd4;
   --vs-sideBarSectionHeader-border: rgba(204, 204, 204, 0.2);
   --vs-scrollbarSlider-background: rgba(121, 121, 121, 0.4);
@@ -32,6 +33,13 @@
   --vs-btn-c: #fff;
   --vs-btn-bg: #0e639c;
   --vs-btn-hover-bg: #1177bb;
+}
+
+*, *::after, *::before {
+  border-color: var(--vs-b-c);
+  // border-color: var(--el-border-color);
+  border-style: solid;
+  border-width: 0;
 }
 
 @mixin vs-base {
@@ -155,6 +163,9 @@
 .vs-menu {
   @apply py5 min-w60 bg-[--vs-menu-bg] b-1 b-solid b-[--vs-menu-b-c];
   box-shadow: 0 0 12px #00000080;
+  & > hr + hr {
+    @apply hidden;
+  }
   & > hr {
     @apply my5;
   }
