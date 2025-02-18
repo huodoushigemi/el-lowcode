@@ -1,10 +1,11 @@
-import { createApp, provide, defineAsyncComponent, h, reactive, watchEffect, triggerRef, toRef, toRaw, nextTick, watchSyncEffect } from 'vue'
+import { createApp, defineAsyncComponent, h, reactive, watchEffect, triggerRef, toRef, toRaw, nextTick, watchSyncEffect, ref } from 'vue'
 import { isPlainObject } from '@vue/shared'
 import { useEventListener } from '@vueuse/core'
-import { ElMessageBox, ElSegmented } from 'element-plus'
+import { ElSegmented } from 'element-plus'
 import { get, html2schema, set, toArr } from '@el-lowcode/utils'
 import { genCode, showDialog } from '../../../utils'
 import MonacoEditor from '../../../layout/components/monaco-editor.vue'
+import DS from './DS.vue'
 
 function create(AsyncComp) {
   let app
@@ -104,7 +105,7 @@ export function deactivate(designer) {
 
 }
 
-export const contributes = (designerCtx) => ({
+export const contributes = (lcd) => ({
   activitybar: [
     {
       id: 'widgets',
@@ -192,6 +193,8 @@ export const contributes = (designerCtx) => ({
     // { text: 'statusbar-right', align: 'right', onClick: () => alert(11) },
   ],
   commands: [
+    { command: 'openState', title: 'Open State', cb: () => openState(lcd) },
+    { command: 'openDataSource', title: 'Open Data Source', cb: () => openDataSource(lcd) },
     { command: 'lcd.toggleDevice', title: 'Toggle Device' },
     { command: 'lcd.clear', title: 'Clear' },
     { command: 'lcd.undo', title: 'Undo' },
@@ -312,3 +315,22 @@ async function toImg(el, format, filename) {
 }
 
 window.toPng = (el) => toImg(el, 'png', designerCtx.active.is)
+
+async function openState(lcd) {
+  const { default: JSON5 } = await import('https://unpkg.com/json5@2.2.3/dist/index.min.mjs')
+  let code = `export default ${JSON5.stringify(lcd.root.state || {}, void 0, '  ')}`
+
+  await showDialog({ is: 'el-drawer', title: 'State', modalClass: 'props', size: '400px' }, () => [
+    h(MonacoEditor, { modelValue: code, 'onUpdate:modelValue': v => code = v, language: 'javascript', autofocus: true }),
+  ])
+
+  lcd.root.state = JSON5.parse(code.replace(/^export default/, ''))
+}
+
+async function openDataSource(lcd) {
+  // const state = ref(JSON.stringify(lcd.root.state, void 0, '  '))
+
+  await showDialog({ is: 'el-drawer', title: 'State', modalClass: 'props', size: '400px' }, () => h(DS, { modelValue: lcd.state.ds }))
+
+  lcd.root.state = JSON.parse(state.value)
+}

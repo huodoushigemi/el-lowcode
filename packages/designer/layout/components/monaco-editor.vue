@@ -39,8 +39,6 @@ const props = defineProps({
   onSave: Function
 })
 
-let editorIns
-
 let _val = refWithWatch(() => props.modelValue || '')
 
 const emit = defineEmits(['save', 'update:modelValue'])
@@ -54,10 +52,11 @@ async function onMount(_editor, monaco) {
   })
   
   isMount.value = true
+
+  window._editor = _editor
   
-  editorIns = _editor
   setTimeout(() => {
-    if (props.autofocus) editorIns.focus()
+    if (props.autofocus) _editor.focus()
   }, 100);
   const { languages } = monaco
   if (props.tsExtraLibs) {

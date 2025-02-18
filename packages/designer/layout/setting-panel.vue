@@ -1,7 +1,7 @@
 <template>
   <div flex aic p8 text-26 font-medium capitalize>
     <div mra>{{ node.label }}</div>
-    <i-mdi:cursor-move v-if="model && designerCtx.root != model" bg-hover w28 h28 p4 mr8 :bg="node.isAbs ? '#404040' : ''" @click="node.isAbs = true" />
+    <i-mdi:cursor-move v-if="model && lcd.root != model" bg-hover w28 h28 p4 mr8 :bg="node.isAbs ? '#404040' : ''" @click="node.isAbs = true" />
     <i-material-symbols-light:code bg-hover w28 h28 p4 @click="visible = true" />
   </div>
   <el-tabs v-if="config" class="tabs" @contextmenu="onContextmenu">
@@ -84,9 +84,9 @@ const Render = createRender({
 
 const RenderItems = ({ items }) => items?.map(e => isPlainObject(e) && Render(e))
 
-const designerCtx = inject(designerCtxKey)
+const lcd = inject(designerCtxKey)
 
-const node = computed(() => designerCtx.active ?? designerCtx.rootNode)
+const node = computed(() => lcd.active ?? lcd.rootNode)
 const model = computed(() => node.value.data)
 const config = computed(() => node.value?.config)
 
@@ -157,17 +157,16 @@ function flat(obj, prefix = [], wm = new WeakMap, ret = []) {
     const e = { label: k, value: v, checked, onClick: () => onSelect(e) }
     ret.push(e)
     isPlainObject(obj[k]) && (e.children = flat(obj[k], [...prefix, k], wm))
-    // add state
-    if (!+prefix && k == 'state') {
-      e.children ??= []
-      e.children.unshift({ icon: 'https://api.iconify.design/material-symbols:add-2-rounded.svg', label: 'ADD', onClick: () => alert('TODO') })
-    }
-    // add data-source
-    if (!+prefix && k == 'ds') {
-      // todo
-      // e.children ??= []
-      // e.children.unshift({ icon: 'https://api.iconify.design/material-symbols:add-2-rounded.svg', label: 'ADD', onClick: () => alert(111) })
-    }
+  }
+  // edit state
+  if (prefix.at(-1) == 'state') {
+    ret.push({ is: 'hr' })
+    ret.push({ icon: 'https://api.iconify.design/tdesign:edit-2.svg', label: 'Edit', onClick: () => lcd.commands.emit('openState') })
+  }
+  // edit data source
+  if (prefix.at(-1) == 'ds') {
+    ret.push({ is: 'hr' })
+    ret.push({ icon: 'https://api.iconify.design/tdesign:edit-2.svg', label: 'Edit', onClick: () => lcd.commands.emit('openDataSource') })
   }
   return ret
 }

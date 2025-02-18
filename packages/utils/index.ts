@@ -10,6 +10,7 @@ export * from './execExp'
 export * from './uid'
 export * from './hooks'
 export * from './html2schema'
+export * from './prettier'
 
 type SFCWithInstall<T> = T & ObjectPlugin
 type Comp = Component & { name: string } & ObjectPlugin

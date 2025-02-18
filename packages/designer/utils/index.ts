@@ -1,4 +1,4 @@
-import { computed, markRaw, MaybeRefOrGetter, reactive, Ref, ref, toValue, watch } from 'vue'
+import { computed, effectScope, markRaw, MaybeRefOrGetter, reactive, Ref, ref, toValue, watch, watchSyncEffect } from 'vue'
 import { isArray, isObject, remove } from '@vue/shared'
 import { Fn, tryOnBeforeUnmount } from '@vueuse/core'
 import { useTransformer } from 'el-form-render'
@@ -132,24 +132,31 @@ export async function createPluginCtx(url: string, module, packageJSON, lcd: Des
     })
     return contributes
   })
+
+  const scope = effectScope()
+  
   const activate = async () => {
-    await module.activate?.(lcd, extCtx)
-    isActive.value = true
+    scope.run(async () => {
+      // process commands.cb
+      watchSyncEffect(clear => {
+        const { commands } = contributes.value
+        console.log(commands);
+        
+        commands?.forEach(e => e.cb && lcd.commands.on(e.command, e.cb))
+        clear(() => commands?.forEach(e => e.cb && lcd.commands.off(e.command, e.cb)))
+      })
+      
+      await module.activate?.(lcd, extCtx)
+      isActive.value = true
+    })
   }
   const deactivate = async () => {
+    scope.stop()
     await module.deactivate?.(lcd)
     isActive.value = false
     extCtx.subscriptions.forEach(fn => typeof fn == 'function' ? fn() : fn.dispose())
   }
   await activate()
-
-  // process commands.cb
-  let commandCbs = [] as Fn[]
-  extCtx.subscriptions.push(() => commandCbs.forEach(cb => cb()))
-  watch(contributes, (val, old) => {
-    old?.commands?.forEach(e => e.cb && lcd.commands.off(e.command, e.cb))
-    commandCbs = val.commands?.flatMap(e => e.cb ? lcd.commands.on(e.command, e.cb) : []) || []
-  }, { immediate: true })
 
   return markRaw({
     url,
@@ -167,7 +174,7 @@ function createEvents() {
   const e = {}
   function on(k: string, cb: (...args: any[]) => void) {
     (e[k] ??= []).push(cb)
-    tryOnBeforeUnmount(() => off(k, cb))
+    // tryOnBeforeUnmount(() => off(k, cb))
     return () => off(k, cb)
   }
   function off(k: string, cb: (...args: any[]) => void) {

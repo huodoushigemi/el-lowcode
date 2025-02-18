@@ -198,7 +198,7 @@ hr {
   @apply b-t-1 b-t-solid b-t-[--vs-menu-b-c];
 }
 
-hr:last-child {
+hr:last-child, hr:first-child {
   display: none;
 }
 
@@ -227,13 +227,18 @@ hr:last-child {
   &.el-select > .el-select__wrapper > .el-select__suffix { display: none; }
 }
 
-.props {
+.el-overlay.no-modal {
+  background-color: unset;
+}
+
+.el-overlay.props {
+  background-color: rgba(0,0,0,0.25);
   & > .el-drawer.rtl {
     @apply translate-x--256 shadow-none;
   }
   &.el-drawer-fade-enter-from > .rtl,
   &.el-drawer-fade-leave-to > .rtl {
-    @apply translate-x--192 op0;
+    @apply translate-x--270 op0;
   }
 }
 
