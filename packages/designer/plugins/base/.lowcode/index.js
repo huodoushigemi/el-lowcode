@@ -3,9 +3,10 @@ import { isPlainObject } from '@vue/shared'
 import { useEventListener } from '@vueuse/core'
 import { ElSegmented } from 'element-plus'
 import { get, html2schema, set, toArr } from '@el-lowcode/utils'
-import { genCode, showDialog } from '../../../utils'
+import { genCode, quickPick, showDialog } from '../../../utils'
 import MonacoEditor from '../../../layout/components/monaco-editor.vue'
 import DS from './DS.vue'
+import ExportCode from './ExportCode.vue'
 
 function create(AsyncComp) {
   let app
@@ -64,7 +65,7 @@ export function activate(lcd) {
     win.Moveable = window.Moveable
   })
 
-  // 
+  // iframe 滚动穿透处理
   useEventListener(() => lcd.state.infiniteViewer.disabled ? void 0 : lcd.canvas.window?.document, 'wheel', e => {
     const { frameElement, WheelEvent } = lcd.canvas.window
     if (e.altKey) {
@@ -99,10 +100,6 @@ export function activate(lcd) {
     
     frameElement.dispatchEvent(event)
   }, { passive: false, capture: true })
-}
-
-export function deactivate(designer) {
-
 }
 
 export const contributes = (lcd) => ({
@@ -189,12 +186,20 @@ export const contributes = (lcd) => ({
     }
   ],
   statusbar: [
-    // { text: 'statusbar-test', command: 'lcd.toggleDevice' },
-    // { text: 'statusbar-right', align: 'right', onClick: () => alert(11) },
+    { command: 'toggleDevice', icon: { class: 'mr4 h20!', src: 'https://api.iconify.design/material-symbols:devices-outline.svg' }, class: 'ml0!', style: 'background: #3655b5', children: devices.find(e => e.eq([lcd.canvas.w, lcd.canvas.h]))?.label || 'auto' },
+    { command: 'clear', icon: 'https://api.iconify.design/tdesign:close.svg' },
+    { command: 'undo', icon: 'https://api.iconify.design/mdi:undo-variant.svg', class: 'mr0!' },
+    { command: 'redo', icon: 'https://api.iconify.design/mdi:redo-variant.svg', class: 'ml0!' },
+    { command: 'openExportCode', icon: 'https://api.iconify.design/tdesign:download.svg' },
   ],
   commands: [
+    { command: 'toggleDevice', cb: () => toggleDevice(lcd) },
+    { command: 'clear', cb: () => (lcd.canvas.window.unmount(), lcd.root = { _id: uid(), is: 'Page', children: [], state: { count: 0 }, plugins: [] }) },
+    // { command: 'undo', cb: () => {} },
+    // { command: 'redo', cb: () => {} },
     { command: 'openState', title: 'Open State', cb: () => openState(lcd) },
     { command: 'openDataSource', title: 'Open Data Source', cb: () => openDataSource(lcd) },
+    { command: 'openExportCode', title: 'Open Export Code', cb: () => openExportCode(lcd) },
     { command: 'lcd.toggleDevice', title: 'Toggle Device' },
     { command: 'lcd.clear', title: 'Clear' },
     { command: 'lcd.undo', title: 'Undo' },
@@ -319,18 +324,29 @@ window.toPng = (el) => toImg(el, 'png', designerCtx.active.is)
 async function openState(lcd) {
   const { default: JSON5 } = await import('https://unpkg.com/json5@2.2.3/dist/index.min.mjs')
   let code = `export default ${JSON5.stringify(lcd.root.state || {}, void 0, '  ')}`
-
-  await showDialog({ is: 'el-drawer', title: 'State', modalClass: 'props', size: '400px' }, () => [
+  await lcd.showDialog({ is: 'el-drawer', title: 'State', modalClass: 'props', size: '400px' }, () => [
     h(MonacoEditor, { modelValue: code, 'onUpdate:modelValue': v => code = v, language: 'javascript', autofocus: true }),
   ])
-
   lcd.root.state = JSON5.parse(code.replace(/^export default/, ''))
 }
 
 async function openDataSource(lcd) {
-  // const state = ref(JSON.stringify(lcd.root.state, void 0, '  '))
+  await lcd.showDialog({ is: 'el-drawer', title: 'State', modalClass: 'props', size: '400px' }, () => h(DS, { modelValue: lcd.ds?.list, 'onUpdate:modelValue': v => set(lcd, 'ds.list', v) }))
+}
 
-  await showDialog({ is: 'el-drawer', title: 'State', modalClass: 'props', size: '400px' }, () => h(DS, { modelValue: lcd.state.ds }))
+async function openExportCode(lcd) {
+  await lcd.showDialog({ is: 'el-drawer', size: '60%', withHeader: false, withFooter: false, direction: 'rtl', okText: 'Download' }, () => h(ExportCode, { modelValue: lcd.state.ds }))
+}
 
-  lcd.root.state = JSON.parse(state.value)
+const devices = [['iPhone SE', '375,667'], ['iPhone12 Pro', '390,844'], ['iPad Mini', '768,1024']].map(e => ({
+  label: e[0],
+  description: e[1].replace(',', ' × '),
+  value: e[1].split(',').map(e => +e),
+  eq: (v) => v?.join(',') == e[1]
+}))
+
+async function toggleDevice(lcd) {
+  const [w, h] = await quickPick({ items: devices, value: [lcd.canvas.w, lcd.canvas.h] })
+  lcd.canvas.w = w
+  lcd.canvas.h = h
 }

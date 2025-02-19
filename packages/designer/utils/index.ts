@@ -1,9 +1,9 @@
-import { computed, effectScope, markRaw, MaybeRefOrGetter, reactive, Ref, ref, toValue, watch, watchSyncEffect } from 'vue'
+import { computed, effectScope, getCurrentInstance, inject, markRaw, MaybeRefOrGetter, reactive, Ref, ref, toRaw, toValue, watch, watchSyncEffect } from 'vue'
 import { isArray, isObject, remove } from '@vue/shared'
-import { Fn, tryOnBeforeUnmount } from '@vueuse/core'
 import { useTransformer } from 'el-form-render'
 import { keyBy, mapValues, toArr, treeUtils, unFn, unVal } from '@el-lowcode/utils'
 import { BoxProps, Contributes, DesignerCtx, DisplayNode, ExtensionContext, PluginModule, UserWidget, Widget } from '../layout/interface'
+import { useShowDialog } from './showDialog'
 
 export * as genCode from './genCode'
 export * from './quickPick'
@@ -69,8 +69,10 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
         disabled: 1
       }
       // workbench.action.toggleSidebarVisibility
-    }
+    },
     // activitybar: computed(() => findret(lcd.plugins, e => e.contributes.activitybar?.find(e => e.id == lcd.state.activitybarId))),
+    app: toRaw(getCurrentInstance()?.appContext.app) as any,
+    showDialog: useShowDialog()
   })
 
   const basePlugin = () => {
@@ -140,8 +142,6 @@ export async function createPluginCtx(url: string, module, packageJSON, lcd: Des
       // process commands.cb
       watchSyncEffect(clear => {
         const { commands } = contributes.value
-        console.log(commands);
-        
         commands?.forEach(e => e.cb && lcd.commands.on(e.command, e.cb))
         clear(() => commands?.forEach(e => e.cb && lcd.commands.off(e.command, e.cb)))
       })
@@ -185,3 +185,5 @@ function createEvents() {
   }
   return { on, off, emit }
 }
+
+export const useLcd = () => inject<DesignerCtx>('designerCtx')!

@@ -1,10 +1,11 @@
-import { computed, InjectionKey, mergeProps, reactive, readonly, ref, shallowRef, toRaw, toRef } from 'vue'
+import { App, computed, InjectionKey, mergeProps, shallowRef, toRaw } from 'vue'
 import { isArray, isObject, isPlainObject, isString, normalizeStyle, camelize, capitalize, hyphenate } from '@vue/shared'
 import { Fn, unrefElement } from '@vueuse/core'
 import { Arrable, Assign, deepClone, Fnable, getRects, isExp, mergeRects, Obj, pick, set, toArr, uid } from '@el-lowcode/utils'
 import { Props } from '@el-lowcode/render'
 import { Node } from './components/Node'
 import { parseTransform } from './components/utils'
+import { useShowDialog } from '../utils'
 
 export interface Widget {
   is: string
@@ -315,6 +316,9 @@ export interface DesignerCtx {
   dict: Record<string, any> & { plugins: string[] }
 
   state: Obj
+
+  app?: App
+  showDialog: ReturnType<typeof useShowDialog>
 }
 
 export interface Contributes {
@@ -344,10 +348,11 @@ export interface PluginModule {
 }
 
 export interface StatusBarItem {
-  icon?: Fnable<string>
+  icon?: Fnable<string> | Obj
   text?: Fnable<string>
   tooltip?: Fnable<string>
   hidden?: Fnable<boolean>
+  disabled?: Fnable<boolean>
   align: 'left' | 'right'
   priority?: number
   class?: any

@@ -2,41 +2,46 @@
   <footer class="vs-status">
     <slot />
     <template v-for="e in left.sort(sort)">
-      <Item :e="e" />
+      <Item v-bind="e" />
     </template>
 
     <div flex-1 style="visibility: hidden;" />
     
     <template v-for="e in right.sort(sort)">
-      <Item :e="e" />
+      <Item v-bind="e" />
     </template>
   </footer>
 </template>
 
 <script setup lang="tsx">
 import { computed, inject } from 'vue'
-import { isObject } from '@vue/shared'
-import { unFn } from '@el-lowcode/utils'
-import { Render } from '@el-lowcode/render'
+import { isObject, normalizeClass } from '@vue/shared'
+import { unFn, unVal } from '@el-lowcode/utils'
+import { createRender, Render } from '@el-lowcode/render'
 import { DesignerCtx, Renderer, StatusBarItem } from '../interface'
+import Icon from '../../components/Icon.vue'
+import { useLcd } from '../../utils'
 
-const designer = inject<DesignerCtx>('designerCtx')!
+const lcd = useLcd()
 
-const left = computed(() => designer.plugins.flatMap(e => e.contributes.statusbar?.filter(e => e.align != 'right') || []))
-const right = computed(() => designer.plugins.flatMap(e => e.contributes.statusbar?.filter(e => e.align == 'right') || []))
+const left = computed(() => lcd.plugins.flatMap(e => e.contributes.statusbar?.filter(e => e.align != 'right') || []))
+const right = computed(() => lcd.plugins.flatMap(e => e.contributes.statusbar?.filter(e => e.align == 'right') || []))
 
 const sort = (a: StatusBarItem, b: StatusBarItem) => (b.priority || 0) - (a.priority || 0)
 
-const Item = ({ e }: { e: StatusBarItem}) => !unFn(e.hidden) && (
-  <div class={[e.class, 'li flex aic space-x-4']} style={e.style} onClick={() => (designer.commands.emit(e.command!), e.onClick?.(designer))} {...renderer(e.renderer)}>
-    {e.icon && (isObject(e.icon) ? Render(e.icon) : <img src={unFn(e.icon)} class='hfull wa' />)}
+const e = (e: StatusBarItem, { slots }) => !unFn(e.hidden) && (
+  <div class={['li flex aic space-x-4']} style={e.style} op={unFn(e.disabled) && '20'} onClick={() => lcd.commands.emit(e.command!)} {...renderer(e.renderer)}>
+    {e.icon && (isObject(e.icon) ? Render({ is: Icon, ...e.icon, class: normalizeClass(['hfull wa min-w22', e.icon.class]) }) : <Icon class='hfull wa min-w22' src={unVal(e.icon)} />)}
     {e.text}
+    {slots.default?.()}
   </div>
 )
 
+const Item = createRender({ defaultIs: e })
+
 const renderer = (renderer?: Renderer) => ({
-  'onVnodeMounted': ({ el }) => renderer?.mount?.(el, designer),
-  'onVnodeUnmounted': ({ el }) => renderer?.unmount?.(el, designer),
+  'onVnodeMounted': ({ el }) => renderer?.mount?.(el, lcd),
+  'onVnodeUnmounted': ({ el }) => renderer?.unmount?.(el, lcd),
 })
 </script>
 

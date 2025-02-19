@@ -62,25 +62,9 @@
       <aside w256 b-l="1px solid [--el-border-color]" overflow-overlay @contextmenu.prevent>
         <setting-panel />
       </aside>
-
-      <ExportCode ref="exportCode" />
     </div>
 
-    <Statusbar>
-      <div flex aic bg="#3655b5" class="li ml0! pr8" @click="lcd.commands.emit('lcd.toggleDevice')">
-        <i-material-symbols:devices-outline wa mr4 h20 />
-        {{ devices.find(e => eq(e.value, [canvas.w, canvas.h]))?.label || (`${canvas.w} × ${canvas.h}`) }}
-      </div>
-      <i-tdesign:close class="li wa" @click="lcd.commands.emit('lcd.clear')" />
-      <i-mdi:undo-variant class="li  wa mr0!" :op="!canUndo && '20'" @click="lcd.commands.emit('lcd.undo')" />
-      <i-mdi:redo-variant class="li  wa ml0!" :op="!canRedo && '20'" @click="lcd.commands.emit('lcd.redo')" />
-      <i-tdesign:download class="li wa" @click="lcd.commands.emit('lcd.download')" />
-      <div flex aic text-nowrap class="li ml12!">
-        <i-mdi:magnify-expand wa mr2 h18 />
-        <input type="range" v-model.number="canvas.zoom" min=".6" max="2.5" step=".01" />
-        <InputNumber :model-value="Math.round(canvas.zoom * 100)" @update:model-value="v => canvas.zoom = +((v || 0) / 100).toFixed(2)" noUnit :min="60" :max="250" class="w50 h20!" />
-      </div>
-    </Statusbar>
+    <Statusbar />
   </div>
 </template>
 
@@ -94,7 +78,6 @@ import { useTransformer } from 'el-form-render'
 import { designerCtxKey, DisplayNode } from './interface'
 import Activitybar from './components/Activitybar.vue'
 import Views from './components/Views.vue'
-import ExportCode from './components/ExportCode.vue'
 import SelectedLayer from './components/selected-layer.vue'
 import SettingPanel from './setting-panel.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
@@ -144,11 +127,7 @@ const props = defineProps({
   extraPlugins: Array as PropType<string[]>,
 })
 
-const initial = () => ({
-  _id: uid(), is: 'Page', children: [],
-  state: { count: 0 }, plugins: [],
-  // designer: { canvas: { style: { width: '100%', height: '100%' } } }
-})
+const initial = () => ({ _id: uid(), is: 'Page', children: [], state: { count: 0 }, plugins: [] })
 
 // 根节点
 // const root = useLocalStorage(
@@ -180,14 +159,10 @@ console.log(window.lcd = window.designerCtx = lcd)
 // 时间旅行
 const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 150, capacity: 20 })
 
-lcd.commands.on('lcd.toggleDevice', async () => quickPick({ items: devices, value: [canvas.w, canvas.h] }).then(v => (canvas.w = v[0], canvas.h = v[1])))
-lcd.commands.on('lcd.clear', () => (lcd.rootNode.el?.ownerDocument.defaultView.unmount(), lcd.rootNode.remove(), root.value = initial()))
-lcd.commands.on('lcd.undo', undo)
-lcd.commands.on('lcd.redo', redo)
-lcd.commands.on('lcd.download', () => exportCode.value.vis = true)
+lcd.commands.on('undo', undo)
+lcd.commands.on('redo', redo)
 
 const viewport = ref<HTMLElement>()
-const exportCode = ref()
 
 const iframeScroll = computed(() => reactive(useWindowScroll({ window: lcd.rootNode.el?.ownerDocument.defaultView })))
 
