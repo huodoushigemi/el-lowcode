@@ -29,7 +29,7 @@ const right = computed(() => lcd.plugins.flatMap(e => e.contributes.statusbar?.f
 
 const sort = (a: StatusBarItem, b: StatusBarItem) => (b.priority || 0) - (a.priority || 0)
 
-const e = (e: StatusBarItem, { slots }) => !unFn(e.hidden) && (
+const e = (e: StatusBarItem, { slots }) => (
   <div class={['li flex aic space-x-4']} style={e.style} op={unFn(e.disabled) && '20'} onClick={() => lcd.commands.emit(e.command!)} {...renderer(e.renderer)}>
     {e.icon && (isObject(e.icon) ? Render({ is: Icon, ...e.icon, class: normalizeClass(['hfull wa min-w22', e.icon.class]) }) : <Icon class='hfull wa min-w22' src={unVal(e.icon)} />)}
     {e.text}

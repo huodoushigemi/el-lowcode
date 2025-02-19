@@ -1,6 +1,6 @@
 import { resolveDynamicComponent, VNode, inject, createVNode } from 'vue'
 import { hasOwn, isArray, isFunction, isPlainObject, isHTMLTag, isString } from '@vue/shared'
-import { Fnable, Arrable, mapValues, Obj } from '@el-lowcode/utils'
+import { Fnable, Arrable, mapValues, Obj, unFn } from '@el-lowcode/utils'
 
 export type Props = {
   _id?: string
@@ -36,7 +36,7 @@ export function createRender({ defaultIs, processProps = (props) => props as unk
       provide: (state) => vars = { ...vars, ...state }
     })
     
-    return !hasOwn(props, 'vIf') || !!vIf
+    return !hasOwn(props, 'vIf') || !!unFn(vIf)
       ? createVNode(
           resolveDynamicComponent(is || defaultIs),
           attrs,
@@ -65,7 +65,7 @@ export function createRender({ defaultIs, processProps = (props) => props as unk
       provide: (state) => vars = { ...vars, ...state }
     })
 
-    return !hasOwn(props, 'vIf') || !!vIf
+    return !hasOwn(props, 'vIf') || !!unFn(vIf)
       ? (
         isArray(children) ? children.map(e => _h(e, vars)) :
         isPlainObject(children) ? Render(children, vars) :

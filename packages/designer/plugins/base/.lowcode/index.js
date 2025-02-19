@@ -188,23 +188,18 @@ export const contributes = (lcd) => ({
   statusbar: [
     { command: 'toggleDevice', icon: { class: 'mr4 h20!', src: 'https://api.iconify.design/material-symbols:devices-outline.svg' }, class: 'ml0!', style: 'background: #3655b5', children: devices.find(e => e.eq([lcd.canvas.w, lcd.canvas.h]))?.label || 'auto' },
     { command: 'clear', icon: 'https://api.iconify.design/tdesign:close.svg' },
-    { command: 'undo', icon: 'https://api.iconify.design/mdi:undo-variant.svg', class: 'mr0!' },
-    { command: 'redo', icon: 'https://api.iconify.design/mdi:redo-variant.svg', class: 'ml0!' },
+    { command: 'undo', icon: 'https://api.iconify.design/mdi:undo-variant.svg', class: 'mr0!', disabled: () => !lcd.state.history.canUndo },
+    { command: 'redo', icon: 'https://api.iconify.design/mdi:redo-variant.svg', class: 'ml0!', disabled: () => !lcd.state.history.canRedo },
     { command: 'openExportCode', icon: 'https://api.iconify.design/tdesign:download.svg' },
   ],
   commands: [
     { command: 'toggleDevice', cb: () => toggleDevice(lcd) },
-    { command: 'clear', cb: () => (lcd.canvas.window.unmount(), lcd.root = { _id: uid(), is: 'Page', children: [], state: { count: 0 }, plugins: [] }) },
-    // { command: 'undo', cb: () => {} },
-    // { command: 'redo', cb: () => {} },
     { command: 'openState', title: 'Open State', cb: () => openState(lcd) },
     { command: 'openDataSource', title: 'Open Data Source', cb: () => openDataSource(lcd) },
     { command: 'openExportCode', title: 'Open Export Code', cb: () => openExportCode(lcd) },
-    { command: 'lcd.toggleDevice', title: 'Toggle Device' },
-    { command: 'lcd.clear', title: 'Clear' },
-    { command: 'lcd.undo', title: 'Undo' },
-    { command: 'lcd.redo', title: 'Redo' },
-    { command: 'lcd.download', title: 'Download' },
+    { command: 'clear', title: 'Clear', cb: () => (lcd.canvas.window.unmount(), lcd.root = { _id: uid(), is: 'Page', children: [], state: { count: 0 }, plugins: [] }) },
+    { command: 'undo', title: 'Undo', cb: () => lcd.state.history.undo() },
+    { command: 'redo', title: 'Redo', cb: () => lcd.state.history.redo() },
   ],
   // todo
   menus: {

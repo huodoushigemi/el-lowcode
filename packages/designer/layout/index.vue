@@ -156,12 +156,6 @@ const devices = [['iPhone SE', '375,667'], ['iPhone12 Pro', '390,844'], ['iPad M
 
 console.log(window.lcd = window.designerCtx = lcd)
 
-// 时间旅行
-const { history, undo, redo, canRedo, canUndo } = useDebouncedRefHistory(root, { deep: true, debounce: 150, capacity: 20 })
-
-lcd.commands.on('undo', undo)
-lcd.commands.on('redo', redo)
-
 const viewport = ref<HTMLElement>()
 
 const iframeScroll = computed(() => reactive(useWindowScroll({ window: lcd.rootNode.el?.ownerDocument.defaultView })))
@@ -256,8 +250,8 @@ function onKeydown(e: KeyboardEvent) {
     // ctrl z / y
     [() => e.ctrlKey && ['z', 'y'].includes(key), () => {
       switch (key) {
-        case 'z': return undo()
-        case 'y': return redo()
+        case 'z': return lcd.commands.emit('undo')
+        case 'y': return lcd.commands.emit('redo')
       }
     }]
   ]

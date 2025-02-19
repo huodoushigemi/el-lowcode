@@ -4,6 +4,7 @@ import { useTransformer } from 'el-form-render'
 import { keyBy, mapValues, toArr, treeUtils, unFn, unVal } from '@el-lowcode/utils'
 import { BoxProps, Contributes, DesignerCtx, DisplayNode, ExtensionContext, PluginModule, UserWidget, Widget } from '../layout/interface'
 import { useShowDialog } from './showDialog'
+import { useDebouncedRefHistory } from '@vueuse/core'
 
 export * as genCode from './genCode'
 export * from './quickPick'
@@ -67,8 +68,9 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
       },
       infiniteViewer: {
         disabled: 1
-      }
-      // workbench.action.toggleSidebarVisibility
+      },
+      // 时间旅行
+      history: useDebouncedRefHistory(root, { deep: true, debounce: 150, capacity: 20 })
     },
     // activitybar: computed(() => findret(lcd.plugins, e => e.contributes.activitybar?.find(e => e.id == lcd.state.activitybarId))),
     app: toRaw(getCurrentInstance()?.appContext.app) as any,
