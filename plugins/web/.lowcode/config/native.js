@@ -112,6 +112,7 @@ export default [
     label: 'img',
     category: '基础组件',
     icon: 'https://api.iconify.design/mdi:image-outline.svg',
+    cover: '',
     props: props => [
       str('src'),
       { is: 'button', class: 'vs-btn mb18', onClick: async () => props.src = (await chooseImg({ base64: true, maxSize: 1024 * 200 }))[0], children: [
@@ -143,6 +144,7 @@ export default [
   {
     is: 'iframe',
     label: 'iframe',
+    cover: '',
     props: [
       str('src')
     ],

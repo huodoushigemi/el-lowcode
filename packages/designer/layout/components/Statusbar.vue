@@ -14,11 +14,11 @@
 </template>
 
 <script setup lang="tsx">
-import { computed, inject } from 'vue'
+import { computed } from 'vue'
 import { isObject, normalizeClass } from '@vue/shared'
 import { unFn, unVal } from '@el-lowcode/utils'
 import { createRender, Render } from '@el-lowcode/render'
-import { DesignerCtx, Renderer, StatusBarItem } from '../interface'
+import { Renderer, StatusBarItem } from '../interface'
 import Icon from '../../components/Icon.vue'
 import { useLcd } from '../../utils'
 

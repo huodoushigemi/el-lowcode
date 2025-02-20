@@ -1122,10 +1122,8 @@ export const widgets = [
   },
 ]
 
-await Promise.all(
-  widgets.map(async e => {
-    e.cover = await import(`./cover/${e.is}.png`).then(e => e.default).catch(() => {})
-  })
-)
+widgets.forEach(e => {
+  e.cover ??= `/imgs/element-plus/${e.is}.png`
+})
 
 export default widgets

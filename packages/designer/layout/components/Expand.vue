@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { vAutoAnimate } from '@formkit/auto-animate'
+// import { vAutoAnimate } from '@formkit/auto-animate'
 import { useVModel } from '@vueuse/core'
 
 const props = defineProps({

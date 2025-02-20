@@ -1,16 +1,4 @@
-import { createApp, defineAsyncComponent, h } from 'vue'
-import { showDialog } from '@el-lowcode/designer'
-
-function create(AsyncComp) {
-  let app
-  return {
-    mount(container, designerCtx) {
-      app = createApp({ provide: { designerCtx }, render: () => h(AsyncComp) })
-      app.mount(container)
-    },
-    unmount: () => app.unmount()
-  }
-}
+import { defineAsyncComponent, h } from 'vue'
 
 export const contributes = {
   activitybar: [
@@ -21,9 +9,7 @@ export const contributes = {
     // },
   ],
   views: {
-    // 'ai': [
-    //   { id: 'ai.d2c', name: 'D2C', renderer: create(defineAsyncComponent(() => import('./D2C.vue'))) },
-    // ],
+    
   },
   menus: {
     'node/context': node => [
@@ -35,8 +21,8 @@ export const contributes = {
 }
 
 function d2c(node) {
-  const ps = showDialog({ is: 'el-drawer', withHeader: false }, {
-    default: () => h(defineAsyncComponent(() => import('./D2C.vue')), { lcd: node.designerCtx, style: 'margin: 0 -6px', onOk: ps.resolve }),
+  const ps = node.lcd.showDialog({ is: 'el-drawer', withHeader: false }, {
+    default: () => h(defineAsyncComponent(() => import('./D2C.vue')), { lcd: node.lcd, style: 'margin: 0 -6px', onOk: ps.resolve }),
     footer: void 0
   })
 }

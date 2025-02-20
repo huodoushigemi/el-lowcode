@@ -26,6 +26,7 @@ const widgets = [
     is: 'wc-appbar',
     label: 'appbar',
     category: '额外扩展',
+    cover: '',
     props: [
       { lp: 'pinned', type: 'switch' },
       { lp: 'floating', type: 'switch' },
@@ -46,6 +47,7 @@ const widgets = [
     is: 'AbsoluteLayout',
     label: '自由布局',
     category: '容器',
+    cover: '',
     props: [],
     defaultProps: () => ({
       'lcd-absolute-layout': true,
@@ -67,6 +69,7 @@ const widgets = [
   {
     is: 'uno-icon',
     label: 'icon',
+    cover: '',
     props: [
       { lp: 'src' }
     ],
@@ -76,10 +79,8 @@ const widgets = [
   }
 ]
 
-await Promise.all(
-  widgets.map(async e => {
-    e.cover = await import(`./cover/${e.is}.png`).then(e => e.default).catch(() => {})
-  })
-)
+widgets.forEach(e => {
+  e.cover ??= `/imgs/web/${e.is}.png`
+})
 
 export default widgets

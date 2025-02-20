@@ -54,6 +54,7 @@ export type BoxProps = Props
 
 export abstract class DisplayNode extends Node<BoxProps> {
   abstract designerCtx: DesignerCtx
+  get lcd() { return this.designerCtx }
 
   get root() { return this.designerCtx.rootNode as typeof this }
   get isRoot() { return this.designerCtx.rootNode == this }
