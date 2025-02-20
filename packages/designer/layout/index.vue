@@ -83,7 +83,7 @@ import SettingPanel from './setting-panel.vue'
 import InfiniteViewer from './components/infinite-viewer.vue'
 import Statusbar from './components/Statusbar.vue'
 // import { vue2esm } from './vue2esm'
-import { createDesignerCtx, quickPick } from '../utils'
+import { createDesignerCtx } from '../utils'
 
 import OptionsInput from '../components/OptionsInput.vue'
 import PairInput from '../components/PairInput.vue'
@@ -115,12 +115,10 @@ const IV = defineComponent({
     const o1 = reactive(useElementSize(elRef))
     const o2 = reactive(useElementSize(viewport))
     return () => lcd.state.infiniteViewer.disabled
-      ? h('div', { class: `flex ${o2.width <= o1.width && 'jcc'} ${o2.height <= o1.height && 'aic'} scrollbar-hidden overflow-auto`, ref: elRef }, slots.default!())
+      ? h('div', { class: `flex ${o2.width <= o1.width && 'jcc'} ${o2.height <= o1.height && 'aic'} p22 scrollbar-hidden overflow-auto`, ref: elRef }, slots.default!())
       : h(InfiniteViewer, { class: 'overflow-hidden', onWheel: e => (e.preventDefault(), e.stopPropagation()) }, () => slots.default?.())
   },
 })
-
-const log = (...arg) => (console.log(...arg), arg[0])
 
 const props = defineProps({
   json: Object,

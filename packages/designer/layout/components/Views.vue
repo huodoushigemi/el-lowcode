@@ -30,11 +30,11 @@
 <script setup lang="ts">
 import { computed, h, inject, PropType, ref } from 'vue'
 import { isArray } from '@vue/shared'
+import Render from '@el-lowcode/render'
+import { get, set } from '@el-lowcode/utils'
 import { Activitybar, DesignerCtx } from '../interface'
 import Expand from './Expand.vue'
-
 import Widgets from './Widgets.vue'
-import { get, set } from '@el-lowcode/utils'
 
 const is = {
   widgets: Widgets
@@ -65,7 +65,8 @@ function unmount(el, pane, state) {
 }
 
 const Pane = ({ pane }) => {
-  return h(is[isArray(pane.is) ? pane.is[0] : pane.is] || 'div', {
+  return Render({
+    is: is[isArray(pane.is) ? pane.is[0] : pane.is] ?? pane.is ?? 'div',
     ...isArray(pane.is) ? pane.is[1] : void 0,
     class: 'vs-expand-body',
     state: state(pane.id),

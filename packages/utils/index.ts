@@ -30,8 +30,8 @@ export const ks = <T extends object>(obj: T) => Object.keys(obj) as (keyof T)[]
 export const toArr = <T>(arr?: Arrable<T>) => Array.isArray(arr) ? arr : (arr == null ? [] : [arr])
 
 type UnFn <T> = T extends (...args) => infer R ? R : T
-type UnP<T> = T extends (...args: infer P) => any ? P : []
-export const unFn = <T extends Fnable<any>>(fn: T, ...args: UnP<T>): UnFn<T> => typeof fn == 'function' ? fn(...args) : fn
+type FilterFn<T> = T extends (...args) => any ? T : never
+export const unFn = <T extends Fnable<any>>(fn: T, ...args: Parameters<FilterFn<T>>): UnFn<T> => typeof fn == 'function' ? fn(...args) : fn
 
 const wm = new WeakMap()
 export function unVal(v, ...args) {

@@ -1,21 +1,11 @@
-import { createApp, defineAsyncComponent, defineComponent, h, inject, ref } from 'vue'
+import { defineAsyncComponent, defineComponent, h, inject, ref } from 'vue'
 import IShare from '~icons/tdesign/share'
 import ILoading from '~icons/eos-icons/bubble-loading'
 import IEye from '~icons/mdi/eye-outline'
 import { uploadLcd, previewLcd, copyText } from './utils'
 
-function create(Comp) {
-  let app
-  return {
-    mount(container, designerCtx) {
-      app = createApp({ provide: { designerCtx }, render: () => h(Comp) })
-      app.mount(container)
-    },
-    unmount: () => app.unmount()
-  }
-}
-
-const Share = create(defineComponent({
+const Share = defineComponent({
+  props: ['state'],
   setup() {
     const loading = ref(false)
     const ctx = inject('designerCtx')
@@ -34,17 +24,9 @@ const Share = create(defineComponent({
       loading.value ? h(ILoading, { class: 'w18 h16' }) : h(IShare, { class: 'w18 h18' })
     ])
   }
-}))
+})
 
-export function activate(designerCtx) {
-  
-}
-
-export function deactivate(designerCtx) {
-
-}
-
-export const contributes = {
+export const contributes = lcd => ({
   activitybar: [
     {
       id: 'template',
@@ -54,11 +36,11 @@ export const contributes = {
   ],
   views: {
     'template': [
-      { id: 'template', renderer: create(defineAsyncComponent(() => import('./TemplateView.vue'))) }
+      { id: 'template', is: defineAsyncComponent(() => import('./TemplateView.vue')) }
     ]
   },
   statusbar: [
-    { class: 'px0', renderer: Share },
+    { children: [{ is: Share }] },
     { icon: { is: IEye, class: 'hfull wa' }, onClick: (ctx) => previewLcd(ctx.root) }
   ]
-}
+})

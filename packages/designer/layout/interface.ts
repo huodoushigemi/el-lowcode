@@ -1,7 +1,7 @@
 import { App, computed, InjectionKey, mergeProps, shallowRef, toRaw } from 'vue'
 import { isArray, isObject, isPlainObject, isString, normalizeStyle, camelize, capitalize, hyphenate } from '@vue/shared'
 import { Fn, unrefElement } from '@vueuse/core'
-import { Arrable, Assign, deepClone, Fnable, getRects, isExp, mergeRects, Obj, pick, set, toArr, uid } from '@el-lowcode/utils'
+import { Arrable, Assign, deepClone, Fnable, getRects, isExp, mergeRects, Obj, pick, set, toArr, uid, unFn } from '@el-lowcode/utils'
 import { Props } from '@el-lowcode/render'
 import { Node } from './components/Node'
 import { parseTransform } from './components/utils'
@@ -205,7 +205,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   get menus() {
-    return this.designerCtx.plugins.flatMap(e => e.contributes.menus?.['node/context']?.(this) ?? [])
+    return this.designerCtx.plugins.flatMap(e => unFn(e.contributes.menus?.['node/context'], this) ?? [])
   }
 
   #drag = computed(() => {
@@ -333,7 +333,11 @@ export interface Contributes {
   }[]>
   statusbar?: StatusBarItem[]
   commands?: Command[]
-  menus?: { 'node/context'?: (node: DisplayNode) => any[] }
+  menus?: {
+    // 'node/context'?: (node: DisplayNode) => any[]
+    'node/context'?: Fnable<any[], [DisplayNode]>
+    xxx?: Fnable<any[], [DisplayNode, number]>
+  }
 }
 
 export interface PluginModule {
