@@ -8,20 +8,20 @@ const styleEl = Object.assign(document.createElement('style'), {
   `
 })
 
-export function activate(designerCtx) {
+export function activate(lcd) {
   watchEffect(() => {
-    designerCtx.rootNode.el?.ownerDocument.head.append(styleEl)
+    lcd.rootNode.el?.ownerDocument.head.append(styleEl)
   })
 }
 
-export function deactivate(designerCtx) {
+export function deactivate(lcd) {
   styleEl.remove()
 }
 
-export const contributes = (designerCtx) => ({
+export const contributes = (lcd) => ({
   views: {
     'widgets': [
-      { id: 'widgets.element-plus', name: true, icon: true, initialSize: 600, iconClass: 'my4', is: ['widgets', { list: widgets }] }
+      { id: 'widgets.element-plus', name: true, icon: true, initialSize: 600, iconClass: 'my4', is: 'WidgetsView', list: widgets }
     ],
   }
 })

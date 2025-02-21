@@ -1,5 +1,5 @@
 <template>
-  <div class="vs-base vs-sidebar" flex="~ col">
+  <sidebar class="vs-base vs-sidebar" flex="~ col">
     <div pl20 pr8 text-11 lh-35 font-400 c="#bbb" truncate uppercase flex-shrink-0>
       {{ activitybar?.title }}
     </div>
@@ -24,20 +24,27 @@
     </Expand>
 
     <Pane v-else-if="list.length" :pane="list[0]" />
-  </div>
+  </sidebar>
 </template>
 
 <script setup lang="ts">
-import { computed, h, inject, PropType, ref } from 'vue'
+import { computed, h, inject, mergeProps, PropType, ref } from 'vue'
 import { isArray } from '@vue/shared'
 import Render from '@el-lowcode/render'
-import { get, set } from '@el-lowcode/utils'
+import { defaults, get, set } from '@el-lowcode/utils'
 import { Activitybar, DesignerCtx } from '../interface'
 import Expand from './Expand.vue'
+import WidgetsView from './WidgetsView.vue'
 import Widgets from './Widgets.vue'
+import SnippetsView from '../../plugins/base/.lowcode/views/SnippetsView.vue'
+import SnippetsView2 from '../../plugins/base/.lowcode/views/SnippetsView2.vue'
 
 const is = {
-  widgets: Widgets
+  widgets: WidgetsView,
+  Widgets,
+  WidgetsView,
+  SnippetsView,
+  SnippetsView2,
 }
 
 const props = defineProps({
@@ -65,13 +72,13 @@ function unmount(el, pane, state) {
 }
 
 const Pane = ({ pane }) => {
-  return Render({
+  return Render(mergeProps(pane, {
     is: is[isArray(pane.is) ? pane.is[0] : pane.is] ?? pane.is ?? 'div',
     ...isArray(pane.is) ? pane.is[1] : void 0,
     class: 'vs-expand-body',
-    state: state(pane.id),
+    state: defaults(state(pane.id), pane.state || {}),
     onVnodeMounted: ({ el }) => mount(el, pane, state(pane.id)),
     onVnodeUnmounted: ({ el }) => unmount(el, pane, state(pane.id)),
-  })
+  }))
 }
 </script>

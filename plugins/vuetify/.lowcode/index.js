@@ -1,5 +1,6 @@
 import { watchEffect } from 'vue'
 import { widgets } from './widgets'
+import { snippets } from './snippets'
 
 export * from './widgets'
 export * from './snippets'
@@ -19,14 +20,24 @@ export function activate(designerCtx) {
   })
 }
 
-export function deactivate(designerCtx) {
+export function deactivate(lcd) {
   styleEl.remove()
 }
 
-export const contributes = (designerCtx) => ({
+export const contributes = {
+  activitybar: [
+    {
+      id: 'vuetify',
+      title: 'Vuetify',
+      icon: 'https://api.iconify.design/logos:vuetifyjs.svg'
+    },
+  ],
   views: {
     'widgets': [
       { id: 'widgets.vuetify', name: true, icon: true, iconClass: 'my4', is: ['widgets', { list: widgets }] }
     ],
+    'vuetify': [
+      { id: 'vuetify.snippets', name: true, icon: true, iconClass: 'my4', is: 'SnippetsView2', list: snippets }
+    ],
   }
-})
+}

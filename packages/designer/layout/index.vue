@@ -1,5 +1,5 @@
 <template>
-  <div class="designer" flex="~ col" @keydown="onKeydown">
+  <div class="designer" flex="~ col" @keydown="onKeydown" tabindex="0" style="outline: 0">
     <div flex flex-1 h0>
       <Activitybar v-model="activitybar" :list="activitybars" />
 

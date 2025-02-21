@@ -1,13 +1,14 @@
 <template>
-  <div v-if="issvg(src)" v-html="unVal(fetchsvg)" class="[&>svg]:wfull [&>svg]:hfull lh-0" />
-  <div v-else class="mask-icon" :style="`--mask-image: url(${unVal(src)})`" />
+  <component v-if="issvg(src)" :is="is ?? 'div'" v-html="unVal(fetchsvg)" class="[&>svg]:wfull [&>svg]:hfull lh-0" />
+  <!-- <div v-else class="mask-icon" :style="`--mask-image: url(${unVal(src)})`" /> -->
+  <img v-else :src="unVal(src)" />
 </template>
 
 <script setup>
 import { isString } from '@vue/shared'
 import { unVal } from '@el-lowcode/utils'
 
-const props = defineProps(['src'])
+const props = defineProps(['is', 'src'])
 
 const fetchsvg = () => {
   return fetch(props.src).then(e => e.text())

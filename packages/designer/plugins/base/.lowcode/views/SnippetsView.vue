@@ -10,7 +10,7 @@
         <div grid="~ cols-1" gap-12>
           <template v-for="snip in arr">
             <div class="vs-li" flex="~ col" rd-4 overflow-hidden :lcd-snippet="snip.id" draggable="true" style="border: 1px solid #36363b;">
-              <img :src="fnAsync(snip.cover)" draggable="false" />
+              <img :src="unVal(snip.cover)" draggable="false" />
               <!-- <div class="px12 py6">{{ wgt.title }}</div> -->
             </div>
           </template>
@@ -24,7 +24,7 @@
 <script setup>
 import { computed, inject, ref } from 'vue'
 import { computedAsync } from '@vueuse/core'
-import { groupBy, unFn } from '@el-lowcode/utils'
+import { groupBy, unFn, unVal } from '@el-lowcode/utils'
 
 const props = defineProps({
 
@@ -35,9 +35,4 @@ const designer = inject('designerCtx')
 const kw = ref('')
 
 const snippets = computed(() => kw.value ? designer.snippets.filter(e => e.title?.includes(kw.value) || e.category.includes(kw.value) || e.keywords?.some(e => e.includes(kw.value))) : designer.snippets)
-
-const cache = new WeakMap()
-function fnAsync(fn) {
-  return (cache.get(fn) ?? cache.set(fn, computedAsync(() => unFn(fn))).get(fn)).value
-}
 </script>
