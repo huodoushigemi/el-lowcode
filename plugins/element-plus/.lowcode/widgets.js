@@ -956,6 +956,7 @@ export const widgets = [
     is: 'ElCalendar',
     label: 'calendar',
     category: '数据展示',
+    cover: '',
     vSlots: {
       'date-cell': { scope: '{ data }' },
       'header': { scope: '{ date }' }

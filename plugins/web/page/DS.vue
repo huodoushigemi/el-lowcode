@@ -1,16 +1,18 @@
 <template>
   <table class="vs-table wfull b-1">
-    <tr>
-      <th>Data Source</th>
-      <th class="hover:c-blue cursor-pointer" @click="onAdd"><div class="mask-icon mxa w24 h24" style="--mask-image: url(https://api.iconify.design/bi:plus.svg)" /></th>
-    </tr>
-    <tr v-for="(e, _i) in modelValue" class="vs-li cursor-pointer" @click="vis = true; model = JSON.parse(JSON.stringify(e)); i = _i">
-      <td class="hover:c-blue">{{ e.id }}</td>
-      <td class="hover:c-red" @click.stop="remove(modelValue, e)"><div class="mask-icon mxa w20 h20" style="--mask-image: url(https://api.iconify.design/ic:sharp-delete-outline.svg)" /></td>
-    </tr>
-    <tr v-if="!modelValue?.length">
-      <td colspan="2" class="py12 op40 text-center">Empty</td>
-    </tr>
+    <tbody>
+      <tr>
+        <th>Data Source</th>
+        <th class="hover:c-blue cursor-pointer" @click="onAdd"><div class="mask-icon mxa w24 h24" style="--mask-image: url(https://api.iconify.design/bi:plus.svg)" /></th>
+      </tr>
+      <tr v-for="(e, _i) in modelValue" class="vs-li cursor-pointer" @click="vis = true; model = JSON.parse(JSON.stringify(e)); i = _i">
+        <td class="hover:c-blue">{{ e.id }}</td>
+        <td class="hover:c-red" @click.stop="remove(modelValue, e)"><div class="mask-icon mxa w20 h20" style="--mask-image: url(https://api.iconify.design/ic:sharp-delete-outline.svg)" /></td>
+      </tr>
+      <tr v-if="!modelValue?.length">
+        <td colspan="2" class="py12 op40 text-center">Empty</td>
+      </tr>
+    </tbody>
   </table>
 
   <el-drawer v-model="vis" title="Data Source" modal-class="props" destroy-on-close append-to-body size="500px" @closed="model = null; i = null">

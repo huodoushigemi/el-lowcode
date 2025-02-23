@@ -184,10 +184,10 @@
 .vs-table {
   @include vs-base;
   @apply border-collapse text-left b-[--vs-table-b-c];
-  > tr:first-child {
+  > tbody > tr:first-child {
     @apply b-b-1 b-b-solid b-b-[--vs-table-b-c] bg-[--vs-table-th-bg];
   }
-  > tr {
+  > tbody > tr {
     @apply odd-not-hover:bg-[--vs-table-tr-bg];
     > th, > td {
       @apply px10;

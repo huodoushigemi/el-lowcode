@@ -1,14 +1,13 @@
 import { capitalize, isArray, isFunction, isOn, parseStringStyle } from '@vue/shared'
 import { IDom, parse, stringify } from 'html-parse-string'
-import { isExp, wrapExp } from './execExp'
+import { isExp, wrapExp, deepWrapExp } from './execExp'
 
 export function html2schema(html: string): any[] {
   const dom = parse(html)
-  console.log(dom);
-  
+
   const schema = { is: 'div', children: [] } as any
   const queue = [schema]
-  walk(dom, function aaa(node, parentNode) {
+  domWalk(dom, function aaa(node, parentNode) {
     const parent = queue[queue.length - 1]
     const attrs = Object.fromEntries((node.attrs ??= []).map(e => [e.name, e.value]))
     let child = {} as any
@@ -67,11 +66,8 @@ export function html2schema(html: string): any[] {
         const [, , key] = name.match(/^(v-on:|@|on)(.+)/) as string[]
         props[`on${capitalize(key)}`] = wrapExp(value)
       }
-      else if (name[0] == ':') {
-        props[name.slice(1)] =
-          ['[', '{'].some(e => value.trim()[0] == e) ? wrapExp(value) : // todo
-          /^-?\d+(\.\d+)?$/.test(value) ? Number(value) :
-          wrapExp(value) // todo
+      else if (name[0] == ':' || name[0] == '.') {
+        props[name.slice(1)] = deepWrapExp(value)
       }
       else {
         if (name[0] == '#') return
@@ -102,7 +98,7 @@ function isVslot(node: IDom, parent?: IDom) {
   return node.name == 'template' && node.attrs.some(e => e.name[0] == '#')
 }
 
-function walk(arr: IDom[], enter: (node: IDom, parent?: IDom) => any, parent?: IDom) {
+function domWalk(arr: IDom[], enter: (node: IDom, parent?: IDom) => any, parent?: IDom) {
   const fragments = ['html', 'body']
   for (let i = 0; i < arr.length; i++) {
     let node = arr[i]
@@ -110,7 +106,7 @@ function walk(arr: IDom[], enter: (node: IDom, parent?: IDom) => any, parent?: I
     if (node.type == 'comment') continue
   
     if (fragments.includes(node.name)) {
-      walk(Array.from(node.children), enter, node)
+      domWalk(Array.from(node.children), enter, node)
       continue
     }
   
@@ -121,7 +117,7 @@ function walk(arr: IDom[], enter: (node: IDom, parent?: IDom) => any, parent?: I
     const ret = enter(node as any, parent)
     node = arr[i]
     if (ret !== false && node.children) {
-      walk(Array.from(node.children), enter, node)
+      domWalk(Array.from(node.children), enter, node)
     }
     isFunction(ret) && ret()
   }

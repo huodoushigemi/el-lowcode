@@ -8,7 +8,7 @@ export default mergeConfig({
     'process.env': process.env
   },
   optimizeDeps: {
-    exclude: ['vue'],
+    exclude: ['vue', '@vue/repl'],
   },
   server: {
     host: '0.0.0.0',

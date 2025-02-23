@@ -13,9 +13,6 @@ export const contributes = {
     },
   ],
   views: {
-    'widgets': [
-      { id: 'widgets.echarts', name: true, icon: true, iconClass: 'my4', is: 'WidgetsView', list: widgets }
-    ],
     'echarts': [
       { id: 'echarts.snippets', name: true, icon: true, iconClass: 'my4', is: 'SnippetsView2', list: snippets }
     ],

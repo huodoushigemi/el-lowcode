@@ -1,5 +1,5 @@
 import { hyphenate, isArray, isObject, isOn, isPlainObject, isString, stringifyStyle } from '@vue/shared'
-import { isExp, omit, unExp } from '@el-lowcode/utils'
+import { isExp, omit, unExp, formatJs, formatJsExp } from '@el-lowcode/utils'
 import { BoxProps, DesignerCtx, DisplayNode } from '../../layout/interface'
 import { objStringify } from '../index'
 
@@ -27,7 +27,7 @@ export async function vue$(rootNode: DisplayNode) {
   let deep = 0
   const indent = () => '  '.repeat(deep)
   
-  function through(props: BoxProps, queue = [] as BoxProps[]) {
+  async function through(props: BoxProps, queue = [] as BoxProps[]) {
     const node = rootNode.keyed[props._id!]
     props = { ...props, ...node.config?.purify?.(props) }
 
@@ -53,7 +53,7 @@ export async function vue$(rootNode: DisplayNode) {
     if (vFor) {
       xml += `${indent()}<template v-for="(${vFor[1] || 'item'}, ${vFor[2] || 'index'}) in ${unExp(vFor[0])}">\n`
       deep += 1
-      through({ ...props, vFor: void 0 }, queue)
+      await through({ ...props, vFor: void 0 }, queue)
       deep -= 1
       xml += `${indent()}</template>\n`
       return
@@ -77,14 +77,13 @@ export async function vue$(rootNode: DisplayNode) {
     
     for (let k in attrs) {
       let v = attrs[k]
-      // k = isOn(k) ? `@${hyphenate(k).slice(3)}` : k
       if (k.includes('lcd-')) {
         continue
       }
-      else if (isString(v)) {
+      else if (typeof v == 'string') {
         if (isExp(v)) {
           k = isOn(k) ? `@${hyphenate(k).slice(3)}` : `:${k}`
-          v = v.replaceAll('\n', `\n${indent()}`)
+          v = (await formatJsExp(unExp(v))).replaceAll('\n', `\n${indent()}`)
           xml += ` ${k}="${unExp(v)}"`
         } else {
           xml += ` ${k}="${v}"`
@@ -97,7 +96,9 @@ export async function vue$(rootNode: DisplayNode) {
         xml += v ? ` ${k}` : ` :${k}="false"`
       }
       else if (v) {
-        xml += ` :${k}="${objStringify(v, v => isExp(v) ? unExp(v) : JSON.stringify(v).replaceAll('"', "'"))}"`
+        v = objStringify(v, v => isExp(v) ? unExp(v) : JSON.stringify(v))
+        v = (await formatJsExp(unExp(v))).replaceAll('\n', `\n${indent()}`)
+        xml += ` :${k}="${v}"`
       }
     }
 
@@ -112,7 +113,7 @@ export async function vue$(rootNode: DisplayNode) {
       xml += '\n'
       queue.push(props)
       deep += 1
-      Object.values(children).forEach(e => through(e, queue))
+      for (const e of Object.values(children)) await through(e, queue)
       deep -= 1
       queue.pop()
       xml += indent()
@@ -131,7 +132,7 @@ export async function vue$(rootNode: DisplayNode) {
 
   const { designer, state, ds, css, plugins, ...root } = JSON.parse(JSON.stringify(rootNode.data))
   
-  through(root)
+  await through(root)
 
   let js = `\nimport { reactive, computed, toRef } from 'vue'\nimport { useConfigProvider } from 'el-lowcode'`
 
@@ -143,16 +144,9 @@ export async function vue$(rootNode: DisplayNode) {
     )
   })
 
-  params = await format(`const { state, ds } = useConfigProvider(${params})`)
+  params = await formatJs(`const { state, ds } = useConfigProvider(${params})`)
   
   js += `\n\n${params.trim()}`
   
   return { template: xml, script: js  }
-}
-
-async function format(code) {
-  const prettier = await import('https://unpkg.com/prettier@3.4.2/standalone.mjs')
-  const Babel = await import('https://unpkg.com/prettier@3.4.2/plugins/babel.mjs').then(e => e.default)
-  const Estree = await import('https://unpkg.com/prettier@3.4.2/plugins/estree.mjs').then(e => e.default)
-  return await prettier.format(code, { parser: 'babel', semi: false, singleQuote: true, plugins: [Babel, Estree] })
 }

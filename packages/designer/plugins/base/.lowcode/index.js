@@ -1,8 +1,7 @@
-import { createApp, defineAsyncComponent, h, reactive, watchEffect, triggerRef, toRef, toRaw, nextTick, watchSyncEffect, ref } from 'vue'
+import { createApp, defineAsyncComponent, h, reactive, watchEffect, triggerRef, toRef, toRaw, nextTick, watchSyncEffect, ref, toRefs } from 'vue'
 import { isPlainObject } from '@vue/shared'
 import { useEventListener } from '@vueuse/core'
-import { ElSegmented } from 'element-plus'
-import { get, html2schema, set, toArr } from '@el-lowcode/utils'
+import { get, html2schema, set, toArr, uid } from '@el-lowcode/utils'
 import { genCode, quickPick, showDialog } from '../../../utils'
 import MonacoEditor from '../../../layout/components/monaco-editor.vue'
 import DS from './DS.vue'
@@ -210,7 +209,7 @@ export const contributes = (lcd) => ({
       { label: '清空', icon: 'https://api.iconify.design/solar:broom-broken.svg', class: 'hover:c-red', onClick: () => node.empty() },
       { label: '删除', icon: 'https://api.iconify.design/solar:trash-bin-minimalistic-linear.svg', class: 'hover:c-red', disabled: () => !node.parent, onClick: () => node.remove() },
       { is: 'hr' },
-      { label: '代码', icon: 'https://api.iconify.design/solar:code-bold.svg', onClick: () => showCode(node) },
+      { label: '代码', icon: 'https://api.iconify.design/solar:code-bold.svg', click: () => showCode(node) },
       { label: '导出为', icon: 'https://api.iconify.design/material-symbols:imagesmode-outline-rounded.svg', children: [
         { label: 'PNG', icon: 'https://api.iconify.design/ic:outline-photo-size-select-actual.svg', click: () => toImg(node.el, 'png', node.is) },
         { label: 'JPG', icon: 'https://api.iconify.design/ic:outline-photo-size-select-actual.svg', click: () => toImg(node.el, 'jpg', node.is) },
@@ -274,20 +273,31 @@ async function showCode(node) {
     })[state.lang]()
   }
 
-  await showDialog({ title: '代码' }, () => [
-    h(ElSegmented, { ...vmodel(state, 'lang'), options: [{ label: 'Html ', value: 'html' }, { label: 'Schema', value: 'json' }], onChange: langChange }),
-    h(MonacoEditor, { ...vmodel(state, 'code'), class: 'mt12', language: state.lang, style: 'height: 500px' }),
-  ])
+  // const { Repl, useStore } = await import('@vue/repl')
+  // const CodeMirror = await import('@vue/repl/codemirror-editor').then(e => e.default)
+  // const Monaco = await import('@vue/repl/monaco-editor').then(e => e.default)
 
-  const json = await ({
-    html: () => html2schema(state.code),
-    json: () => JSON.parse(state.code)
-  })[state.lang]()
+  // const store = useStore(toRefs({
+  //   showOutput: false,
+  // }))
 
-  const i = node.index
+  ;(async () => {
+    await showDialog({ title: '代码' }, () => [
+      // h(ElSegmented, { ...vmodel(state, 'lang'), options: [{ label: 'Html ', value: 'html' }, { label: 'Schema', value: 'json' }], onChange: langChange }),
+      h(MonacoEditor, { ...vmodel(state, 'code'), class: 'mt12', language: state.lang, style: 'height: 500px' }),
+      // h(Repl, { editor: Monaco, style: 'height: 500px', theme: 'dark', showImportMap: false, showTsConfig: false, clearConsole: false,  })
+    ])
   
-  node.parent.data.children.splice(i, 1, ...toArr(json))
-  node.parent.children[i].click()
+    const json = await ({
+      html: () => html2schema(state.code),
+      json: () => JSON.parse(state.code)
+    })[state.lang]()
+  
+    const i = node.index
+    
+    node.parent.data.children.splice(i, 1, ...toArr(json))
+    node.parent.children[i].click()
+  })()
 }
 
 function toPdf(node) {

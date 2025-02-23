@@ -35,7 +35,7 @@ import { ElFormItemRender, formItemRenderPropsBase, useTransformer } from 'el-fo
 import { designerCtxKey } from '../interface'
 import MonacoEditor from './monaco-editor.vue'
 import { refWithWatch } from '../../components/hooks'
-import { isExp, pick, unExp, wrapExp } from '@el-lowcode/utils'
+import { formatJsExp, isExp, pick, unExp, wrapExp } from '@el-lowcode/utils'
 import { objStringify } from '../../utils'
 
 const props = defineProps({
@@ -67,8 +67,8 @@ const exp = computed(() => isExp(value.value) ? unExp(value.value) : '')
 const visible = ref(false)
 const code = refWithWatch(() => exp.value || (isOn(props.prop) ? `(e) => {\n  \n}` : ''), visible)
 
-function onSave() {
-  value.value = code.value ? wrapExp(code.value) : void 0
+async function onSave() {
+  value.value = code.value ? wrapExp(await formatJsExp(code.value)) : void 0
   visible.value = false
 }
 </script>

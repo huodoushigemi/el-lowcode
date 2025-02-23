@@ -23,6 +23,7 @@
     "@el-lowcode/crud": "^0.0.16",
     "@formkit/auto-animate": "^0.8.2",
     "@guolao/vue-monaco-editor": "^1.3.0",
+    "@vue/repl": "^4.5.1",
     "@vue/shared": "^3.2.0",
     "@vueuse/core": "^10.5.0",
     "@vueuse/integrations": "^10.11.0",

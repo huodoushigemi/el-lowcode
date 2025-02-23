@@ -66,6 +66,12 @@ export function deepClone(obj?: Record<string | number, any>, iteratee = (v, k) 
   return temp
 }
 
+export async function deepCloneAsync(obj?: Record<string | number, any>, iteratee = (v, k) => v, bool = (v) => true) {
+  const temp = isArray(obj) ? [] : {}
+  for (const k in obj) temp[k] = isObject(obj[k]) && bool(obj[k]) ? await deepClone(obj[k], iteratee, bool) : await iteratee(obj[k], k)
+  return temp
+}
+
 export const keyBy = <T>(arr: T[], path: string) => arr.reduce((o, e) => (o[get(e, path)] = e, o), {}) as Record<string, T>
 
 export const groupBy = <T>(arr: T[], path: string) => arr.reduce((o, e) => ((o[get(e, path)] ??= []).push(e), o), {}) as Record<string, T[]>

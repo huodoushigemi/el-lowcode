@@ -11,6 +11,7 @@ const widgets = [
     is: 'wc-waterfall',
     label: 'waterfall',
     category: '容器',
+    cover: '',
     props: [
       { lp: 'cols', type: 'input-number' },
       { lp: 'gap', type: 'slider' },

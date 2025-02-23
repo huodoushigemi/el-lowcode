@@ -23,6 +23,19 @@ export function objStringify(obj, fn) {
   }
 }
 
+export async function objStringifyAsync(obj, fn) {
+  if (isArray(obj)) {
+    return `[${await Promise.all(obj.map(e => objStringifyAsync(e, fn))).then(e => e.join(', '))}]`
+  } else if (isObject(obj)) {
+    let str = '{'
+    for (const k in obj) str += ` ${k}: ${await objStringifyAsync(obj[k], fn)},`
+    str = str.replace(/,$/, '') + ' }'
+    return str
+  } else {
+    return fn(obj)
+  }
+}
+
 export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGetter<string[] | undefined>) {
   const allUrls = computed(() => [
     ...toValue(builtinPluginUrls) || [],
