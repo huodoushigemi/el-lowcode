@@ -2,9 +2,10 @@ import { capitalize, isArray, isFunction, isOn, parseStringStyle } from '@vue/sh
 import { IDom, parse, stringify } from 'html-parse-string'
 import { isExp, wrapExp, deepWrapExp } from './execExp'
 
-export function html2schema(html: string): any[] {
+export async function html2schema(html: string): Promise<any[]> {
+  const parseExp = await deepWrapExp()
+  
   const dom = parse(html)
-
   const schema = { is: 'div', children: [] } as any
   const queue = [schema]
   domWalk(dom, function aaa(node, parentNode) {
@@ -67,7 +68,7 @@ export function html2schema(html: string): any[] {
         props[`on${capitalize(key)}`] = wrapExp(value)
       }
       else if (name[0] == ':' || name[0] == '.') {
-        props[name.slice(1)] = deepWrapExp(value)
+        props[name.slice(1)] = parseExp(value)
       }
       else {
         if (name[0] == '#') return

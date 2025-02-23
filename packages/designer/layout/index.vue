@@ -144,14 +144,6 @@ provide(designerCtxKey, lcd)
 provide('designerCtx', lcd)
 defineExpose(lcd)
 
-const devices = [['iPhone SE', '375,667'], ['iPhone12 Pro', '390,844'], ['iPad Mini', '768,1024']].map(e => ({
-  label: e[0],
-  description: e[1].replace(',', ' × '),
-  // value: { width: `${e[1].split(',')[0]}px`, height: `${e[1].split(',')[1]}px` },
-  value: e[1].split(',').map(e => +e),
-}))
-// const device = useTransformer(root, 'designer.canvas.style', { get: v => pick(v, ['width', 'height']), set: v => JSON.parse(JSON.stringify(v)) })
-
 console.log(window.lcd = window.designerCtx = lcd)
 
 const viewport = ref<HTMLElement>()
