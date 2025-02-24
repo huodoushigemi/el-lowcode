@@ -1,7 +1,7 @@
 import { defineConfig, presetAttributify, presetUno, presetIcons, transformerVariantGroup, transformerDirectives } from 'unocss'
 import presetRemToPx from '@unocss/preset-rem-to-px'
 
-const gaps = [-4, -2, -1, 0, 1, 2, 4, 6, 8, 10, 12, 'a'].flatMap(e => [e, e + '!'])
+const gaps = [-4, -2, -1, 0, 1, 2, 4, 6, 8, 10, 12, 14, 16, 'a'].flatMap(e => [e, e + '!'])
 
 export default defineConfig({
   content: {
@@ -50,17 +50,10 @@ export default defineConfig({
     ...gaps.map(e => `gap-${e}`),
     ...gaps.map(e => `gap-x-${e}`),
     ...gaps.map(e => `gap-y-${e}`),
-    ...gaps.map(e => `col-span-${e}`),
-    ...gaps.map(e => `row-span-${e}`),
-    ...gaps.map(e => `grid-cols-${e}`),
     ...gaps.map(e => `space-x-${e}`),
     ...gaps.map(e => `space-y-${e}`),
     
-    ...Array(4).fill(0).map((e, i) => `col-span-${i + 1}`),
-    ...Array(4).fill(0).map((e, i) => `row-span-${i + 1}`),
-    ...Array(4).fill(0).map((e, i) => `grid-cols-${i + 1}`),
-    ...Array(4).fill(0).map((e, i) => `space-x-${i + 1}`),
-    ...Array(4).fill(0).map((e, i) => `space-y-${i + 1}`),
+    ...Array(4).fill(0).flatMap((e, i) => `grid-cols-${i + 1} col-span-${i + 1} row-span-${i + 1}`.split(' ')),
     '[&>*]:mb0',
     '[&>*]:mb0!',
     '[&>*]:mb8',

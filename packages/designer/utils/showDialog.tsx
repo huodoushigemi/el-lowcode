@@ -1,9 +1,12 @@
 import { createApp, getCurrentInstance, camelize, capitalize, h, ref, AppContext, render, inject } from 'vue'
-import { Obj } from '@el-lowcode/utils'
+import { Awaitable } from '@vueuse/core'
+import { isPromise } from '@vue/shared'
+import { Obj, unFn } from '@el-lowcode/utils'
 import { ElButton, ElDialog, ElDrawer } from 'element-plus'
 
 interface ShowDialogOpt {
   is?: 'el-dialog' | 'el-drawer'
+  ok?: () => Awaitable<any>
   okText?: string
 }
 
@@ -20,6 +23,7 @@ export function showDialog(opt: ShowDialogOpt & Obj, slots, appContext?: AppCont
   const xxx = {} as any
   const ret = new Promise<void>((resolve, reject) => {
     const comp = { ElDialog, ElDrawer }[camelize(capitalize(opt.is || 'el-dialog'))] as typeof ElDialog
+    const loading = ref(false)
 
     const com = {
       setup() {
@@ -29,7 +33,7 @@ export function showDialog(opt: ShowDialogOpt & Obj, slots, appContext?: AppCont
           'div',
           { tabindex: 0, onKeydown },
           h(comp, { modelValue: vis.value, ...opt, is: void 0, onClosed }, {
-            footer: () => [h(ElButton, { onClick: esc }, 'Esc'), h(ElButton, { type: 'primary', onClick: ok }, opt.okText ?? 'Ctrl+S')],
+            footer: () => [h(ElButton, { onClick: esc }, 'Esc'), h(ElButton, { type: 'primary', loading: loading.value, onClick: ok }, opt.okText ?? 'Ctrl+S')],
             ...(typeof slots == 'function' ? { default: slots } : slots)
           })
         )
@@ -47,7 +51,12 @@ export function showDialog(opt: ShowDialogOpt & Obj, slots, appContext?: AppCont
       ok()
     }
 
-    function ok() {
+    async function ok() {
+      const x = unFn(opt.ok)
+      if (isPromise(x)) {
+        loading.value = true
+        try { await x } finally { loading.value = false }
+      }
       resolve()
       vis.value = false
     }

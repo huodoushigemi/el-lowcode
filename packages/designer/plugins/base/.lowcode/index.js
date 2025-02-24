@@ -281,13 +281,13 @@ async function showCode(node) {
   //   showOutput: false,
   // }))
 
-  ;(async () => {
-    await showDialog({ title: '代码' }, () => [
-      // h(ElSegmented, { ...vmodel(state, 'lang'), options: [{ label: 'Html ', value: 'html' }, { label: 'Schema', value: 'json' }], onChange: langChange }),
-      h(MonacoEditor, { ...vmodel(state, 'code'), class: 'mt12', language: state.lang, style: 'height: 500px' }),
-      // h(Repl, { editor: Monaco, style: 'height: 500px', theme: 'dark', showImportMap: false, showTsConfig: false, clearConsole: false,  })
-    ])
+  showDialog({ title: '代码', ok }, () => [
+    // h(ElSegmented, { ...vmodel(state, 'lang'), options: [{ label: 'Html ', value: 'html' }, { label: 'Schema', value: 'json' }], onChange: langChange }),
+    h(MonacoEditor, { ...vmodel(state, 'code'), class: 'mt12', language: state.lang, style: 'height: 500px' }),
+    // h(Repl, { editor: Monaco, style: 'height: 500px', theme: 'dark', showImportMap: false, showTsConfig: false, clearConsole: false,  })
+  ])
   
+  async function ok() {
     const json = await ({
       html: () => html2schema(state.code),
       json: () => JSON.parse(state.code)
@@ -297,7 +297,7 @@ async function showCode(node) {
     
     node.parent.data.children.splice(i, 1, ...toArr(json))
     node.parent.children[i].click()
-  })()
+  }
 }
 
 function toPdf(node) {

@@ -24,7 +24,7 @@ defineRender(() => {
   ]
 })
 
-const designer = inject('designerCtx') as DesignerCtx
+const lcd = inject('designerCtx') as DesignerCtx
 
 const wm = new WeakMap()
 const EMPTY = Symbol()
@@ -43,7 +43,7 @@ const Render = createRender({
     }
     
     // return wm.get(_props)?.value || wm.set(_props, computed(() => {
-      const node = designer.keyedNode[_props._id] // todo
+      const node = lcd.keyedNode[_props._id] // todo
 
       if (node.vSlotName && (node.parent!.config?.getScopeIndex?.(node, vars) ?? 0) != 0) {
         provide({ __not_index_0_in_for: true })
@@ -137,7 +137,7 @@ const draggable = useDraggable(document.body, {
     }
   },
   children(el) {
-    const node = designer.keyedNode[el.getAttribute('lcd-dragover')!]
+    const node = lcd.keyedNode[el.getAttribute('lcd-dragover')!]
     if (node.isAbsLayout) return []
     const ret = node.children$!.map(e => e.el!)
     return ret
@@ -149,7 +149,7 @@ const draggable = useDraggable(document.body, {
     try {
       if (el == dragNode!.el) return
       if (!dragNode) return
-      const rel = designer.keyedNode[el.getAttribute('lcd-dragover')!] || resolveNode(el)
+      const rel = lcd.keyedNode[el.getAttribute('lcd-dragover')!] || resolveNode(el)
       if (rel.isAbsLayout && type == 'inner') {
         const rect = el.getBoundingClientRect()
         dragNode.isAbs = true
@@ -178,12 +178,12 @@ useEventListener(document.body, 'mousedown', e => {
   const el = e.composedPath().find(e => resolveNode(e as El)?.selectable)!
   if (!el) return
   const node = resolveNode(el as El)!
-  if (designer.dragged) return
+  if (lcd.dragged) return
   node.click()
 })
 
 useEventListener(document.body, 'mouseover', e => {
-  if (designer.dragged) return
+  if (lcd.dragged) return
   const el = e.composedPath().find(e => resolveNode(e as El)?.selectable)!
   if (!el) return
   const node = resolveNode(el as El)!
@@ -222,7 +222,7 @@ function dragStart(e: DragEvent) {
   dragNode = resolveNode(e.target as El)
   dragged.value = dragNode
   if (!dragNode) return
-  designer.draggedId = dragNode?.id
+  lcd.draggedId = dragNode?.id
   // activitybarId = designer.state.activitybarId
   // designer.state.activitybarId = 'comp-tree'
   // designer.state.sidebarVisible = true
@@ -232,7 +232,7 @@ function dragEnd() {
   draggable.dragend()
   dragNode = void 0
   dragged.value = void 0
-  designer.draggedId = void 0
+  lcd.draggedId = void 0
   // designer.state.activitybarId = activitybarId
   // designer.state.sidebarVisible = true
 }
@@ -241,18 +241,18 @@ function resolveNode(el: El) {
   if (el.nodeType != 1) return
   // snippet
   const snippet = el.getAttribute('lcd-snippet')
-  if (snippet) return new designer.DisplayNode(unFn(designer.snippets.find(e => e.id == snippet)?.schema))
+  if (snippet) return new lcd.DisplayNode(unFn(lcd.snippets.find(e => e.id == snippet)?.schema))
   // id
   let id = el.getAttribute('lcd-id')
-  if (id) return designer.keyedNode[id!]
+  if (id) return lcd.keyedNode[id!]
   // is
   const is = el.getAttribute('lcd-is')
-  if (is) return new designer.DisplayNode(designer.newProps(is!))
+  if (is) return new lcd.DisplayNode(lcd.newProps(is!))
 }
 
 const dragMaskRects = computed(() => {
   const { to } = dragged.value?.drag || {}
-  const putable = to ? Object.values(designer.keyedNode).filter(e => to.includes(e.is)) : void 0
+  const putable = to ? Object.values(lcd.keyedNode).filter(e => to.includes(e.is)) : void 0
   // const putable = dragged.value ? Object.values(designer.keyedNode).sort((a, b) => a.deep - b.deep).filter(e => e.insertable(dragged.value!)) : void 0
   return putable?.map(e => e.el!.getBoundingClientRect()).map(e => ({ x: e.x, y: e.y, w: e.width, h: e.height }))
 })
