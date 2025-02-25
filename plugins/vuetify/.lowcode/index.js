@@ -34,7 +34,7 @@ export const contributes = {
   ],
   views: {
     'widgets': [
-      { id: 'widgets.vuetify', name: true, icon: true, iconClass: 'my4', is: ['widgets', { list: widgets }] }
+      { id: 'widgets.vuetify', name: true, icon: true, iconClass: 'my4', is: 'WidgetsView', list: widgets }
     ],
     'vuetify': [
       { id: 'vuetify.snippets', name: true, icon: true, iconClass: 'my4', is: 'SnippetsView2', list: snippets }

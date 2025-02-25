@@ -29,7 +29,6 @@
 
 <script setup lang="ts">
 import { computed, h, inject, mergeProps, PropType, ref } from 'vue'
-import { isArray } from '@vue/shared'
 import Render from '@el-lowcode/render'
 import { defaults, get, set } from '@el-lowcode/utils'
 import { Activitybar, DesignerCtx } from '../interface'
@@ -40,7 +39,6 @@ import SnippetsView from '../../plugins/base/.lowcode/views/SnippetsView.vue'
 import SnippetsView2 from '../../plugins/base/.lowcode/views/SnippetsView2.vue'
 
 const is = {
-  widgets: WidgetsView,
   Widgets,
   WidgetsView,
   SnippetsView,
@@ -73,8 +71,7 @@ function unmount(el, pane, state) {
 
 const Pane = ({ pane }) => {
   return Render(mergeProps(pane, {
-    is: is[isArray(pane.is) ? pane.is[0] : pane.is] ?? pane.is ?? 'div',
-    ...isArray(pane.is) ? pane.is[1] : void 0,
+    is: is[pane.is] ?? pane.is ?? 'div',
     class: 'vs-expand-body',
     state: defaults(state(pane.id), pane.state || {}),
     onVnodeMounted: ({ el }) => mount(el, pane, state(pane.id)),

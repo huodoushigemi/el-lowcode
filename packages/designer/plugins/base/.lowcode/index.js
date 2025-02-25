@@ -1,4 +1,4 @@
-import { createApp, defineAsyncComponent, h, reactive, watchEffect, triggerRef, toRef, toRaw, nextTick, watchSyncEffect, ref, toRefs } from 'vue'
+import { defineAsyncComponent, h, reactive, watchEffect, triggerRef, toRef, toRaw, nextTick, watchSyncEffect } from 'vue'
 import { isPlainObject } from '@vue/shared'
 import { useEventListener } from '@vueuse/core'
 import { get, html2schema, set, toArr, uid } from '@el-lowcode/utils'
@@ -6,17 +6,6 @@ import { genCode, quickPick, showDialog } from '../../../utils'
 import MonacoEditor from '../../../layout/components/monaco-editor.vue'
 import DS from './DS.vue'
 import ExportCode from './ExportCode.vue'
-
-function create(AsyncComp) {
-  let app
-  return {
-    mount(container, designerCtx) {
-      app = createApp({ provide: { designerCtx }, render: () => h(AsyncComp) })
-      app.mount(container)
-    },
-    unmount: () => app.unmount()
-  }
-}
 
 export function activate(lcd) {
   // 文本元素 开启编辑模式
@@ -136,16 +125,16 @@ export const contributes = (lcd) => ({
   ],
   views: {
     'snippets': [
-      { id: 'snippets', renderer: create(defineAsyncComponent(() => import('./views/SnippetsView.vue'))) }
+      { id: 'snippets', is: defineAsyncComponent(() => import('./views/SnippetsView.vue')) }
     ],
     'comp-tree': [
-      { id: 'comp-tree', renderer: create(defineAsyncComponent(() => import('./views/CompTreeView.vue'))) }
+      { id: 'comp-tree', is: defineAsyncComponent(() => import('./views/SnippetsView.vue')) }
     ],
     'schema-sourcecode': [
-      { id: 'schema-sourcecode', renderer: create(defineAsyncComponent(() => import('./views/Schema.vue'))) }
+      { id: 'schema-sourcecode', is: defineAsyncComponent(() => import('./views/SnippetsView.vue')) }
     ],
     'plugin-market': [
-      { id: 'plugin-market', renderer: create(defineAsyncComponent(() => import('./views/PluginsView.vue'))) }
+      { id: 'plugin-market', is: defineAsyncComponent(() => import('./views/SnippetsView.vue')) }
     ],
     
   },
