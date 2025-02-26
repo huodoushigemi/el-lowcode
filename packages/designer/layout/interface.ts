@@ -11,9 +11,9 @@ export interface Widget {
   is: string
   label?: string
   icon?: string
+  cover?: string
   drag: WidgetDrag
   hidden?: boolean
-  cover?: string // todo
   slots: any[]
   vSlots: any[]
   props?: any[] | ((props: Obj, ctx: DesignerCtx, arg: { node: DisplayNode }) => any[])
@@ -47,17 +47,18 @@ export interface WidgetDrag {
 export interface Snippet {
   id: string
   title: string
+  cover?: string
   schema: () => BoxProps
 }
 
 export type BoxProps = Props
 
 export abstract class DisplayNode extends Node<BoxProps> {
-  abstract designerCtx: DesignerCtx
-  get lcd() { return this.designerCtx }
+  abstract lcd: DesignerCtx
+  get designerCtx() { return this.lcd }
 
-  get root() { return this.designerCtx.rootNode as typeof this }
-  get isRoot() { return this.designerCtx.rootNode == this }
+  get root() { return this.lcd.rootNode as typeof this }
+  get isRoot() { return this.lcd.rootNode == this }
 
   constructor(data) {
     const raw = toRaw(data)
@@ -71,11 +72,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get label () { return (this.vSlotName && `#${this.vSlotName}`) || this.$data['lcd-label'] || this.config?.label || this.data.is }
   get dir() { return isArray(this.data_children) }
   get vSlotName() { return isPlainObject(this.parent?.data.children) ? Object.entries(this.parent!.data.children).find(([k, v]) => v == this.data)?.[0] : void 0 }
-  get config() {  
-    // if (!this.designerCtx.widgets[this.is]) console.error(`${this.is}: Unable to find a matching el_lowcode configuration of ${this.is}`, this.data)
-    const { widgets } = this.designerCtx
-    return widgets[this.is] || widgets[hyphenate(this.is)] || widgets[capitalize(camelize(this.is))]
-  }
+  get config() { return (o => o[this.is] || o[hyphenate(this.is)] || o[capitalize(camelize(this.is))])(this.lcd.widgets) }
 
   // #data_children = computed(() => {
   //   return (
@@ -143,8 +140,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
 
   #$data = computed(() => {
     let props = this.data
-    // if (this.vars && this.designerCtx.canvas.window?.processProps) props = this.designerCtx.canvas.window.processProps(props, this.vars)
-    if (this.#vars.value && this.designerCtx.canvas.window?.processProps) props = this.designerCtx.canvas.window.processProps(props, this.#vars.value)
+    if (this.#vars.value && this.lcd.canvas.window?.processProps) props = this.lcd.canvas.window.processProps(props, this.#vars.value)
     if (this.config?.devProps) props = mergeProps(props, this.config?.devProps(this.data, this)) as any
     return props
   })
@@ -172,7 +168,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   get isAbsLayout() { return !!this.data['lcd-absolute-layout'] }
   set isAbsLayout(bool) { this.data['lcd-absolute-layout'] = bool || void 0 }
 
-  get text() { return isString(this.data.children) && !isExp(this.data.children) ? this.data.children : void 0 }
+  get text() { return (v => isString(v) && !isExp(v) ? v : void 0)(this.data.children) }
   
   // 插槽化 children
   #vSlots
@@ -184,20 +180,19 @@ export abstract class DisplayNode extends Node<BoxProps> {
       set: (target, p, val, receiver) => {
         const config = isPlainObject(this.config?.vSlots) ? this.config.vSlots[p] : void 0
         let children = this.data.children as any
-        children =
-          isPlainObject(children) ? { ...children } :
-          isArray(children) ? { default: { children } } :
-          children != null ? { default: [{ is: 'span', children }] } :
-          {}
+        children = isPlainObject(children) ? { ...children } : { default: { children } }
         // 
         if (val == null) delete children[p]
-        else children[p] = isArray(val) ? { children: val } : val == true ? { children: [] } : val
-        if (config?.scope && children[p]) children[p].scope = config.scope
+        else {
+          if (val == true) val = config ?? []
+          const props = children[p] = isPlainObject(val) ? val : { children: isArray(val) ? val : [{ is: 'span', children: String(val) }] }
+          props.scope ??= config.scope
+        }
         // 最小化 children
         if (Object.values(children).every(e => e == null)) {
           children = void 0
         } else if (Object.entries(children).every(([k, v]) => k == 'default' || v == null) && children.default.scope == null) {
-          // children = children.default.children
+          children = children.default.children
         }
         this.data.children = children
         return true
@@ -206,7 +201,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   get menus() {
-    return this.designerCtx.plugins.flatMap(e => unFn(e.contributes.menus?.['node/context'], this) ?? [])
+    return this.lcd.plugins.flatMap(e => unFn(e.contributes.menus?.['node/context'], this) ?? [])
   }
 
   #drag = computed(() => {
@@ -260,7 +255,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   override remove() {
-    this.designerCtx.activeId = this.prev?.id ?? this.next?.id ?? this.parent?.id
+    this.lcd.activeId = this.prev?.id ?? this.next?.id ?? this.parent?.id
     this.isRoot ? this.empty() : super.remove()
   }
 
@@ -268,11 +263,11 @@ export abstract class DisplayNode extends Node<BoxProps> {
     this.vSlotName ? (delete this.parent!.data.children![this.vSlotName]) : super.doRemove()
   }
 
-  override hover() { this.designerCtx.hoverId = this.id }
-  override click() { this.designerCtx.activeId = this.id }
+  override hover() { this.lcd.hoverId = this.id }
+  override click() { this.lcd.activeId = this.id }
 
-  get hovered() { return this.designerCtx.hover == this }
-  get selected() { return this.designerCtx.hover == this }
+  get hovered() { return this.lcd.hover == this }
+  get selected() { return this.lcd.hover == this }
 }
 
 export interface DesignerCtx {

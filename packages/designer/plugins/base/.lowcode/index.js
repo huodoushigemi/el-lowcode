@@ -131,7 +131,7 @@ export const contributes = (lcd) => ({
       { id: 'comp-tree', is: defineAsyncComponent(() => import('./views/SnippetsView.vue')) }
     ],
     'schema-sourcecode': [
-      { id: 'schema-sourcecode', is: defineAsyncComponent(() => import('./views/SnippetsView.vue')) }
+      { id: 'schema-sourcecode', is: defineAsyncComponent(() => import('./views/Schema.vue')) }
     ],
     'plugin-market': [
       { id: 'plugin-market', is: defineAsyncComponent(() => import('./views/SnippetsView.vue')) }
@@ -192,11 +192,11 @@ export const contributes = (lcd) => ({
   // todo
   menus: {
     'node/context': node => [
-      { label: '上移', icon: 'https://api.iconify.design/solar:arrow-up-linear.svg', disabled: () => node.vSlotName || !node.prev, onClick: () => node.after(node.prev) },
-      { label: '下移', icon: 'https://api.iconify.design/solar:arrow-down-linear.svg', disabled: () => node.vSlotName || !node.next, onClick: () => node.before(node.next) },
-      { label: '拷贝', icon: 'https://api.iconify.design/solar:copy-line-duotone.svg', disabled: () => node.vSlotName || !node.parent, onClick: () => node.after(node.clone()) },
-      { label: '清空', icon: 'https://api.iconify.design/solar:broom-broken.svg', class: 'hover:c-red', onClick: () => node.empty() },
-      { label: '删除', icon: 'https://api.iconify.design/solar:trash-bin-minimalistic-linear.svg', class: 'hover:c-red', disabled: () => !node.parent, onClick: () => node.remove() },
+      { label: '上移', icon: 'https://api.iconify.design/solar:arrow-up-linear.svg', disabled: () => node.vSlotName || !node.prev, click: () => node.after(node.prev) },
+      { label: '下移', icon: 'https://api.iconify.design/solar:arrow-down-linear.svg', disabled: () => node.vSlotName || !node.next, click: () => node.before(node.next) },
+      { label: '拷贝', icon: 'https://api.iconify.design/solar:copy-line-duotone.svg', disabled: () => node.vSlotName || !node.parent, click: () => node.after(node.clone()) },
+      { label: '清空', icon: 'https://api.iconify.design/solar:broom-broken.svg', class: 'hover:c-red', click: () => node.empty() },
+      { label: '删除', icon: 'https://api.iconify.design/solar:trash-bin-minimalistic-linear.svg', class: 'hover:c-red', disabled: () => !node.parent, click: () => node.remove() },
       { is: 'hr' },
       { label: '代码', icon: 'https://api.iconify.design/solar:code-bold.svg', click: () => showCode(node) },
       { label: '导出为', icon: 'https://api.iconify.design/material-symbols:imagesmode-outline-rounded.svg', children: [
@@ -208,10 +208,10 @@ export const contributes = (lcd) => ({
       ] },
       { is: 'hr' },
       { label: 'v-slots', vIf: vSlots(node), icon: 'https://api.iconify.design/fa6-solid:check-to-slot.svg', children: 
-        vSlots(node)?.map(slot => ({ label: slot, checked: () => !!node.vSlots[slot], onClick: () => node.vSlots[slot] = node.vSlots[slot] ? void 0 : [] }))
+        vSlots(node)?.map(slot => ({ label: slot, checked: () => !!node.vSlots[slot], click: () => node.vSlots[slot] = node.vSlots[slot] ? void 0 : true }))
       },
       { label: 'slot', vIf: slots(node), icon: 'https://api.iconify.design/fa6-solid:check-to-slot.svg', children:
-        slots(node)?.map(slot => ({ label: slot, checked: () => node.data.slot == slot, onClick: () => node.data.slot = node.data.slot == slot ? void 0 : slot }))
+        slots(node)?.map(slot => ({ label: slot, checked: () => node.data.slot == slot, click: () => node.data.slot = node.data.slot == slot ? void 0 : slot }))
       },
       { is: 'hr' },
     ],

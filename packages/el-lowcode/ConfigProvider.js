@@ -1,6 +1,7 @@
 import { computed, defineComponent, getCurrentInstance, isRef, onUnmounted, unref, provide, reactive, renderSlot, toRefs, watch, watchEffect } from 'vue'
 import { execExp, useRequest } from '@el-lowcode/utils'
 import { cloneObj } from './index'
+import { isFunction, isString } from '@vue/shared'
 
 const dsType = {
   fetch: (e, vars) => {
@@ -17,28 +18,36 @@ const dsType = {
   }
 }
 
+const props = {
+  state: Object,
+  ds: Object,
+  css: String,
+  plugins: Array,
+  fetch: Function,
+  schema: Object
+}
+
 export const ConfigProvider = defineComponent({
   inheritAttrs: false,
-  props: {
-    state: Object,
-    ds: Object,
-    css: String,
-    plugins: Array,
-  },
+  props,
   setup(props, { slots }) {
     const config = reactive(useConfigProvider(props))
 
-    provide('pageCtx', window.pageCtx = config)
+    provide('pageCtx', config)
 
-    return () => renderSlot(slots, config.loading ? 'loading' : 'default')
+    return () => renderSlot(slots, config.loading ? 'loading' : 'default', {  })
   }
 })
 
 export function useConfigProvider(props) {
   const config = reactive({})
+  const { data: attrs } = useRequest(() => 
+    isString(props.fetch) ? fetch(props.fetch).then(e => e.json()) :
+    isFunction(props.fetch) ? props.fetch() :
+    props
+  )
 
   config.state = computed(() => {
-    console.log('state')
     return reactive(cloneObj(props.state, config, v => !isRef(v)))
   })
 

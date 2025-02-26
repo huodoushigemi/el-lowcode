@@ -1,6 +1,6 @@
 <template>
   <sidebar class="vs-base vs-sidebar" flex="~ col">
-    <div pl20 pr8 text-11 lh-35 font-400 c="#bbb" truncate uppercase flex-shrink-0>
+    <div pl20 pr8 text-11 lh-35 font-400 c="#bbb" truncate uppercase flex-shrink-0 sticky top-0 z-1>
       {{ activitybar?.title }}
     </div>
 
@@ -15,8 +15,8 @@
       class="flex-shrink-1"
       :style="
         isFull(pane.id) ? 'flex: 1; height: 0;' :
-        (expanded[pane.id] ?? 1) && pane.initialSize ? `flex: 0 0 ${pane.initialSize}px; height: 0;` :
-        (expanded[pane.id] ?? 1) ? 'flex: 1 1; height: 0;' :
+        (expanded[pane.id] ?? 1) && pane.initialSize ? `flex: 0 1 ${unit(pane.initialSize)}; height: 0;` :
+        (expanded[pane.id] ?? 1) ? 'flex: 1 0 142px; height: 0;' :
         ''
       "
     >
@@ -67,6 +67,10 @@ function mount(el, pane, state) {
 function unmount(el, pane, state) {
   const { id, renderer } = pane
   renderer?.unmount?.(el, lcd, state)
+}
+
+function unit(n) {
+  return /^\d+$/.test(String(n)) ? `${n}px` : n
 }
 
 const Pane = ({ pane }) => {

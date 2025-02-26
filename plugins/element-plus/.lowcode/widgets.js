@@ -90,7 +90,7 @@ export const widgets = [
     label: 'card',
     category: '容器',
     coverSpan: 2,
-    vSlots: ['header', 'footer'],
+    vSlots: { header: 'Header', footer: 'Footer' },
     props: [
       str('body-class'),
       str('body-style', { el: { type: 'textarea', autosize: { minRows: 4, maxRows: 12 } } }),
@@ -179,6 +179,7 @@ export const widgets = [
       type: 'card',
       autoplay: false,
       height: '150px',
+      trigger: 'click',
       children: [
         { is: 'ElCarouselItem', style: { background: '#d3dce6' }, children: [{ is: 'h1', style: { textAlign: 'center' }, children: `1` }] },
         { is: 'ElCarouselItem', style: { background: '#99a9bf' }, children: [{ is: 'h1', style: { textAlign: 'center' }, children: `2` }] },
@@ -220,7 +221,7 @@ export const widgets = [
     label: 'collapse-item',
     hidden: true,
     drag: { to: ['ElCollapse'] },
-    vSlots: ['title', 'icon'],
+    vSlots: { title: true, icon: { scope: '{ isActive }', children: `isActive ? 'Expanded' : 'Collapsed'` } },
     props: [
       bool('disabled')
     ],
@@ -353,6 +354,7 @@ export const widgets = [
     category: '数据输入',
     vSlots: ['prefix', 'suffix'],
     props: [
+      vmodel(),
       grid2([
         bool('disabled'), bool('readonly'),
         num('min'), num('max'),
@@ -429,6 +431,7 @@ export const widgets = [
     label: 'switch',
     category: '数据输入',
     props: [
+      vmodel(),
       bool('disabled'),
       num('width'),
       grid2([
@@ -449,6 +452,7 @@ export const widgets = [
     label: 'segmented',
     category: '数据输入',
     props: [
+      vmodel(),
       grid2([
         bool('disabled'), bool('block'),
       ]),
@@ -469,6 +473,7 @@ export const widgets = [
     category: '数据输入',
     drag: { from: ['ElCheckbox', 'ElCheckboxButton'] },
     props: [
+      vmodel(),
       grid2([
         bool('disabled'), bool('button', void 0, { el: { activeValue: 'button', inactiveValue: undefined } }),
         num('min'), num('max'),
@@ -541,6 +546,7 @@ export const widgets = [
     label: 'slider',
     category: '数据输入',
     props: [
+      vmodel(),
       grid2([
         bool('disabled'), bool('show-tooltip', true),
         num('min'), num('max'),
@@ -564,6 +570,7 @@ export const widgets = [
     label: 'rate',
     category: '数据输入',
     props: [
+      vmodel(),
       bool('disabled'),
       num('max', 5),
       color('void-color'),
@@ -585,6 +592,7 @@ export const widgets = [
     label: 'date',
     category: '数据输入',
     props: [
+      vmodel(),
       grid2([
         bool('disabled'),
         bool('readonly'),
@@ -612,6 +620,7 @@ export const widgets = [
     label: 'time',
     category: '数据输入',
     props: [
+      vmodel(),
       grid2([
         bool('disabled'),
         bool('readonly'),
@@ -637,6 +646,7 @@ export const widgets = [
     label: 'color',
     category: '数据输入',
     props: [
+      vmodel(),
       grid2([
         bool('disabled'), bool('show-alpha'),
       ])

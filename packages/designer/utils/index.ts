@@ -46,7 +46,7 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
     // viewport,
     // canvas: computed(() => root.value.designer?.canvas || { zoom: 1 }),
     // @ts-ignore
-    DisplayNode: class $DisplayNode extends DisplayNode { designerCtx = lcd },
+    DisplayNode: class $DisplayNode extends DisplayNode { lcd = lcd },
     canvas: {
       x: useTransformer(root, 'designer.canvas.x', { silentSet: v => +v.toFixed(0) }),
       y: useTransformer(root, 'designer.canvas.y', { silentSet: v => +v.toFixed(0) }),

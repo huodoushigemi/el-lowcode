@@ -1,3 +1,4 @@
+import { isPromise } from '@vue/shared'
 import { reactive, watchPostEffect, onBeforeUnmount, toRef } from 'vue'
 
 function toRefs(obj) {
@@ -34,15 +35,17 @@ export function useRequest<F extends (...args) => any, T = UnFn<F>, A = Paramete
 
   let interrupt = () => { }
   async function run(...args: Parameters<F>) {
+    interrupt()
     const req = reqFn.apply(null, args)
     let interrupted = false
-    interrupt()
-    await new Promise((s) => s(undefined))
+    // await new Promise((s) => s(undefined))
     try {
       config.onBefore?.(args as A)
       state.loading = true
       state.params = args as any
-      state.data = await Promise.race([req, new Promise((s, j) => interrupt = () => { interrupted = true; j() })])
+      state.data = isPromise(req)
+        ? await Promise.race([req, new Promise((s, j) => interrupt = () => { interrupted = true; j() })])
+        : req
       state.loading = false
       config.onSuccess?.(state.data as T)
       return state.data as T
@@ -70,7 +73,7 @@ export function useRequest<F extends (...args) => any, T = UnFn<F>, A = Paramete
       let stop = watchPostEffect(() => run.apply(null, config.defaultParams))
       onBeforeUnmount(stop)
     } else {
-      Promise.resolve().then(() => run.apply(null, config.defaultParams))
+      run.apply(null, config.defaultParams)
     }
   }
 
