@@ -8,10 +8,10 @@ export * from './ConfigProvider'
 
 const _Render = createRender({ processProps })
 
-export const Render = ({ state, dataSource, css, plugins, ...props }, { slots }) => {
-  return h(ConfigProvider, { state, dataSource, css, plugins }, {
+export const Render = (props, { slots }) => {
+  return h(ConfigProvider, props, {
     ...slots,
-    default: () => h(_Render, props)
+    default: ({ schema }) => h(_Render, schema)
   })
 }
 

@@ -44,7 +44,7 @@
     const loading = h('h1', { style: 'margin-top: 45vh; text-align: center;' }, 'Loading……')
 
     createApp(() => schema.value
-      ? h(Render, schema.value, { loading })
+      ? h(Render, { schema: schema.value }, { loading })
       : loading
     )
       .mount(document.body)

@@ -9,6 +9,7 @@ const Share = defineComponent({
   setup() {
     const loading = ref(false)
     const ctx = inject('designerCtx')
+
     async function onClick() {
       if (loading.value) return
       loading.value = true
@@ -20,6 +21,7 @@ const Share = defineComponent({
         loading.value = false
       }
     }
+
     return () => h('div', { class: 'flex aic px6', onClick }, [
       loading.value ? h(ILoading, { class: 'w18 h16' }) : h(IShare, { class: 'w18 h18' })
     ])
@@ -41,6 +43,6 @@ export const contributes = lcd => ({
   },
   statusbar: [
     { children: [{ is: Share }] },
-    { icon: { is: IEye, class: 'hfull wa' }, onClick: (ctx) => previewLcd(ctx.root) }
+    { icon: { is: IEye, class: 'hfull wa' }, onClick: () => previewLcd(lcd.root) }
   ]
 })

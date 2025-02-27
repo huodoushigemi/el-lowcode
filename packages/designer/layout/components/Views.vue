@@ -1,5 +1,5 @@
 <template>
-  <sidebar class="vs-base vs-sidebar" flex="~ col">
+  <aside class="vs-base vs-sidebar" flex="~ col">
     <div pl20 pr8 text-11 lh-35 font-400 c="#bbb" truncate uppercase flex-shrink-0 sticky top-0 z-1>
       {{ activitybar?.title }}
     </div>
@@ -24,11 +24,11 @@
     </Expand>
 
     <Pane v-else-if="list.length" :pane="list[0]" />
-  </sidebar>
+  </aside>
 </template>
 
 <script setup lang="ts">
-import { computed, h, inject, mergeProps, PropType, ref } from 'vue'
+import { computed, inject, mergeProps, PropType, ref } from 'vue'
 import Render from '@el-lowcode/render'
 import { defaults, get, set } from '@el-lowcode/utils'
 import { Activitybar, DesignerCtx } from '../interface'

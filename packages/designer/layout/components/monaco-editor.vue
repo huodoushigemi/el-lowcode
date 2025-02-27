@@ -43,7 +43,8 @@ let _val = refWithWatch(() => props.modelValue || '')
 
 const emit = defineEmits(['save', 'update:modelValue'])
 
-const isDark = useDark({ storageKey: 'vitepress-theme-appearance' })
+// const isDark = useDark({ storageKey: 'vitepress-theme-appearance' })
+const isDark = true
 
 async function onMount(_editor, monaco) {
   monaco.languages.typescript.javascriptDefaults.setCompilerOptions({

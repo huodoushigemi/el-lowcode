@@ -1,5 +1,5 @@
 import { isPromise } from '@vue/shared'
-import { reactive, watchPostEffect, onBeforeUnmount, toRef } from 'vue'
+import { reactive, watchPostEffect, onBeforeUnmount, toRef, watch } from 'vue'
 
 function toRefs(obj) {
   const ret = {}
@@ -34,21 +34,17 @@ export function useRequest<F extends (...args) => any, T = UnFn<F>, A = Paramete
   })
 
   let interrupt = () => { }
-  async function run(...args: Parameters<F>) {
+  function __run(...args: Parameters<F>) {
     interrupt()
-    const req = reqFn.apply(null, args)
     let interrupted = false
-    // await new Promise((s) => s(undefined))
     try {
       config.onBefore?.(args as A)
       state.loading = true
+      const req = reqFn.apply(null, args)
       state.params = args as any
-      state.data = isPromise(req)
-        ? await Promise.race([req, new Promise((s, j) => interrupt = () => { interrupted = true; j() })])
+      return isPromise(req)
+        ? Promise.race([req, new Promise((s, j) => interrupt = () => { interrupted = true; j() })])
         : req
-      state.loading = false
-      config.onSuccess?.(state.data as T)
-      return state.data as T
     } catch (e) {
       if (interrupted) return
       state.loading = false
@@ -56,12 +52,24 @@ export function useRequest<F extends (...args) => any, T = UnFn<F>, A = Paramete
       if (config.onError) config.onError?.(e)
       else throw e
     } finally {
+      state.loading = false
       config.onFinally?.()
     }
   }
 
+  async function __after(ret) {
+    state.data = isPromise(ret) ? await ret : ret
+    state.loading = false
+    config.onSuccess?.(state.data as T)
+    return state.data
+  }
+
+  async function run() {
+    return __after(__run(config.defaultParams))
+  }
+
   function refresh() {
-    return run(...state.params as any)
+    return __after(__run(state.params))
   }
 
   function cancel() {
@@ -70,10 +78,10 @@ export function useRequest<F extends (...args) => any, T = UnFn<F>, A = Paramete
 
   if (!config.manual) {
     if (config.trackDep) {
-      let stop = watchPostEffect(() => run.apply(null, config.defaultParams))
+      let stop = watch(() => __run(config.defaultParams), __after, { immediate: true, flush: 'post' })
       onBeforeUnmount(stop)
     } else {
-      run.apply(null, config.defaultParams)
+      run()
     }
   }
 

@@ -1,4 +1,5 @@
 import { defineAsyncComponent, h } from 'vue'
+import { Render } from 'el-lowcode'
 import Page from './page'
 import Grid from './grid'
 import UnoIcon from './UnoIcon.vue'
@@ -11,6 +12,7 @@ export default {
     app.use(Page)
     app.use(Grid)
     app.component('UnoIcon', UnoIcon)
+    app.component('render', Render)
     
     app.component('AbsoluteLayout', (props, { slots }) => h('div', props, slots))
     app.component('VHtml', (props) => h('div', { ...props }))

@@ -91,7 +91,7 @@ export function createRender({ defaultIs, processProps = (props) => props as unk
   }
 
   return (props) => {
-    const vars = inject('pageCtx', void 0) as any
+    const vars = inject('vars', void 0) as any
     return Render(props, vars)
   }
 }

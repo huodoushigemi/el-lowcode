@@ -11,7 +11,7 @@ export async function vue(ctx: DesignerCtx): Promise<string> {
 export function jsonRender(ctx: DesignerCtx) {
   const omitKey = new Set(['_id', 'lcd-absolute-layout'])
   return `<template>
-  <Render v-bind="schema" />
+  <Render :schema="schema" />
 </template>
 
 <script setup>
@@ -97,7 +97,7 @@ export async function vue$(rootNode: DisplayNode) {
       }
       else if (v) {
         v = objStringify(v, v => isExp(v) ? unExp(v) : JSON.stringify(v))
-        v = (await formatJsExp(unExp(v))).replaceAll('\n', `\n${indent()}`)
+        v = (await formatJsExp(v)).replaceAll('\n', `\n${indent()}`)
         xml += ` :${k}="${v}"`
       }
     }
@@ -136,7 +136,7 @@ export async function vue$(rootNode: DisplayNode) {
 
   let js = `\nimport { reactive, computed, toRef } from 'vue'\nimport { useConfigProvider } from 'el-lowcode'`
 
-  let params = objStringify(JSON.parse(JSON.stringify({ state, ds, css, plugins })), v => {
+  let params = objStringify({ state, ds, css, plugins }, v => {
     return (
       isExp(v) ? `toRef(() => ${unExp(v)})` :
       isString(v) ? JSON.stringify(v) :

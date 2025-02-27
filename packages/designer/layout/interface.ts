@@ -185,8 +185,8 @@ export abstract class DisplayNode extends Node<BoxProps> {
         if (val == null) delete children[p]
         else {
           if (val == true) val = config ?? []
-          const props = children[p] = isPlainObject(val) ? val : { children: isArray(val) ? val : [{ is: 'span', children: String(val) }] }
-          props.scope ??= config.scope
+          const props = children[p] = isPlainObject(val) ? val : { children: isArray(val) ? val : [{ is: 'span', children: String(val) }] } as any
+          props.scope ??= config?.scope
         }
         // 最小化 children
         if (Object.values(children).every(e => e == null)) {

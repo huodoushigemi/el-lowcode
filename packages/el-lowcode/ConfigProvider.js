@@ -1,7 +1,8 @@
-import { computed, defineComponent, getCurrentInstance, isRef, onUnmounted, unref, provide, reactive, renderSlot, toRefs, watch, watchEffect } from 'vue'
+import { computed, defineComponent, getCurrentInstance, isRef, onUnmounted, unref, provide, reactive, renderSlot, toRefs, watch, watchEffect, toValue, h } from 'vue'
+import { isFunction, isString } from '@vue/shared'
+import { toReactive } from '@vueuse/core'
 import { execExp, useRequest } from '@el-lowcode/utils'
 import { cloneObj } from './index'
-import { isFunction, isString } from '@vue/shared'
 
 const dsType = {
   fetch: (e, vars) => {
@@ -19,10 +20,6 @@ const dsType = {
 }
 
 const props = {
-  state: Object,
-  ds: Object,
-  css: String,
-  plugins: Array,
   fetch: Function,
   schema: Object
 }
@@ -30,22 +27,27 @@ const props = {
 export const ConfigProvider = defineComponent({
   inheritAttrs: false,
   props,
-  setup(props, { slots }) {
-    const config = reactive(useConfigProvider(props))
+  setup(props, { slots, expose }) {
+    const { data: schema, loading } = useRequest(() => 
+      isString(props.fetch) ? fetch(props.fetch).then(e => e.json()) :
+      isFunction(props.fetch) ? props.fetch() :
+      props.schema
+    )
+    
+    const vars = reactive(useConfigProvider(toReactive(computed(() => schema.value ?? {}))))
 
-    provide('pageCtx', config)
+    provide('vars', vars)
+    expose(vars)
 
-    return () => renderSlot(slots, config.loading ? 'loading' : 'default', {  })
+    return () =>
+      vars.loading || loading.value ? h('div', renderSlot(slots, 'loading')) :
+      !schema.value ? h('div', renderSlot(slots, 'empty', { vars }, () => [h('div', { style: 'opacity: .4; text-align: center; padding: 1em' }, 'Empty')])) :
+      renderSlot(slots, 'default', { vars, schema: schema.value })
   }
 })
 
 export function useConfigProvider(props) {
   const config = reactive({})
-  const { data: attrs } = useRequest(() => 
-    isString(props.fetch) ? fetch(props.fetch).then(e => e.json()) :
-    isFunction(props.fetch) ? props.fetch() :
-    props
-  )
 
   config.state = computed(() => {
     return reactive(cloneObj(props.state, config, v => !isRef(v)))
@@ -65,7 +67,7 @@ export function useConfigProvider(props) {
   const loaded = {}
 
   // load plugin
-  watch(() => [...props.plugins], async (urls, old) => {
+  watch(() => [...props.plugins || []], async (urls, old) => {
     if (JSON.stringify(urls) == JSON.stringify(old)) return
     if (!urls?.length) return
     
