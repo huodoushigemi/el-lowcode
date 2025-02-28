@@ -205,6 +205,38 @@
   }
 }
 
+.vs-editor-group {
+  
+}
+
+.vs-editor-tabs {
+  @apply h35 bg-#252526;
+  & > .tab {
+    @apply flex aic pl10 lh-[35px] text-13 c-#fff/25 bg-#2d2d2d b-r-1 b-r-#252526 [&>.vs-actions]:op0 [&:hover>.vs-actions]:op100 [&>.vs-actions]:w28;
+  }
+  & > .tab.active {
+    @apply bg-#1e1e1e [&>.vs-actions]:op100;
+  }
+  & > .vs-actions {
+    @apply bg-inherit;
+  }
+}
+
+.vs-editor-group.active {
+  & > .vs-editor-tabs {
+    & > .tab {
+      @apply c-#fff/50;
+    }
+    & > .tab.active {
+      @apply c-#fff;
+    }
+  }
+}
+
+.vs-editor-container {
+
+}
+
 hr {
   @apply b-t-1 b-t-solid b-t-[--vs-menu-b-c];
 }

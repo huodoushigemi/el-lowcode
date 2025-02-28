@@ -12,9 +12,9 @@ export interface Widget {
   label?: string
   icon?: string
   cover?: string
-  drag: WidgetDrag
+  drag?: WidgetDrag
   hidden?: boolean
-  slots: any[]
+  slots?: any[]
   vSlots: any[]
   props?: any[] | ((props: Obj, ctx: DesignerCtx, arg: { node: DisplayNode }) => any[])
   defaultProps?(ctx: DesignerCtx): Obj
@@ -29,12 +29,7 @@ export interface Widget {
 }
 
 export type UserWidget = Assign<Widget, {
-  slots?: any[]
-  drag?: boolean | Assign<WidgetDrag, {
-    to?: Arrable<string>
-    from?: Arrable<string>
-    ancestor?: Arrable<string>
-  }>
+  drag?: boolean | WidgetDrag
 }>
 
 export interface WidgetDrag {

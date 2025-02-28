@@ -7,7 +7,9 @@ const styleEl = Object.assign(document.createElement('style'), {
     .el-drawer__body > .empty-placeholder { height: 100% }
     .el-carousel__item > .empty-placeholder { height: 100% }
     .el-card,
-    .el-button { transition: none !important; }
+    .el-button { transition: none !important }
+    .el-carousel--horizontal > .el-carousel__container { display: flex }
+    .el-carousel--vertical > .el-carousel__container { display: flex; flex-direction: column }
   `
 })
 

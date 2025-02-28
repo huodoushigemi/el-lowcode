@@ -55,6 +55,14 @@
             <div v-if="node != active" mx4> > </div>
           </div>
         </div>
+
+        <!-- <div class="absolute top-0 wfull">
+          <Tabs3>
+            <div label="lcd.json"></div>
+            <div label="xxxxxx"></div>
+            <div label="xxxxxx"></div>
+          </Tabs3>
+        </div> -->
       </div>
 
       
@@ -94,6 +102,7 @@ import EditTable from '../components/EditTable.vue'
 import Tabs from '../components/Tabs.vue'
 import MonacoEditor from './components/monaco-editor.vue'
 import ElFormRender from 'el-form-render'
+import Tabs3 from '../components/Tabs3.vue'
 
 const srcdoc = computedAsync(() => import.meta.env.PROD ? import('./components/iframe-temp.html?transform').then(e => e.default) : void 0)
 const srcurl = computedAsync(() => import.meta.env.DEV ? import('./components/iframe-temp.html?url').then(e => e.default) : void 0)
