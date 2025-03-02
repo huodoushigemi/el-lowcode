@@ -1,7 +1,7 @@
 <script setup lang='jsx'>
 import { onMounted, ref, useSlots, watchEffect, watchPostEffect } from 'vue'
 import { refWithControl } from '@vueuse/core'
-import { useSortable } from '@vueuse/integrations/useSortable.mjs'
+// import { useSortable } from '@vueuse/integrations/useSortable.mjs'
 import { set } from '@el-lowcode/utils'
 import { useEdit } from './hooks'
 import Icon from './Icon.vue'
@@ -15,7 +15,6 @@ const props = defineProps({
   addable: { type: Boolean, default: true },
   new: Function,
   props: Object,
-  showClose: Boolean
 })
 
 const slots = useSlots()
@@ -27,11 +26,11 @@ const edit = ref(false)
 const { inputRef } = useEdit(ref(), () => edit.value = false)
 
 const navRef = ref()
-const sortable = useSortable(navRef, () => props.tabs, { draggable: '.tab', animation: 100 })
+// const sortable = useSortable(navRef, () => props.tabs, { draggable: '.tab', animation: 100 })
 
-onMounted(() => {
-  watchEffect(() => sortable.option('disabled', !(props.editable && props.sortable)))
-})
+// onMounted(() => {
+//   watchEffect(() => sortable.option('disabled', !(props.editable && props.sortable)))
+// })
 
 function onPlus() {
   const { tabs } = props
@@ -83,7 +82,7 @@ function del(i) {
 }
 
 defineRender(() => {
-  const { stretch, editable, showClose, nav } = props
+  const { stretch, editable, nav } = props
   children = slots.default?.()
   children.forEach((e, i) => e.key ??= i)
 

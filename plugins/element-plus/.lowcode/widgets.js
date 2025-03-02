@@ -19,6 +19,7 @@ const grid2 = children => ({ is: 'div', class: 'grid grid-cols-2 gap-x-12', chil
 const grid3 = children => ({ is: 'div', class: 'grid grid-cols-3 gap-x-12', children })
 
 const Text = (s, extra) => ({ is: 'span', children: s, ...extra })
+const Block = (s, extra) => ({ is: 'div', children: s, ...extra })
 
 function vmodel(prop, extra) {
   const label = prop ? `v-model : ${prop}` : `v-model`
@@ -210,9 +211,9 @@ export const widgets = [
     ],
     defaultProps: () => ({
       children: [
-        { is: 'ElCollapseItem', children: { title: { children: [Text('Consistency')] }, default: { children: [Text('Consistent with real life: in line with the process and logic of real life, and comply with languages and habits that the users are used to;')] } } },
-        { is: 'ElCollapseItem', children: { title: { children: [Text('Feedback')] }, default: { children: [Text('Operation feedback: enable the users to clearly perceive their operations by style updates and interactive effects;')] } } },
-        { is: 'ElCollapseItem', children: { title: { children: [Text('Efficiency')] }, default: { children: [Text('Simplify the process: keep operating process simple and intuitive;')] } } },
+        { is: 'ElCollapseItem', children: { title: { children: [Text('Consistency')] }, default: { children: [Block('Consistent with real life: in line with the process and logic of real life, and comply with languages and habits that the users are used to;')] } } },
+        { is: 'ElCollapseItem', children: { title: { children: [Text('Feedback')] }, default: { children: [Block('Operation feedback: enable the users to clearly perceive their operations by style updates and interactive effects;')] } } },
+        { is: 'ElCollapseItem', children: { title: { children: [Text('Efficiency')] }, default: { children: [Block('Simplify the process: keep operating process simple and intuitive;')] } } },
       ]
     })
   },

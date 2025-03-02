@@ -134,7 +134,7 @@ export const contributes = (lcd) => ({
       { id: 'schema-sourcecode', is: defineAsyncComponent(() => import('./views/Schema.vue')) }
     ],
     'plugin-market': [
-      { id: 'plugin-market', is: defineAsyncComponent(() => import('./views/SnippetsView.vue')) }
+      { id: 'plugin-market', is: defineAsyncComponent(() => import('./views/PluginsView.vue')) }
     ],
     
   },

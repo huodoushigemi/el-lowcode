@@ -73,8 +73,6 @@ const Render = createRender({
   }
 })
 
-let count = 0
-
 const propsCtx = new WeakMap()
 
 function setup(node: DisplayNode) {
@@ -86,32 +84,31 @@ function setup(node: DisplayNode) {
     return ret
   }
 
-  const addAttrs = () => {
-    if (node.detached) return scope?.stop()
-    ;([{ ...node.parent?.children as any }, node.els])
+  const scope = effectScope()
+  scope.run(() => {
+    watchPostEffect(() => {
+      if (node.detached) {
+        propsCtx.delete(node)
+        return scope?.stop()
+      }
+      ;([{ ...node.parent?.children as any }, node.els])
 
-    const xxx = () => node.setAttrs({
-      draggable: (!node.isAbs && !node.drag.disabled) + '',
-      'lcd-id': node.id
+      const xxx = () => node.setAttrs({
+        draggable: (!node.isAbs && !node.drag.disabled) + '',
+        'lcd-id': node.id
+      })
+
+      xxx()
+      setTimeout(xxx, 0) // fix: el-table-column | el-descriptions-item | el-tab-pane
     })
+  })
 
-    xxx()
-    setTimeout(xxx, 0) // fix: el-table-column | el-descriptions-item | el-tab-pane
-  }
-
-  let scope
-  function start() {
-    scope?.stop()
-    scope = effectScope()
-    scope.run(() => watchPostEffect(addAttrs))
-  }
-  
-  start()
-
-  const ret = { emptyRef: node.emptyRef, attrs: { ref: node.ref, key: count++ } }
+  const ret = { emptyRef: node.emptyRef, attrs: { ref: node.ref, key: node.id } }
   propsCtx.set(node, ret)
   return ret
 }
+
+let pid
 
 const draggable = useDraggable(document.body, {
   dragstart(e) {
@@ -122,7 +119,7 @@ const draggable = useDraggable(document.body, {
     e.dataTransfer!.setDragImage(new Image(), 0, 0)
   },
   dragover(el, _, { path }) {
-    draggable.dragoverEl?.removeAttribute('lcd-dragover')
+    pid = void 0
     if (!dragNode) return false
     if (el.getAttribute('lcd-id')) {
       let node = resolveNode(el)!
@@ -132,12 +129,12 @@ const draggable = useDraggable(document.body, {
         container = node?.dropEls.find(e => path.includes(e))
         if (!container || !node.insertable(dragNode)) return
       }
-      container.setAttribute('lcd-dragover', node.id)
+      pid = node.id
       return container
     }
   },
-  children(el) {
-    const node = lcd.keyedNode[el.getAttribute('lcd-dragover')!]
+  children() {
+    const node = lcd.keyedNode[pid]
     if (node.isAbsLayout) return []
     const ret = node.children$!.map(e => e.el!)
     return ret
@@ -149,7 +146,7 @@ const draggable = useDraggable(document.body, {
     try {
       if (el == dragNode!.el) return
       if (!dragNode) return
-      const rel = lcd.keyedNode[el.getAttribute('lcd-dragover')!] || resolveNode(el)
+      const rel = resolveNode(el)!
       if (rel.isAbsLayout && type == 'inner') {
         const rect = el.getBoundingClientRect()
         dragNode.isAbs = true
@@ -168,7 +165,7 @@ const draggable = useDraggable(document.body, {
     }
   },
   dragend() {
-    draggable.dragoverEl?.removeAttribute('lcd-dragover')
+    pid = void 0
   },
 })
 

@@ -223,6 +223,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   getRects(): DOMRect[] {
+    if (this.vSlotName) return getRects(this.emptyRef.value)
     return getRects(this.config?.getRect?.(this) ?? this.els)
   }
 

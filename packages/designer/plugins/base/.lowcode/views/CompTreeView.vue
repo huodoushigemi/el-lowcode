@@ -6,7 +6,7 @@
     :dropable="({ to, node }) => to.insertable(node)"
     :expandKeys="expandKeys"
     v-model:selected-keys="selectedKeys"
-    @node-click="node => node?.click()"
+    @node-down="node => node?.click()"
     @node-hover="node => node?.hover()"
     #default="{ node }"
   >

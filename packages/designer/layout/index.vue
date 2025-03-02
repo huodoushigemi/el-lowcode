@@ -56,13 +56,13 @@
           </div>
         </div>
 
-        <!-- <div class="absolute top-0 wfull">
-          <Tabs3>
+        <div class="absolute top-0 wfull">
+          <!-- <Tabs3>
             <div label="lcd.json"></div>
             <div label="xxxxxx"></div>
             <div label="xxxxxx"></div>
-          </Tabs3>
-        </div> -->
+          </Tabs3> -->
+        </div>
       </div>
 
       
@@ -78,7 +78,7 @@
 
 <script setup lang="ts">
 import { watch, computed, provide, ref, getCurrentInstance, PropType, reactive, onUnmounted, toRaw, triggerRef, toRef, toRefs, nextTick, h, defineComponent, renderSlot, cloneVNode, watchEffect } from 'vue'
-import { computedAsync, Fn, useDebouncedRefHistory, useElementSize, useResizeObserver, useWindowScroll } from '@vueuse/core'
+import { computedAsync, Fn, useElementSize, useWindowScroll } from '@vueuse/core'
 import Moveable from 'vue3-moveable'
 
 import { eq, get, pick, set, uid } from '@el-lowcode/utils'

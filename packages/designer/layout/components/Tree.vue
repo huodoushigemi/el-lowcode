@@ -1,9 +1,8 @@
 <template>
-  <div :class="['vs-tree vs-ul hfull', selected && 'element-selection']" tabindex="0" @dragstart="onDragstart" @dragover="onDragover" @drop="onDrop" @dragend="onDragend" @click="onClick" @pointerover="onHover" @pointerleave="onHover" v-list-focus>
-    <div class="drag-guide" :style="dragGuideStyle" />
-    
+  <div :class="['vs-tree vs-ul hfull', selected && 'element-selection']" tabindex="0" @click="onClick" @pointerdown="onPointerdown" @pointerover="onHover" @pointerleave="onHover" v-list-focus>
     <template v-for="(node, i) in expandTree" :key="node.id">
       <div
+        :ref="node.ref"
         :class="['vs-li group relative flex aic h22 lh-22', node.selected && 'selected']"
         :style="`padding-left: ${4 + (indent * node.deep)}px`"
         :data-index="i"
@@ -27,10 +26,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, toRaw } from 'vue'
+import { computed, reactive, ref, toRaw, watchEffect, watchPostEffect } from 'vue'
 import { isArray } from '@vue/shared'
-import { toReactive, useVModel } from '@vueuse/core'
-import { keyBy, unFn, vListFocus } from '@el-lowcode/utils'
+import { useVModel, useCurrentElement } from '@vueuse/core'
+import { unFn, useDraggable, vListFocus } from '@el-lowcode/utils'
 import { Node } from './Node'
 
 type Props = {
@@ -43,6 +42,14 @@ type Props = {
 
   draggable?: boolean | ((node: $_Node) => boolean)
   dropable?: boolean | ((e: DropEvent) => boolean)
+  dragstate?: Dragstate
+}
+
+type Dragstate = {
+  drag?: string
+  dragover?: string
+  rel?: string
+  direction?: 'T' | 'B' | 'L' | 'R'
 }
 
 type DropEvent = { from: $_Node; to: $_Node; node: $_Node; oldIndex: number; newIndex: number }
@@ -51,12 +58,14 @@ const props = withDefaults(defineProps<Props>(), {
   data: () => [],
   expandKeys: () => reactive({}),
   indent: 12,
-  dropable: true
+  dropable: true,
+  dragstate: () => ({})
 })
 
-const emit = defineEmits(['node-click', 'node-hover', 'update:selectedKeys'])
+const emit = defineEmits(['node-click', 'node-down', 'node-hover', 'update:selectedKeys'])
 
 class $_Node extends props.Node {
+  ref = ref<HTMLElement[]>()
   get root() { return rootNode as typeof this }
   get isRoot() { return this.root == this }
   get dir() { return isArray(this.data_children) }
@@ -70,8 +79,6 @@ const rootNode = new $_Node({ get children() { return props.data } })
 const selectedKeys = useVModel(props, 'selectedKeys', void 0, { passive: true, defaultValue: [] })
 const selected = computed(() => selectedKeys.value!.map(e => rootNode.keyed[e]).filter(e => e))
 
-const dragGuideStyle = reactive({ left: '', top: '', height: '', width: '' })
-
 const expandTree = computed(() => {
   const ret = [...rootNode.children!]
   for (let i = 0; i < ret.length; i++) {
@@ -84,13 +91,21 @@ function onClick(e: MouseEvent) {
   const node = getNode(e)
   if (node) {
     if (node.dir) props.expandKeys[node.id] = !node.expand
-    console.log(node);
-    
-    selectedKeys.value = [node.id]
     emit('node-click', node)
   } else {
     selectedKeys.value = []
     emit('node-click', void 0)
+  }
+}
+
+function onPointerdown(e: PointerEvent) {
+  const node = getNode(e)
+  if (node) {
+    selectedKeys.value = [node.id]
+    emit('node-down', node)
+  } else {
+    selectedKeys.value = []
+    emit('node-down', void 0)
   }
 }
 
@@ -99,96 +114,56 @@ function onHover(e: MouseEvent) {
   emit('node-hover', node)
 }
 
-let dragLi: $_Node | undefined
-let dropEl: HTMLElement | undefined
-let dropEvent: DropEvent | undefined
+const elRef = useCurrentElement<HTMLElement>()
 
-function onDragstart(e: DragEvent) {
-  const node = getNode(e)
-  if (!node) return
-  if (!unFn(props.draggable, node)) return e.preventDefault()
-  e.stopPropagation()
-  dragLi = node
-  e.dataTransfer!.setDragImage(new Image(), 0, 0)
-}
+const dragjs = useDraggable(elRef, {
+  dragstart(e) {
+    e.dataTransfer!.setDragImage(new Image(), 0, 0)
+  },
+  dragover(el, drag) {
+    const id = el.getAttribute('data-id')
+    if (!id) return
+    return [rootNode.keyed[id], ...rootNode.keyed[id].parents].find(e => props.dropable?.({
+      to: e,
+      node: rootNode.keyed[drag!.getAttribute('data-id')!]
+    }))?.ref.value?.[0]
+  },
+  children(el) {
+    return rootNode.keyed[el.getAttribute('data-id')!].children!.flatMap(e => e.ref.value ?? [])
+  },
+  drop(el, drag, type, e) {
+    const node = rootNode.keyed[el.getAttribute('data-id')!]
+    const dragNode = rootNode.keyed[drag!.getAttribute('data-id')!]
+    type == 'prev' ? node.before(dragNode) :
+    type == 'next' ? node.after(dragNode) :
+    type == 'inner' ? node.insertBefore(dragNode) : void 0
+  },
+})
 
-function onDragover(e: DragEvent) {
-  dropEl?.classList.remove('drop-inner')
-  if (!dragLi) return
-  const drop = getNode(e)
-  if (!drop) return
-  if (dragLi != drop && dragLi.contains(drop)) return
-  dropEl = e.composedPath().find(e => e.getAttribute?.('data-id')) as HTMLElement
-  const dropRect = dropEl.getBoundingClientRect()
-
-  let type: 'inner' | 'prev' | 'next'
-  let dropBool = false
-  dropEvent = { from: dragLi.parent!, to: drop.parent!, node: dragLi, oldIndex: dragLi.index, newIndex: 0 }
-
-  const lte = (r: number) => e.y <= dropRect.y + (dropRect.height * r)
-
-  if (lte(.25)) {
-    type = 'prev'
-    dropEvent.to = drop.parent!
-    dropEvent.newIndex = drop.index
-    dropBool = unFn(props.dropable, dropEvent)
-  }
-  else if (lte(.75)) {
-    if (dragLi != drop) {
-      type = 'inner'
-      dropEvent.to = drop
-      dropEvent.newIndex = drop.children?.length ?? 0
-      dropBool = unFn(props.dropable, dropEvent)
+watchEffect(cb => {
+  if (dragjs.state?.rel) {
+    const { rel } = dragjs.state
+    if (dragjs.state!.type == 'inner') {
+      rel.style.background = `var(--vs-li-inactiveSelectionBg)`
+      dragjs.cursor.style.background = ''
+    } else {
+      rel.style.background = ''
+      dragjs.cursor.style.background = `var(--vs-focus-b-c)`
     }
-    if (!dropBool) {
-      type = lte(.5) ? 'prev' : 'next'
-      dropEvent.to = drop.parent!
-      dropEvent.newIndex = drop.index + (lte(.5) ? 0 : 1)
-      dropBool = unFn(props.dropable, dropEvent)
-    }
+    cb(() => {
+      rel.style.background = ``
+      dragjs.cursor.style.background = ``
+    })
   }
-  else {
-    type = 'next'
-    dropEvent.to = drop.parent!
-    dropEvent.newIndex = drop.index + 1
-    dropBool = unFn(props.dropable, dropEvent)
-  }
-  
-  if (!dropBool) {
-    for (const k in dragGuideStyle) dragGuideStyle[k] = ''
-    dropEvent = void 0
-    return
-  } else {
-    if (type == 'prev') {
-      Object.assign(dragGuideStyle, { left: `${dropRect.left + parseInt(dropEl.style.paddingLeft)}px`, top: `${dropRect.top}px`, width: `${dropRect.width - parseInt(dropEl.style.paddingLeft)}px`, height: `2px` })
-    }
-    else if (type == 'next') {
-      Object.assign(dragGuideStyle, { left: `${dropRect.left + parseInt(dropEl.style.paddingLeft)}px`, top: `${dropRect.bottom - 2}px`, width: `${dropRect.width - parseInt(dropEl.style.paddingLeft)}px`, height: `2px` })
-    }
-    else if (type == 'inner') {
-      for (const k in dragGuideStyle) dragGuideStyle[k] = ''
-      dropEl.classList.add(`drop-inner`)
-    }
-  }
+})
 
-  e.preventDefault()
-  e.stopPropagation()
-}
-
-function onDrop(e: DragEvent) {
-  if (dropEvent) {
-    dropEvent.to.insertBefore(dropEvent.node, dropEvent.to.children![dropEvent.newIndex])
+watchPostEffect(() => {
+  dragjs.state = {
+    ...props.dragstate,
+    drag: elRef.value?.querySelector(`> [data-id="${props.dragstate.drag}"]`) as HTMLElement,
+    rel: elRef.value?.querySelector(`> [data-id="${props.dragstate.rel}"]`) as HTMLElement,
   }
-  onDragend()
-}
-
-function onDragend() {
-  dragLi = void 0
-  dropEl?.classList.remove('drop-inner')
-  dropEl = void 0
-  dropEvent = void 0
-  for (const k in dragGuideStyle) dragGuideStyle[k] = ''
-}
+})
 
 function getNode(e: Event) {
   const id = e.composedPath().find(e => e.getAttribute?.('data-id'))?.getAttribute?.('data-id')
@@ -212,18 +187,6 @@ function getNode(e: Event) {
 
   &.active {
     opacity: 100% !important;
-  }
-}
-
-.vs-tree {
-  > .drag-guide {
-    position: fixed;
-    background: var(--vs-focus-b-c);
-    z-index: 1;
-    pointer-events: none;
-  }
-  > .drop-inner {
-    background: var(--vs-li-inactiveSelectionBg) !important;
   }
 }
 </style>
