@@ -1,7 +1,7 @@
 <template>
   <Tree
-    :data="designerCtx.root.children"
-    :Node="designerCtx.DisplayNode"
+    :data="lcd.root.children"
+    :Node="lcd.DisplayNode"
     draggable
     :dropable="({ to, node }) => to.insertable(node)"
     :expandKeys="expandKeys"
@@ -27,12 +27,12 @@
 import { inject, reactive, ref, watchEffect } from 'vue'
 import { Tree } from '@el-lowcode/designer'
 
-const designerCtx = inject('designerCtx')
+const lcd = inject('designerCtx')
 
 const expandKeys = reactive({})
 const selectedKeys = ref([])
 watchEffect(() => {
-  const node = designerCtx.active
+  const node = lcd.active
   if (!node) return
   node.parents.reduce((o, e) => (o[e.id] = true, o), expandKeys)
   selectedKeys.value = [node.id]

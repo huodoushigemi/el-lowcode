@@ -1,8 +1,8 @@
 <template>
-  <div :class="['vs-tree vs-ul hfull', selected && 'element-selection']" tabindex="0" @click="onClick" @pointerdown="onPointerdown" @pointerover="onHover" @pointerleave="onHover" v-list-focus>
+  <div :class="['vs-tree vs-ul hfull', selected && 'element-selection']" :data-id="rootNode.id" tabindex="0" @click="onClick" @pointerdown="onPointerdown" @pointerover="onHover" @pointerleave="onHover" v-list-focus>
     <template v-for="(node, i) in expandTree" :key="node.id">
       <div
-        :ref="node.ref"
+        :ref="v => node.ref.value = v"
         :class="['vs-li group relative flex aic h22 lh-22', node.selected && 'selected']"
         :style="`padding-left: ${4 + (indent * node.deep)}px`"
         :data-index="i"
@@ -29,7 +29,7 @@
 import { computed, reactive, ref, toRaw, watchEffect, watchPostEffect } from 'vue'
 import { isArray } from '@vue/shared'
 import { useVModel, useCurrentElement } from '@vueuse/core'
-import { unFn, useDraggable, vListFocus } from '@el-lowcode/utils'
+import { findret, unFn, useDraggable, vListFocus } from '@el-lowcode/utils'
 import { Node } from './Node'
 
 type Props = {
@@ -65,7 +65,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['node-click', 'node-down', 'node-hover', 'update:selectedKeys'])
 
 class $_Node extends props.Node {
-  ref = ref<HTMLElement[]>()
+  ref = ref<HTMLElement>()
   get root() { return rootNode as typeof this }
   get isRoot() { return this.root == this }
   get dir() { return isArray(this.data_children) }
@@ -75,6 +75,7 @@ class $_Node extends props.Node {
 }
 
 const rootNode = new $_Node({ get children() { return props.data } })
+rootNode.ref = useCurrentElement() as any
 
 const selectedKeys = useVModel(props, 'selectedKeys', void 0, { passive: true, defaultValue: [] })
 const selected = computed(() => selectedKeys.value!.map(e => rootNode.keyed[e]).filter(e => e))
@@ -114,19 +115,17 @@ function onHover(e: MouseEvent) {
   emit('node-hover', node)
 }
 
-const elRef = useCurrentElement<HTMLElement>()
-
-const dragjs = useDraggable(elRef, {
+const dragjs = useDraggable(rootNode.ref, {
   dragstart(e) {
     e.dataTransfer!.setDragImage(new Image(), 0, 0)
   },
-  dragover(el, drag) {
-    const id = el.getAttribute('data-id')
-    if (!id) return
-    return [rootNode.keyed[id], ...rootNode.keyed[id].parents].find(e => props.dropable?.({
+  dragover(el, drag, { path }) {
+    const id = findret(path, e => e.nodeType == 1 ? e.getAttribute('data-id') : void 0)
+    const node = [rootNode.keyed[id], ...rootNode.keyed[id].parents].find(e => props.dropable?.({
       to: e,
       node: rootNode.keyed[drag!.getAttribute('data-id')!]
-    }))?.ref.value?.[0]
+    }))
+    return node?.ref.value
   },
   children(el) {
     return rootNode.keyed[el.getAttribute('data-id')!].children!.flatMap(e => e.ref.value ?? [])
@@ -160,8 +159,8 @@ watchEffect(cb => {
 watchPostEffect(() => {
   dragjs.state = {
     ...props.dragstate,
-    drag: elRef.value?.querySelector(`> [data-id="${props.dragstate.drag}"]`) as HTMLElement,
-    rel: elRef.value?.querySelector(`> [data-id="${props.dragstate.rel}"]`) as HTMLElement,
+    drag: rootNode.ref.value?.querySelector(`& > [data-id="${props.dragstate.drag}"]`) as HTMLElement,
+    rel: rootNode.ref.value?.querySelector(`& > [data-id="${props.dragstate.rel}"]`) as HTMLElement,
   }
 })
 

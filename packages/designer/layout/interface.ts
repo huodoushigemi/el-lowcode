@@ -242,6 +242,7 @@ export abstract class DisplayNode extends Node<BoxProps> {
   }
 
   override insertable(node: DisplayNode) {
+    if (this.vSlotName && node.vSlotName) return false
     if (!isArray(this.data.children)) return false
     if (node.drag.to && !node.drag.to.includes(this.is$)) return false
     if (this.drag.from && !this.drag.from.includes(node.is)) return false
