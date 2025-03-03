@@ -35,7 +35,7 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
 
   const ret = reactive({
     dragend,
-    state: void 0 as State | void
+    state: {} as State
   })
 
   useEventListener(root, 'dragstart', e => {
@@ -50,13 +50,13 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
     let dragover: HTMLElement | void
     for (let i = 0; i < path.length; i++) {
       const el = path[i] as HTMLElement
-      const v = el.nodeType == 1 ? props.dragover(el, ret.state?.drag, { path }) : void 0
+      const v = el.nodeType == 1 ? props.dragover(el, ret.state.drag, { path }) : void 0
       dragover = v == true ? el : (v as HTMLElement || void 0)
       if (el == container || dragover) break
     }
     // @ts-ignore
     if (!dragover) {
-      if (ret.state) ret.state = _State({ drag: ret.state.drag })
+      ret.state = _State({ drag: ret.state.drag })
       return
     }
 
@@ -67,15 +67,13 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
 
     const children = props.children ? props.children(dragover) : [...dragover.children]
     const [, rel, rect, dir] = nearestEl(e.x, e.y, children, dragover, getRect)!
-    ret.state = _State({ ...ret.state!, rel: rel ?? dragover, direction: dir })
+    ret.state = _State({ ...ret.state, rel: rel ?? dragover, direction: dir })
   })
 
   useEventListener(root, 'drop', e => {
-    if (ret.state) {
-      e.stopPropagation()
-      e.preventDefault()
-      props.drop(ret.state!.rel!, ret.state.drag, ret.state.type!, e)
-    }
+    e.stopPropagation()
+    e.preventDefault()
+    props.drop(ret.state.rel!, ret.state.drag, ret.state.type!, e)
     dragend()
   })
 
@@ -83,7 +81,7 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
 
   function dragend() {
     props.dragend?.()
-    ret.state = void 0
+    ret.state = {}
   }
 
   // drop cursor
@@ -93,7 +91,7 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
   document.body.append(cursorContainer)
 
   watchEffect(() => {
-    if (ret.state?.rel) {
+    if (ret.state.rel) {
       const { rel, direction: dir, type } = ret.state
       const rect = getRect(rel!)
       const size = 6, v = dir == 'T' || dir == 'B'

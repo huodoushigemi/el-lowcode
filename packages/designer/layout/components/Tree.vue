@@ -1,9 +1,9 @@
 <template>
-  <div :class="['vs-tree vs-ul hfull', selected && 'element-selection']" :data-id="rootNode.id" tabindex="0" @click="onClick" @pointerdown="onPointerdown" @pointerover="onHover" @pointerleave="onHover" v-list-focus>
+  <div ref="elRef" :class="['vs-tree vs-ul hfull', selected && 'element-selection']" :data-id="rootNode.id" tabindex="0" @click="onClick" @pointerdown="onPointerdown" @pointerover="onHover" @pointerleave="onHover" v-list-focus>
     <template v-for="(node, i) in expandTree" :key="node.id">
       <div
         :ref="v => node.ref.value = v"
-        :class="['vs-li group relative flex aic h22 lh-22', node.selected && 'selected']"
+        :class="['vs-li group relative flex aic h22 lh-22', node.selected && 'selected', node.dropTarget && 'drop-target']"
         :style="`padding-left: ${4 + (indent * node.deep)}px`"
         :data-index="i"
         :data-id="node.id"
@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, toRaw, watchEffect, watchPostEffect } from 'vue'
 import { isArray } from '@vue/shared'
-import { useVModel, useCurrentElement } from '@vueuse/core'
+import { useVModel } from '@vueuse/core'
 import { findret, unFn, useDraggable, vListFocus } from '@el-lowcode/utils'
 import { Node } from './Node'
 
@@ -72,10 +72,24 @@ class $_Node extends props.Node {
   get expand() { return props.expandKeys[this.id] }
   get expandCount(): number { return this.expand ? this.children!.reduce((t, e) => t + e.expandCount, this.children!.length) : 0 }
   get selected() { return selectedKeys.value?.includes(this.id) }
+
+  #dropTarget = ref(false)
+  get dropTarget() { return this.#dropTarget.value }
+  set dropTarget(v) { this.#dropTarget.value = v }
+
+  #inDrop = computed(() => this.dropTarget || this.parent?.inDrop)
+  get inDrop() { return this.#inDrop.value }
 }
 
+const elRef = ref()
 const rootNode = new $_Node({ get children() { return props.data } })
-rootNode.ref = useCurrentElement() as any
+rootNode.ref = elRef
+
+// todo: bug
+// const xxx = useCurrentElement()
+// watchEffect(() => {
+//   console.log(xxx.value);
+// })
 
 const selectedKeys = useVModel(props, 'selectedKeys', void 0, { passive: true, defaultValue: [] })
 const selected = computed(() => selectedKeys.value!.map(e => rootNode.keyed[e]).filter(e => e))
@@ -121,6 +135,7 @@ const dragjs = useDraggable(rootNode.ref, {
   },
   dragover(el, drag, { path }) {
     const id = findret(path, e => e.nodeType == 1 ? e.getAttribute('data-id') : void 0)
+    // console.log(rootNode.keyed[id], drag);
     const node = [rootNode.keyed[id], ...rootNode.keyed[id].parents].find(e => props.dropable?.({
       to: e,
       node: rootNode.keyed[drag!.getAttribute('data-id')!]
@@ -128,8 +143,15 @@ const dragjs = useDraggable(rootNode.ref, {
     return node?.ref.value
   },
   children(el) {
+    // console.log(el);
+    
     return rootNode.keyed[el.getAttribute('data-id')!].children!.flatMap(e => e.ref.value ?? [])
   },
+  // getRect(el) {
+  //   const rect = el.getBoundingClientRect()
+  //   const h = rect.height * (rootNode.keyed[el.getAttribute('data-id')!].expandCount + 1)
+  //   return DOMRect.fromRect({ x: rect.x, y: rect.y, width: rect.width, height: h })
+  // },
   drop(el, drag, type, e) {
     const node = rootNode.keyed[el.getAttribute('data-id')!]
     const dragNode = rootNode.keyed[drag!.getAttribute('data-id')!]
@@ -142,14 +164,17 @@ const dragjs = useDraggable(rootNode.ref, {
 watchEffect(cb => {
   if (dragjs.state?.rel) {
     const { rel } = dragjs.state
+    const id = rel.getAttribute('data-id')!
     if (dragjs.state!.type == 'inner') {
-      rel.style.background = `var(--vs-li-inactiveSelectionBg)`
+      // rel.style.background = `var(--vs-li-inactiveSelectionBg)`
+      rootNode.keyed[id].dropTarget = true
       dragjs.cursor.style.background = ''
     } else {
-      rel.style.background = ''
+      // rel.style.background = ''
       dragjs.cursor.style.background = `var(--vs-focus-b-c)`
     }
     cb(() => {
+      rootNode.keyed[id].dropTarget = false
       rel.style.background = ``
       dragjs.cursor.style.background = ``
     })
@@ -186,6 +211,12 @@ function getNode(e: Event) {
 
   &.active {
     opacity: 100% !important;
+  }
+}
+
+.vs-tree {
+  & > .drop-target {
+    background: var(--vs-li-inactiveSelectionBg)
   }
 }
 </style>
