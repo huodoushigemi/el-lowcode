@@ -3,10 +3,10 @@ import { MaybeComputedElementRef, unrefElement, useEventListener } from '@vueuse
 
 interface UseDraggableProps {
   dragstart?(e: DragEvent): void
-  dragover(el: Element, drag: Element | void, ctx: { path: EventTarget[] }): boolean | Element | void
+  dragover(el: Element, drag: Element | undefined, ctx: { path: EventTarget[] }): boolean | Element | void
   children?(el: Element): Element[]
   getRect?(el: Element): DOMRect
-  drop(el: Element, drag: Element | void, type: 'prev' | 'next' | 'inner', e: DragEvent): void
+  drop(el: Element, drag: Element | undefined, type: 'prev' | 'next' | 'inner', e: DragEvent): void
   dragend?(): void
   curosr?: Partial<typeof defaultCurosr>
 }
@@ -74,7 +74,6 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
 
     const children = props.children ? props.children(dragover) : [...dragover.children]
     const [, rel, rect, dir] = nearestEl(e.x, e.y, children, dragover, getRect)!
-    ret.state ??= _State({})
     ret.state.rel = rel ?? dragover
     ret.state.direction = dir
   })

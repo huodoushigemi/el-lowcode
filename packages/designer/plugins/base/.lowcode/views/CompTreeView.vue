@@ -5,6 +5,7 @@
     draggable
     :dropable="({ to, node }) => to.insertable(node)"
     :expandKeys="expandKeys"
+    :dragstate="lcd.state.dragstate"
     v-model:selected-keys="selectedKeys"
     @node-down="node => node?.click()"
     @node-hover="node => node?.hover()"

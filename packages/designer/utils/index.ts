@@ -83,7 +83,8 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
         disabled: 1
       },
       // 时间旅行
-      history: useDebouncedRefHistory(root, { deep: true, debounce: 150, capacity: 20 })
+      history: useDebouncedRefHistory(root, { deep: true, debounce: 150, capacity: 20 }),
+      dragstate: {}
     },
     // activitybar: computed(() => findret(lcd.plugins, e => e.contributes.activitybar?.find(e => e.id == lcd.state.activitybarId))),
     app: toRaw(getCurrentInstance()?.appContext.app) as any,

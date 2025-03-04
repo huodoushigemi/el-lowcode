@@ -26,10 +26,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, toRaw, watch, watchEffect, watchPostEffect } from 'vue'
+import { computed, reactive, ref, watchEffect, watchPostEffect } from 'vue'
 import { isArray } from '@vue/shared'
 import { useVModel } from '@vueuse/core'
-import { findret, unFn, useDraggable, vListFocus } from '@el-lowcode/utils'
+import { findret, useDraggable, vListFocus } from '@el-lowcode/utils'
 import { Node } from './Node'
 
 type Props = {
@@ -134,28 +134,25 @@ const dragjs = useDraggable(rootNode.ref, {
     e.dataTransfer!.setDragImage(new Image(), 0, 0)
   },
   dragover(el, drag, { path }) {
-    const id = findret(path, e => e.nodeType == 1 ? e.getAttribute('data-id') : void 0)
+    const id = findret(path, e => e.nodeType == 1 ? getId(e) : void 0)
     const node = [rootNode.keyed[id], ...rootNode.keyed[id].parents].find(e => props.dropable?.({
       to: e,
-      node: rootNode.keyed[drag!.getAttribute('data-id')!]
+      node: rootNode.keyed[getId(drag)]
     }))
     return node?.ref.value
   },
   children(el) {
-    return rootNode.keyed[el.getAttribute('data-id')!].children!.flatMap(e => e.ref.value ?? [])
+    return rootNode.keyed[getId(el)].children!.flatMap(e => e.ref.value ?? [])
   },
   getRect(el) {
     const rect = el.getBoundingClientRect()
-    // const h = rect.height * (rootNode.keyed[el.getAttribute('data-id')!].expandCount + 1)
-    // return DOMRect.fromRect({ x: rect.x, y: rect.y, width: rect.width, height: h })
-    // getNode(el)
-    const node = rootNode.keyed[el.getAttribute('data-id')!]
-    const x = (node.deep - 1) * props.indent
+    const node = rootNode.keyed[getId(el)]
+    const x = (node.deep - 0) * props.indent + 20
     return DOMRect.fromRect({ x: rect.x + x, y: rect.y, width: rect.width - x, height: rect.height })
   },
   drop(el, drag, type, e) {
-    const node = rootNode.keyed[el.getAttribute('data-id')!]
-    const dragNode = rootNode.keyed[drag!.getAttribute('data-id')!]
+    const node = rootNode.keyed[getId(el)]
+    const dragNode = rootNode.keyed[getId(drag)]
     type == 'prev' ? node.before(dragNode) :
     type == 'next' ? node.after(dragNode) :
     type == 'inner' ? node.insertBefore(dragNode) : void 0
@@ -167,23 +164,15 @@ const dragjs = useDraggable(rootNode.ref, {
 
 watchEffect(cb => {
   const { rel, type } = dragjs.state
-  if (rel) {
-    // console.log({...dragjs.state});
-    const id = rel.getAttribute('data-id')!
-    if (type == 'inner') {
-      // rel.style.background = `var(--vs-li-inactiveSelectionBg)`
-      rootNode.keyed[id].dropTarget = true
-      dragjs.cursor.style.background = ''
-    } else {
-      // rel.style.background = ''
-      dragjs.cursor.style.background = `var(--vs-focus-b-c)`
-    }
-    cb(() => {
-      rootNode.keyed[id].dropTarget = false
-      // rel.style.background = ``
-      dragjs.cursor.style.background = ``
-    })
-  }
+  const drop = type == 'inner' ? rel : rootNode.keyed[getId(rel)]?.parent?.ref.value
+  if (!drop) return
+  const id = getId(drop)
+  if (type != 'inner') dragjs.cursor.style.background = `var(--vs-focus-b-c)`
+  if (drop != rootNode.ref.value) rootNode.keyed[id].dropTarget = true
+  cb(() => {
+    rootNode.keyed[id].dropTarget = false
+    dragjs.cursor.style.background = ``
+  })
 })
 
 
@@ -195,9 +184,21 @@ watchPostEffect(() => {
   }
 })
 
+watchPostEffect(() => {
+  Object.assign(props.dragstate, {
+    ...dragjs.state,
+    drag: getId(dragjs.state.drag),
+    rel: getId(dragjs.state.rel),
+  })
+})
+
 function getNode(e: Event) {
-  const id = e.composedPath().find(e => e.getAttribute?.('data-id'))?.getAttribute?.('data-id')
+  const id = findret(e.composedPath(), e => getId(e))!
   return rootNode.keyed[id]
+}
+
+function getId(e?: Element) {
+  return e?.getAttribute('data-id')!
 }
 </script>
 

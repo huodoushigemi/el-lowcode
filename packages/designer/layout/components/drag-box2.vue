@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cloneVNode, computed, defineComponent, effectScope, h, inject, mergeProps, shallowRef, watchPostEffect } from 'vue'
+import { cloneVNode, computed, defineComponent, effectScope, h, inject, mergeProps, shallowRef, watchEffect, watchPostEffect } from 'vue'
 import { isArray } from '@vue/shared'
 import { useEventListener } from '@vueuse/core'
 import { processProps } from 'el-lowcode'
@@ -110,7 +110,7 @@ function setup(node: DisplayNode) {
 
 let pid
 
-const draggable = useDraggable(document.body, {
+const dragjs = useDraggable(document.body, {
   dragstart(e) {
     if (findret(e.composedPath() as El[], e => e.nodeType == 1 ? resolveNode(e) : void 0)?.isAbs) {
       e.preventDefault()
@@ -167,6 +167,22 @@ const draggable = useDraggable(document.body, {
   dragend() {
     pid = void 0
   },
+})
+
+watchEffect(() => {
+  dragjs.state = {
+    ...lcd.state.dragstate,
+    drag: lcd.rootNode.keyed[lcd.state.dragstate.drag]?.el,
+    rel: lcd.rootNode.keyed[lcd.state.dragstate.rel]?.el,
+  }
+})
+
+watchEffect(() => {
+  Object.assign(lcd.state.dragstate, {
+    ...dragjs.state,
+    drag: dragjs.state.drag?.getAttribute('lcd-id'),
+    rel: dragjs.state.rel?.getAttribute('lcd-id'),
+  })
 })
 
 useEventListener(document.body, 'mousedown', e => {
@@ -226,7 +242,7 @@ function dragStart(e: DragEvent) {
 }
 
 function dragEnd() {
-  draggable.dragend()
+  dragjs.dragend()
   dragNode = void 0
   dragged.value = void 0
   lcd.draggedId = void 0
