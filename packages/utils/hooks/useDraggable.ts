@@ -8,6 +8,12 @@ interface UseDraggableProps {
   getRect?(el: Element): DOMRect
   drop(el: Element, drag: Element | void, type: 'prev' | 'next' | 'inner', e: DragEvent): void
   dragend?(): void
+  curosr?: Partial<typeof defaultCurosr>
+}
+
+const defaultCurosr = {
+  size: 6,
+  color: '#e6a23c66'
 }
 
 interface State {
@@ -19,9 +25,10 @@ interface State {
 
 function _State(state: State) {
   Object.defineProperty(state, 'type', {
+    enumerable: true,
     get() {
-      return state.rel
-        ? { T: 'prev', L: 'prev', B: 'next', R: 'next' }[state.direction!] ?? 'inner'
+      return this.rel
+        ? { T: 'prev', L: 'prev', B: 'next', R: 'next' }[this.direction!] ?? 'inner'
         : void 0
     }
   })
@@ -35,7 +42,7 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
 
   const ret = reactive({
     dragend,
-    state: {} as State
+    state: _State({})
   })
 
   useEventListener(root, 'dragstart', e => {
@@ -67,7 +74,9 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
 
     const children = props.children ? props.children(dragover) : [...dragover.children]
     const [, rel, rect, dir] = nearestEl(e.x, e.y, children, dragover, getRect)!
-    ret.state = _State({ ...ret.state, rel: rel ?? dragover, direction: dir })
+    ret.state ??= _State({})
+    ret.state.rel = rel ?? dragover
+    ret.state.direction = dir
   })
 
   useEventListener(root, 'drop', e => {
@@ -81,7 +90,7 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
 
   function dragend() {
     props.dragend?.()
-    ret.state = {}
+    ret.state = _State({})
   }
 
   // drop cursor
@@ -94,7 +103,8 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
     if (ret.state.rel) {
       const { rel, direction: dir, type } = ret.state
       const rect = getRect(rel!)
-      const size = 6, v = dir == 'T' || dir == 'B'
+      const v = dir == 'T' || dir == 'B'
+      const { size } = { ...defaultCurosr, ...props.curosr }
       Object.assign(cursor.style, type != 'inner' ? {
         transform: `translate(${rect.x - (v ? 0 : size / 2) + (v || dir == 'L' ? 0 : rect.width)}px, ${rect.y - (v ? size / 2 : 0) + (!v || dir == 'T' ? 0 : rect.height)}px)`,
         width: v ? `${rect.width}px` : `${size}px`,

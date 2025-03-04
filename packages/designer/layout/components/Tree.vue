@@ -3,7 +3,7 @@
     <template v-for="(node, i) in expandTree" :key="node.id">
       <div
         :ref="v => node.ref.value = v"
-        :class="['vs-li group relative flex aic h22 lh-22', node.selected && 'selected', node.dropTarget && 'drop-target']"
+        :class="['vs-li group relative flex aic h22 lh-22', node.selected && 'selected', node.inDrop && 'drop-target']"
         :style="`padding-left: ${4 + (indent * node.deep)}px`"
         :data-index="i"
         :data-id="node.id"
@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, toRaw, watchEffect, watchPostEffect } from 'vue'
+import { computed, reactive, ref, toRaw, watch, watchEffect, watchPostEffect } from 'vue'
 import { isArray } from '@vue/shared'
 import { useVModel } from '@vueuse/core'
 import { findret, unFn, useDraggable, vListFocus } from '@el-lowcode/utils'
@@ -135,7 +135,6 @@ const dragjs = useDraggable(rootNode.ref, {
   },
   dragover(el, drag, { path }) {
     const id = findret(path, e => e.nodeType == 1 ? e.getAttribute('data-id') : void 0)
-    // console.log(rootNode.keyed[id], drag);
     const node = [rootNode.keyed[id], ...rootNode.keyed[id].parents].find(e => props.dropable?.({
       to: e,
       node: rootNode.keyed[drag!.getAttribute('data-id')!]
@@ -143,15 +142,17 @@ const dragjs = useDraggable(rootNode.ref, {
     return node?.ref.value
   },
   children(el) {
-    // console.log(el);
-    
     return rootNode.keyed[el.getAttribute('data-id')!].children!.flatMap(e => e.ref.value ?? [])
   },
-  // getRect(el) {
-  //   const rect = el.getBoundingClientRect()
-  //   const h = rect.height * (rootNode.keyed[el.getAttribute('data-id')!].expandCount + 1)
-  //   return DOMRect.fromRect({ x: rect.x, y: rect.y, width: rect.width, height: h })
-  // },
+  getRect(el) {
+    const rect = el.getBoundingClientRect()
+    // const h = rect.height * (rootNode.keyed[el.getAttribute('data-id')!].expandCount + 1)
+    // return DOMRect.fromRect({ x: rect.x, y: rect.y, width: rect.width, height: h })
+    // getNode(el)
+    const node = rootNode.keyed[el.getAttribute('data-id')!]
+    const x = (node.deep - 1) * props.indent
+    return DOMRect.fromRect({ x: rect.x + x, y: rect.y, width: rect.width - x, height: rect.height })
+  },
   drop(el, drag, type, e) {
     const node = rootNode.keyed[el.getAttribute('data-id')!]
     const dragNode = rootNode.keyed[drag!.getAttribute('data-id')!]
@@ -159,13 +160,17 @@ const dragjs = useDraggable(rootNode.ref, {
     type == 'next' ? node.after(dragNode) :
     type == 'inner' ? node.insertBefore(dragNode) : void 0
   },
+  curosr: {
+    size: 2
+  }
 })
 
 watchEffect(cb => {
-  if (dragjs.state?.rel) {
-    const { rel } = dragjs.state
+  const { rel, type } = dragjs.state
+  if (rel) {
+    // console.log({...dragjs.state});
     const id = rel.getAttribute('data-id')!
-    if (dragjs.state!.type == 'inner') {
+    if (type == 'inner') {
       // rel.style.background = `var(--vs-li-inactiveSelectionBg)`
       rootNode.keyed[id].dropTarget = true
       dragjs.cursor.style.background = ''
@@ -175,11 +180,12 @@ watchEffect(cb => {
     }
     cb(() => {
       rootNode.keyed[id].dropTarget = false
-      rel.style.background = ``
+      // rel.style.background = ``
       dragjs.cursor.style.background = ``
     })
   }
 })
+
 
 watchPostEffect(() => {
   dragjs.state = {
