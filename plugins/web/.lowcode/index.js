@@ -1,5 +1,5 @@
-import widgets from './config'
-export { default as widgets } from './config'
+import widgets from './widgets'
+export { default as widgets } from './widgets'
 
 export const contributes = (lcd) => ({
   views: {

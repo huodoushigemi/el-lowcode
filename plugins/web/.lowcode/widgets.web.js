@@ -1,60 +1,4 @@
-import { defineAsyncComponent, defineComponent, h, mergeProps, normalizeStyle, toRaw, toRef, triggerRef } from 'vue'
-import { isString } from '@vue/shared'
-import { chooseImg } from '@el-lowcode/utils'
-
-const str = (lp, extra) => ({ lp, displayValue: '', ...extra })
-const opts = (lp, options, extra) => ({ lp, options, ...extra })
-const radios = (lp, options, extra) => ({ lp, type: 'radio-group', options, ...extra, el: { type: 'button', ...extra?.el } })
-const chekcs = (lp, options, extra) => ({ lp, type: 'checkbox-group', options, ...extra, el: { type: 'button', ...extra?.el } })
-const bool = (lp, displayValue = false, extra) => ({ lp, type: 'switch', displayValue, ...extra })
-const num = (lp, displayValue, extra) => ({ lp, type: 'input-number', displayValue, set: v => v == null ? void 0 : v, ...extra })
-const color = lp => ({ lp, type: 'color-picker' })
-
-const txt = () => ({ lp: ['text', 'children'], hide: o => !isString(o.children) })
-const hr = () => ({ is: 'hr', class: '-mx8' })
-
-const grid2 = children => ({ is: 'div', class: 'grid grid-cols-2 gap-x-12', children })
-const grid3 = children => ({ is: 'div', class: 'grid grid-cols-3 gap-x-12', children })
-
-const Text = (s, extra) => ({ is: 'span', children: s, ...extra })
-
-const createH = (is, hidden = true) => ({
-  is,
-  label: is,
-  hidden,
-  icon: 'https://api.iconify.design/mdi:format-header-1.svg',
-  props: [
-    { lp: ['text', 'children'] },
-    radios(['level', 'is'], ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
-  ],
-  defaultProps: () => ({
-    children: 'Heading'
-  })
-})
-
-const virtualProp = (props, p1, p2) => (p2 in props) || Object.defineProperty(props, p2, {
-  get() { return this[p1] },
-  set(v) { this[p1] = v },
-  enumerable: false
-})
-
-function vmodel(prop, extra) {
-  const label = prop ? `v-model : ${prop}` : `v-model`
-  prop = prop ? camelize(prop) : 'modelValue'
-  return { lp: [label, `vModels.${prop}.0`], out: (v, model) => (v || (delete model.vModels[prop]), {}), script: false, ...extra, el: { spellcheck: false } }
-}
-
-function vmodelInput(prop = 'value', extra) {
-  return {
-    lp: ['v-model', `vModels.${prop}`],
-    get: v => v?.[0] || '',
-    set: v => v ? ([v, null, ['onInput', 'e => e.target.value']]) : void 0,
-    out: (v, model) => (v || (delete model.vModels[prop]), {}),
-    script: false,
-    ...extra,
-    el: { spellcheck: false }
-  }
-}
+import { bool, color, grid2, hr, num, opts, radios, str, txt, virtualProp, vmodelInput } from './widgets.util'
 
 export default [
   {
@@ -66,13 +10,6 @@ export default [
       children: []
     })
   },
-
-  createH('h1'),
-  createH('h2'),
-  createH('h3'),
-  createH('h4'),
-  createH('h5'),
-  createH('h6'),
 
   {
     is: 'a',
@@ -251,7 +188,7 @@ export default [
     props: [
       str('on-submit')
     ],
-    defaultProps: await import('./form.schema').then(e => e.default)
+    defaultProps: await import('./snippets').then(e => e.form_snippets)
   },
 
   {
@@ -317,7 +254,7 @@ export default [
     coverSpan: 2,
     props: (props, { el }) => [
       // { lp: ['v-html', 'innerHTML'], el: { type: 'textarea', autosize: { maxRows: 6 } } }
-      { is: defineAsyncComponent(() => import('../TiptapProps.vue')), el }
+      { is: defineAsyncComponent(() => import('./TiptapProps.vue')), el }
     ],
     defaultProps: () => ({
       innerHTML: '<h1>v-html 用于渲染富文本</h1><p>这里可用直接编辑，采用了 Tiptap 富文本编辑器</p>'
@@ -430,5 +367,52 @@ export default [
     })
   },
 
-  { is: 'script', hidden: true }
+  {
+    is: 'wc-waterfall',
+    label: 'waterfall',
+    category: '容器',
+    cover: '',
+    props: [
+      { lp: 'cols', type: 'input-number' },
+      { lp: 'gap', type: 'slider' },
+    ],
+    defaultProps: () => ({
+      cols: 2,
+      gap: 4,
+      children: []
+    })
+  },
+
+  {
+    is: 'wc-appbar',
+    label: 'appbar',
+    category: '额外扩展',
+    cover: '',
+    props: [
+      { lp: 'pinned', type: 'switch' },
+      { lp: 'floating', type: 'switch' },
+      { lp: 'snap', type: 'switch' },
+      { lp: 'minh', type: 'input-number' },
+      { lp: 'maxh', type: 'input-number' },
+    ],
+    defaultProps: () => ({
+      minh: 56,
+      children: [
+        { is: 'img', src: 'https://game.gtimg.cn/images/lol/act/img/guidetop/guide350000.jpg', style: { position: 'absolute', top: 0, width: '100%', height: '100%', zIndex: -1, objectFit: 'cover' } },
+        { is: 'p', children: 'Yuumi', style: { margin: 0, padding: '1em', height: 'calc(var(--wc-appbar-minh) * 1px)', lineHeight: 'calc(var(--wc-appbar-minh) * 1px)', fontSize: '1.5em', background: 'var(--el-bg-color)', opacity: 'calc(var(--wc-appbar-shrink-offset) / (var(--wc-appbar-maxh) - var(--wc-appbar-minh)))' } }
+      ]
+    })
+  },
+
+  {
+    is: 'uno-icon',
+    label: 'icon',
+    cover: '',
+    props: [
+      { lp: 'src' }
+    ],
+    defaultProps: () => ({
+      src: `https://api.iconify.design/logos:vitejs.svg`
+    })
+  },
 ]
