@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cloneVNode, computed, defineComponent, effectScope, h, inject, mergeProps, shallowRef, watchEffect, watchPostEffect } from 'vue'
+import { cloneVNode, computed, defineComponent, effectScope, h, inject, mergeProps, shallowRef, watchEffect, watchPostEffect, watchSyncEffect } from 'vue'
 import { isArray } from '@vue/shared'
 import { useEventListener } from '@vueuse/core'
 import { processProps } from 'el-lowcode'
@@ -169,19 +169,19 @@ const dragjs = useDraggable(document.body, {
   },
 })
 
-watchEffect(() => {
-  dragjs.state = {
-    ...lcd.state.dragstate,
-    drag: lcd.rootNode.keyed[lcd.state.dragstate.drag]?.el,
-    rel: lcd.rootNode.keyed[lcd.state.dragstate.rel]?.el,
-  }
-})
-
-watchEffect(() => {
+watchSyncEffect(() => {
   Object.assign(lcd.state.dragstate, {
     ...dragjs.state,
     drag: dragjs.state.drag?.getAttribute('lcd-id'),
     rel: dragjs.state.rel?.getAttribute('lcd-id'),
+  })
+})
+
+watchSyncEffect(() => {
+  Object.assign(dragjs.state, {
+    ...lcd.state.dragstate,
+    drag: lcd.rootNode.keyed[lcd.state.dragstate.drag]?.el,
+    rel: lcd.rootNode.keyed[lcd.state.dragstate.rel]?.el,
   })
 })
 

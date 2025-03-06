@@ -1,5 +1,6 @@
-import { reactive, shallowRef, watchEffect } from 'vue'
+import { reactive, watchPostEffect } from 'vue'
 import { MaybeComputedElementRef, unrefElement, useEventListener } from '@vueuse/core'
+import { mapValues } from '../index'
 
 interface UseDraggableProps {
   dragstart?(e: DragEvent): void
@@ -23,18 +24,6 @@ interface State {
   type?: 'prev' | 'next' | 'inner'
 }
 
-function _State(state: State) {
-  Object.defineProperty(state, 'type', {
-    enumerable: true,
-    get() {
-      return this.rel
-        ? { T: 'prev', L: 'prev', B: 'next', R: 'next' }[this.direction!] ?? 'inner'
-        : void 0
-    }
-  })
-  return state
-}
-
 export function useDraggable(el: MaybeComputedElementRef, props: UseDraggableProps) {
   const root = () => unrefElement(el) as HTMLElement
   let x = 0, y = 0
@@ -42,13 +31,18 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
 
   const ret = reactive({
     dragend,
-    state: _State({})
+    state: {
+      drag: void 0,
+      rel: void 0,
+      direction: void 0,
+      type: void 0
+    } as State
   })
 
   useEventListener(root, 'dragstart', e => {
     props.dragstart?.(e)
     if (e.defaultPrevented) return
-    ret.state = _State({ drag: e.target as HTMLElement })
+    ret.state = { drag: e.target as HTMLElement }
   })
 
   useEventListener(root, 'dragover', (e: DragEvent) => {
@@ -63,7 +57,7 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
     }
     // @ts-ignore
     if (!dragover) {
-      ret.state = _State({ drag: ret.state.drag })
+      ret.state = { ...mapValues(ret.state, () => void 0), drag: ret.state.drag }
       return
     }
 
@@ -76,6 +70,7 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
     const [, rel, rect, dir] = nearestEl(e.x, e.y, children, dragover, getRect)!
     ret.state.rel = rel ?? dragover
     ret.state.direction = dir
+    ret.state.type = ret.state.rel ? { T: 'prev', L: 'prev', B: 'next', R: 'next' }[dir] ?? 'inner' : void 0
   })
 
   useEventListener(root, 'drop', e => {
@@ -89,7 +84,7 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
 
   function dragend() {
     props.dragend?.()
-    ret.state = _State({})
+    ret.state = mapValues(ret.state, () => void 0)
   }
 
   // drop cursor
@@ -98,14 +93,14 @@ export function useDraggable(el: MaybeComputedElementRef, props: UseDraggablePro
   cursorContainer.append(cursor)
   document.body.append(cursorContainer)
 
-  watchEffect(() => {
+  watchPostEffect(() => {
     if (ret.state.rel) {
-      const { rel, direction: dir, type } = ret.state
+      const { rel, type } = ret.state
       const rect = getRect(rel!)
-      const v = dir == 'T' || dir == 'B'
+      const v = computeDir()(rel) == 'v', t = type == 'prev'
       const { size } = { ...defaultCurosr, ...props.curosr }
       Object.assign(cursor.style, type != 'inner' ? {
-        transform: `translate(${rect.x - (v ? 0 : size / 2) + (v || dir == 'L' ? 0 : rect.width)}px, ${rect.y - (v ? size / 2 : 0) + (!v || dir == 'T' ? 0 : rect.height)}px)`,
+        transform: `translate(${rect.x - (v ? 0 : size / 2) + (v || t ? 0 : rect.width)}px, ${rect.y - (v ? size / 2 : 0) + (!v || t ? 0 : rect.height)}px)`,
         width: v ? `${rect.width}px` : `${size}px`,
         height: v ? `${size}px` : `${rect.height}px`,
       } : {

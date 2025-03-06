@@ -26,10 +26,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watchEffect, watchPostEffect } from 'vue'
+import { computed, reactive, ref, watchEffect, watchPostEffect, watchSyncEffect } from 'vue'
 import { isArray } from '@vue/shared'
 import { useVModel } from '@vueuse/core'
-import { findret, useDraggable, vListFocus } from '@el-lowcode/utils'
+import { findret, mapValues, useDraggable, vListFocus } from '@el-lowcode/utils'
 import { Node } from './Node'
 
 type Props = {
@@ -175,20 +175,19 @@ watchEffect(cb => {
   })
 })
 
-
-watchPostEffect(() => {
-  dragjs.state = {
-    ...props.dragstate,
-    drag: rootNode.ref.value?.querySelector(`& > [data-id="${props.dragstate.drag}"]`) as HTMLElement,
-    rel: rootNode.ref.value?.querySelector(`& > [data-id="${props.dragstate.rel}"]`) as HTMLElement,
-  }
-})
-
-watchPostEffect(() => {
+watchSyncEffect(() => {
   Object.assign(props.dragstate, {
     ...dragjs.state,
     drag: getId(dragjs.state.drag),
     rel: getId(dragjs.state.rel),
+  })
+})
+
+watchSyncEffect(() => {
+  Object.assign(dragjs.state, {
+    ...props.dragstate,
+    drag: rootNode.ref.value?.querySelector(`& > [data-id="${props.dragstate.drag}"]`) as HTMLElement,
+    rel: rootNode.ref.value?.querySelector(`& > [data-id="${props.dragstate.rel}"]`) as HTMLElement,
   })
 })
 
