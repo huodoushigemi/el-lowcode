@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html class="sl-theme-dark mdui-theme-auto dark" style="color-scheme: dark;">
+  <head>
+    <style>
+      html, body { display: flex; flex-direction: column; flex: 1 0 content; width: 100%; height: 100%; margin: 0; padding: 0; }
+      [lcd-root] { flex: 1; }
+      [lcd-dragged] { transition: none !important; }
+      [lcd-text] { outline: 0; }
+      * { box-sizing: border-box; }
+    </style>
+
+    <!-- 解决 iframe 不触发事件 -->
+    <script type="module">
+      import { useEventListener } from '@vueuse/core'
+      import { pick } from '@el-lowcode/utils'
+
+      if (window.parent) {
+        useEventListener(['mousedown', 'mousemove', 'mouseup'], e => {
+          if (e.button == 1) {
+            e.preventDefault()
+            e.stopPropagation()
+          }
+          const z = designerCtx.canvas.zoom
+          const rect = frameElement.getBoundingClientRect()
+          frameElement.dispatchEvent(new MouseEvent(e.type, {
+            ...pick(e, [
+              'button', 'buttons', 'clientX', 'clientY', 'movementX', 'movementY', 'screenX', 'screenY',
+              'altKey', 'ctrlKey', 'metaKey', 'shiftKey',
+              'detail', 'which',
+              'bubbles', 'cancelable', 'composed'
+            ]),
+            clientX: e.x * z + rect.x, clientY: e.y * z + rect.y,
+            bubbles: true
+          }))
+        })
+
+        useEventListener(['keypress', 'keydown', 'keyup'], e => {
+          if (['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].includes(e.key)) e.preventDefault()
+          e.stopPropagation()
+          frameElement.dispatchEvent(new KeyboardEvent(e.type, pick(e, [
+            'code', 'isComposing', 'key', 'location', 'repeat',
+            'altKey', 'ctrlKey', 'metaKey', 'shiftKey',
+            'detail', 'which',
+            'bubbles', 'cancelable', 'composed'
+          ])))
+        })
+      }
+
+      window.lcd ??= designerCtx
+    </script>
+
+    <!-- 渲染 JSON -->
+    <script type="module">
+      import { h, createRenderer } from 'vue'
+      import Moveable from 'vue3-moveable'
+      import { ConfigProvider } from 'el-lowcode'
+      import DragBox from './drag-box2.vue'
+      import { rendererOptions } from './rendererOptions'
+
+      const renderer = createRenderer(rendererOptions)
+
+      const app = renderer.createApp({
+        provide: {
+          designerCtx
+        },
+        render: () => [
+          // todo updated
+          h(ConfigProvider, { schema: designerCtx.root }, {
+            default: () => h(DragBox, { root: designerCtx.root }),
+            loading: () => h('h1', { style: 'margin: 0; text-align: center; transform: translate(0, 45vh);' }, 'Loading……')
+          }),
+          // free drag
+          lcd.hover?.isAbs && lcd.hover?.el && h(Moveable, {
+            key: lcd.hover.id,
+            target: lcd.hover.el,
+            draggable: true,
+            origin: false,
+            hideDefaultLines: true,
+            throttleDrag: 1,
+            snappable: true,
+            elementGuidelines: [lcd.hover.parent, ...lcd.hover.siblings || []]?.map(e => e?.el),
+            snapDirections: Object.fromEntries(['top', 'left', 'bottom', 'right', 'center', 'middle'].map(e => [e, true])),
+            elementSnapDirections: Object.fromEntries(['top', 'left', 'bottom', 'right', 'center', 'middle'].map(e => [e, true])),
+            onDragStart: e => lcd.activeId = lcd.draggedId = lcd.hover.id,
+            onDrag: e => e.target.style.transform = e.transform,
+            onDragEnd: e => {
+              const style = lcd.hover.data.style ??= {}
+              style.transform = e.target.style.getPropertyValue('transform')
+              lcd.draggedId = undefined
+            }
+          })
+        ]
+      })
+
+      app.mount(document.body)
+
+      app._context.reload = void 0
+
+      window.unmount = () => {
+        app.unmount()
+      }
+    </script>
+  </head>
+  <body>
+    <!--  -->
+  </body>
+</html>
