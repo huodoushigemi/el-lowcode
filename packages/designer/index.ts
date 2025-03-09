@@ -5,6 +5,7 @@ import './style.scss'
 export * from './layout/interface'
 export * from './utils/quickPick'
 export * from './utils/showDialog'
+export * from './class'
 
 export { default }  from './layout/index.vue'
 

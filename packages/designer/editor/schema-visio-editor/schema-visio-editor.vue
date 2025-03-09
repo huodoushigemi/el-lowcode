@@ -71,32 +71,10 @@ import { designerCtxKey, DisplayNode } from '../../layout/interface'
 // import InfiniteViewer from './components/infinite-viewer.vue'
 // import Statusbar from './components/Statusbar.vue'
 // // import { vue2esm } from './vue2esm'
-// import { createDesignerCtx } from '../utils'
+import { createDesignerCtx } from './utils'
 
-// import OptionsInput from '../components/OptionsInput.vue'
-// import PairInput from '../components/PairInput.vue'
-// import InputNumber from '../components/InputNumber.vue'
-// import InputNumbers from '../components/InputNumbers.vue'
-// import Collapse from '../components/Collapse.vue'
-// import EditTable from '../components/EditTable.vue'
-// import Tabs from '../components/Tabs.vue'
-// import MonacoEditor from './components/monaco-editor.vue'
-// import ElFormRender from 'el-form-render'
-// import Tabs3 from '../components/Tabs3.vue'
-
-const srcdoc = computedAsync(() => import.meta.env.PROD ? import('./components/iframe-temp.html?transform').then(e => e.default) : void 0)
-const srcurl = computedAsync(() => import.meta.env.DEV ? import('./components/iframe-temp.html?url').then(e => e.default) : void 0)
-
-// const app = getCurrentInstance()!.appContext.app
-// app.component('OptionsInput', OptionsInput)
-// app.component('PairInput', PairInput)
-// app.component('InputNumber', InputNumber)
-// app.component('InputNumbers', InputNumbers)
-// app.component('Collapse', Collapse)
-// app.component('EditTable', EditTable)
-// app.component('Tabs', Tabs)
-// app.component('MonacoEditor', MonacoEditor)
-// app.use(ElFormRender)
+const srcdoc = computedAsync(() => import.meta.env.PROD ? import('./iframe-temp.html?transform').then(e => e.default) : void 0)
+const srcurl = computedAsync(() => import.meta.env.DEV ? import('./iframe-temp.html?url').then(e => e.default) : void 0)
 
 const IV = defineComponent({
   setup(props, { slots }) {

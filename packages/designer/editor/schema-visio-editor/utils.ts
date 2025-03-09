@@ -1,41 +1,9 @@
 import { computed, effectScope, getCurrentInstance, inject, markRaw, MaybeRefOrGetter, reactive, Ref, ref, toRaw, toValue, watch, watchSyncEffect } from 'vue'
 import { isArray, isObject, remove } from '@vue/shared'
+import { useDebouncedRefHistory } from '@vueuse/core'
 import { useTransformer } from 'el-form-render'
 import { keyBy, mapValues, toArr, treeUtils, unFn, unVal } from '@el-lowcode/utils'
-import { BoxProps, Contributes, DesignerCtx, DisplayNode, ExtensionContext, PluginModule, UserWidget, Widget } from '../layout/interface'
-import { useShowDialog } from './showDialog'
-import { useDebouncedRefHistory } from '@vueuse/core'
-import { TabGroups } from '../class'
-
-export * as genCode from './genCode'
-export * from './quickPick'
-export * from './showDialog'
-
-export function objStringify(obj, fn) {
-  if (isArray(obj)) {
-    return `[${obj.map(e => objStringify(e, fn)).join(', ')}]`
-  } else if (isObject(obj)) {
-    let str = '{'
-    for (const k in obj) str += ` ${k}: ${objStringify(obj[k], fn)},`
-    str = str.replace(/,$/, '') + ' }'
-    return str
-  } else {
-    return fn(obj)
-  }
-}
-
-export async function objStringifyAsync(obj, fn) {
-  if (isArray(obj)) {
-    return `[${await Promise.all(obj.map(e => objStringifyAsync(e, fn))).then(e => e.join(', '))}]`
-  } else if (isObject(obj)) {
-    let str = '{'
-    for (const k in obj) str += ` ${k}: ${await objStringifyAsync(obj[k], fn)},`
-    str = str.replace(/,$/, '') + ' }'
-    return str
-  } else {
-    return fn(obj)
-  }
-}
+import { BoxProps, Contributes, DesignerCtx, DisplayNode, ExtensionContext, PluginModule, UserWidget, Widget } from '../../layout/interface'
 
 export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGetter<string[] | undefined>) {
   const allUrls = computed(() => [
@@ -74,35 +42,20 @@ export function createDesignerCtx(root: Ref, builtinPluginUrls?: MaybeRefOrGette
       snippets: []
     },
     state: {
-      activitybar: {
-        id: root.value.designer?.activitybar ?? 'widgets',
-      },
-      sidebar: {
-        visible: true
-      },
       infiniteViewer: {
         disabled: 1
       },
       // 时间旅行
       history: useDebouncedRefHistory(root, { deep: true, debounce: 150, capacity: 20 }),
       dragstate: {},
-      tabGroups: new TabGroups({
-        all: [{
-          tabs: [
-            { label: 'xxx.lcd.json' },
-            { label: 'www.lcd.json' },
-          ],
-        }]
-      })
     },
     // activitybar: computed(() => findret(lcd.plugins, e => e.contributes.activitybar?.find(e => e.id == lcd.state.activitybarId))),
     app: toRaw(getCurrentInstance()?.appContext.app) as any,
-    showDialog: useShowDialog()
   })
 
   const basePlugin = () => {
-    const module = import('../plugins/base/.lowcode/index')
-    const json = import('../plugins/base/.lowcode/package.json')
+    const module = import('../../plugins/base/.lowcode/index')
+    const json = import('../../plugins/base/.lowcode/package.json')
     return createPluginCtx('base', module, json, lcd)
   }
 

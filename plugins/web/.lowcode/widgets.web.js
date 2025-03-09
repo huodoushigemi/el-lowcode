@@ -5,7 +5,7 @@ export default [
     is: 'div',
     label: 'div',
     category: '容器',
-    icon: 'https://api.iconify.design/mdi:border-all-variant.svg',
+    icon: 'https://api.iconify.design/lineicons:layers-1.svg',
     defaultProps: () => ({
       children: []
     })

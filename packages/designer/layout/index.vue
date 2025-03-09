@@ -56,15 +56,12 @@
           </div>
         </div>
 
-        <div class="absolute top-0 wfull">
-          <!-- <Tabs3>
-            <div label="lcd.json"></div>
-            <div label="xxxxxx"></div>
-            <div label="xxxxxx"></div>
-          </Tabs3> -->
-        </div>
+        <!-- <div class="absolute top-0 wfull">
+          <Tabs3 v-for="group in lcd.state.tabGroups?.all">
+            <div v-for="tab in group.tabs" :label="tab.label"></div>
+          </Tabs3>
+        </div> -->
       </div>
-
       
       <!-- Setting -->
       <aside w256 b-l="1px solid [--el-border-color]" overflow-overlay @contextmenu.prevent>

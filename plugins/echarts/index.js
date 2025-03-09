@@ -1,13 +1,10 @@
-import ELine from './ELine.vue'
-import EBar from './EBar.vue'
-import EPie from './EPie.vue'
-import ERadar from './ERadar.vue'
+import { defineAsyncComponent } from 'vue'
 
 export default {
   install(app) {
-    app.component(ELine.__name, ELine)
-    app.component(EBar.__name, EBar)
-    app.component(EPie.__name, EPie)
-    app.component(ERadar.__name, ERadar)
+    app.component('ELine', defineAsyncComponent(() => import('./ELine.vue')))
+    app.component('EBar', defineAsyncComponent(() => import('./EBar.vue')))
+    app.component('EPie', defineAsyncComponent(() => import('./EPie.vue')))
+    app.component('ERadar', defineAsyncComponent(() => import('./ERadar.vue')))
   }
 }

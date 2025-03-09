@@ -1,26 +1,27 @@
-import { computed, ComputedRef, Ref, shallowRef } from 'vue'
+import { computed, ComputedRef, ref } from 'vue'
 import { remove } from '@vue/shared'
 import { keyBy, treeUtils } from '@el-lowcode/utils'
 
-export abstract class Node<T = any> {
-  #data: Ref<T>
-  get data() { return this.#data.value }
-  set data(v) { this.#data.value = v }
+function _ref<T>(): T | undefined
+function _ref<T>(v: T): T
+function _ref(v?) { return ref(v) }
+
+function _calc<T extends () => any>(v: T) { return computed(v) as ReturnType<T> }
+
+export abstract class Node<T = any, Child extends Node = Node<any, any, any>, Parent extends Node = Node<any, any, any>> {
+  data = _ref<T>()
 
   abstract get id(): string
   abstract get label(): string
   abstract get data_children(): any[] | undefined
   get icon(): any { return void 0 }
 
-  get root() { let node = this; while (node.parent) node = node.parent; return node }
+  get root() { let node: Node = this; while (node.parent) node = node.parent; return node }
   get isRoot() { return !this.parent }
 
-  #parent = shallowRef<typeof this>()
-  get parent() { return this.#parent.value }
-  set parent(v) { this.#parent.value = v }
+  parent = _ref<Parent>()
 
-  #parents = computed(() => { let arr = [] as typeof this[], node = this; while (node = node.parent!) arr.push(node); return arr })
-  get parents() { return this.#parents.value }
+  parents = _calc(() => { let arr = [] as Node[], node: Node = this; while (node = node.parent!) arr.push(node); return arr })
 
   get path() { return [this, ...this.parents].reverse() }
 
@@ -29,33 +30,26 @@ export abstract class Node<T = any> {
   get detached() { return this.isRoot ? false : this.parent ? this.parent.detached : true }
 
   constructor(data) {
-    this.#data = shallowRef(data)
+    this.data = data
   }
 
-  #deep = computed(() => (this.parent?.deep ?? -1) + 1)
-  get deep(): number { return this.#deep.value }
+  deep: number = _calc(() => (this.parent?.deep ?? -1) + 1)
 
-  #index = computed(() => this.parent?.children?.indexOf(this) ?? 0)
-  get index(): number { return this.#index.value }
+  index = _calc(() => this.parent?.children?.indexOf(this) ?? 0)
 
-  #wm: WeakMap<any, typeof this> | undefined
+  private $wm: WeakMap<any, Child> | undefined
+
+  getItem(e: T): Child {
+    // @ts-ignore
+    return new this.constructor(e)
+  }
   
-  // #children = computed(() => {
-  //   // const wm = this.root.#wm
-  //   return this.data_children?.map(e => {
-  //     // @ts-ignore
-  //     // const node = wm.get(e) ?? wm.set(e, new this.constructor(e)).get(e)!
-  //     const node = new this.constructor(e)
-  //     node.parent = this
-  //     return node
-  //   })
-  // })
-  // get children() { return this.#children.value }
-  get children() {
-    const wm = this.root.#wm ??= new WeakMap
+  get children(): Child[] | undefined {
+    const wm = this.root.$wm ??= new WeakMap
+    // @ts-ignore
     return this.data_children?.map(e => {
       // @ts-ignore
-      const node = wm.get(e) ?? wm.set(e, new this.constructor(e)).get(e)!
+      const node = wm.get(e) ?? wm.set(e, this.getItem(e)).get(e)!
       node.parent = this
       return node
     })
@@ -69,17 +63,17 @@ export abstract class Node<T = any> {
     return treeUtils.flat(this.children || [])
   }
 
-  #keyed?: ComputedRef<Record<string, this>>
+  private $keyed?: ComputedRef<Record<string, this>>
   get keyed() {
-    return (this.root.#keyed ??= computed(() => keyBy(treeUtils.flat([this.root]), 'id'))).value
+    return (this.root.$keyed ??= computed(() => keyBy(treeUtils.flat([this.root]), 'id'))).value
   }
 
   find(data: T) {
-    return this.root.#wm!.get(data)
+    return this.root.$wm!.get(data)
   }
 
   remove() {
-    const wm = this.root.#wm!
+    const wm = this.root.$wm!
     this.descendants.forEach(e => wm.delete(e.data))
     wm.delete(this.data)
     this.doRemove()

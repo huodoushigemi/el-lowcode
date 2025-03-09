@@ -1,10 +1,10 @@
 <script setup lang='jsx'>
-import { onMounted, ref, useSlots, watchEffect, watchPostEffect } from 'vue'
+import { onMounted, ref, useSlots, Comment, Fragment } from 'vue'
 import { refWithControl } from '@vueuse/core'
 // import { useSortable } from '@vueuse/integrations/useSortable.mjs'
 import { set } from '@el-lowcode/utils'
 import { useEdit } from './hooks'
-import Icon from './Icon.vue'
+// import Icon from './Icon.vue'
 
 const props = defineProps({
   stretch: Boolean,
@@ -84,10 +84,16 @@ function del(i) {
 defineRender(() => {
   const { stretch, editable, nav } = props
   children = slots.default?.()
+  children = (function flat (v) { return v.flatMap(e => 
+    e.type == Fragment ? flat(e.children) :
+    e.type == Comment ? [] :
+    e
+  ) })(children)
+  .filter(e => e.props)
   children.forEach((e, i) => e.key ??= i)
 
   if (active.value == null) {
-    active.lay(children[0].key)
+    active.lay(children[0]?.key)
   }
 
   return (
@@ -101,7 +107,7 @@ defineRender(() => {
             {active.value == key && edit.value && <input class='absolute left-0 p4 wfull lh-22 outline-0' ref={inputRef} value={tab.label} onChange={(e) => onChangeLabel(i, e.target.value)} />}
             {/* {tab.editable && showClose && <div class='i-ep-close hover:i-ep:circle-close-filled flex aic jcc ml4 -mr4 text-10' onClick={(e) => (e.stopPropagation(), del(i))} />} */}
             <div class="vs-actions flex aic sticky right-0 mla">
-              {tab.closable !== false && <i-mdi-close class="vs-li mx3 p2! w20! h20!" onClick={(e) => (e.stopPropagation(), del(i))} />}
+              {tab.closable !== false && <i-mdi-close class="vs-li mx3 p2! w18! h18!" onClick={(e) => (e.stopPropagation(), del(i))} />}
             </div>
           </div>
         ))}
@@ -114,7 +120,7 @@ defineRender(() => {
         </div>
         
       </div>
-      <div flex-1>
+      <div class="flex-1">
         {children.find(e => e.key == active.value)}
       </div>
     </div>
