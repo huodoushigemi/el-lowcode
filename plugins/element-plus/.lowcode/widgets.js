@@ -299,6 +299,9 @@ export const widgets = [
         ]
       }]},
     ]),
+    editableProps: {
+      label: ({ el }) => el.querySelector('.el-form-item__label'),
+    },
     defaultProps: (ctx) => ({
       is: 'ElFormItemRender',
       label: 'field',
@@ -805,7 +808,6 @@ export const widgets = [
     category: '数据展示',
     coverSpan: 2,
     props: [
-      str('title'),
       num('value'),
       num('precision'),
       str('prefix'),
@@ -817,7 +819,7 @@ export const widgets = [
       is: 'div',
       style: { padding: '20px', borderRadius: '4px', backgroundColor: 'var(--el-bg-color-overlay)' },
       children: [
-        { is: 'ElStatistic', title: 'Daily active users', value: 268500 },
+        { is: 'ElStatistic', value: 268500, children: { title: { children: [Text('Daily active users')] } } },
         {
           is: 'div',
           children: [
@@ -826,7 +828,7 @@ export const widgets = [
           ],
           style: { display: 'flex', alignItems: 'center', flexWrap: 'wrap', fontSize: '12px', color: 'var(--el-text-color-regular)', marginTop: '16px' },
         },
-      ],
+      ]
     })
   },
 
