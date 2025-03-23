@@ -1,6 +1,6 @@
 {
   "name": "el-form-render",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "private": false,
   "description": "vue3 + element-plus render form-item easily",
   "license": "MIT",
@@ -14,12 +14,10 @@
   "exports": {
     ".": {
       "import": "./index.mjs",
-      "require": "./index.cjs",
       "types": "./index.d.ts"
     },
     "./*": {
       "import": "./*.mjs",
-      "require": "./*.cjs",
       "types": "./*.d.ts"
     }
   },
@@ -27,10 +25,7 @@
     "@vue/shared": "^3.2.0"
   },
   "peerDependencies": {
-    "ant-design-vue": "^4.0.0",
     "element-plus": "^2.0.0",
-    "naive-ui": "^2.0.0",
-    "vue": "^3.2.0",
-    "vant": "^4.0.0"
+    "vue": "^3.2.0"
   }
 }

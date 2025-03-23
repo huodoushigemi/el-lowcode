@@ -11,13 +11,13 @@
   <code><pre>model: {{ JSON.stringify(model, null, '  ') }}</pre></code>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { reactive } from 'vue'
-import ElFormRender, { Item } from 'el-form-render'
+import ElFormRender from 'el-form-render'
 
 const model = reactive({})
 
-const items: Item[] = [
+const items = [
   { lp: ['姓名', 'name'] },
   { lp: ['年龄', 'age'] },
   { lp: ['性别', 'sex'], type: 'switch' },
@@ -50,13 +50,13 @@ const items: Item[] = [
   </el-form-render>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { reactive } from 'vue'
-import ElFormRender, { Item } from 'el-form-render'
+import ElFormRender from 'el-form-render'
 
 const model = reactive({})
 
-const items: Item[] = [
+const items = [
   { lp: ['name', 'name'] },
   { lp: ['Activity zone', 'region'] },
   { lp: ['time', 'date'], type: 'time-picker' },
@@ -81,53 +81,6 @@ const onSubmit = () => {
 </script>
 ```
 
-## 行内表单
-
-当垂直方向空间受限且表单较简单时，可以在一行内放置表单。
-
-通过设置 `inline` 属性为 `true` 可以让表单域变为行内的表单域。
-
-```vue preview
-<template>
-  <el-form-render inline :model="model" :items="items" class="demo-form-inline">
-    <el-form-item>
-      <el-button type="primary">Query</el-button>
-    </el-form-item>
-  </el-form-render>
-  
-  <code><pre>model: {{ JSON.stringify(model, null, '  ') }}</pre></code>
-</template>
-
-<script setup lang="ts">
-import { reactive } from 'vue'
-import ElFormRender, { Item } from 'el-form-render'
-
-const model = reactive({})
-
-const items: Item[] = [
-  {
-    lp: ['Approved by', 'user']
-  },
-  {
-    lp: ['Activity zone', 'region'],
-    type: 'select',
-    options: [{ value: 'shanghai' }, { value: 'beijing' }]
-  },
-  {
-    lp: ['Activity time', 'date'],
-    type: 'date-picker',
-    el: { type: 'date', clearable: true }
-  }
-]
-</script>
-
-<style>
-.demo-form-inline .el-input {
-  --el-input-width: 180px;
-}
-</style>
-```
-
 ## 表单校验
 
 这个例子中展示了如何使用自定义验证规则来完成密码的二次验证。
@@ -146,15 +99,15 @@ const items: Item[] = [
   </el-form-render>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, reactive } from 'vue'
 import type { FormInstance } from 'element-plus'
-import ElFormRender, { Item } from 'el-form-render'
+import ElFormRender from 'el-form-render'
 
 const form = ref<FormInstance>()
 const model = reactive({})
 
-const items: Item[] = [
+const items = [
   {
     lp: ['Password', 'pass'],
     rules: {
@@ -223,13 +176,13 @@ const submitForm = () => {
   </el-form-render>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { reactive } from 'vue'
-import ElFormRender, { Item } from 'el-form-render'
+import ElFormRender from 'el-form-render'
 
 const model = reactive({})
 
-const items: Item[] = [
+const items = [
   { lp: ['姓名', 'name'] },
   { lp: ['性别', 'sex'], type: 'select', options: [{ value: '男' }, { value: '女' }] },
   {
@@ -237,30 +190,6 @@ const items: Item[] = [
     rules: (row) => ({ required: row.sex === '男', message: '必填 ' }),
     el: { type: 'textarea' }
   },
-]
-</script>
-```
-
-## disabled
-
-通过设置 `disabled` 动态禁用表单项。
-
-```vue preview
-<template>
-  <el-form-render :model="model" :items="items" label-width="60" label-position="left" />
-  
-  <code><pre>model: {{ JSON.stringify(model, null, '  ') }}</pre></code>
-</template>
-
-<script setup lang="ts">
-import { reactive } from 'vue'
-import ElFormRender, { Item } from 'el-form-render'
-
-const model = reactive({})
-
-const items: Item[] = [
-  { lp: 'control', type: 'radio-group', options: ['disabled', 'enable'] },
-  { lp: 'name', el: { disabled: (model) => model.control == 'disabled' } }
 ]
 </script>
 ```
@@ -276,13 +205,13 @@ const items: Item[] = [
   <code><pre>model: {{ JSON.stringify(model, null, '  ') }}</pre></code>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { reactive } from 'vue'
-import ElFormRender, { Item } from 'el-form-render'
+import ElFormRender from 'el-form-render'
 
 const model = reactive({})
 
-const items: Item[] = [
+const items = [
   { lp: 'control', options: ['show', 'hide'] },
   { lp: 'name', hide: () => model.control != 'show' }
 ]
@@ -300,13 +229,13 @@ const items: Item[] = [
   <code><pre>model: {{ JSON.stringify(model, null, '  ') }}</pre></code>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { reactive } from 'vue'
-import ElFormRender, { Item } from 'el-form-render'
+import ElFormRender from 'el-form-render'
 
 const model = reactive({})
 
-const items: Item[] = [
+const items = [
   {
     lp: ['range', 'time'],
     type: 'date-picker',
