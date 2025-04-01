@@ -38,7 +38,7 @@ onMounted(() => {
     "/plugins/shoelace",
     "/plugins/mdui",
     "/plugins/threejs",
-    "/plugins/ai",
+    // "/plugins/ai",
 
     // "/plugins/threejs",
     // "/plugins/threejs",
