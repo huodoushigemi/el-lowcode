@@ -1,7 +1,7 @@
-import { InjectionKey, computed, defineComponent, inject, provide, ref, ExtractPropTypes, mergeProps, camelize, renderSlot, PropType } from 'vue'
+import { InjectionKey, defineComponent, inject, provide, ref, ExtractPropTypes, mergeProps, camelize, renderSlot } from 'vue'
 import { objectPick, toReactive } from '@vueuse/core'
 import { createRender } from '@el-lowcode/render'
-import { Obj, get, set, ks, unFn, withInstall } from '@el-lowcode/utils'
+import { Obj, ks, unFn, withInstall } from '@el-lowcode/utils'
 import { Item, formItemRenderPropsBase } from './props'
 import { useTransformer } from './utils'
 
