@@ -28,8 +28,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, mergeProps, PropType, ref } from 'vue'
-import Render from '@el-lowcode/render'
+import { computed, h, inject, mergeProps, PropType, ref, Suspense, withDirectives } from 'vue'
+import { vLoading } from 'element-plus'
+import { createRender } from '@el-lowcode/render'
 import { defaults, get, set } from '@el-lowcode/utils'
 import { Activitybar, DesignerCtx } from '../interface'
 import Expand from './Expand.vue'
@@ -72,6 +73,19 @@ function unmount(el, pane, state) {
 function unit(n) {
   return /^\d+$/.test(String(n)) ? `${n}px` : n
 }
+
+const Render = createRender({
+  processProps(props, vars) {
+    if (props.is?.name == 'AsyncComponentWrapper') {
+      const is = (attrs) => h(Suspense, void 0, {
+        default: () => h(props.is, attrs),
+        fallback: () => withDirectives(h('div', { style: 'flex: 1' }), [[vLoading, { background: 'transparent' }]])
+      })
+      return { ...props, is }
+    }
+    return props as any
+  },
+})
 
 const Pane = ({ pane }) => {
   return Render(mergeProps(pane, {

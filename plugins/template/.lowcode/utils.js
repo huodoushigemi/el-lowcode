@@ -21,13 +21,11 @@ export async function uploadLcd(json) {
 
   const url = `${storage.url}/object/public/${storage.bucketId}/${hash}`
 
-  if (!await fetch(url, { method: 'HEAD' }).then(e => e.status == 200)) {
-    try {
-      const file = new File([text], hash, { type: 'text/plain' })
-      await storage.upload(hash, file, { cacheControl: 3600 * 24 * 7 })
-    } catch (e) {
-      console.error(e)
-    }
+  try {
+    const file = new File([text], hash, { type: 'text/plain' })
+    await storage.upload(hash, file, { cacheControl: 3600 * 24 * 7, upsert: true })
+  } catch (e) {
+    console.error(e)
   }
 
   return url

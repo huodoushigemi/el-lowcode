@@ -1,24 +1,29 @@
 <template>
-  <VueMonacoEditor
-    @mount="onMount"
-    @keydown="onKeydown"
-    v-loading="!isMount"
-    v-bind="{...$props, ...$attrs}"
-    :value="_val"
-    :modelValue="void 0"
-    @update:value="emit('update:modelValue', _val = $event)"
-    :class="language"
-    :language="language || 'json'"
-    :theme="isDark ? 'vs-dark' : 'vs'"
-    :options="{
-      lineNumbers: 'off',
-      minimap: { enabled: false },
-      formatOnType: true,
-      tabSize: 2,
-      wordWrap: 'off',
-      ...options,
-    }"
-  />
+  <Suspense>
+    <VueMonacoEditor
+      @mount="onMount"
+      @keydown="onKeydown"
+      v-loading="!isMount"
+      v-bind="{...$props, ...$attrs}"
+      :value="_val"
+      :modelValue="void 0"
+      @update:value="emit('update:modelValue', _val = $event)"
+      :class="language"
+      :language="language || 'json'"
+      :theme="isDark ? 'vs-dark' : 'vs'"
+      :options="{
+        lineNumbers: 'off',
+        minimap: { enabled: false },
+        formatOnType: true,
+        tabSize: 2,
+        wordWrap: 'off',
+        ...options,
+      }"
+    />
+    <template #fallback>
+      <div v-bind="$attrs" v-loading="true"></div>
+    </template>
+  </Suspense>
 </template>
 
 <script setup>
@@ -81,7 +86,8 @@ function onKeydown(e) {
 import { defineAsyncComponent } from 'vue'
 
 const VueMonacoEditor = defineAsyncComponent(async () => {
-  const vs = 'https://unpkg.com/monaco-editor@0.52.2/min/vs'
+  // https://unpkg.com/monaco-editor@0.52.2/min/vs
+  const vs = 'https://s4.zstatic.net/ajax/libs/monaco-editor/0.52.2/min/vs'
 
   const { VueMonacoEditor, loader } = await import('@guolao/vue-monaco-editor')
   // loader.config({ monaco })
