@@ -1,3 +1,5 @@
+import { defineAsyncComponent, defineComponent, h, toRaw, toRef, triggerRef } from 'vue'
+import { chooseImg } from '@el-lowcode/utils'
 import { bool, color, grid2, hr, num, opts, radios, str, txt, virtualProp, vmodelInput } from './widgets.util'
 
 export default [
