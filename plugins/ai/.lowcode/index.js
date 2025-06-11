@@ -1,16 +1,18 @@
 import { defineAsyncComponent, h } from 'vue'
 
 export const contributes = {
-  activitybar: [
-    // {
-    //   id: 'ai',
-    //   title: 'AI',
-    //   icon: 'https://api.iconify.design/solar:magic-stick-broken.svg'
-    // },
-  ],
-  views: {
-    
-  },
+  // activitybar: [
+  //   {
+  //     id: 'ai',
+  //     title: 'AI',
+  //     icon: 'https://api.iconify.design/solar:magic-stick-broken.svg'
+  //   },
+  // ],
+  // views: {
+  //   ai: [
+  //     { id: 'ai.code', is: defineAsyncComponent(() => import('./D2C.vue')) }
+  //   ]
+  // },
   menus: {
     'node/context': node => [
       { label: 'AI 助手', icon: 'https://api.iconify.design/solar:magic-stick-broken.svg', children: [
