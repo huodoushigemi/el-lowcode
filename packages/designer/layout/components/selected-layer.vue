@@ -12,7 +12,7 @@
     <!-- active rect -->
     <template v-if="active" v-for="rect in active?.getRects()">
       <div absolute outline="1 solid [--vs-focus-b-c] offset--1" :style="calcStyle(rect)" @mousedown.stop>
-        <div :key="active.id" class="vs-actions absolute bottom-full right-0 flex text-14 pointer-events-auto bg-#333" :class="!!designerCtx.dragged && 'op0 pointer-events-none!'" style="box-shadow: 0 0 12px #00000080" @mousedown.stop draggable="true" @dragstart="dispatchDrag">
+        <div class="vs-actions absolute bottom-full right-0 flex text-14 pointer-events-auto bg-#333" :class="!!designerCtx.dragged && 'op0 pointer-events-none!'" style="box-shadow: 0 0 12px #00000080" @mousedown.stop draggable="true" @dragstart="dispatchDrag">
           <div v-if="active.isAbs" class="vs-li">
             <i-mdi:cursor-move ref="moveHandle" w16 h16 cursor-move />
             <Moveable v-if="active.el" :key="active.id" :target="active.el" :dragTarget="unrefElement(moveHandle?.[0])" :draggable="true" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />
@@ -44,6 +44,8 @@ const active = computed(() => designerCtx.active)
 const calcStyle = (rect: DOMRect) => {
   return { top: rect.top + 'px', left: rect.left + 'px', width: rect.width + 'px', height: rect.height + 'px' }
 }
+
+const log = (v) => (console.log(v), v)
 
 // moveable
 const moveHandle = ref()
