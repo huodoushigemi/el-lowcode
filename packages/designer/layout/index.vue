@@ -21,29 +21,31 @@
               @vue:mounted="({ el }) => (lcd.canvas.window = el.contentWindow, el.contentWindow.designerCtx = lcd)"
               @vue:beforeUnmount="({ el }) => el.contentWindow.unmount?.()"
             />
-
-            <selected-layer />
-            <!-- resize -->
-            <Moveable
-              v-if="active && !active.isRoot && active.el && !active?.inline && active.is != 'span'"
-              ref="moveable"
-              :key="active.id"
-              :style="`margin-top: ${-iframeScroll.y}px; margin-left: ${-iframeScroll.x}px`"
-              :target="active.el"
-              :resizable="true"
-              :rotatable="false"
-              :origin="false"
-              :renderDirections="active.isAbs ? undefined : ['e', 'se', 's']"
-              :hideDefaultLines="true"
-              :snappable="true"
-              :snapGap="false"
-              :snapElement="true"
-              :elementGuidelines="[active?.parent, ...active?.siblings || []].map(e => e?.el)"
-              :useResizeObserver="true"
-              :useMutationObserver="true"
-              @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd"
-              @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd"
-            />
+            
+            <ScrollSync :reference="lcd.rootNode?.el?.ownerDocument.defaultView" class="absolute top-0 transform-gpu pointer-events-none">
+              <selected-layer />
+              <!-- resize -->
+              <Moveable
+                v-if="active && !active.isRoot && active.el && !active?.inline && active.is != 'span'"
+                ref="moveable"
+                :key="active.id"
+                style="pointer-events: auto"
+                :target="active.el"
+                :resizable="true"
+                :rotatable="false"
+                :origin="false"
+                :renderDirections="active.isAbs ? undefined : ['e', 'se', 's']"
+                :hideDefaultLines="true"
+                :snappable="true"
+                :snapGap="false"
+                :snapElement="true"
+                :elementGuidelines="[active.parent, ...active?.siblings || []].map(e => e?.el)"
+                :useResizeObserver="true"
+                :useMutationObserver="true"
+                @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd"
+                @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd"
+              />
+            </ScrollSync>
           </div>
         </IV>
 
@@ -73,13 +75,13 @@
 </template>
 
 <script setup lang="ts">
-import { watch, computed, provide, ref, getCurrentInstance, PropType, reactive, onUnmounted, toRaw, triggerRef, toRef, toRefs, nextTick, h, defineComponent, renderSlot, cloneVNode, watchEffect } from 'vue'
-import { computedAsync, Fn, useElementSize, useWindowScroll } from '@vueuse/core'
+import { watch, computed, provide, ref, getCurrentInstance, PropType, reactive, onUnmounted, toRaw, triggerRef, toRef, toRefs, nextTick, h, defineComponent, watchEffect } from 'vue'
+import { computedAsync, Fn, useElementSize, useEventListener } from '@vueuse/core'
 import Moveable from 'vue3-moveable'
 
 import { eq, get, pick, set, uid } from '@el-lowcode/utils'
 import { useTransformer } from 'el-form-render'
-import { designerCtxKey, DisplayNode } from './interface'
+import { designerCtxKey } from './interface'
 import Activitybar from './components/Activitybar.vue'
 import Views from './components/Views.vue'
 import SelectedLayer from './components/selected-layer.vue'
@@ -153,7 +155,28 @@ console.log(window.lcd = window.designerCtx = lcd)
 
 const viewport = ref<HTMLElement>()
 
-const iframeScroll = computed(() => reactive(useWindowScroll({ window: lcd.rootNode.el?.ownerDocument.defaultView })))
+const ScrollSync = defineComponent({
+  props: ['reference'],
+  setup(props, { slots }) {
+    const elRef = ref()
+    const x = ref(0), y = ref(0)
+    const sync = el => [x.value, y.value] = [el.scrollLeft ?? el.scrollX, el.scrollTop ?? el.scrollY]
+    useEventListener(() => props.reference, 'scroll', e => sync(e.currentTarget))
+    watchEffect(() => {
+      props.reference && sync(props.reference)
+    })
+    watchEffect(() => {
+      const el = elRef.value
+      if (!el) return
+      // fix: when fixed
+      el.style.left = `-${x.value}px`
+      el.style.top = `-${y.value}px`
+      // el.style.transform = `translate(-${x.value}px, -${y.value}px)`
+    })
+    return () => h('div', { class: 'transform-gpu', }, h('div', { ref: elRef, class: 'absolute' }, slots))
+  }
+})
+
 
 const activitybars = computed(() => lcd.plugins.flatMap(e => e.contributes.activitybar || []))
 const activitybar = useTransformer(lcd, 'state.activitybar.id', {
