@@ -3,6 +3,13 @@ import { fileSelect, fileToBase64 } from '@el-lowcode/utils'
 import { decode } from 'https://unpkg.com/js-base64/base64.mjs'
 
 export const AI = [
+  {
+    name: 'Qwen',
+    icon: 'https://img.alicdn.com/imgextra/i2/O1CN01B9mlGG1msAz3fxxWL_!!6000000005009-2-tps-84-84.png',
+    key: decode('c2stNTljYjgwNTM2OGVjNDE5MTllODY1Y2FhODZmOWMzNjk='),
+    models: ['qwen2.5-vl-72b-instruct', 'qwen-vl-max'],
+    stream: (opt, content, c) => openai({ url: 'https://dashscope.aliyuncs.com/compatible-mode/v1', ...opt }, content, c)
+  },
   // {
   //   name: 'DeepSeek',
   //   icon: 'https://api-docs.deepseek.com/zh-cn/img/favicon.svg',
@@ -34,8 +41,8 @@ async function* openai(opt, content = [], controller) {
     dangerouslyAllowBrowser: true
   })
   content = await Promise.all(content.map(async e => 
-    isString(e) ? { type: 'text', content: e } :
-    e instanceof File ? { typr: 'image_url', image_url: { url: await fileToBase64(e) } } :
+    isString(e) ? { type: 'text', content: e, text: e } :
+    e instanceof File ? { type: 'image_url', image_url: { url: await fileToBase64(e) } } :
     void 0
   ))
   try {

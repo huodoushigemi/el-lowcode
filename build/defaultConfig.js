@@ -26,7 +26,14 @@ export const mergeConfig = (config) => defineConfig({
     ]
   },
   plugins: [
-    Macros({ plugins: { vue: Vue(), vueJsx: VueJsx() } }),
+    Macros({ plugins: {
+      vue: Vue({
+        template: {
+          compilerOptions: { isCustomElement: (tag) => tag.startsWith('wc-') }
+        }
+      }),
+      vueJsx: VueJsx()
+    } }),
     Unocss(),
     Components({ resolvers: [IconsResolver()] }),
     Icons({ autoInstall: true }),

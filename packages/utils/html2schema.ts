@@ -3,6 +3,7 @@ import { IDom, parse, stringify } from 'html-parse-string'
 import { isExp, wrapExp, deepWrapExp } from './execExp'
 
 export async function html2schema(html: string): Promise<any[]> {
+  html = html.replace('<!DOCTYPE html>', '')
   const parseExp = await deepWrapExp()
   
   const dom = parse(html)
