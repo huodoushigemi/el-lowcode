@@ -3,8 +3,8 @@ import { ElLoadingService, ElMessage } from 'element-plus'
 export async function createClient() {
   const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.45.4')
   const supabase = createClient(
-    'https://oxbkrsyagojtbckytbjx.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94Ymtyc3lhZ29qdGJja3l0Ymp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjcyNzQzNTAsImV4cCI6MjA0Mjg1MDM1MH0.M3O3VPvgfaxtMaasBIM-rgPw90l1GAG_m-_RQqMbNMc'
+    'https://redgvceyldyybsrxwqtx.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlZGd2Y2V5bGR5eWJzcnh3cXR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwNzI1MTMsImV4cCI6MjA3MzY0ODUxM30.y-qaQFg7PswsA77Vq6hi23K264hHihSx_VV17_opiYs'
   )
 
   // await supabase.auth.signUp({ email: '123@qq.com', password: '123456' })
