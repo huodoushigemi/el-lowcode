@@ -186,7 +186,7 @@ async function ok(e) {
   const type = btn?.getAttribute('data-cb')
   if (!type) return
 
-  const code = decodeURIComponent(btn.parentElement?.getAttribute('data-code'))
+  let code = decodeURIComponent(btn.parentElement?.getAttribute('data-code'))
   
   const map = {
     copy: async () => {
@@ -202,6 +202,7 @@ async function ok(e) {
     ok: async () => {
       const node = props.lcd.active
       const i = node.index
+      code = code.replaceAll('></i>', ' />')
       node.parent.data.children.splice(i, 1, ...await html2schema(code))
       node.parent.children[i].click()
       props.onOk()
