@@ -1,6 +1,7 @@
 import { isString } from '@vue/shared'
 import { fileSelect, fileToBase64 } from '@el-lowcode/utils'
 import { decode } from 'https://unpkg.com/js-base64/base64.mjs'
+import prompt from './prompt.md?raw'
 
 export const AI = [
   {
@@ -47,7 +48,7 @@ async function* openai(opt, content = [], controller) {
   ))
   try {
     const stream = await openai.chat.completions.create({
-      messages: [{ role: 'user', content }],
+      messages: [{ role: 'system', content: prompt }, { role: 'user', content }],
       model: opt.model ?? 'deepseek-chat',
       stream: true
     })

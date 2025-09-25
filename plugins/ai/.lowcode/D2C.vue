@@ -91,7 +91,7 @@ const msgs = ref([
 const dropZone = ref()
 const { isOverDropZone } = useDropZone(dropZone, { dataTypes: e => e.some(e => e.includes('image')), onDrop: e => e?.[0] && send(e[0]) })
 
-async function send(file, content = '将图片转为 HTML + UnoCSS\n- 使用 CDN 引入 UnoCSS: `\<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime">\<\/script\><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind.min.css" />`\n- 样式布局使用 UnoCSS 语法编写\n- 颜色值使用16进制精准还原\n- 无需多余解释，仅输出代码即可') {
+async function send(file, content = '') {
   msgs.value.push({
     self: 1,
     image: await fileToBase64(file),

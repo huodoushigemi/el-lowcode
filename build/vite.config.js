@@ -13,7 +13,8 @@ async function build1(input, outDir) {
     configFile: false,
     mode: 'production',
     define: {
-      'process.env.NODE_ENV': '"production"'
+      'process.env.NODE_ENV': '"production"',
+      'process.env': {}
     },
     build: {
       outDir,
