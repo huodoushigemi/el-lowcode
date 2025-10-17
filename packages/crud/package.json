@@ -19,9 +19,9 @@
     }
   },
   "dependencies": {
-    "@vue/shared": "^3.2.0",
     "@el-lowcode/render": "^1.0.2",
-    "el-form-render": "^1.0.2"
+    "@vue/shared": "^3.2.0",
+    "el-form-render": "^2.0.6"
   },
   "peerDependencies": {
     "element-plus": "^2.3.8",

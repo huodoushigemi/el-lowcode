@@ -17,23 +17,9 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Components', link: '/el-form-render/quickstart' }
     ],
 
     sidebar: [
-      {
-        text: 'el-form-render',
-        items: [
-          { text: '快速开始', link: '/el-form-render/quickstart' },
-          { text: '基础使用', link: '/el-form-render/basic' },
-          { text: 'options 属性', link: '/el-form-render/options' },
-          { text: '自定义组件', link: '/el-form-render/is' },
-          { text: 'ant-design-vue', link: '/el-form-render/antdv' },
-          { text: 'naive-ui', link: '/el-form-render/naive-ui' },
-          { text: 'vant-ui', link: '/el-form-render/vant' },
-          // { text: 'Runtime API Examples', link: '/markdown-examples' },
-        ]
-      },
       {
         text: 'crud',
         items: [
@@ -78,10 +64,6 @@ export default defineConfig({
         const dir = e.replace(/@el-lowcode\//, '')
         o[e] = path.join(process.cwd(), 'packages', dir, '/index')
         return o
-      }, {
-        'el-form-render/antdv4': path.join(process.cwd(), 'packages/el-form-render/antdv4'),
-        'el-form-render/naive-ui': path.join(process.cwd(), 'packages/el-form-render/naive-ui'),
-        'el-form-render/vant4': path.join(process.cwd(), 'packages/el-form-render/vant4'),
       })
     },
     optimizeDeps: {

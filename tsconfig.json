@@ -21,7 +21,6 @@
     "strict": true,
 
     "paths": {
-      "el-form-render": ["./packages/el-form-render/index.ts"],
       "@el-lowcode/render": ["./packages/render/index.ts"],
       "@el-lowcode/crud": ["./packages/crud/index.ts"],
       "@el-lowcode/utils": ["./packages/utils/index.ts"],

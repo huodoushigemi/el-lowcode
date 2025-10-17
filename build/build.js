@@ -116,7 +116,6 @@ async function buildDts(pack) {
 // buildFull()
 // await build('utils')
 // await build('render')
-await build('el-form-render')
 // await build('crud')
 // await build('designer') // todo > unocss
 // await build('el-lowcode')

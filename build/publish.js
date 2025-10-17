@@ -24,6 +24,5 @@ function publish(pack) {
 }
 
 publish('render')
-publish('el-form-render')
 // publish('crud')
 publish('el-lowcode')

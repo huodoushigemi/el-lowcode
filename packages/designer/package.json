@@ -28,7 +28,7 @@
     "@vueuse/core": "^10.5.0",
     "@vueuse/integrations": "^10.11.0",
     "buffer": "^6.0.3",
-    "el-form-render": "^0.0.17",
+    "el-form-render": "^2.0.6",
     "github-markdown-css": "^5.5.1",
     "markdown-it": "^14.1.0",
     "monaco-editor": "^0.48.0",
