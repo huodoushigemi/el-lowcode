@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, toRef, PropType } from 'vue'
+import { getCurrentInstance, toRef, PropType, useAttrs } from 'vue'
 import { useParentElement, useElementSize } from '@vueuse/core'
 // import { importJs } from '../../../components/_utils'
 import { useFit } from './hooks'

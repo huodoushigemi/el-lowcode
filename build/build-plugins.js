@@ -2,7 +2,6 @@ import path from 'path'
 import { build } from 'vite'
 import fs from 'fs'
 import fse from 'fs-extra/esm'
-import { ALL_DEPS, ALL_PKGS } from './all-pkgs.js'
 import { mergeConfig } from './defaultConfig.js'
 
 import * as esbuild from 'esbuild'
@@ -27,24 +26,20 @@ async function build1(input, outDir) {
       // minify: false,
       copyPublicDir: false,
       rollupOptions: {
+        external: ['vue', 'vue-demi'],
         treeshake: {
           preset: 'smallest',
           moduleSideEffects: true,
-        },
-        manualChunks: (id) => {
-          if (['wc-mdit', 'wc-hljs'].find(e => id.includes(`node_modules/${e}/`))) return
-          const dep = [...ALL_DEPS, '@vue'].find(e => id.includes(`node_modules/${e}/`))
-          if (dep && dep != 'vue') return dep.replaceAll('/', '-')
         },
       }
     },
     plugins: [
       (await import('vite-plugin-css-injected-by-js')).default(),
       // (await import('rollup-plugin-visualizer')).visualizer(),
-      {
-        name: 'esbuild-minify',
-        generateBundle: (_, bundle) => Object.values(bundle).forEach(e => e.type == 'chunk' && (e.code = minify(e.code)))
-      }
+      // {
+      //   name: 'esbuild-minify',
+      //   generateBundle: (_, bundle) => Object.values(bundle).forEach(e => e.type == 'chunk' && (e.code = minify(e.code)))
+      // }
     ]
   }))
 
@@ -60,16 +55,16 @@ async function buildPlugin(name) {
 }
 
 
-await buildPlugin('web')
-await buildPlugin('element-plus')
-await buildPlugin('echarts')
-await buildPlugin('vuetify')
-await buildPlugin('uni-app')
-await buildPlugin('ant-design-vue')
-await buildPlugin('naive-ui')
-await buildPlugin('mdui')
-await buildPlugin('material-web')
-await buildPlugin('shoelace')
-await buildPlugin('threejs')
-await buildPlugin('template')
-await buildPlugin('ai')
+// await buildPlugin('web')
+// await buildPlugin('element-plus')
+// await buildPlugin('echarts')
+// await buildPlugin('vuetify')
+// await buildPlugin('uni-app')
+// await buildPlugin('ant-design-vue')
+// await buildPlugin('naive-ui')
+// await buildPlugin('mdui')
+// await buildPlugin('material-web')
+// await buildPlugin('shoelace')
+// await buildPlugin('threejs')
+// await buildPlugin('template')
+// await buildPlugin('ai')

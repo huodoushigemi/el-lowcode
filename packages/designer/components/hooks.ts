@@ -1,5 +1,5 @@
-import { computed, MaybeRefOrGetter, Ref, ref, watch, watchEffect } from 'vue'
-import { onClickOutside, useEventListener } from '@vueuse/core'
+import { computed, MaybeRefOrGetter, Ref, ref, toRef, watch, watchEffect } from 'vue'
+import { onClickOutside, toReactive, useEventListener } from '@vueuse/core'
 import { isFunction } from '@vue/shared'
 
 export function refWithWatch<T>(fn: () => T, refreshDep?: MaybeRefOrGetter) {
@@ -22,6 +22,11 @@ export function useEdit(inputRef, cb) {
 
   return { inputRef }
 }
+
+// export function unref$<T>(fn: (() => T) | Ref<T>) {
+//   // return toReactive(isFunction(fn) ? computed(fn) : fn) as T
+//   return toReactive(computed(() => (isFunction(fn) ? fn() : fn.value) || {}))
+// }
 
 export function unref$<T>(fn: (() => T) | Ref<T>) {
   const ret = isFunction(fn) ? computed(fn) : fn

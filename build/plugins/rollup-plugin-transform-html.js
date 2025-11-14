@@ -4,7 +4,7 @@ import { build } from 'vite'
 import { mergeConfig } from '../defaultConfig.js'
 
 /**
- * @returns {import('rollup').Plugin}
+ * @returns {import('vite').Plugin}
  */
 function TransformHtml() {
   const xxx = {}

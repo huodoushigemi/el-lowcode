@@ -1,4 +1,5 @@
 import { rollup } from 'rollup'
+import { build as vite, createBuilder } from 'vite'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import chalk from 'chalk'
 // import Vue from 'unplugin-vue/rollup'
@@ -10,23 +11,12 @@ import dts from 'rollup-plugin-dts'
 import fs from 'fs'
 import fse from 'fs-extra'
 import { execSync } from 'child_process'
-
-import Icons from 'unplugin-icons/rollup'
-import IconsResolver from 'unplugin-icons/resolver'
-import Components from 'unplugin-vue-components/rollup'
-
-import plugins from './plugins/index.js'
-import { importGlobPlugin } from './importMetaGlob.js'
+import path from 'path'
 
 import { pkgDir } from './utils.js'
+import { mergeConfig } from './defaultConfig.js'
 
 const log = console.log
-
-const formats = {
-  esm: 'mjs',
-  // cjs: 'cjs',
-  // iife: 'iife.js'
-}
 
 const cwd = process.cwd()
 
@@ -37,44 +27,37 @@ export async function build(pack) {
   if (!fs.existsSync(jsonPath)) return
   const pkg = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))
 
-  const bundle = await rollup({
-    input: pkgDir(pack, 'index.ts'),
-    external: Object.keys({ ...pkg.dependencies, ...pkg.peerDependencies }) ?? [],
+  const bundle = await vite(mergeConfig({
+    configFile: false,
+    mode: 'production',
+    build: {
+      outDir: pkgDir(pack, 'dist'),
+      target: 'esnext',
+      copyPublicDir: false,
+      lib: {
+        entry: pkgDir(pack, 'index.ts'),
+        formats: ['es'],
+        fileName: '[name]',
+      },
+      rollupOptions: {
+        external: [
+          ...Object.keys({ ...pkg.dependencies, ...pkg.peerDependencies }) ?? []
+        ],
+      }
+    },
     plugins: [
-      nodeResolve(),
-      importGlobPlugin({ root: process.cwd() }),
-      VueMacros({
-        plugins: {
-          vue: Vue({ style: true }),
-          vueJsx: Jsx(),
-        },
-      }),
-      
-      Components({ resolvers: [IconsResolver()] }),
-      Icons({ autoInstall: true }),
-
-      esbuild({ minify: false, target: ['chrome78', 'ios13'] }),
-      ...plugins(),
+      // nodeResolve(),
+      (await import('vite-plugin-css-injected-by-js')).default(),
+      // esbuild({ minify: false, target: ['chrome78', 'ios13'] }),
     ]
-  })
+  }))
 
-  for (const [format, ext] of Object.entries(formats)) {
-    await bundle.write({
-        format,
-        dir: pkgDir(pack, `dist`),
-        chunkFileNames: `[name]-[hash].${ext}`,
-        entryFileNames: `[name].${ext}`,
-    })
-  }
+  // ;['package.json', 'README.md'].forEach(name => {
+  //   const file = pkgDir(pack, name)
+  //   if (fs.existsSync(file)) fse.copyFileSync(file, pkgDir(pack, 'dist', name))
+  // })
 
-  await bundle.close()
-
-  ;['package.json', 'README.md'].forEach(name => {
-    const file = pkgDir(pack, name)
-    if (fs.existsSync(file)) fse.copyFileSync(file, pkgDir(pack, 'dist', name))
-  })
-
-  buildDts(pack)
+  // buildDts(pack)
 }
 
 export async function buildFull() {
@@ -114,8 +97,9 @@ async function buildDts(pack) {
 }
 
 // buildFull()
-// await build('utils')
-// await build('render')
+await build('utils')
+await build('render')
+await build('render-drag')
 // await build('crud')
-// await build('designer') // todo > unocss
-// await build('el-lowcode')
+await build('el-lowcode')
+await build('designer')

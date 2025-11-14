@@ -1,8 +1,13 @@
-<template>
-  <OL :items="items" @contextmenu.prevent />
-</template>
+import { computed, defineComponent, inject, InjectionKey, markRaw, nextTick, provide, reactive, ref, renderSlot, shallowRef, toRef, ToRefs, watchEffect } from 'vue'
+import { isPromise } from '@vue/shared'
+import { unrefElement, debouncedRef, useCurrentElement } from '@vueuse/core'
+import { createRender } from '@el-lowcode/render'
+import { unFn } from '@el-lowcode/utils'
+import tippy from 'tippy.js'
+import { Node } from '../layout/components/Node'
+import Icon from './Icon.vue'
+import { unref$ } from './hooks'
 
-<script lang="tsx">
 const ROOT = Symbol() as InjectionKey<MenuNode>
 
 const useRoot = () => inject(ROOT)
@@ -43,13 +48,6 @@ abstract class MenuNode extends Node {
   }
 }
 
-const OL = defineComponent({
-  props: ['items'],
-  setup(props) {
-    return () => <UL node={useRoot()}>{ useRoot()!.children?.map(e => Render(e)) }</UL>
-  }
-})
-
 const UL = defineComponent({
   props: ['node'],
   setup(props, { slots }) {
@@ -59,14 +57,11 @@ const UL = defineComponent({
     const subItem = unref$(debouncedRef(computed(() => root.state.hover?.path.find(e => node.children?.includes(e))), 200))
     const vis = ref(false), subMenuRef = ref()
 
-    let ins
     watchEffect(async (cb) => {
-      if (!subItem?.children) {
-        return
-      }
+      if (!subItem?.children) return
       vis.value = true
       await nextTick()
-      ins = tippy(document.body, { interactive: true, content: unrefElement(subMenuRef.value), offset: [-6, 5], delay: [100, 300], duration: 0, placement: 'right-start', trigger: 'mouseenter click', ...node.state.tippy, appendTo: unrefElement(el)! })
+      const ins = tippy(document.body, { interactive: true, content: unrefElement(subMenuRef.value), offset: [-6, 5], delay: [100, 300], duration: 0, placement: 'right-start', trigger: 'mouseenter click', ...node.state.tippy, appendTo: unrefElement(el)! })
       ins.setProps({ getReferenceClientRect: () => subItem!.el!.getBoundingClientRect() })
       ins.show()
       cb(() => {
@@ -80,14 +75,14 @@ const UL = defineComponent({
         <div class='vs-menu max-h-60vh overflow-auto' tabindex={0}>
           { renderSlot(slots, 'default', void 0, () => [<div class='px12 op20'>Empty</div>]) }
         </div>
-        { vis.value && <UL ref={subMenuRef} key={subItem!.id} node={subItem}>{ subItem!.children!.map(e => Render(e)) }</UL> }
+        { vis.value && Render({ is: UL, ref: subMenuRef, key: subItem!.id, node: subItem, children: subItem!.children }) }
       </div>
     )
   }
 })
 
 const LI = defineComponent({
-  props: ['node', 'label', 'icon', 'checked', 'disabled', 'click'],
+  props: ['node'],
   setup(props, { slots }) {
     const node = unref$(() => props.node as MenuNode)
     
@@ -96,9 +91,9 @@ const LI = defineComponent({
         { 
           node.loading ? <i-svg-spinners-bars-rotate-fade class='absolute left-0 ml4 w18 h18' /> :
           node.checked ? <i-mdi-check class='absolute left-0 ml4 w18 h18' /> :
-          <Icon class='absolute left-0 ml4 w17 h17' src={props.icon} />
+          <Icon class='absolute left-0 ml4 w17 h17' src={node.icon} />
         }
-        { props.label }
+        { node.label }
         { slots.default && <i-mdi-chevron-right class='absolute right-0 mr6' /> }
       </div>
     )
@@ -107,44 +102,34 @@ const LI = defineComponent({
 
 const Render = createRender({
   defaultIs: LI,
-  processProps(node) {
-    const { data } = node
-    return data.is ? data : { ...data, node }
+  processProps: e => e.is ? e : { ...e.data, node: e }
+})
+
+const Menu = defineComponent({
+  props: {
+    items: Array,
+    tippy: Object,
   },
+  setup(props, { expose }) {
+    const state = reactive<ToRefs<State>>({
+      hover: void 0,
+      tippy: toRef(() => props.tippy),
+    }) as State
+
+    expose(state)
+
+    class MN extends MenuNode {
+      get state() { return state }
+      get root() { return root as this }
+      get isRoot() { return root == this }
+    }
+
+    const root = new MN({ get children() { return props.items } })
+
+    provide(ROOT, root)
+
+    return () => Render({ is: UL, node: root, children: root.children })
+  }
 })
-</script>
 
-<script setup lang="tsx">
-import { computed, defineComponent, inject, InjectionKey, markRaw, nextTick, provide, reactive, ref, renderSlot, shallowRef, toRef, ToRefs, watchEffect } from 'vue'
-import { unrefElement, debouncedRef, useCurrentElement } from '@vueuse/core'
-import { createRender } from '@el-lowcode/render'
-import { unFn } from '@el-lowcode/utils'
-import tippy from 'tippy.js'
-import { Node } from '../layout/components/Node'
-import Icon from './Icon.vue'
-import { unref$ } from './hooks'
-import { isPromise } from '@vue/shared'
-
-const props = defineProps({
-  items: Array,
-  tippy: Object,
-})
-
-const state = reactive<ToRefs<State>>({
-  hover: void 0,
-  tippy: toRef(() => props.tippy),
-}) as State
-
-defineExpose(state)
-
-class MN extends MenuNode {
-  // state = state
-  get state() { return state }
-  get root() { return root as this }
-  get isRoot() { return root == this }
-}
-
-const root = new MN({ get children() { return props.items } })
-
-provide(ROOT, root)
-</script>
+export default Menu

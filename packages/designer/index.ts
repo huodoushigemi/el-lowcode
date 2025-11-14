@@ -1,3 +1,5 @@
+import 'virtual:uno.css'
+
 export { default as Tree } from './layout/components/Tree.vue'
 
 import './style.scss'

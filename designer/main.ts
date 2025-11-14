@@ -4,10 +4,10 @@ import { useDark } from '@vueuse/core'
 import ElementPlus from 'element-plus'
 // import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
+import 'virtual:uno.css'
 
 import { createRouter, createWebHashHistory, RouterView } from 'vue-router'
 import routes from '~pages'
-
 
 import 'element-plus/es/components/loading/style/css'
 import 'element-plus/es/components/message/style/css'
@@ -47,8 +47,6 @@ import 'element-plus/es/components/segmented/style/css'
 import 'element-plus/es/components/color-picker/style/css'
 
 import './style.css'
-import 'virtual:uno.css'
-// import 'uno.css'
 
 // useDark({ storageKey: 'vitepress-theme-appearance' })
 

@@ -38,7 +38,7 @@ import { reactive, inject, defineComponent, h } from 'vue'
 import { computedAsync } from '@vueuse/core'
 import { ElMessage, ElMessageBox, ElDrawer, ElTooltip } from 'element-plus'
 
-import { DesignerCtx } from '@el-lowcode/designer'
+import { DesignerCtx } from '../../../../layout/interface'
 import { vListFocus } from '@el-lowcode/utils'
 import MD from './MD.vue'
 

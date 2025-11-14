@@ -1,0 +1,70 @@
+html, body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 content;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+[lcd-root] { flex: 1; }
+[lcd-dragged] { transition: none !important; }
+[lcd-text] { outline: 0; }
+* { box-sizing: border-box; }
+
+.empty-placeholder {
+  position: relative;
+  padding: 18px;
+  align-self: stretch;
+  flex: 1;
+  overflow: hidden;
+  container-type: inline-size;
+  container-name: empty-placeholder;
+  outline-offset: -1px;
+  mix-blend-mode: difference;
+  &::after {
+    content: 'Drag and drop here';
+    opacity: .4;
+    text-wrap: nowrap;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    color: rgba(#e6a23c, .5);
+    transform: translate(-50%, -50%);
+  }
+  &:hover {
+    outline: 1px dashed rgba(#e6a23c, .4);
+    background: rgba(#e6a23c, .1);
+  }
+}
+
+@container empty-placeholder (max-width: 128px) {
+  .empty-placeholder::after {
+    content: '';
+    inset: 0;
+    opacity: 1;
+    transform: unset;
+    outline: 1px dashed rgba(#e6a23c, .4);
+    outline-offset: -1px;
+  }
+}
+
+[lcd-root] > .empty-placeholder {
+  position: absolute;
+  inset: 0;
+  font-size: 22px;
+  &:hover {
+    background: unset;
+  }
+}
+[lcd-absolute-layout] > .empty-placeholder {
+  width: 100%;
+  height: 100%;
+}
+[lcd-lock] > * {
+  pointer-events: none;
+}
+[lcd-hidden] {
+  display: none !important;
+}

@@ -26,7 +26,7 @@
 
 <script setup>
 import { inject, reactive, ref, watchEffect } from 'vue'
-import { Tree } from '@el-lowcode/designer'
+import Tree from '../../../../layout/components/Tree.vue'
 
 const lcd = inject('designerCtx')
 

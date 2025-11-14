@@ -1,19 +1,18 @@
-import { defineConfig, presetAttributify, presetUno, presetIcons, transformerVariantGroup, transformerDirectives } from 'unocss'
+import { defineConfig, presetAttributify, presetIcons, transformerDirectives } from 'unocss'
 import presetRemToPx from '@unocss/preset-rem-to-px'
+import presetWind4 from '@unocss/preset-wind4'
+import { createRemToPxProcessor } from '@unocss/preset-wind4/utils'
 
 const gaps = [-4, -2, -1, 0, 1, 2, 4, 6, 8, 10, 12, 14, 16, 'a'].flatMap(e => [e, e + '!'])
 
 export default defineConfig({
-  content: {
-    pipeline: {
-      exclude: '**/node_modules/'
-    },
-  },
   presets: [
-    presetUno(),
+    presetWind4({
+      preflights: { theme: { process: createRemToPxProcessor(4) } }
+    }),
     presetAttributify(),
+    presetIcons(),
     presetRemToPx({ baseFontSize: 4 }),
-    presetIcons()
   ],
   transformers: [
     // transformerVariantGroup()

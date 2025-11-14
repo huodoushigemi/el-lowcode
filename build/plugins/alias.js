@@ -7,7 +7,3 @@ export const entries = ALL_PKGS.map(pkg => ({
   find: pkg,
   replacement: path.join(cwd, pkgDir(pkg.replace('@el-lowcode/', ''), 'index.ts'))
 }))
-
-export const alias = _alias({
-  entries
-})

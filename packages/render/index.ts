@@ -22,7 +22,7 @@ export type ProcessedProps = {
   [k: string]: any
 }
 
-type CreateRender = {
+export type CreateRender = {
   defaultIs?: any
   processProps?: (props: Props, vars: Obj, aaa) => ProcessedProps
 }

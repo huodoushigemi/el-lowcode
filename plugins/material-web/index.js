@@ -13,11 +13,6 @@ const list = [
 
 list.forEach(el => document.head.append(el))
 
-// todo 'lit'
-// const { styles } = await import('https://cdn.jsdelivr.net/npm/@material/web/typography/md-typescale-styles.js')
-// console.log(styles);
-// document.adoptedStyleSheets.push(styles.styleSheet)
-
 export default {
   install(app) {
     

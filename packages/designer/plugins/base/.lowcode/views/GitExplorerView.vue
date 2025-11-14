@@ -11,7 +11,8 @@
 
 <script setup>
 import { inject, ref } from 'vue'
-import { Tree } from '@el-lowcode/designer'
+// import { Tree } from '@el-lowcode/designer'
+import Tree from '../../../../layout/components/Tree.vue'
 import http from 'https://unpkg.com/isomorphic-git/http/web/index.js'
 import { extIcons } from './data'
 

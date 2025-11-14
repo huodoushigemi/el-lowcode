@@ -6,21 +6,15 @@
   </div>
   <el-tabs v-if="config" class="tabs" @contextmenu="onContextmenu">
     <el-tab-pane label="attrs" :key="node.id">
-      <el-form-render :model="model" label-width="auto" size="small" label-position="top" @submit.prevent>
-        <RenderItems :items="_items" />
-      </el-form-render>
+      <el-form-render :model="model" :items="_items" label-width="auto" size="small" label-position="top" :processProps @submit.prevent />
     </el-tab-pane>
 
     <el-tab-pane label="style" lazy>
-      <el-form-render :model="model" label-width="auto" size="small" label-position="top" @submit.prevent>
-        <RenderItems :items="styles" />
-      </el-form-render>
+      <el-form-render :model="model" :items="styles" label-width="auto" size="small" label-position="top" :processProps @submit.prevent />
     </el-tab-pane>
 
     <el-tab-pane label="common" lazy>
-      <el-form-render :model="model" label-width="auto" size="small" label-position="top" @submit.prevent>
-        <RenderItems :items="commons" />
-      </el-form-render>
+      <el-form-render :model="model" :items="commons" label-width="auto" size="small" label-position="top" :processProps @submit.prevent />
     </el-tab-pane>
   </el-tabs>
 
@@ -41,7 +35,6 @@ import 'tippy.js/animations/scale.css'
 import { computed, inject, nextTick, reactive, ref, toRaw } from 'vue'
 import { parseStringStyle, stringifyStyle, isOn, isPlainObject } from '@vue/shared'
 import { unrefElement } from '@vueuse/core'
-import { createRender } from '@el-lowcode/render'
 import { mapValues, omit, pick, unFn, wrapExp } from '@el-lowcode/utils'
 import { ElFormRender, normalizeItem } from 'el-form-render'
 import { designerCtxKey } from './interface'
@@ -52,7 +45,7 @@ import BoxModel from './components/style/BoxModel.vue'
 import StyleFlexLayout from './components/style/StyleFlexLayout.vue'
 import StyleText from './components/style/StyleText.vue'
 import StyleLayout from './components/style/StyleLayout.vue'
-import Menu from '../components/Menu.vue'
+import Menu from '../components/Menu'
 
 const visible = ref(false)
 const internalProps = ['_id', 'is', 'children']
@@ -61,28 +54,24 @@ const editModel = computed({
   set: v => Object.assign(model.value, mapValues(model.value, () => void 0), pick(model.value, internalProps), JSON.parse(v))
 })
 
-const Render = createRender({
-  defaultIs: Scriptable,
-  processProps(props) {
-    if (!props.is) {
-      props = normalizeItem(props)
-      props.el ??= {}
-      if (props.type == 'radio-group') props.el.type ??= 'button'
-      if (props.type == 'color-picker') {
-        props.el.size ??= 'default'
-        props.el.showAlpha ??= true
-        // props.displayValue ??= '#000000ff'
-        props.set ??= v => v ?? undefined
-      }
-      props.el.clearable ??= true
-      props.el.placeholder ??= ''
-      if (isOn(props.prop)) props.script ??= true
+function processProps(props) {
+  if (!props.is) {
+    props = normalizeItem(props)
+    props.is = Scriptable
+    props.el ??= {}
+    if (props.type == 'radio-group') props.el.type ??= 'button'
+    if (props.type == 'color-picker') {
+      props.el.size ??= 'default'
+      props.el.showAlpha ??= true
+      // props.displayValue ??= '#000000ff'
+      props.set ??= v => v ?? undefined
     }
-    return props
+    props.el.clearable ??= true
+    props.el.placeholder ??= ''
+    if (isOn(props.prop)) props.script ??= true
   }
-})
-
-const RenderItems = ({ items }) => items?.map(e => isPlainObject(e) && Render(e))
+  return props
+}
 
 const lcd = inject(designerCtxKey)
 

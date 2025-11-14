@@ -22,25 +22,13 @@
 
     "paths": {
       "@el-lowcode/render": ["./packages/render/index.ts"],
+      "@el-lowcode/render-drag": ["./packages/render-drag/index.ts"],
       "@el-lowcode/crud": ["./packages/crud/index.ts"],
       "@el-lowcode/utils": ["./packages/utils/index.ts"],
       "@el-lowcode/designer": ["./packages/designer/index.ts"],
     },
-    // "types": ["unplugin-vue-macros/macros-global", "element-plus/global.d.ts"]
   },
-  // "vueCompilerOptions": {
-  //   "plugins": [
-  //     "@vue-macros/volar/define-options",
-  //     "@vue-macros/volar/define-models",
-  //     "@vue-macros/volar/define-props",
-  //     "@vue-macros/volar/define-props-refs",
-  //     "@vue-macros/volar/short-vmodel",
-  //     "@vue-macros/volar/define-slots",
-  //     "@vue-macros/volar/export-props"
-  //   ]
-  // },
-  // "types/*", 
-  "include": ["packages", "designer", "packages/*"],
+  "include": ["packages", "designer", "plugins"],
   "exclude": ["node_modules", "**/dist"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -3,18 +3,9 @@
   "private": false,
   "version": "0.0.2",
   "type": "module",
-  "main": "index.cjs",
-  "module": "index.mjs",
-  "unpkg": "index.iife.js",
-  "jsdelivr": "index.iife.js",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./index.mjs",
-      "require": "./index.cjs",
-      "types": "./index.d.ts"
-    }
-  },
   "dependencies": {
     "pretty-bytes": "^6.1.1"
   },

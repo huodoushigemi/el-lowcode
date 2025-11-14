@@ -11,47 +11,17 @@
         <!-- v-model:x="canvas.x" v-model:y="canvas.y" -->
         <IV wfull hfull :disabled="lcd.state.infiniteViewer.disabled" style="background: var(--vs-panel-bg)" @click="lcd.activeId = undefined" v-model:zoom="canvas.zoom">
           <div ref="viewport" class="viewport" :style="lcd.canvas?.style" @click.stop @mouseleave="lcd.dragged || (lcd.hoverId = undefined)">
-            <iframe
+            <iframe-canvas
               v-if="!lcd.pluginsLoading"
-              :key="srcurl + srcdoc + root._id"
               class="wfull hfull"
               style="user-select: none"
-              :src="srcurl"
-              :srcdoc="srcdoc"
-              @vue:mounted="({ el }) => (lcd.canvas.window = el.contentWindow, el.contentWindow.designerCtx = lcd)"
-              @vue:beforeUnmount="({ el }) => el.contentWindow.unmount?.()"
             />
-            
-            <ScrollSync :reference="lcd.rootNode?.el?.ownerDocument.defaultView" class="absolute top-0 transform-gpu pointer-events-none">
-              <selected-layer />
-              <!-- resize -->
-              <Moveable
-                v-if="active && !active.isRoot && active.el && !active?.inline && active.is != 'span'"
-                ref="moveable"
-                :key="active.id"
-                style="pointer-events: auto"
-                :target="active.el"
-                :resizable="true"
-                :rotatable="false"
-                :origin="false"
-                :renderDirections="active.isAbs ? undefined : ['e', 'se', 's']"
-                :hideDefaultLines="true"
-                :snappable="true"
-                :snapGap="false"
-                :snapElement="true"
-                :elementGuidelines="[active.parent, ...active?.siblings || []].map(e => e?.el)"
-                :useResizeObserver="true"
-                :useMutationObserver="true"
-                @resizeStart="onDragStart" @resize="onResize" @resizeEnd="onResizeEnd"
-                @rotateStart="onDragStart" @rotate="onDrag" @rotateEnd="onDragEnd"
-              />
-            </ScrollSync>
           </div>
         </IV>
 
         <!-- Breadcrumb -->
         <div class="absolute top-20 left-35 flex aic text-13 lh-32" @mouseleave="lcd.hoverId = void 0">
-          <div v-for="(node, i, len) in active?.path" class="vs-breadcrumb-li" @click="node.click()" @mouseenter="node.hover()">
+          <div v-for="node in active?.path" class="vs-breadcrumb-li" @click="node.click()" @mouseenter="node.hover()">
             <div class="max-w150 truncate">{{ node.label }}</div>
             <div v-if="node != active" mx4> > </div>
           </div>
@@ -75,21 +45,20 @@
 </template>
 
 <script setup lang="ts">
-import { watch, computed, provide, ref, getCurrentInstance, PropType, reactive, onUnmounted, toRaw, triggerRef, toRef, toRefs, nextTick, h, defineComponent, watchEffect } from 'vue'
+import { watch, computed, provide, ref, getCurrentInstance, PropType, reactive, onUnmounted, toRaw, triggerRef, toRef, toRefs, nextTick, h, defineComponent, watchEffect, defineAsyncComponent } from 'vue'
 import { computedAsync, Fn, useElementSize, useEventListener } from '@vueuse/core'
-import Moveable from 'vue3-moveable'
 
 import { eq, get, pick, set, uid } from '@el-lowcode/utils'
 import { useTransformer } from 'el-form-render'
 import { designerCtxKey } from './interface'
 import Activitybar from './components/Activitybar.vue'
 import Views from './components/Views.vue'
-import SelectedLayer from './components/selected-layer.vue'
 import SettingPanel from './setting-panel.vue'
-import InfiniteViewer from './components/infinite-viewer.vue'
 import Statusbar from './components/Statusbar.vue'
 // import { vue2esm } from './vue2esm'
 import { createDesignerCtx } from '../utils'
+// import IframeCanvas from './components/iframe-canvas'
+const IframeCanvas = defineAsyncComponent(() => import('./components/iframe-canvas'))
 
 import OptionsInput from '../components/OptionsInput.vue'
 import PairInput from '../components/PairInput.vue'
@@ -101,9 +70,6 @@ import Tabs from '../components/Tabs.vue'
 import MonacoEditor from './components/monaco-editor.vue'
 import ElFormRender from 'el-form-render'
 import Tabs3 from '../components/Tabs3.vue'
-
-const srcdoc = computedAsync(() => import.meta.env.PROD ? import('./components/iframe-temp.html?transform').then(e => e.default) : void 0)
-const srcurl = computedAsync(() => import.meta.env.DEV ? import('./components/iframe-temp.html?url').then(e => e.default) : void 0)
 
 const app = getCurrentInstance()!.appContext.app
 app.component('OptionsInput', OptionsInput)
@@ -118,6 +84,7 @@ app.use(ElFormRender)
 
 const IV = defineComponent({
   setup(props, { slots }) {
+    const InfiniteViewer = defineAsyncComponent(() => import('./components/infinite-viewer.vue'))
     const elRef = ref()
     const o1 = reactive(useElementSize(elRef))
     const o2 = reactive(useElementSize(viewport))
@@ -155,29 +122,6 @@ console.log(window.lcd = window.designerCtx = lcd)
 
 const viewport = ref<HTMLElement>()
 
-const ScrollSync = defineComponent({
-  props: ['reference'],
-  setup(props, { slots }) {
-    const elRef = ref()
-    const x = ref(0), y = ref(0)
-    const sync = el => [x.value, y.value] = [el.scrollLeft ?? el.scrollX, el.scrollTop ?? el.scrollY]
-    useEventListener(() => props.reference, 'scroll', e => sync(e.currentTarget))
-    watchEffect(() => {
-      props.reference && sync(props.reference)
-    })
-    watchEffect(() => {
-      const el = elRef.value
-      if (!el) return
-      // fix: when fixed
-      el.style.left = `-${x.value}px`
-      el.style.top = `-${y.value}px`
-      // el.style.transform = `translate(-${x.value}px, -${y.value}px)`
-    })
-    return () => h('div', { class: 'transform-gpu', }, h('div', { ref: elRef, class: 'absolute' }, slots))
-  }
-})
-
-
 const activitybars = computed(() => lcd.plugins.flatMap(e => e.contributes.activitybar || []))
 const activitybar = useTransformer(lcd, 'state.activitybar.id', {
   get: v => lcd.state.sidebar.visible ? v : void 0,
@@ -202,37 +146,6 @@ watch(views, (val) => {
   })
 }, { immediate: true })
 
-
-// moveable
-const moveable = ref()
-watch(() => active!.value?.index, async () => {
-  await nextTick()
-  moveable.value?.updateRect()
-})
-function onDragStart(e) {
-  lcd.draggedId = e.target.getAttribute('lcd-id')
-}
-function onDrag(e) {
-  e.target.style.transform = e.transform
-}
-function onDragEnd(e) {
-  const style = lcd.dragged!.data!.style ??= {}
-  ;['transform'].forEach(k => style[k] = e.target.style.getPropertyValue(k))
-  lcd.draggedId = undefined
-}
-function onResize({ target, width, height, transform, drag }) {
-  const style = lcd.dragged!.data!.style ??= {}
-  const setw = width != target.offsetWidth
-  const seth = height != target.offsetHeight
-  const sett = drag.translate[0] != 0 && drag.translate[1] != 0
-  setw && (toRaw(style).width = target.style.width = `${width}px`)
-  seth && (toRaw(style).height = target.style.height = `${height}px`)
-  sett && (toRaw(style).transform = target.style.transform = transform)
-}
-function onResizeEnd(e) {
-  triggerRef(toRef(lcd.dragged!.data, 'style'))
-  lcd.draggedId = undefined
-}
 
 // 快捷键
 function onKeydown(e: KeyboardEvent) {

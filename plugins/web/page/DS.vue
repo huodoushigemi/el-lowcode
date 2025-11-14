@@ -16,16 +16,15 @@
   </table>
 
   <el-drawer v-model="vis" title="Data Source" modal-class="props" destroy-on-close append-to-body size="500px" @closed="model = null; i = null">
-    <el-form-render ref="formRef" :model="model" label-position="right" label-width="auto">
-      <div grid="~ cols-2" style="gap: 0 32px">
-        <el-form-item-render :lp="['ID', 'id']" :rules="[required, { validator: (r, v) => modelValue?.find((e, _i) => i != _i && e.id == v) ? new Error('ID duplicate') : true }]" />
-        <el-form-item-render :lp="['IS INIT', 'isInit']" type="switch" />
-        <el-form-item-render :lp="['TYPE', 'type']" :options="['fetch']" />
-        <el-form-item-render :lp="['METHOD', 'options.method']" :options="['GET', 'POST', 'PUT', 'DELETE']" />
-      </div>
+    <!-- todo -->
+    <el-form-render v-if="vis" ref="formRef" :model="model" label-position="right" label-width="auto" grid="~ cols-2" style="gap: 0 32px">
+      <el-form-item-render :lp="['ID', 'id']" :rules="[required, { validator: (r, v) => modelValue?.find((e, _i) => i != _i && e.id == v) ? new Error('ID duplicate') : true }]" />
+      <el-form-item-render :lp="['IS INIT', 'isInit']" type="switch" />
+      <el-form-item-render :lp="['TYPE', 'type']" :options="['fetch']" />
+      <el-form-item-render :lp="['METHOD', 'options.method']" :options="['GET', 'POST', 'PUT', 'DELETE']" />
       <el-form-item-render :lp="['URL', 'options.uri']" :rules="[required]" :el="{ placeholder: 'https://...' }" />
-      <el-form-item-render :lp="['BODY', 'options.params']" :el="{ is: 'MonacoEditor', language: 'json', options: { scrollBeyondLastLine: false } }" :displayValue="`{\n  \n}`" :get="v => v ? JSON.stringify(v, null, '  ') : void 0" :set="v => v ? JSON.parse(v) : void 0" style="height: 100px" />
-      <el-form-item-render :lp="['FILTER', 'dataHandler']" :el="{ is: 'MonacoEditor', language: 'javascript', options: { scrollBeyondLastLine: false } }" :displayValue="`(data) => {\n  return data\n}`" :get="v => unExp(v)" :set="v => wrapExp(v)" style="height: 128px" />
+      <el-form-item-render :lp="['BODY', 'options.params']" col-span-full :el="{ is: 'MonacoEditor', language: 'json', options: { scrollBeyondLastLine: false } }" :displayValue="`{\n  \n}`" :get="v => v ? JSON.stringify(v, null, '  ') : void 0" :set="v => v ? JSON.parse(v) : void 0" style="height: 100px" />
+      <el-form-item-render :lp="['FILTER', 'dataHandler']" col-span-full :el="{ is: 'MonacoEditor', language: 'javascript', options: { scrollBeyondLastLine: false } }" :displayValue="`(data) => {\n  return data\n}`" :get="v => unExp(v)" :set="v => wrapExp(v)" style="height: 128px" />
     </el-form-render>
 
     <template #footer>
