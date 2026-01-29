@@ -105,7 +105,7 @@ defineRender(() => {
             <i-vscode-icons-file-type-json class='pr6 w22' />
             {tab.label}
             {active.value == key && edit.value && <input class='absolute left-0 p4 wfull lh-22 outline-0' ref={inputRef} value={tab.label} onChange={(e) => onChangeLabel(i, e.target.value)} />}
-            {/* {tab.editable && showClose && <div class='i-ep-close hover:i-ep:circle-close-filled flex aic jcc ml4 -mr4 text-10' onClick={(e) => (e.stopPropagation(), del(i))} />} */}
+            {/* {tab.editable && showClose && <div class='i-ep-close hover:i-ep:circle-close-filled flex aic jcc ml4 -mr4 text-10px' onClick={(e) => (e.stopPropagation(), del(i))} />} */}
             <div class="vs-actions flex aic sticky right-0 mla">
               {tab.closable !== false && <i-mdi-close class="vs-li mx3 p2! w18! h18!" onClick={(e) => (e.stopPropagation(), del(i))} />}
             </div>

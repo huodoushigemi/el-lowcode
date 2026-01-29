@@ -3,7 +3,7 @@
     <div :class="['el-collapse-item__header', open && 'is-active']" flex cursor-pointer select-none :open="open" @click="open = !open">
       <div mra>{{ title }}</div>
       <slot name="extra" />
-      <i-ep:arrow-up class="el-collapse-item__arrow" :rotate="open ? 180 : 90" ml8 text-12 />
+      <i-ep:arrow-up class="el-collapse-item__arrow" :rotate="open ? 180 : 90" ml8 text-3 />
     </div>
 
     <div v-if="open" class="el-collapse-item__wrap">

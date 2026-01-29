@@ -20,7 +20,7 @@
         </IV>
 
         <!-- Breadcrumb -->
-        <div class="absolute top-20 left-35 flex aic text-13 lh-32" @mouseleave="lcd.hoverId = void 0">
+        <div class="absolute top-20 left-35 flex aic text-13px lh-32" @mouseleave="lcd.hoverId = void 0">
           <div v-for="node in active?.path" class="vs-breadcrumb-li" @click="node.click()" @mouseenter="node.hover()">
             <div class="max-w150 truncate">{{ node.label }}</div>
             <div v-if="node != active" mx4> > </div>

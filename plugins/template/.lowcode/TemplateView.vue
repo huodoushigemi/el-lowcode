@@ -1,6 +1,6 @@
 <template>
   <div class="px12" overflow-overlay>
-    <i-mingcute:loading-line v-if="isLoading" class="hfull block mxa text-32 animate-spin" style="margin-top: 64px" />
+    <i-mingcute:loading-line v-if="isLoading" class="hfull block mxa text-8 animate-spin" style="margin-top: 64px" />
 
     <div v-else v-for="item in templates" shadow="hover" body-class="p0!" class="vs-li comp-li my12 cursor-pointer" flex="~ col" @click="onEdit(item)">
       <img class="comp-cover" :src="unVal(item.cover) || 'https://img.alicdn.com/tfs/TB1SnwliYr1gK0jSZR0XXbP8XXa-192-144.png_300x300Q90.jpg'" wfull hfull :style="`max-height: ${item.cover ? 'unset' : '96px'}; object-fit: scale-down;`" />

@@ -1,6 +1,6 @@
 <template>
   <aside class="vs-base vs-sidebar" flex="~ col">
-    <div pl20 pr8 text-11 lh-35 font-400 c="#bbb" truncate uppercase flex-shrink-0 sticky top-0 z-1>
+    <div pl20 pr8 text-11px lh-35 font-400 c="#bbb" truncate uppercase flex-shrink-0 sticky top-0 z-1>
       {{ activitybar?.title }}
     </div>
 

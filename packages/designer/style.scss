@@ -43,7 +43,7 @@
 }
 
 @mixin vs-base {
-  @apply text-13 lh-[1.4] select-none c-[--vs-c];
+  @apply text-13px lh-[1.4] select-none c-[--vs-c];
 }
 
 .monaco-workbench, .monaco-base, .vs-base {
@@ -106,7 +106,7 @@
 }
 
 .vs-btn {
-  @apply inline-flex aic py0 px10 b-none lh-26 text-14 align-middle c-[--vs-btn-c] bg-[--vs-btn-bg] cursor-pointer;
+  @apply inline-flex aic py0 px10 b-none lh-26 text-3.5 align-middle c-[--vs-btn-c] bg-[--vs-btn-bg] cursor-pointer;
   outline: 1px solid transparent;
   outline-offset: 2px !important;
   
@@ -134,7 +134,7 @@
 }
 
 .vs-input {
-  @apply block h26 py6 px6 c-inherit bg-#3c3c3c text-13;
+  @apply block h26 py6 px6 c-inherit bg-#3c3c3c text-13px;
   &:focus, &.focused {
     outline: 1px solid var(--vs-focus-b-c);
   }
@@ -212,7 +212,7 @@
 .vs-editor-tabs {
   @apply h35 bg-#252526;
   & > .tab {
-    @apply flex aic pl10 lh-[35px] text-13 c-#fff/25 bg-#2d2d2d b-r-1 b-r-#252526 [&>.vs-actions]:op0 [&:hover>.vs-actions]:op100 [&>.vs-actions]:w28;
+    @apply flex aic pl10 lh-[35px] text-13px c-#fff/25 bg-#2d2d2d b-r-1 b-r-#252526 [&>.vs-actions]:op0 [&:hover>.vs-actions]:op100 [&>.vs-actions]:w28;
   }
   & > .tab.active {
     @apply bg-#1e1e1e [&>.vs-actions]:op100;

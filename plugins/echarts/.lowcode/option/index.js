@@ -59,7 +59,7 @@ const yAxis = (axis) => ({ is: 'ElFormRender', model: axis, class: 'mt8', size: 
 
 export const axiss = (option) => ({ is: (_, { slots }) => h(resolveComponent('Tabs'), { tabs: [...option.xAxis, ...option.yAxis], editable: true, sortable: false, addable: false, props: { label: 'name' } }, {
   default: slots.default,
-  extra: () => h('div', { class: 'flex aic jcc mx4 w20 h20 text-16 bg-hover cursor-pointer b-1', onClick: () => option.yAxis.push({}) }, '+'),
+  extra: () => h('div', { class: 'flex aic jcc mx4 w20 h20 text-4 bg-hover cursor-pointer b-1', onClick: () => option.yAxis.push({}) }, '+'),
 }), children: () => [
   ...toArr(option.xAxis).map((axis, i) => ({ ...xAxis(axis), key: `x${i}`, label: axis.name || `类目轴${i == 0 ? '' : ' ' + (i + 1)}` })),
   ...toArr(option.yAxis).map((axis, i) => ({ ...yAxis(axis), key: `y${i}`, label: axis.name || `数值轴${i == 0 ? '' : ' ' + (i + 1)}` })),
@@ -115,7 +115,7 @@ export const legendView = (option) => ({ is: 'div', children: [
     radios(['', 'legend.top'], [['T', 'top'], ['C', 'middle'], ['B', 'bottom']]),
     num(['', 'legend.itemGap'], { displayValue: 10 }),
   ] },
-  { is: 'div', class: 'text-12 op80', children: 'text' },
+  { is: 'div', class: 'text-3 op80', children: 'text' },
   { is: StyleText, class: 'my8', model: option, disabled: ['r'], prefix: 'legend.textStyle' },
 ] })
 
@@ -153,7 +153,7 @@ export const tooltip = (option) => enable2(option, 'Tooltip', genDisplayValue(op
     color(['bg', 'tooltip.backgroundColor'], { el: { size: 'small' } }),
   ] },
   // text
-  { is: 'div', class: 'text-12 op90', children: 'text' },
+  { is: 'div', class: 'text-3 op90', children: 'text' },
   { is: StyleText, class: 'my8', model: option, disabled: ['r'], prefix: 'tooltip.textStyle' },
   // enable3(option, 'text', void 0, () => [
   // ])

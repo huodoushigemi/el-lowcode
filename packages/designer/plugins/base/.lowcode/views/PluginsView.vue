@@ -1,7 +1,7 @@
 <template>
-  <div flex aic px8 py12 text-22 b-b="1 solid [--el-border-color]">
+  <div flex aic px8 py12 text-22px b-b="1 solid [--el-border-color]">
     <!-- 插件市场 -->
-    <ElTooltip content="远程插件" placement="right"><i-ep:plus class="vs-ai" mla p6 text-24 rd-6 @click="addRemotePlugin()" /></ElTooltip>
+    <ElTooltip content="远程插件" placement="right"><i-ep:plus class="vs-ai" mla p6 text-4 rd-6 @click="addRemotePlugin()" /></ElTooltip>
      <!-- <button class="vs-btn" flex aic mla @click="addRemotePlugin()">+ 远程插件</button> -->
   </div>
   <div :class="['vs-ul', drawer.url && 'element-selection']" tabindex="0" style="overflow: auto;" v-list-focus>
@@ -12,9 +12,9 @@
           <div w0 flex-1>
             <div truncate font-700 lh-19>{{ pkg.displayName || pkg.name }}</div>
             <div class="desc" :c="url == drawer.url ? 'inherit' : '[--vs-desc-c]'" truncate lh-17>{{ pkg.description }}</div>
-            <div flex aic text-12 lh-24>
+            <div flex aic text-3px lh-24>
               <div class="author" :c="url == drawer.url ? 'inherit' : '[--vs-desc-c]'" lh-24>{{ pkg.author?.author || pkg.author }}</div>
-              <button v-if="!designerCtx.root.plugins?.includes(url)" class="vs-btn mla px5! text-11! lh-16!" :disabled="pkg.disabled" @click.stop="(designerCtx.root.plugins ??= []).push(url)">Install</button>
+              <button v-if="!designerCtx.root.plugins?.includes(url)" class="vs-btn mla px5! text-11px! lh-16!" :disabled="pkg.disabled" @click.stop="(designerCtx.root.plugins ??= []).push(url)">Install</button>
             </div>
           </div>
         </div>

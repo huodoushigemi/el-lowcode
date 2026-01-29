@@ -1,5 +1,5 @@
 <template>
-  <div flex aic p8 text-26 font-medium capitalize>
+  <div flex aic p8 text-26px font-medium capitalize>
     <div mra>{{ node.label }}</div>
     <i-mdi:cursor-move v-if="model && lcd.root != model" bg-hover w28 h28 p4 mr8 :bg="node.isAbs ? '#404040' : ''" @click="node.isAbs = true" />
     <i-material-symbols-light:code bg-hover w28 h28 p4 @click="visible = true" />

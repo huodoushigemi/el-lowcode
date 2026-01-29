@@ -396,18 +396,23 @@ export const widgets = [
         props.multiple && num('multiple-limit')
       ]),
       str('placeholder'),
-      { lp: ['options', 'children'], el: { is: 'OptionsInput', new: i => ({ is: 'ElOption', label: `opt ${i + 1}`, value: `${i + 1}` }) }  }
+      { lp: 'options', el: { is: 'OptionsInput' }  }
     ],
     defaultProps: () => ({
       // todo
       // defaultValue: '',
       filterable: true,
       defaultFirstOption: true,
-      children: [
-        { is: 'ElOption', label: `opt 1`, value: `1` },
-        { is: 'ElOption', label: `opt 2`, value: `2` },
-        { is: 'ElOption', label: `opt 3`, value: `3` },
+      options: [
+        { label: `opt 1`, value: `1` },
+        { label: `opt 2`, value: `2` },
+        { label: `opt 3`, value: `3` },
       ]
+      // children: [
+      //   { is: 'ElOption', label: `opt 1`, value: `1` },
+      //   { is: 'ElOption', label: `opt 2`, value: `2` },
+      //   { is: 'ElOption', label: `opt 3`, value: `3` },
+      // ]
     }),
     JSONSchemaOutput: (props) => ({
       // todo
@@ -461,7 +466,7 @@ export const widgets = [
         bool('disabled'), bool('block'),
       ]),
       radios('size', SIZES),
-      { lp: 'options', el: { is: 'OptionsInput', new: i => ({ label: `opt ${i + 1}`, value: `${i + 1}` }) }  }
+      { lp: 'options', el: { is: 'OptionsInput' } }
     ],
     defaultProps: () => ({
       options: [{ label: `opt 1`, value: `1` }, { label: `opt 2`, value: `2` }, { label: `opt 3`, value: `3` }]

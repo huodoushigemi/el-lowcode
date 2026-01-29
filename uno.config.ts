@@ -12,7 +12,15 @@ export default defineConfig({
     }),
     presetAttributify(),
     presetIcons(),
-    presetRemToPx({ baseFontSize: 4 }),
+    // presetRemToPx({ baseFontSize: 4 }),
+    {
+      name: "@preset-rem-to-px",
+      postprocess: (util) => {
+        util.entries.forEach((i) => {
+          if (typeof i[1] === "string") i[1] = i[1].replaceAll('var(--spacing)', '1px')
+        });
+      }
+    }
   ],
   transformers: [
     // transformerVariantGroup()
@@ -24,7 +32,6 @@ export default defineConfig({
     'flex!',
     'flex-wrap',
     'grid',
-    'text-12',
     ...gaps.map(e => `m${e}`),
     ...gaps.map(e => `mt${e}`),
     ...gaps.map(e => `mr${e}`),
@@ -58,7 +65,8 @@ export default defineConfig({
     '[&>*]:mb8',
     '[&>*]:mb8!',
     '[&>*]:flex-1',
-    'text-32',
+    'text-3',
+    'text-8',
     'font-bold',
     'c-red', 'hover:c-red',
     'cursor-cell',

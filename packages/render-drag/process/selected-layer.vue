@@ -4,7 +4,7 @@
     <template v-for="(rect, i) in lcd.hover?.getRects()">
       <div v-if="lcd.hover != active && !lcd.dragged" class="fixed" :style="calcStyle(lcd.hover, rect)">
         <div class="absolute inset-0 op50" outline="1 dashed [--vs-focus-b-c] offset--1" />
-        <div class="-translate-y-full flex aic px8 max-w8em text-12 truncate c-white op50 bg-[--vs-focus-b-c]">
+        <div class="-translate-y-full flex aic px8 max-w8em text-3 truncate c-white op50 bg-[--vs-focus-b-c]">
           <!-- <i-mdi:cursor-move v-if="lcd.hover?.isAbs" class="-ml4 mr4" /> -->
           {{ lcd.hover?.label }}
         </div>
@@ -14,7 +14,7 @@
     <!-- active rect -->
     <template v-if="active" v-for="rect in active?.getRects()">
       <div class="fixed" outline="1 solid [--vs-focus-b-c] offset--1" :style="calcStyle(lcd.active, rect)" @mousedown.stop>
-        <div class="vs-actions absolute bottom-full right-0 flex text-14 pointer-events-auto bg-#333" :class="!!lcd.dragged && 'op0 pointer-events-none!'" style="box-shadow: 0 0 12px #00000080" @mousedown.stop draggable="true" @dragstart="dispatchDrag">
+        <div class="vs-actions absolute bottom-full right-0 flex text-14px pointer-events-auto bg-#333" :class="!!lcd.dragged && 'op0 pointer-events-none!'" style="box-shadow: 0 0 12px #00000080" @mousedown.stop draggable="true" @dragstart="dispatchDrag">
           <div v-if="active.isAbs" class="vs-li">
             <!-- <i-mdi:cursor-move ref="moveHandle" w16 h16 cursor-move /> -->
             <Moveable v-if="active.el" :key="active.id" :target="active.el" :dragTarget="unrefElement(moveHandle?.[0])" :draggable="true" :origin="false" :hideDefaultLines="true" :useResizeObserver="true" :useMutationObserver="true" :throttleDrag="1" @dragStart="onDragStart" @drag="onDrag" @dragEnd="onDragEnd" />

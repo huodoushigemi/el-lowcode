@@ -97,7 +97,7 @@ defineRender(() => {
           <div key={c.key} class={['tab', active.value == c.key && 'is-active']} onPointerdown={onDown} onPointerup={e => onTab(e, c.key, i)} onDblclick={onEditLabel}>
             {c.props.label}
             {active.value == c.key && edit.value && <input class='absolute left-0 p4 wfull lh-22 outline-0' ref={inputRef} value={c.props.label} onChange={(e) => onChangeLabel(i, e.target.value)} />}
-            {props.editable && showClose && <div class='i-ep-close hover:i-ep:circle-close-filled flex aic jcc ml4 -mr4 text-10' onClick={(e) => (e.stopPropagation(), del(i))} />}
+            {props.editable && showClose && <div class='i-ep-close hover:i-ep:circle-close-filled flex aic jcc ml4 -mr4 text-10px' onClick={(e) => (e.stopPropagation(), del(i))} />}
           </div>
         ))}
         <div class='sticky right-0 flex aic mla bg-inherit! shadow-md shadow-#000/40'>
@@ -133,7 +133,7 @@ defineRender(() => {
     }
 
     > .tab {
-      @apply flex-shrink-0 relative px8 max-w6em min-w2em text-12 lh-26 cursor-default truncate text-center;
+      @apply flex-shrink-0 relative px8 max-w6em min-w2em text-3 lh-26 cursor-default truncate text-center;
       color: var(--el-text-color-secondary);
 
       & + .tab {
@@ -150,7 +150,7 @@ defineRender(() => {
     }
 
     .tab-plus {
-      @apply flex aic jcc mx4 w20 h20 text-16 bg-hover cursor-pointer b-1;
+      @apply flex aic jcc mx4 w20 h20 text-4 bg-hover cursor-pointer b-1;
     }
   }
 
