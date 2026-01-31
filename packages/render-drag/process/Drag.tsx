@@ -14,7 +14,7 @@ declare module '.' {
 type El = Element
 
 /**
- * 文本元素 开启编辑模式
+ * 元素拖拽
  */
 export const Drag: Process = {
   mounted(store) {

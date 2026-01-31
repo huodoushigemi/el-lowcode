@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig, mergeConfig } from 'vite'
 import { cwd } from './utils.js'
 import { entries } from './plugins/alias.js'
 
@@ -11,25 +11,24 @@ import IconsResolver from 'unplugin-icons/resolver'
 import Icons from 'unplugin-icons/vite'
 import Globals from 'rollup-plugin-external-globals'
 import Externalize from 'vite-plugin-externalize-dependencies'
-import TransformHtml from './plugins/rollup-plugin-transform-html.js'
 
 /**
  * @param {import('vite').UserConfig} config
  */
-export const mergeConfig = (config) => defineConfig({
+export const defineConfig2 = (config) => {
+  return mergeConfig(buildConfig, config)
+}
+
+export const defaultConfig = defineConfig(async (env) => ({
   root: cwd,
-  ...config,
   resolve: {
-    ...config.resolve,
-    alias: [
-      // ...entries,
-      ...config.resolve?.alias || [],
-    ],
+    alias: env.command == 'serve' ? entries : [],
     external: ['vue', 'vue-demi']
   },
   build: {
-    // sourcemap: true,
-    ...config.build
+    rollupOptions: {
+      external: ['vue', 'vue-demi']
+    }
   },
   plugins: [
     Macros({ plugins: {
@@ -43,43 +42,15 @@ export const mergeConfig = (config) => defineConfig({
     Unocss(),
     Components({ resolvers: [IconsResolver()] }),
     Icons({ autoInstall: true }),
-    TransformHtml(),
-    // await (import('vite-plugin-externalize-dependencies').then(e => e.default))
     Externalize({ externals: ['vue', 'vue-demi'] }),
-    // {
-    //   enforce: 'post',
-    //   ...Globals(id => (
-    //     id == 'vue' ? 'Vue' :
-    //     id == 'vue-demi' ? 'VueDemi' :
-    //     // id == 'vue-request' ? 'VueRequest' :
-    //     id == 'moveable' ? 'Moveable' :
-    //     void 0
-    //   ))
-    // },
-    ...config.plugins || []
-  ]
-})
-
-
-export const defaultConfig = defineConfig((env) => ({
-  root: cwd,
-  resolve: {
-    alias: env.command == 'serve' ? entries : []
-  },
-  plugins: [
-    Macros({ plugins: {
-      vue: Vue({
-        template: {
-          compilerOptions: { isCustomElement: (tag) => tag.startsWith('wc-') }
-        }
-      }),
-      vueJsx: VueJsx()
-    } }),
-    Unocss(),
-    Components({ resolvers: [IconsResolver()] }),
-    Icons({ autoInstall: true }),
-    TransformHtml(),
-    // await (import('vite-plugin-externalize-dependencies').then(e => e.default))
-    Externalize({ externals: ['vue', 'vue-demi'] }),
+    // (await import('vite-plugin-external')).default({
+    //   externals: {
+    //     'vue': 'Vue',
+    //     'vue-demi': 'VueDemi'
+    //   }
+    // })
   ]
 }))
+
+const buildConfig = await defaultConfig({ command: 'build' })
+const devConfig = await defaultConfig({ command: 'serve' })

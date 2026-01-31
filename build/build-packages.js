@@ -1,20 +1,12 @@
 import { rollup } from 'rollup'
-import { build as vite, createBuilder } from 'vite'
-import { nodeResolve } from '@rollup/plugin-node-resolve'
+import { build as vite } from 'vite'
 import chalk from 'chalk'
-// import Vue from 'unplugin-vue/rollup'
-import Vue from '@vitejs/plugin-vue'
-import Jsx from '@vitejs/plugin-vue-jsx'
-import VueMacros from 'unplugin-vue-macros/rollup'
-import esbuild from 'rollup-plugin-esbuild'
 import dts from 'rollup-plugin-dts'
 import fs from 'fs'
-import fse from 'fs-extra'
 import { execSync } from 'child_process'
-import path from 'path'
 
 import { pkgDir } from './utils.js'
-import { mergeConfig } from './defaultConfig.js'
+import { defineConfig2 } from './defaultConfig.js'
 
 const log = console.log
 
@@ -26,8 +18,8 @@ export async function build(pack) {
   const jsonPath = pkgDir(pack, 'package.json')
   if (!fs.existsSync(jsonPath)) return
   const pkg = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))
-
-  const bundle = await vite(mergeConfig({
+  
+  await vite(defineConfig2({
     configFile: false,
     mode: 'production',
     build: {
@@ -40,9 +32,7 @@ export async function build(pack) {
         fileName: '[name]',
       },
       rollupOptions: {
-        external: [
-          ...Object.keys({ ...pkg.dependencies, ...pkg.peerDependencies }) ?? []
-        ],
+        external: Object.keys({ ...pkg.dependencies, ...pkg.peerDependencies }) ?? []
       }
     },
     plugins: [

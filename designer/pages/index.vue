@@ -72,28 +72,28 @@ if (vscode) {
 //   }, { immediate: true, flush: 'post' })
 // })
 
-// query.schema
-const schema = useRouteQuery<string | undefined>('schema')
-const file = useRouteQuery<string | undefined>('file')
-// watch([schema, designer], ([val, designer]) => {
-//   if (!val || !designer) return
-//   const json = JSON.parse(val)
-//   designer.root = json
-//   schema.value = undefined
-// }, { immediate: true, flush: 'post' })
-watchEffect(async () => {
-  if (!designer.value) return
-  if (schema.value) {
-    designer.value.root = JSON.parse(schema.value)
-    schema.value = undefined
-  }
-  else if (file.value) {
-    const loading = ElLoadingService()
-    designer.value.root = await fetch(file.value).then(e => e.status == 200 ? e.json() : Promise.reject()).catch(() => initial([{ is: 'h1', children: '404' }]))
-    loading.close()
-    file.value = undefined
-  }
-})
+// // query.schema
+// const schema = useRouteQuery<string | undefined>('schema')
+// const file = useRouteQuery<string | undefined>('file')
+// // watch([schema, designer], ([val, designer]) => {
+// //   if (!val || !designer) return
+// //   const json = JSON.parse(val)
+// //   designer.root = json
+// //   schema.value = undefined
+// // }, { immediate: true, flush: 'post' })
+// watchEffect(async () => {
+//   if (!designer.value) return
+//   if (schema.value) {
+//     designer.value.root = JSON.parse(schema.value)
+//     schema.value = undefined
+//   }
+//   else if (file.value) {
+//     const loading = ElLoadingService()
+//     designer.value.root = await fetch(file.value).then(e => e.status == 200 ? e.json() : Promise.reject()).catch(() => initial([{ is: 'h1', children: '404' }]))
+//     loading.close()
+//     file.value = undefined
+//   }
+// })
 </script>
 
 <template>

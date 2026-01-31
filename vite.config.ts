@@ -1,4 +1,3 @@
-import path from 'path'
 import { ALL_DEPS } from './build/all-pkgs.js'
 import { defineConfig, mergeConfig, Plugin } from 'vite'
 import { defaultConfig } from './build/defaultConfig.js'
@@ -11,7 +10,7 @@ const config = defineConfig({
   },
   server: {
     host: '0.0.0.0',
-    port: 5174
+    port: 5174,
   },
   build: {
     // outDir: 'docs/dest/designer',
@@ -29,7 +28,7 @@ const config = defineConfig({
           if (dep) return dep.replaceAll('/', '-')
         }
       },
-      external: ['vue', 'vue-demi'],
+      // external: ['vue', 'vue-demi'],
       plugins: [
         (await import('rollup-plugin-visualizer')).visualizer() as any,
       ]
@@ -40,4 +39,4 @@ const config = defineConfig({
   ]
 })
 
-export default env => mergeConfig(defaultConfig(env), config)
+export default async env => mergeConfig(await defaultConfig(env), config)

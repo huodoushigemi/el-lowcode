@@ -1,14 +1,14 @@
 import path from 'path'
-import { build } from 'vite'
+import { build, defineConfig, mergeConfig } from 'vite'
 import fs from 'fs'
 import fse from 'fs-extra/esm'
-import { mergeConfig } from './defaultConfig.js'
+import { defaultConfig, defineConfig2 } from './defaultConfig.js'
 
 import * as esbuild from 'esbuild'
 const minify = code => esbuild.transformSync(code, { loader: 'ts', minifyWhitespace: true }).code
 
 async function build1(input, outDir) {
-  await build(mergeConfig({
+  await build(defineConfig2({
     configFile: false,
     mode: 'production',
     define: {
@@ -26,7 +26,6 @@ async function build1(input, outDir) {
       // minify: false,
       copyPublicDir: false,
       rollupOptions: {
-        external: ['vue', 'vue-demi'],
         treeshake: {
           preset: 'smallest',
           moduleSideEffects: true,
@@ -55,16 +54,16 @@ async function buildPlugin(name) {
 }
 
 
-// await buildPlugin('web')
-// await buildPlugin('element-plus')
-// await buildPlugin('echarts')
-// await buildPlugin('vuetify')
-// await buildPlugin('uni-app')
-// await buildPlugin('ant-design-vue')
-// await buildPlugin('naive-ui')
-// await buildPlugin('mdui')
-// await buildPlugin('material-web')
-// await buildPlugin('shoelace')
-// await buildPlugin('threejs')
-// await buildPlugin('template')
-// await buildPlugin('ai')
+await buildPlugin('web')
+await buildPlugin('element-plus')
+await buildPlugin('echarts')
+await buildPlugin('vuetify')
+await buildPlugin('uni-app')
+await buildPlugin('ant-design-vue')
+await buildPlugin('naive-ui')
+await buildPlugin('mdui')
+await buildPlugin('material-web')
+await buildPlugin('shoelace')
+await buildPlugin('threejs')
+await buildPlugin('template')
+await buildPlugin('ai')
