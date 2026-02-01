@@ -22,7 +22,7 @@
           <Tippy class="vs-li" interactive :offset="[0, 0]" :delay="[0, 300]" placement="right-start" :duration="0">
             <i-mdi:dots-vertical w16 h16 />
             <template #content>
-              <!-- <Menu ref="menu" :items="active.menus" :tippy="{ delay: 100 }" /> -->
+              <Menu ref="menu" :items="active.menus" :tippy="{ delay: 100 }" />
             </template>
           </Tippy>
         </div>

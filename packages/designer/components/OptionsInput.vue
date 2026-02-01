@@ -7,6 +7,7 @@
       :columns="[{ id: L, name: L }, { id: V, name: V }].map(e => ({ ...e, editable: true }))"
       size="small"
       :newRow="newRow"
+      :rowDrag="true"
       :data="modelValue"
       @update:data="v => emit('update:modelValue', v)"
     />
