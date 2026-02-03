@@ -18,7 +18,7 @@
 
   <template v-if="script === true || isScript || visible">
     <el-dialog v-model="visible" title="JS Expression" destroy-on-close>
-      <monaco-editor v-model="code" @save="onSave" :tsExtraLibs="tsExtraLibs" language="javascript" height="500px" autofocus />
+      <monaco-editor v-model="code" @save="onSave" :tsExtraLibs="tsExtraLibs" language="javascript" style="height: 500px" autofocus />
       <template #footer>
         <el-button size="default" @click="visible = false">Cancel</el-button>
         <el-button size="default" type="primary" @click="onSave">Crtl+S</el-button>
@@ -58,7 +58,7 @@ const isScript = computed(() => isExp(value.value))
 const win = pick(window, ['alert', 'console'])
 
 const tsExtraLibs = computed(() => ({
-  'lcd.vars.d.ts': Object.entries((designerCtx.active ?? designerCtx.rootNode)?.vars || {}).map(([k, v]) => `const ${k} = ${JSON.stringify(v)} as const`).join('\n\n'),
+  'lcd.vars.d.ts': Object.entries((designerCtx.active ?? designerCtx.rootNode)?.vars || {}).map(([k, v]) => `const ${k} = ${JSON.stringify(v)}`).join('\n\n'),
   'lcd.dom.d.ts': `const window = ${objStringify(win, v => typeof v == 'function' ? '() => {}' : JSON.stringify(v))} as const`,
 }))
 
